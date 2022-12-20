@@ -1,14 +1,11 @@
 import sys
 import os
-import re
 import subprocess
 import inspect
 from functools import partial
 import xlsxwriter
-import json
 import logging
 import time
-import csv
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
@@ -48,9 +45,19 @@ class ImgWidget2(QtWidgets.QWidget):
 
 class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
+    def dragEnterEvent(self, e):
+        if e.mimeData().hasUrls():
+            e.acceptProposedAction()
+
+    def dropEvent(self, e):
+        for url in e.mimeData().urls():
+            file_name = url.toLocalFile()
+            self.ui.package_folder.setText(str(file_name))
+            print("Dropped file: " + file_name)
+
     def __init__(self, no_gui=False, s=None):
         super().__init__()
-        self.bare_title = "Submission Tool"
+        self.bare_title = "Submission Helper"
 
         self.ui = Ui_submission()
         self.ui.setupUi(self)
@@ -79,8 +86,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'package_browse', 'browse'))
         self.ui.package_explore.clicked.connect(
             partial(self.handler, 'shot_explore', 'explore'))
-        self.ui.package_reload.clicked.connect(
-            partial(self.handler, 'package_reload', 'reload'))
+        self.ui.reload.clicked.connect(
+            partial(self.handler, 'package_reload', 'source_change'))
 
         # Rename Package
         self.ui.name_template.textChanged.connect(
@@ -790,7 +797,7 @@ if __name__ == "__main__":
     log.setLevel(logging.DEBUG)
     """
     logging.basicConfig(filename=os.path.join(self.settings_get_user_settings_path(),
-                                              'SubmissionToolLog.log').replace('\\', '/'), level=logging.DEBUG)
+                                              'SubmissionHelperLog.log').replace('\\', '/'), level=logging.DEBUG)
     """
     log.info('Started at: ' + time.strftime("%Y-%m-%d, %H:%M"))
 

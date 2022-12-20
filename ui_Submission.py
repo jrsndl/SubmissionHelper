@@ -25,6 +25,7 @@ class Ui_submission(object):
         sizePolicy.setHeightForWidth(submission.sizePolicy().hasHeightForWidth())
         submission.setSizePolicy(sizePolicy)
         submission.setMinimumSize(QSize(770, 600))
+        submission.setAcceptDrops(True)
         icon = QIcon()
         icon.addFile(u":/images/folder.png", QSize(), QIcon.Normal, QIcon.Off)
         submission.setWindowIcon(icon)
@@ -742,6 +743,7 @@ class Ui_submission(object):
         self.package_folder.setSizePolicy(sizePolicy1)
         self.package_folder.setMinimumSize(QSize(250, 25))
         self.package_folder.setMaximumSize(QSize(16000, 16777215))
+        self.package_folder.setDragEnabled(True)
 
         self.horizontalLayout_4.addWidget(self.package_folder)
 
@@ -4049,17 +4051,17 @@ class Ui_submission(object):
 
         self.horizontalLayout_3.addWidget(self.write_button)
 
-        self.write_button_2 = QPushButton(self.centralwidget)
-        self.write_button_2.setObjectName(u"write_button_2")
-        sizePolicy2.setHeightForWidth(self.write_button_2.sizePolicy().hasHeightForWidth())
-        self.write_button_2.setSizePolicy(sizePolicy2)
-        self.write_button_2.setMinimumSize(QSize(70, 40))
-        self.write_button_2.setMaximumSize(QSize(70, 40))
-        self.write_button_2.setBaseSize(QSize(520, 51))
-        self.write_button_2.setAutoFillBackground(False)
-        self.write_button_2.setFlat(True)
+        self.reload = QPushButton(self.centralwidget)
+        self.reload.setObjectName(u"reload")
+        sizePolicy2.setHeightForWidth(self.reload.sizePolicy().hasHeightForWidth())
+        self.reload.setSizePolicy(sizePolicy2)
+        self.reload.setMinimumSize(QSize(70, 40))
+        self.reload.setMaximumSize(QSize(70, 40))
+        self.reload.setBaseSize(QSize(520, 51))
+        self.reload.setAutoFillBackground(False)
+        self.reload.setFlat(True)
 
-        self.horizontalLayout_3.addWidget(self.write_button_2)
+        self.horizontalLayout_3.addWidget(self.reload)
 
 
         self.verticalLayout_10.addLayout(self.horizontalLayout_3)
@@ -4090,14 +4092,14 @@ class Ui_submission(object):
         self.prefs_frame_rate.setCurrentIndex(1)
         self.BottomTab.setCurrentIndex(0)
         self.write_button.setDefault(True)
-        self.write_button_2.setDefault(True)
+        self.reload.setDefault(True)
 
 
         QMetaObject.connectSlotsByName(submission)
     # setupUi
 
     def retranslateUi(self, submission):
-        submission.setWindowTitle(QCoreApplication.translate("submission", u"Submission Tool", None))
+        submission.setWindowTitle(QCoreApplication.translate("submission", u"Submission Helper", None))
 #if QT_CONFIG(tooltip)
         submission.setToolTip("")
 #endif // QT_CONFIG(tooltip)
@@ -4362,5 +4364,6 @@ class Ui_submission(object):
         self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_7), QCoreApplication.translate("submission", u"Drive Log", None))
         self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_8), QCoreApplication.translate("submission", u"Text", None))
         self.write_button.setText(QCoreApplication.translate("submission", u"Write", None))
-        self.write_button_2.setText(QCoreApplication.translate("submission", u"Reload", None))
+        self.reload.setText(QCoreApplication.translate("submission", u"Reload", None))
     # retranslateUi
+

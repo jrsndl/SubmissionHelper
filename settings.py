@@ -12,7 +12,7 @@ class Settings(object):
         self.log = logging.getLogger("mylog")
         self.log.setLevel(logging.DEBUG)
 
-        self.app_name = "SubmissionTool2"
+        self.app_name = "SubmissionHelper"
         self.preset_names = []
         self.current_settings_name = ""
 

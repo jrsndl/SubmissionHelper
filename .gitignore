@@ -1,0 +1,10 @@
+
+*.bat
+
+ffmpeg/ffprobe.exe
+
+ffmpeg/ffplay.exe
+
+ffmpeg/ffmpeg.exe
+
+.idea/*

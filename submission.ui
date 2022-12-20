@@ -22,8 +22,11 @@
     <height>600</height>
    </size>
   </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
-   <string>Submission Tool</string>
+   <string>Submission Helper</string>
   </property>
   <property name="windowIcon">
    <iconset resource="ui_images.qrc">
@@ -809,6 +812,9 @@ p, li { white-space: pre-wrap; }
                    <property name="text">
                     <string/>
                    </property>
+                   <property name="dragEnabled">
+                    <bool>true</bool>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -1347,7 +1353,6 @@ p, li { white-space: pre-wrap; }
            </layout>
           </item>
          </layout>
-         <zorder></zorder>
         </widget>
         <widget class="QWidget" name="tab_10">
          <attribute name="title">
@@ -7665,7 +7670,7 @@ Vendor = AmazingVFX</string>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="write_button_2">
+           <widget class="QPushButton" name="reload">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
