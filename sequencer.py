@@ -908,7 +908,6 @@ class Sequencer(object):
                         result = ""
                     one_item.update({k: result})
 
-
     def prepare_package_name(self):
 
         def str_to_bool(my_str):
@@ -970,7 +969,7 @@ class Sequencer(object):
             except :
                 self.log.error("Package date failed")
 
-        # make sure path exists, it is a directory and has trailing slash
+        # make sure path exists, it is a directory and has no trailing slash
         if os.path.exists(_pkg_folder):
             if _pkg_folder is None:
                 _pkg_folder = ''
@@ -982,7 +981,7 @@ class Sequencer(object):
                     # remove trailing slash
                     _pkg_folder = _pkg_folder[:-1]
                 _spl = _pkg_folder.split('/')
-                one_up = _pkg_folder
+                one_up = '/'.join(_spl[:-1])
                 name_from_folder = _spl[-1]
 
         # list all dirs, parse date and version
@@ -1025,16 +1024,26 @@ class Sequencer(object):
         if last_dir:
             last_version = last_dir['version']
         else:
-            last_version = 'Z'
+            last_version = None
 
         if _ver_letters:
-            if _ver_upper:
-                next_version = chr(
-                    (ord(last_version.upper()) + 1 - 65) % 26 + 65)
-            else:
-                next_version = chr(
-                    (ord(last_version.upper()) + 1 - 65) % 26 + 65).lower()
+            if last_version is None:
+                last_version = 'Z'
+            try:
+                _test = last_version.upper()
+            except:
+                last_version = 'Z'
+            next_version = chr(
+                (ord(last_version.upper()) + 1 - 65) % 26 + 65)
+            if not _ver_upper:
+                next_version = next_version.lower()
         else:
+            if last_version is None:
+                last_version = 0
+            try:
+                _test = int(last_version)
+            except ValueError:
+                last_version = 0
             # version is number
             next_version = str(int(last_version) + 1).zfill(_ver_zeroes)
 

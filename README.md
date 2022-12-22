@@ -28,7 +28,7 @@ Package starts with one or more files that you want to package and send. Submiss
 ## Quick How-to
 Submission Helper assumes you put the file(s) in one folder - the Package Folder.
 
-1. Drag the package folder path to the Package Folder
+1. Drag the package folder path anywhere to the Submission Helper window
 2. Set the Package Name options, till the preview matches what you need
 3. Use Spreadsheet tab to define columns and their values
 4. Set the export options in Exports and text tabs
