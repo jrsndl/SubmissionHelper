@@ -384,7 +384,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         # refresh self.settings
         self.settings_from_gui()
-        # read and precompile regexes
+
+        # update settings from gui
+        if self.data is not None:
+            self.data.settings = self.settings
+
 
         if group == 'browse':
             if sender == 'package_browse':
@@ -491,7 +495,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
     def go_button(self):
 
-        self.save_spreadsheet()
+        log.debug('-> save_submission')
+        self.data.export_all()
 
     def submission_name_from_path(self):
 
@@ -534,49 +539,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                         log.error("can't display table row")
             table_ui.resizeColumnsToContents()
             table_ui.resizeRowsToContents()
-
-
-    def save_submission(self):
-
-        log.debug('-> save_submission')
-
-        # read column widths from tablewidget for excel column sizes
-        # there is no way to change excel column sizes by content
-        column_widths = []
-        for column_number, one_column in enumerate(self.data.column_titles_sub):
-            column_widths.append((float(self.ui.sub_table.columnWidth(column_number))))
-        _row_height = 20
-        _column_width = 0.2
-        _thumbnail_scale = 0.27
-
-        if self.data.static_keywords is not None:
-            excel_name = self.data.static_keywords['package_name_root']\
-                         + '/' + self.data.static_keywords['package_name']\
-                         + '.xlsx'
-            txt_name = self.data.static_keywords['package_name_root']\
-                         + '/' + self.data.static_keywords['package_name']\
-                         + '.txt'
-
-        if self.data.table_sub and self.data.column_titles_sub:
-            # spreadsheet
-            workbook = xlsxwriter.Workbook(excel_name)
-            worksheet = workbook.add_worksheet()
-
-            worksheet.set_row(0, _row_height)
-            for column_number, one_column in enumerate(self.data.column_titles_sub):
-                worksheet.set_column(column_number, column_number, column_widths[column_number] * _column_width)
-                worksheet.write(0, column_number, one_column)
-            for row, line in enumerate(self.data.table_sub):
-                worksheet.set_row(row + 1, _row_height)
-                for column_number, one_column in enumerate(self.data.column_titles_sub):
-                    worksheet.write(row + 1, column_number, line[column_number])
-            workbook.close()
-        """       
-        except:
-            log.error('Error writing file: ' + str(excel_name))
-        """
-        with open(txt_name, 'w') as f:
-            f.write(self.data.table_txt)
 
     def settings_update_dropbox(self):
         self.ui.load_preset_combobox.blockSignals(True)

@@ -5,6 +5,9 @@ import pprint
 import time
 import logging
 
+import xlsxwriter
+import csv
+
 import parse_file_name
 from metadata import MetaData
 import helpers
@@ -1060,7 +1063,8 @@ class Sequencer(object):
     def prepare_columns(self, gui_columns):
         """
         Gets columns definition as a string like:
-        Thumbnail={thumb_path}, Thumbnail={created_thumb_path}, Shot={shot_name}, CheckShot={check_shot_name}, ...
+        Thumbnail={thumb_path}, Thumbnail={created_thumb_path},
+        Shot={shot_name}, CheckShot={check_shot_name}, ...
         Returns two lists: column_titles and column_expressions
         """
 
@@ -1068,7 +1072,7 @@ class Sequencer(object):
         column_expressions = []
         gui_columns.replace("\n", ",")
 
-        NM_RE = re.compile(r"\s*(?P<columntitle>.*)\s*=\s*(?P<columnexpression>.*)\s*")
+        NM_RE = re.compile(r"\s*(?P<column_title>.*)\s*=\s*(?P<column_expression>.*)\s*")
         split_list = gui_columns.split(",")
         column_count = 0
         columns = []
@@ -1076,9 +1080,13 @@ class Sequencer(object):
         for one_column in split_list:
             m = NM_RE.search(one_column)
             if m:
-                title = m.group("columntitle")
-                expression = m.group("columnexpression")
-                one_itm = {'column_number': column_count, 'title': title, 'expression': expression}
+                title = m.group("column_title")
+                expression = m.group("column_expression")
+                one_itm = {
+                    'column_number': column_count,
+                    'title': title,
+                    'expression': expression
+                }
                 columns.append(one_itm)
                 column_titles.append(title)
                 column_expressions.append(expression)
@@ -1098,9 +1106,12 @@ class Sequencer(object):
             if self.settings['txt_columns']['value']:
                 _txt = self.settings['txt_columns']['value']
 
-        self.column_titles_sub, self.column_expressions_sub = self.prepare_columns(_sub)
-        self.column_titles_log, self.column_expressions_log = self.prepare_columns(_log)
-        self.column_titles_txt, self.column_expressions_txt = self.prepare_columns(_txt)
+        self.column_titles_sub, self.column_expressions_sub =\
+            self.prepare_columns(_sub)
+        self.column_titles_log, self.column_expressions_log =\
+            self.prepare_columns(_log)
+        self.column_titles_txt, self.column_expressions_txt =\
+            self.prepare_columns(_txt)
 
     def prepare_tables(self):
 
@@ -1135,7 +1146,8 @@ class Sequencer(object):
                             # can't parse expression, put it in original form
                             #one_row_sub.append(str(one_expression))
                             one_row_sub.append("")
-                    #  add item to the end of the row, so we can later on easily reference all the data for the row
+                    #  add item to the end of the row, so we can later
+                    #  on easily reference all the data for the row
                     one_row_sub.append(one_item)
                     # add to table
                     self.table_sub.append(one_row_sub)
@@ -1150,7 +1162,8 @@ class Sequencer(object):
                             # can't parse expression, put it in original form
                             #one_row_log.append(str(one_expression))
                             one_row_log.append("")
-                    #  add item to the end of the row, so we can later on easily reference all the data for the row
+                    #  add item to the end of the row, so we can later
+                    #  on easily reference all the data for the row
                     one_row_log.append(one_item)
                     # add to table
                     self.table_log.append(one_row_log)
@@ -1180,6 +1193,127 @@ class Sequencer(object):
         except KeyError:
             _footer = txt_footer
         self.table_txt = _header + '\n' + _titles + body_txt + '\n' + _footer
+
+    def export_all(self):
+
+        if self.settings and self.static_keywords:
+            # Submission
+            s_pth_above = bool(self.settings['export_sub_above']['value'])
+            s_pth_custom = bool(self.settings['export_sub_custom']['value'])
+            s_custom = str(self.settings['export_sub_custom_path']['value'])
+            s_do_excel = bool(self.settings['export_sub_excel']['value'])
+            s_do_csv = bool(self.settings['export_sub_csv']['value'])
+            s_export_root = self.static_keywords['package_name_root'].replace(
+                '\\', '/')
+            if s_pth_custom:
+                s_export_root = s_custom.replace('\\', '/')
+            elif s_pth_above:
+                s_export_root = '/'.join(s_export_root.split('/')[:-1])
+            s_export_root += '/' + self.static_keywords['package_name']
+            self.export_spreadsheet(s_export_root, s_do_excel, s_do_csv,
+                                    self.table_sub, self.column_titles_sub)
+
+            # Drive Log
+            d_pth_above = bool(self.settings['export_log_above']['value'])
+            d_pth_custom = bool(self.settings['export_log_custom']['value'])
+            d_custom = str(self.settings['export_log_custom_path']['value'])
+            d_do_excel = bool(self.settings['export_log_excel']['value'])
+            d_do_csv = bool(self.settings['export_log_csv']['value'])
+            d_export_root = self.static_keywords['package_name_root'].replace(
+                '\\', '/')
+            if d_pth_custom:
+                d_export_root = d_custom.replace('\\', '/')
+            elif d_pth_above:
+                d_export_root = '/'.join(d_export_root.split('/')[:-1])
+            d_export_root += '/' + self.static_keywords['package_name']
+            self.export_spreadsheet(d_export_root, d_do_excel, d_do_csv,
+                                    self.table_log, self.column_titles_log)
+
+            # Text
+            t_pth_above = bool(self.settings['text_above']['value'])
+            t_pth_custom = bool(self.settings['text_custom']['value'])
+            t_custom = str(self.settings['text_custom_path']['value'])
+            t_do_txt = bool(self.settings['text_txt']['value'])
+            t_export_root = self.static_keywords['package_name_root'].replace(
+                '\\', '/')
+            if t_pth_custom:
+                t_export_root = t_custom.replace('\\', '/')
+            elif t_pth_above:
+                t_export_root = '/'.join(t_export_root.split('/')[:-1])
+            t_export_root += '/' + self.static_keywords['package_name'] +\
+                             '.txt'
+
+            if self.table_txt is not None and t_do_txt:
+                with open(t_export_root, 'w') as f:
+                    f.write(self.table_txt)
+
+    def export_spreadsheet(self, export_root, do_excel, do_csv, table, titles):
+
+        if table and titles:
+            # Excel
+            if do_excel:
+                workbook = xlsxwriter.Workbook(export_root + '.xlsx')
+                worksheet = workbook.add_worksheet()
+                for column_number, one_column in enumerate(
+                        titles):
+                    worksheet.set_column(column_number, column_number)
+                    worksheet.write(0, column_number, one_column)
+                for row, line in enumerate(table):
+                    for column_number, one_column in enumerate(
+                            titles):
+                        worksheet.write(row + 1, column_number,
+                                        line[column_number])
+                workbook.close()
+            # CSV
+            if do_csv:
+                with open(export_root + '.csv', 'w', newline='') as f:
+                    writer = csv.writer(f)
+                    writer.writerow(titles)
+                    for row, line in enumerate(table):
+                        writer.writerow(line[:len(titles)])
+
+    def export_submission(self):
+        # KILL, not used anymore
+
+        if self.settings and self.static_keywords:
+            pth_above = bool(self.settings['export_sub_above']['value'])
+            pth_custom = bool(self.settings['export_sub_custom']['value'])
+            custom = str(self.settings['export_sub_custom_path']['value'])
+
+            export_root = self.static_keywords['package_name_root'].replace(
+                '\\', '/')
+            if pth_custom:
+                export_root = custom.replace('\\', '/')
+            elif pth_above:
+                export_root = '/'.join(export_root.split('/')[:-1])
+            export_root += '/' + self.static_keywords['package_name']
+
+            do_excel = bool(self.settings['export_sub_excel']['value'])
+            do_csv = bool(self.settings['export_sub_csv']['value'])
+
+            if self.table_sub and self.column_titles_sub:
+                # Excel
+                if do_excel:
+                    workbook = xlsxwriter.Workbook(export_root + '.xlsx')
+                    worksheet = workbook.add_worksheet()
+                    for column_number, one_column in enumerate(
+                            self.column_titles_sub):
+                        worksheet.set_column(column_number, column_number)
+                        worksheet.write(0, column_number, one_column)
+                    for row, line in enumerate(self.table_sub):
+                        for column_number, one_column in enumerate(
+                                self.column_titles_sub):
+                            worksheet.write(row + 1, column_number,
+                                            line[column_number])
+                    workbook.close()
+                # CSV
+                if do_csv:
+                    with open(export_root + '.csv', 'w', newline='') as f:
+                        writer = csv.writer(f)
+                        writer.writerow(self.column_titles_sub)
+                        for row, line in enumerate(self.table_sub):
+                            writer.writerow(line[:len(self.column_titles_sub)])
+
 
 if __name__ == "__main__":
     # import doctest

@@ -737,12 +737,15 @@ QCalendarWidget
           <height>350</height>
          </size>
         </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Defines output columns for submission, drive log and text outputs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="currentIndex">
          <number>0</number>
         </property>
         <widget class="QWidget" name="tab">
          <attribute name="title">
-          <string>Submission</string>
+          <string>Package</string>
          </attribute>
          <layout class="QHBoxLayout" name="horizontalLayout_50">
           <item>
@@ -808,6 +811,9 @@ p, li { white-space: pre-wrap; }
                      <width>16000</width>
                      <height>16777215</height>
                     </size>
+                   </property>
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder containing media files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="text">
                     <string/>
@@ -925,7 +931,7 @@ p, li { white-space: pre-wrap; }
                </size>
               </property>
               <property name="title">
-               <string>Rename Package Root Folder:</string>
+               <string>Package Name:</string>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_49">
                <item>
@@ -972,6 +978,9 @@ p, li { white-space: pre-wrap; }
                          <width>16000</width>
                          <height>16777215</height>
                         </size>
+                       </property>
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Template for naming the package. &lt;br/&gt;&lt;br/&gt;Keywords:&lt;br/&gt;{package_version} : detects consecutive versions one folder up from package folder&lt;br/&gt;{yy}: year&lt;br/&gt;{mm}: month&lt;br/&gt;{dd}: day&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="text">
                         <string>sub_{yy}{mm}{dd}_{package_version}</string>
@@ -1020,6 +1029,9 @@ p, li { white-space: pre-wrap; }
                          <width>16000</width>
                          <height>16777215</height>
                         </size>
+                       </property>
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder.&lt;br/&gt;For every folder there, it tries to detect date stamp and version  by the regexes.&lt;br/&gt;Then it produces {package_version} keyword, depending on Version options.&lt;br/&gt;Finally, the package name is constructed by Template that contains {package_version} keyword.&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -1079,6 +1091,9 @@ p, li { white-space: pre-wrap; }
                          <height>16777215</height>
                         </size>
                        </property>
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects current date stamp in it by using Date Regex&lt;/p&gt;&lt;p&gt;&lt;br/&gt;Keywords:&lt;br/&gt;{yy}: year&lt;br/&gt;{mm}: month&lt;br/&gt;{dd}: day&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
                        <property name="text">
                         <string>sub_{yy}{mm}{dd}</string>
                        </property>
@@ -1127,6 +1142,9 @@ p, li { white-space: pre-wrap; }
                          <height>16777215</height>
                         </size>
                        </property>
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
                        <property name="text">
                         <string>_(\d{3})$</string>
                        </property>
@@ -1165,6 +1183,9 @@ p, li { white-space: pre-wrap; }
                             <width>80</width>
                             <height>25</height>
                            </size>
+                          </property>
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Each date, versions start from A or 1.&lt;br/&gt;If unchecked, package versions are contunuous, not depending on date.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
                           <property name="text">
                            <string>Per Date</string>
@@ -1206,6 +1227,9 @@ p, li { white-space: pre-wrap; }
                               <height>25</height>
                              </size>
                             </property>
+                            <property name="toolTip">
+                             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;For numbered versions, use leading zeroes&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                            </property>
                             <property name="value">
                              <number>3</number>
                             </property>
@@ -1227,6 +1251,9 @@ p, li { white-space: pre-wrap; }
                             <height>25</height>
                            </size>
                           </property>
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use letters instead of numbers for versioning&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
                           <property name="text">
                            <string>Letter</string>
                           </property>
@@ -1245,6 +1272,9 @@ p, li { white-space: pre-wrap; }
                             <width>90</width>
                             <height>25</height>
                            </size>
+                          </property>
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If using letters for versioning, use upper case instead of lower case letters&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
                           <property name="text">
                            <string>Upper Case</string>
@@ -4620,6 +4650,9 @@ p, li { white-space: pre-wrap; }
                           <height>300</height>
                          </size>
                         </property>
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The columns are defines as &lt;br/&gt;column name = value,&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
                         <property name="plainText">
                          <string>Shot = {printf_pattern},
 Vendor = AmazingVFX</string>
@@ -4671,6 +4704,9 @@ Vendor = AmazingVFX</string>
                             <height>25</height>
                            </size>
                           </property>
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Do not use files that contain this string in path or name.&lt;br/&gt;Can use more than one string, separated by space.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
                          </widget>
                         </item>
                        </layout>
@@ -4715,6 +4751,9 @@ Vendor = AmazingVFX</string>
                             <width>80</width>
                             <height>25</height>
                            </size>
+                          </property>
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Only use files that contain this string in path or name.&lt;br/&gt;Can use more than one string, separated by space&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
                          </widget>
                         </item>
@@ -4773,6 +4812,9 @@ Vendor = AmazingVFX</string>
                           <height>300</height>
                          </size>
                         </property>
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The columns are defines as &lt;br/&gt;column name = value,&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
                         <property name="plainText">
                          <string>Shot = {printf_pattern},
 Vendor = AmazingVFX</string>
@@ -4824,6 +4866,9 @@ Vendor = AmazingVFX</string>
                             <height>25</height>
                            </size>
                           </property>
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Do not use files that contain this string in path or name.&lt;br/&gt;Can use more than one string, separated by space.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
                          </widget>
                         </item>
                        </layout>
@@ -4868,6 +4913,9 @@ Vendor = AmazingVFX</string>
                             <width>80</width>
                             <height>25</height>
                            </size>
+                          </property>
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Only use files that contain this string in path or name.&lt;br/&gt;Can use more than one string, separated by space&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
                          </widget>
                         </item>
@@ -4926,6 +4974,9 @@ Vendor = AmazingVFX</string>
                           <height>300</height>
                          </size>
                         </property>
+                        <property name="toolTip">
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The columns are defines as &lt;br/&gt;column name = value,&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        </property>
                         <property name="plainText">
                          <string>File = {Shot = {printf_pattern}</string>
                         </property>
@@ -4976,6 +5027,9 @@ Vendor = AmazingVFX</string>
                             <height>25</height>
                            </size>
                           </property>
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Do not use files that contain this string in path or name.&lt;br/&gt;Can use more than one string, separated by space.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                          </property>
                          </widget>
                         </item>
                        </layout>
@@ -5020,6 +5074,9 @@ Vendor = AmazingVFX</string>
                             <width>80</width>
                             <height>25</height>
                            </size>
+                          </property>
+                          <property name="toolTip">
+                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Only use files that contain this string in path or name.&lt;br/&gt;Can use more than one string, separated by space&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
                          </widget>
                         </item>
@@ -6822,6 +6879,9 @@ Vendor = AmazingVFX</string>
                        <height>25</height>
                       </size>
                      </property>
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -6984,6 +7044,9 @@ Vendor = AmazingVFX</string>
                        <width>300</width>
                        <height>25</height>
                       </size>
+                     </property>
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                      </property>
                     </widget>
                    </item>
@@ -7659,7 +7722,7 @@ Vendor = AmazingVFX</string>
              <bool>false</bool>
             </property>
             <property name="text">
-             <string>Write</string>
+             <string>Go</string>
             </property>
             <property name="default">
              <bool>true</bool>
