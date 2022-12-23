@@ -163,24 +163,23 @@ def get_platform():
 
     return platform, platform_exe_ext
 
-"""
-def humanize_file_size(size):
-    size = abs(size)
-    if size == 0:
-        return "0B"
-    units = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-    p = math.floor(math.log(size, 2) / 10)
-    return "%.3f%s" % (size / math.pow(1024, p), units[int(p)])
-"""
-
-
 def humanize_file_size(size, suffix="B"):
+    r = ''
     for unit in ["", "K", "M", "G", "T", "P", "E", "Z"]:
         if abs(size) < 1024.0:
-            return f"{size:3.1f}{unit}{suffix}"
+            r = f"{size:3.1f}"
+            break
         size /= 1024.0
-    return f"{size:.1f}Yi{suffix}"
-
+    if r == '':
+        r = f"{size:.1f}"
+        unit = 'Yi'
+    try:
+        rr = r.split('.')
+        if int(rr[1]) == 0:
+            r = rr[0]
+    except:
+        pass
+    return '{} {}{}'.format(r, unit, suffix)
 
 if __name__ == "__main__":
     tc_to_frames('00:00:41:16', 24000, 1001)

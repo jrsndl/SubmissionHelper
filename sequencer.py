@@ -17,6 +17,7 @@ class Sequencer(object):
     def __init__(self, in_path, sequence_mode='to_subsequences', gui=None):
 
         self.log = logging.getLogger("mylog")
+        self.sequence_mode = sequence_mode
         self.merged_list = None
         self.settings = gui
         self.regexes = None
@@ -30,71 +31,84 @@ class Sequencer(object):
         self.table_sub = []
         self.table_log = []
         self.table_txt = ""
-        self.static_keywords = None
 
         self.output = {}
 
-        if os.path.exists(in_path):
-            if in_path is None:
-                in_path = ''
+        self.in_path = in_path
+        self._prepare_in_path()
 
-            # to detect if in_path is full path
-            # or just path to directory with no end slash
-            if os.path.isdir(in_path)\
-                    and not (in_path[-1] == os.sep or
-                             in_path[-1] == os.altsep):
-                # add end slash
-                in_path += os.sep
-            in_path.replace("\\", "/")
-
-            in_path_parsed = parse_file_name.parse(in_path)
-            self.in_path = in_path
-
-            # get list of all files
-            file_list = self.walk_dirs(self.in_path)
-
-            # get list of dirs of sequences
-            self.merged_list = []
-            self.merged_list = self.seq_list_from_file_list(
-                file_list, mode=sequence_mode)
-
-            # get list of dirs of multi-frame files
-            self.merged_list.extend(self.multirames_from_file_list(file_list))
-
-            # other (audio, office, graphics, other)
-            self.merged_list.extend(self.other_files_from_file_list(file_list))
-
-            # get file sizes for merged list
-            self.get_file_sizes()
-
-            self.get_relative_paths(in_path_parsed)
-
-            self.get_metadata()
-
-            # this sets static keywords like date and package name
-            self.prepare_package_name()
-
-            # also adds totals to static keywords
-            self.filter_items_add_counters()
-
-            # read from settings and compile
-            self.prepare_regex()
-
-            # for every found item prepare regex items
-            self.fill_regexes()
-
-            # parse table headers
-            self.prepare_all_columns()
-
-            # fill tables for export and display
-            self.prepare_tables()
-
+        if os.path.exists(self.in_path):
+            self.read_files()
+            self.transform_data()
             pprint.pprint(self.merged_list)
 
-            # pprint.pprint(self.table_sub)
-            #print("number of files: {}".format(len(file_list)))
-
             # logging.debug('-> Sequencer Init')
+
+    def _prepare_in_path(self):
+
+        if self.in_path is None:
+            self.in_path = ''
+        # to detect if in_path is full path
+        # or just path to directory with no end slash
+        if os.path.isdir(self.in_path) \
+                and not (self.in_path[-1] == os.sep or
+                         self.in_path[-1] == os.altsep):
+            # add end slash
+            self.in_path += os.sep
+        self.in_path.replace("\\", "/")
+
+    def read_files(self):
+        """
+        Do all the slow stuff like finding files
+        and reading metadata
+        :return:
+        """
+        # get list of all files
+        file_list = self.walk_dirs(self.in_path)
+
+        # get list of dirs of sequences
+        self.merged_list = []
+        self.merged_list = self.seq_list_from_file_list(
+            file_list, mode=self.sequence_mode)
+
+        # get list of dirs of multi-frame files
+        self.merged_list.extend(self.multirames_from_file_list(file_list))
+
+        # other (audio, office, graphics, other)
+        self.merged_list.extend(self.other_files_from_file_list(file_list))
+
+        # get file sizes for merged list
+        self.get_file_sizes()
+
+        # matadata
+        self.get_metadata()
+
+    def transform_data(self):
+        """
+        Transform file info and prepare data for export
+        :return:
+        """
+
+        # this sets static keywords like date and package name
+        self.prepare_package_name()
+
+        # make paths relative
+        self.get_relative_paths(parse_file_name.parse(self.in_path))
+
+        # also adds totals to static keywords
+        self.filter_items_add_counters()
+
+        # read from settings and compile
+        self.prepare_regex()
+
+        # for every found item prepare regex items
+        self.fill_regexes()
+
+        # parse table headers
+        self.prepare_all_columns()
+
+        # fill tables for export and display
+        self.prepare_tables()
 
     def get_metadata(self):
 
@@ -1135,7 +1149,7 @@ class Sequencer(object):
                 if self.settings['text_sep_tab']['value']:
                     txt_sep = "\t"
             if self.settings['text_add_titles']['value'] is not None:
-                txt_titles = bool(self.settings['text_add_titles']['value'])
+                do_txt_titles = bool(self.settings['text_add_titles']['value'])
             if self.settings['text_header']['value'] is not None:
                 txt_header = self.settings['text_header']['value']
             if self.settings['text_footer']['value'] is not None:
@@ -1193,7 +1207,7 @@ class Sequencer(object):
             _header = txt_header.format(**self.static_keywords)
         except KeyError:
             _header = txt_header
-        if txt_titles:
+        if do_txt_titles:
             _titles = '\n' + str(txt_sep.join(self.column_titles_txt)) + '\n'
         else:
             _titles = ""
@@ -1206,19 +1220,20 @@ class Sequencer(object):
     def export_all(self):
 
         if self.settings and self.static_keywords:
+            one_above = str(self.static_keywords['package_name_root']).replace('\\', '/') + '/'
+            export_root = one_above + self.static_keywords['package_name_from_folder'] + '/'
             # Submission
             s_pth_above = bool(self.settings['export_sub_above']['value'])
             s_pth_custom = bool(self.settings['export_sub_custom']['value'])
             s_custom = str(self.settings['export_sub_custom_path']['value'])
             s_do_excel = bool(self.settings['export_sub_excel']['value'])
             s_do_csv = bool(self.settings['export_sub_csv']['value'])
-            s_export_root = self.static_keywords['package_name_root'].replace(
-                '\\', '/')
+            s_export_root = export_root
             if s_pth_custom:
-                s_export_root = s_custom.replace('\\', '/')
+                s_export_root = s_custom.replace('\\', '/') + '/'
             elif s_pth_above:
-                s_export_root = '/'.join(s_export_root.split('/')[:-1])
-            s_export_root += '/' + self.static_keywords['package_name']
+                s_export_root = one_above
+            s_export_root += self.static_keywords['package_name']
             self.export_spreadsheet(s_export_root, s_do_excel, s_do_csv,
                                     self.table_sub, self.column_titles_sub)
 
@@ -1228,13 +1243,12 @@ class Sequencer(object):
             d_custom = str(self.settings['export_log_custom_path']['value'])
             d_do_excel = bool(self.settings['export_log_excel']['value'])
             d_do_csv = bool(self.settings['export_log_csv']['value'])
-            d_export_root = self.static_keywords['package_name_root'].replace(
-                '\\', '/')
+            d_export_root = export_root
             if d_pth_custom:
-                d_export_root = d_custom.replace('\\', '/')
+                d_export_root = d_custom.replace('\\', '/') + '/'
             elif d_pth_above:
-                d_export_root = '/'.join(d_export_root.split('/')[:-1])
-            d_export_root += '/' + self.static_keywords['package_name']
+                d_export_root = one_above
+            d_export_root += self.static_keywords['package_name']
             self.export_spreadsheet(d_export_root, d_do_excel, d_do_csv,
                                     self.table_log, self.column_titles_log)
 
@@ -1243,14 +1257,12 @@ class Sequencer(object):
             t_pth_custom = bool(self.settings['text_custom']['value'])
             t_custom = str(self.settings['text_custom_path']['value'])
             t_do_txt = bool(self.settings['text_txt']['value'])
-            t_export_root = self.static_keywords['package_name_root'].replace(
-                '\\', '/')
+            t_export_root = export_root
             if t_pth_custom:
-                t_export_root = t_custom.replace('\\', '/')
+                t_export_root = t_custom.replace('\\', '/') + '/'
             elif t_pth_above:
-                t_export_root = '/'.join(t_export_root.split('/')[:-1])
-            t_export_root += '/' + self.static_keywords['package_name'] +\
-                             '.txt'
+                t_export_root = one_above
+            t_export_root += self.static_keywords['package_name'] + '.txt'
 
             if self.table_txt is not None and t_do_txt:
                 with open(t_export_root, 'w') as f:
@@ -1280,49 +1292,6 @@ class Sequencer(object):
                     writer.writerow(titles)
                     for row, line in enumerate(table):
                         writer.writerow(line[:len(titles)])
-
-    def export_submission(self):
-        # KILL, not used anymore
-
-        if self.settings and self.static_keywords:
-            pth_above = bool(self.settings['export_sub_above']['value'])
-            pth_custom = bool(self.settings['export_sub_custom']['value'])
-            custom = str(self.settings['export_sub_custom_path']['value'])
-
-            export_root = self.static_keywords['package_name_root'].replace(
-                '\\', '/')
-            if pth_custom:
-                export_root = custom.replace('\\', '/')
-            elif pth_above:
-                export_root = '/'.join(export_root.split('/')[:-1])
-            export_root += '/' + self.static_keywords['package_name']
-
-            do_excel = bool(self.settings['export_sub_excel']['value'])
-            do_csv = bool(self.settings['export_sub_csv']['value'])
-
-            if self.table_sub and self.column_titles_sub:
-                # Excel
-                if do_excel:
-                    workbook = xlsxwriter.Workbook(export_root + '.xlsx')
-                    worksheet = workbook.add_worksheet()
-                    for column_number, one_column in enumerate(
-                            self.column_titles_sub):
-                        worksheet.set_column(column_number, column_number)
-                        worksheet.write(0, column_number, one_column)
-                    for row, line in enumerate(self.table_sub):
-                        for column_number, one_column in enumerate(
-                                self.column_titles_sub):
-                            worksheet.write(row + 1, column_number,
-                                            line[column_number])
-                    workbook.close()
-                # CSV
-                if do_csv:
-                    with open(export_root + '.csv', 'w', newline='') as f:
-                        writer = csv.writer(f)
-                        writer.writerow(self.column_titles_sub)
-                        for row, line in enumerate(self.table_sub):
-                            writer.writerow(line[:len(self.column_titles_sub)])
-
 
 if __name__ == "__main__":
     # import doctest

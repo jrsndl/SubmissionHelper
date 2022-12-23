@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>770</width>
+    <width>800</width>
     <height>600</height>
    </rect>
   </property>
@@ -18,7 +18,7 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>770</width>
+    <width>800</width>
     <height>600</height>
    </size>
   </property>
@@ -704,7 +704,7 @@ QCalendarWidget
   <widget class="QWidget" name="centralwidget">
    <property name="minimumSize">
     <size>
-     <width>770</width>
+     <width>800</width>
      <height>580</height>
     </size>
    </property>
@@ -727,7 +727,7 @@ QCalendarWidget
         </property>
         <property name="minimumSize">
          <size>
-          <width>750</width>
+          <width>780</width>
           <height>320</height>
          </size>
         </property>
@@ -738,7 +738,7 @@ QCalendarWidget
          </size>
         </property>
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Defines output columns for submission, drive log and text outputs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="currentIndex">
          <number>0</number>
@@ -1190,6 +1190,9 @@ p, li { white-space: pre-wrap; }
                           <property name="text">
                            <string>Per Date</string>
                           </property>
+                          <property name="checked">
+                           <bool>true</bool>
+                          </property>
                          </widget>
                         </item>
                         <item>
@@ -1256,6 +1259,9 @@ p, li { white-space: pre-wrap; }
                           </property>
                           <property name="text">
                            <string>Letter</string>
+                          </property>
+                          <property name="checked">
+                           <bool>true</bool>
                           </property>
                          </widget>
                         </item>
@@ -1409,6 +1415,9 @@ p, li { white-space: pre-wrap; }
               <height>350</height>
              </size>
             </property>
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Creating new keys&lt;br/&gt;1. source is the text to be searched. For every file, the {keys} are replaced first&lt;/p&gt;&lt;p&gt;2. Pattern is used for Python re.sub regex&lt;/p&gt;&lt;p&gt;3. Repl is used for Python re.sub replace. If itr starts with lambda, the repl is evaluated as Python&lt;/p&gt;&lt;p&gt;4. Result (found group 1 or replace) is named by the name field&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="widgetResizable">
              <bool>true</bool>
             </property>
@@ -1417,7 +1426,7 @@ p, li { white-space: pre-wrap; }
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>721</width>
+               <width>751</width>
                <height>311</height>
               </rect>
              </property>
@@ -4580,6 +4589,9 @@ p, li { white-space: pre-wrap; }
                 <height>16000</height>
                </size>
               </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Defines output columns for submission, drive log and text outputs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
               <property name="widgetResizable">
                <bool>true</bool>
               </property>
@@ -4588,7 +4600,7 @@ p, li { white-space: pre-wrap; }
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>726</width>
+                 <width>756</width>
                  <height>269</height>
                 </rect>
                </property>
@@ -5168,7 +5180,7 @@ Vendor = AmazingVFX</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>719</width>
+                 <width>749</width>
                  <height>296</height>
                 </rect>
                </property>
@@ -7589,6 +7601,56 @@ Vendor = AmazingVFX</string>
              </spacer>
             </item>
            </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_14">
+         <attribute name="title">
+          <string>Help</string>
+         </attribute>
+         <layout class="QHBoxLayout" name="horizontalLayout_91">
+          <item>
+           <widget class="QTextEdit" name="textEdit">
+            <property name="html">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:18pt; color:#e8e8e8;&quot;&gt;Submission Helper&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;This tool is helping vfx vendors to send media to productions or other studios.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;Each sending usually consists of one or more media files, together with spreadsheet that binds the media files with additional info like notes, status, version, task...&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;This process doesn't seem to have an industry standard, Submission Helper has numerous options to help interface vendor and production with as little friction as possible.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;a href=&quot;https://knowledge.autodesk.com/support/shotgrid/getting-started/caas/CloudHelp/cloudhelp/ENU/SG-Tutorials/files/SG-Tutorials-tu-submission-overview-html-html.html&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Here&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt; is the overview from ShotGrid:&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt; color:#e8e8e8;&quot;&gt;Intended use&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;Package starts with one or more files that you want to package and send. Submission Helper checks all the files and helps to produce spreadsheet(s) and email that is easily ingested in receiver's system, often automatically.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt; color:#e8e8e8;&quot;&gt;Features&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;* Helps to name the package by the template, including consecutive or per day versions&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;* Reads metadata from the files by ffprobe and other methods&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;* Calculates file sizes&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;* Allows to gather and copy sidecar files like CDLs or LUTs to the package.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;* Allows to define spreadsheet columns and values in a flexible way&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;* Generates up to two spreadsheets that are called in gui submission and drive log&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;* Generates a text file that is often used for email that follows up the sending.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;* Can read notes from Ftrack&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;* Allows for checking for holes in file sequences, files with zero size and other common problems&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;* Allows saving config to json files&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;* Can be used head-less &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt; color:#e8e8e8;&quot;&gt;Quick How-to&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;Submission Helper assumes you put the file(s) in one folder - the Package Folder.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;1. Drag the package folder path anywhere to the Submission Helper window&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;2. Set the Package Name options, till the preview matches what you need&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;3. Use Spreadsheet tab to define columns and their values&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;4. Set the export options in Exports and text tabs&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;5. Press Go to export&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

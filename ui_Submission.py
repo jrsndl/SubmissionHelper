@@ -18,13 +18,13 @@ class Ui_submission(object):
     def setupUi(self, submission):
         if not submission.objectName():
             submission.setObjectName(u"submission")
-        submission.resize(770, 600)
+        submission.resize(800, 600)
         sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(submission.sizePolicy().hasHeightForWidth())
         submission.setSizePolicy(sizePolicy)
-        submission.setMinimumSize(QSize(770, 600))
+        submission.setMinimumSize(QSize(800, 600))
         submission.setAcceptDrops(True)
         icon = QIcon()
         icon.addFile(u":/images/folder.png", QSize(), QIcon.Normal, QIcon.Off)
@@ -704,7 +704,7 @@ class Ui_submission(object):
         submission.setUnifiedTitleAndToolBarOnMac(True)
         self.centralwidget = QWidget(submission)
         self.centralwidget.setObjectName(u"centralwidget")
-        self.centralwidget.setMinimumSize(QSize(770, 580))
+        self.centralwidget.setMinimumSize(QSize(800, 580))
         self.centralwidget.setMaximumSize(QSize(16000, 16777215))
         self.verticalLayout_51 = QVBoxLayout(self.centralwidget)
         self.verticalLayout_51.setObjectName(u"verticalLayout_51")
@@ -714,7 +714,7 @@ class Ui_submission(object):
         self.TopTab.setObjectName(u"TopTab")
         sizePolicy.setHeightForWidth(self.TopTab.sizePolicy().hasHeightForWidth())
         self.TopTab.setSizePolicy(sizePolicy)
-        self.TopTab.setMinimumSize(QSize(750, 320))
+        self.TopTab.setMinimumSize(QSize(780, 320))
         self.TopTab.setMaximumSize(QSize(16777215, 350))
         self.tab = QWidget()
         self.tab.setObjectName(u"tab")
@@ -908,6 +908,7 @@ class Ui_submission(object):
         sizePolicy2.setHeightForWidth(self.name_version_per_date.sizePolicy().hasHeightForWidth())
         self.name_version_per_date.setSizePolicy(sizePolicy2)
         self.name_version_per_date.setMinimumSize(QSize(80, 25))
+        self.name_version_per_date.setChecked(True)
 
         self.horizontalLayout_17.addWidget(self.name_version_per_date)
 
@@ -938,6 +939,7 @@ class Ui_submission(object):
         sizePolicy2.setHeightForWidth(self.name_version_use_letters.sizePolicy().hasHeightForWidth())
         self.name_version_use_letters.setSizePolicy(sizePolicy2)
         self.name_version_use_letters.setMinimumSize(QSize(70, 25))
+        self.name_version_use_letters.setChecked(True)
 
         self.horizontalLayout_17.addWidget(self.name_version_use_letters)
 
@@ -1019,7 +1021,7 @@ class Ui_submission(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 721, 311))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 751, 311))
         sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
@@ -2505,7 +2507,7 @@ class Ui_submission(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 726, 269))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 756, 269))
         sizePolicy5 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         sizePolicy5.setHorizontalStretch(0)
         sizePolicy5.setVerticalStretch(0)
@@ -2794,7 +2796,7 @@ class Ui_submission(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollAreaWidgetContents_4 = QWidget()
         self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
-        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 719, 296))
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 749, 296))
         self.verticalLayout_47 = QVBoxLayout(self.scrollAreaWidgetContents_4)
         self.verticalLayout_47.setObjectName(u"verticalLayout_47")
         self.verticalLayout_36 = QVBoxLayout()
@@ -3984,6 +3986,16 @@ class Ui_submission(object):
         self.verticalLayout_37.addLayout(self.verticalLayout_12)
 
         self.TopTab.addTab(self.tab_3, "")
+        self.tab_14 = QWidget()
+        self.tab_14.setObjectName(u"tab_14")
+        self.horizontalLayout_91 = QHBoxLayout(self.tab_14)
+        self.horizontalLayout_91.setObjectName(u"horizontalLayout_91")
+        self.textEdit = QTextEdit(self.tab_14)
+        self.textEdit.setObjectName(u"textEdit")
+
+        self.horizontalLayout_91.addWidget(self.textEdit)
+
+        self.TopTab.addTab(self.tab_14, "")
 
         self.verticalLayout_50.addWidget(self.TopTab)
 
@@ -4104,6 +4116,9 @@ class Ui_submission(object):
         submission.setToolTip("")
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
+        self.TopTab.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p><br/></p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+#if QT_CONFIG(tooltip)
         self.groupBox.setToolTip(QCoreApplication.translate("submission", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -4111,6 +4126,9 @@ class Ui_submission(object):
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.groupBox.setTitle(QCoreApplication.translate("submission", u"Package Folder:", None))
+#if QT_CONFIG(tooltip)
+        self.package_folder.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Expects path to folder containing media files.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.package_folder.setText("")
 #if QT_CONFIG(tooltip)
         self.package_explore.setToolTip(QCoreApplication.translate("submission", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -4128,25 +4146,52 @@ class Ui_submission(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Browse for video file.</span></p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.package_browse.setText("")
-        self.groupBox_8.setTitle(QCoreApplication.translate("submission", u"Rename Package Root Folder:", None))
+        self.groupBox_8.setTitle(QCoreApplication.translate("submission", u"Package Name:", None))
         self.label_10.setText(QCoreApplication.translate("submission", u"Template:", None))
+#if QT_CONFIG(tooltip)
+        self.name_template.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Template for naming the package. <br/><br/>Keywords:<br/>{package_version} : detects consecutive versions one folder up from package folder<br/>{yy}: year<br/>{mm}: month<br/>{dd}: day</p><p><br/></p><p><br/></p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.name_template.setText(QCoreApplication.translate("submission", u"sub_{yy}{mm}{dd}_{package_version}", None))
         self.label_36.setText(QCoreApplication.translate("submission", u"Preview:", None))
+#if QT_CONFIG(tooltip)
+        self.name_preview.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder.<br/>For every folder there, it tries to detect date stamp and version  by the regexes.<br/>Then it produces {package_version} keyword, depending on Version options.<br/>Finally, the package name is constructed by Template that contains {package_version} keyword.<br/></p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.name_preview.setText("")
         self.name_preview.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
         self.label_37.setText(QCoreApplication.translate("submission", u"Date Regex:", None))
+#if QT_CONFIG(tooltip)
+        self.name_date_regex.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects current date stamp in it by using Date Regex</p><p><br/>Keywords:<br/>{yy}: year<br/>{mm}: month<br/>{dd}: day</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.name_date_regex.setText(QCoreApplication.translate("submission", u"sub_{yy}{mm}{dd}", None))
         self.label_76.setText(QCoreApplication.translate("submission", u"Version Regex:", None))
+#if QT_CONFIG(tooltip)
+        self.name_version_regex.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.name_version_regex.setText(QCoreApplication.translate("submission", u"_(\\d{3})$", None))
         self.name_version_regex.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
         self.groupBox_9.setTitle(QCoreApplication.translate("submission", u"Version", None))
+#if QT_CONFIG(tooltip)
+        self.name_version_per_date.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Each date, versions start from A or 1.<br/>If unchecked, package versions are contunuous, not depending on date.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.name_version_per_date.setText(QCoreApplication.translate("submission", u"Per Date", None))
         self.name_version_leading_zeroes.setText(QCoreApplication.translate("submission", u"Leading Zeroes:", None))
+#if QT_CONFIG(tooltip)
+        self.name_version_zeroes.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>For numbered versions, use leading zeroes</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+#if QT_CONFIG(tooltip)
+        self.name_version_use_letters.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Use letters instead of numbers for versioning</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.name_version_use_letters.setText(QCoreApplication.translate("submission", u"Letter", None))
+#if QT_CONFIG(tooltip)
+        self.name_version_letters_uppercase.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>If using letters for versioning, use upper case instead of lower case letters</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.name_version_letters_uppercase.setText(QCoreApplication.translate("submission", u"Upper Case", None))
         self.name_rename.setText(QCoreApplication.translate("submission", u"Rename", None))
         self.name_rename_auto.setText(QCoreApplication.translate("submission", u"Auto Rename", None))
-        self.TopTab.setTabText(self.TopTab.indexOf(self.tab), QCoreApplication.translate("submission", u"Submission", None))
+        self.TopTab.setTabText(self.TopTab.indexOf(self.tab), QCoreApplication.translate("submission", u"Package", None))
+#if QT_CONFIG(tooltip)
+        self.scrollArea.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Creating new keys<br/>1. source is the text to be searched. For every file, the {keys} are replaced first</p><p>2. Pattern is used for Python re.sub regex</p><p>3. Repl is used for Python re.sub replace. If itr starts with lambda, the repl is evaluated as Python</p><p>4. Result (found group 1 or replace) is named by the name field</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.label_18.setText(QCoreApplication.translate("submission", u"Name:", None))
         self.parse_name_1.setText(QCoreApplication.translate("submission", u"shot", None))
         self.label_20.setText(QCoreApplication.translate("submission", u"Pattern:", None))
@@ -4257,20 +4302,50 @@ class Ui_submission(object):
         self.label_91.setText(QCoreApplication.translate("submission", u"Note Match:", None))
         self.ftrack_note.setText(QCoreApplication.translate("submission", u"4client v{version}", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_11), QCoreApplication.translate("submission", u"Ftrack Note", None))
+#if QT_CONFIG(tooltip)
+        self.scrollArea_2.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Defines output columns for submission, drive log and text outputs.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.label_3.setText(QCoreApplication.translate("submission", u"Submission:", None))
+#if QT_CONFIG(tooltip)
+        self.sub_columns.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>The columns are defines as <br/>column name = value,</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.sub_columns.setPlainText(QCoreApplication.translate("submission", u"Shot = {printf_pattern},\n"
 "Vendor = AmazingVFX", None))
         self.label_7.setText(QCoreApplication.translate("submission", u"Exclude:", None))
+#if QT_CONFIG(tooltip)
+        self.sub_exclude.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Do not use files that contain this string in path or name.<br/>Can use more than one string, separated by space.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.label_8.setText(QCoreApplication.translate("submission", u"Include:", None))
+#if QT_CONFIG(tooltip)
+        self.sub_include.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Only use files that contain this string in path or name.<br/>Can use more than one string, separated by space</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.label_4.setText(QCoreApplication.translate("submission", u"Drive Log", None))
+#if QT_CONFIG(tooltip)
+        self.log_columns.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>The columns are defines as <br/>column name = value,</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.log_columns.setPlainText(QCoreApplication.translate("submission", u"Shot = {printf_pattern},\n"
 "Vendor = AmazingVFX", None))
         self.label_9.setText(QCoreApplication.translate("submission", u"Exclude:", None))
+#if QT_CONFIG(tooltip)
+        self.log_exclude.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Do not use files that contain this string in path or name.<br/>Can use more than one string, separated by space.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.label_11.setText(QCoreApplication.translate("submission", u"Include:", None))
+#if QT_CONFIG(tooltip)
+        self.log_include.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Only use files that contain this string in path or name.<br/>Can use more than one string, separated by space</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.label_6.setText(QCoreApplication.translate("submission", u"Text", None))
+#if QT_CONFIG(tooltip)
+        self.txt_columns.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>The columns are defines as <br/>column name = value,</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.txt_columns.setPlainText(QCoreApplication.translate("submission", u"File = {Shot = {printf_pattern}", None))
         self.label_12.setText(QCoreApplication.translate("submission", u"Exclude:", None))
+#if QT_CONFIG(tooltip)
+        self.txt_exclude.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Do not use files that contain this string in path or name.<br/>Can use more than one string, separated by space.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.label_13.setText(QCoreApplication.translate("submission", u"Include:", None))
+#if QT_CONFIG(tooltip)
+        self.txt_include.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Only use files that contain this string in path or name.<br/>Can use more than one string, separated by space</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_2), QCoreApplication.translate("submission", u"Spreadsheet", None))
         self.check_sequence_size_consistency.setText(QCoreApplication.translate("submission", u"File Sequence Size consistency", None))
         self.check_sequence_holes.setText(QCoreApplication.translate("submission", u"Check for File Sequence Holes", None))
@@ -4329,6 +4404,9 @@ class Ui_submission(object):
         self.export_sub_above.setText(QCoreApplication.translate("submission", u"One folder above Root", None))
         self.export_sub_custom.setText(QCoreApplication.translate("submission", u"Custom Location", None))
         self.label_15.setText(QCoreApplication.translate("submission", u"Custom Location", None))
+#if QT_CONFIG(tooltip)
+        self.export_sub_custom_path.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Expects path to folder</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.groupBox_10.setTitle(QCoreApplication.translate("submission", u"Export Drive Log:", None))
         self.export_log_excel.setText(QCoreApplication.translate("submission", u"Excel", None))
         self.export_log_csv.setText(QCoreApplication.translate("submission", u"CSV", None))
@@ -4336,6 +4414,9 @@ class Ui_submission(object):
         self.export_log_above.setText(QCoreApplication.translate("submission", u"One folder above Root", None))
         self.export_log_custom.setText(QCoreApplication.translate("submission", u"Custom Location", None))
         self.label_16.setText(QCoreApplication.translate("submission", u"Custom Location", None))
+#if QT_CONFIG(tooltip)
+        self.export_log_custom_path.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Expects path to folder</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_9), QCoreApplication.translate("submission", u"Exports", None))
         self.groupBox_5.setTitle(QCoreApplication.translate("submission", u"Export Submission:", None))
         self.text_txt.setText(QCoreApplication.translate("submission", u"TXT", None))
@@ -4360,10 +4441,55 @@ class Ui_submission(object):
         self.save_preset_button.setText(QCoreApplication.translate("submission", u"Save Preset", None))
         self.preset_explore.setText(QCoreApplication.translate("submission", u"Open Preset Folder", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_3), QCoreApplication.translate("submission", u"Presets", None))
+        self.textEdit.setHtml(QCoreApplication.translate("submission", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:18pt; color:#e8e8e8;\">Submission Helper</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">This tool is helping vfx vendors to send media to productions or other studios.</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-lef"
+                        "t:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">Each sending usually consists of one or more media files, together with spreadsheet that binds the media files with additional info like notes, status, version, task...</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">This process doesn't seem to have an industry standard, Submission Helper has numerous options to help interface vendor and production with as little friction as possible.</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin"
+                        "-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"https://knowledge.autodesk.com/support/shotgrid/getting-started/caas/CloudHelp/cloudhelp/ENU/SG-Tutorials/files/SG-Tutorials-tu-submission-overview-html-html.html\"><span style=\" text-decoration: underline; color:#0000ff;\">Here</span></a><span style=\" color:#e8e8e8;\"> is the overview from ShotGrid:</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; color:#e8e8e8;\">Intended use</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">Package starts with one or more files that you want to package and send. Submission Helper checks all the files and h"
+                        "elps to produce spreadsheet(s) and email that is easily ingested in receiver's system, often automatically.</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; color:#e8e8e8;\">Features</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Helps to name the package by the template, including consecutive or per day versions</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Reads metadata from the files by ffprobe and other methods</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; ma"
+                        "rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Calculates file sizes</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Allows to gather and copy sidecar files like CDLs or LUTs to the package.</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Allows to define spreadsheet columns and values in a flexible way</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Generates up to two spreadsheets that are called in gui submission and drive log</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\""
+                        ">* Generates a text file that is often used for email that follows up the sending.</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Can read notes from Ftrack</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Allows for checking for holes in file sequences, files with zero size and other common problems</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Allows saving config to json files</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Can be used head-less </span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom"
+                        ":0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; color:#e8e8e8;\">Quick How-to</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">Submission Helper assumes you put the file(s) in one folder - the Package Folder.</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">1. Drag the package folder path anywhere to the Submission Helper window</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; marg"
+                        "in-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">2. Set the Package Name options, till the preview matches what you need</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">3. Use Spreadsheet tab to define columns and their values</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">4. Set the export options in Exports and text tabs</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">5. Press Go to export</span></p></body></html>", None))
+        self.TopTab.setTabText(self.TopTab.indexOf(self.tab_14), QCoreApplication.translate("submission", u"Help", None))
         self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_6), QCoreApplication.translate("submission", u"Submission", None))
         self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_7), QCoreApplication.translate("submission", u"Drive Log", None))
         self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_8), QCoreApplication.translate("submission", u"Text", None))
-        self.write_button.setText(QCoreApplication.translate("submission", u"Write", None))
+        self.write_button.setText(QCoreApplication.translate("submission", u"Go", None))
         self.reload.setText(QCoreApplication.translate("submission", u"Reload", None))
     # retranslateUi
 

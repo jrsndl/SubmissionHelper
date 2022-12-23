@@ -91,20 +91,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         # Rename Package
         self.ui.name_template.textChanged.connect(
-            partial(self.handler, 'name_template', 'package_template'))
+            partial(self.handler, 'name_template', 'package_rename'))
 
         self.ui.name_date_regex.textChanged.connect(
-            partial(self.handler, 'name_date_regex', 'package_template'))
+            partial(self.handler, 'name_date_regex', 'package_rename'))
         self.ui.name_version_per_date.clicked.connect(
-            partial(self.handler, 'name_version_per_date', 'package_template'))
+            partial(self.handler, 'name_version_per_date', 'package_rename'))
         self.ui.name_version_zeroes.valueChanged.connect(
-            partial(self.handler, 'name_version_zeroes', 'package_template'))
+            partial(self.handler, 'name_version_zeroes', 'package_rename'))
         self.ui.name_version_use_letters.clicked.connect(
             partial(self.handler,
-                    'name_version_use_letters', 'package_template'))
+                    'name_version_use_letters', 'package_rename'))
         self.ui.name_version_letters_uppercase.clicked.connect(
             partial(self.handler,
-                    'name_version_letters_uppercase', 'package_template'))
+                    'name_version_letters_uppercase', 'package_rename'))
         self.ui.name_rename.clicked.connect(
             partial(self.handler, 'name_rename', 'package_rename'))
         self.ui.name_rename_auto.clicked.connect(
@@ -209,25 +209,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         # Spreadsheet
         self.ui.sub_columns.textChanged.connect(
-            partial(self.handler, 'sub_columns', 'refresh_table_sub'))
+            partial(self.handler, 'sub_columns', 'refresh_spreadsheets'))
         self.ui.sub_exclude.textChanged.connect(
-            partial(self.handler, 'sub_exclude', 'filter_table_sub'))
+            partial(self.handler, 'sub_exclude', 'refresh_spreadsheets'))
         self.ui.sub_include.textChanged.connect(
-            partial(self.handler, 'sub_include', 'filter_table_sub'))
+            partial(self.handler, 'sub_include', 'refresh_spreadsheets'))
 
         self.ui.log_columns.textChanged.connect(
-            partial(self.handler, 'log_columns', 'refresh_table_log'))
+            partial(self.handler, 'log_columns', 'refresh_spreadsheets'))
         self.ui.log_exclude.textChanged.connect(
-            partial(self.handler, 'log_exclude', 'filter_table_log'))
+            partial(self.handler, 'log_exclude', 'refresh_spreadsheets'))
         self.ui.log_include.textChanged.connect(
-            partial(self.handler, 'log_include', 'filter_table_log'))
+            partial(self.handler, 'log_include', 'refresh_spreadsheets'))
 
         self.ui.txt_columns.textChanged.connect(
-            partial(self.handler, 'txt_columns', 'refresh_table_txt'))
+            partial(self.handler, 'txt_columns', 'refresh_spreadsheets'))
         self.ui.txt_exclude.textChanged.connect(
-            partial(self.handler, 'txt_exclude', 'filter_table_txt'))
+            partial(self.handler, 'txt_exclude', 'refresh_spreadsheets'))
         self.ui.txt_include.textChanged.connect(
-            partial(self.handler, 'txt_include', 'filter_table_txt'))
+            partial(self.handler, 'txt_include', 'refresh_spreadsheets'))
 
         # Checks Tab
         self.ui.check_sequence_size_consistency.clicked.connect(
@@ -338,27 +338,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         # Text Tab
         self.ui.text_txt.clicked.connect(
-            partial(self.handler, 'text_txt', 'refresh_export_prep'))
+            partial(self.handler, 'text_txt', 'refresh_text'))
         self.ui.text_root.clicked.connect(
-            partial(self.handler, 'text_root', 'refresh_export_prep'))
+            partial(self.handler, 'text_root', 'refresh_text'))
         self.ui.text_above.clicked.connect(
-            partial(self.handler, 'text_above', 'refresh_export_prep'))
+            partial(self.handler, 'text_above', 'refresh_text'))
         self.ui.text_custom.clicked.connect(
-            partial(self.handler, 'text_custom', 'refresh_export_prep'))
+            partial(self.handler, 'text_custom', 'refresh_text'))
         self.ui.text_custom_path.textChanged.connect(
-            partial(self.handler, 'text_custom_path', 'refresh_export_prep'))
+            partial(self.handler, 'text_custom_path', 'refresh_text'))
 
         self.ui.text_add_titles.clicked.connect(
-            partial(self.handler, 'text_add_titles', 'refresh_export_prep'))
+            partial(self.handler, 'text_add_titles', 'refresh_text'))
         self.ui.text_sep_tab.clicked.connect(
-            partial(self.handler, 'text_sep_tab', 'refresh_export_prep'))
+            partial(self.handler, 'text_sep_tab', 'refresh_text'))
         self.ui.text_sep_fixed.clicked.connect(
-            partial(self.handler, 'text_sep_fixed', 'refresh_export_prep'))
+            partial(self.handler, 'text_sep_fixed', 'refresh_text'))
 
         self.ui.text_header.textChanged.connect(
-            partial(self.handler, 'text_header', 'refresh_table_txt'))
+            partial(self.handler, 'text_header', 'refresh_text'))
         self.ui.text_footer.textChanged.connect(
-            partial(self.handler, 'text_footer', 'refresh_table_txt'))
+            partial(self.handler, 'text_footer', 'refresh_text'))
 
         # Presets Tab
         self.ui.load_preset_button.clicked.connect(
@@ -389,7 +389,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         if self.data is not None:
             self.data.settings = self.settings
 
-
         if group == 'browse':
             if sender == 'package_browse':
                 pth_to_browse = str(self.settings['package_folder']['value']).replace('\\', '/')
@@ -401,28 +400,30 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         if group == 'source_change':
             pth = str(self.settings['package_folder']['value']).replace('\\', '/')
             self.data = Sequencer(pth, sequence_mode='holes_allowed', gui=self.settings)
+            self.show_all()
+
+        if group == 'package_rename':
             if self.data:
+                self.data.transform_data()
+                self.show_all()
 
-                # fill all tables
-                self.display_table(
-                    self.data.table_sub,
-                    self.ui.sub_table,
-                    self.data.column_titles_sub
-                )
-                self.display_table(
-                    self.data.table_log,
-                    self.ui.log_table,
-                    self.data.column_titles_log
-                )
-                self.ui.txt_table.setPlainText(self.data.table_txt)
+        if group == 'refresh_parsing':
+            if self.data:
+                self.data.transform_data()
+                self.show_all()
 
-                # display Package name
-                _preview = self.data.output.get('package_name', '')
-                self.ui.name_preview.setText(_preview)
+        if group == 'refresh_spreadsheets':
+            if self.data:
+                self.data.transform_data()
+                self.show_all()
 
+        if group == 'refresh_text':
+            if self.data:
+                self.data.transform_data()
+                self.show_all()
 
         if sender == 'write_button':
-            self.save_submission()
+            self.data.export_all()
 
         if group == 'save_presets':
             preset_name = str(self.ui.save_preset_name.displayText())
@@ -458,6 +459,30 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             except:
                 log.error('Error reading preset {}'.format(preset_to_load))
             """
+
+    def show_all(self):
+        """
+        Fill Submission table, drive log table and text with data
+        :return:
+        """
+
+        if self.data:
+            # fill all tables
+            self.display_table(
+                self.data.table_sub,
+                self.ui.sub_table,
+                self.data.column_titles_sub
+            )
+            self.display_table(
+                self.data.table_log,
+                self.ui.log_table,
+                self.data.column_titles_log
+            )
+            self.ui.txt_table.setPlainText(self.data.table_txt)
+
+            # display Package name
+            _preview = self.data.output.get('package_name', '')
+            self.ui.name_preview.setText(_preview)
 
     def explore(self, path):
 
