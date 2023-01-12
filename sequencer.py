@@ -1270,6 +1270,7 @@ class Sequencer(object):
 
     def export_spreadsheet(self, export_root, do_excel, do_csv, table, titles):
 
+        _excel = 0.15
         if table and titles:
             # Excel
             if do_excel:
