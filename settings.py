@@ -32,7 +32,7 @@ class Settings(object):
 
         # try both possible prefs locations
         prefs_path = os.path.join(
-            self.get_user_settings_path(), name_json).replace('\\', '/')
+            self._get_user_settings_path(), name_json).replace('\\', '/')
         if not os.path.exists(prefs_path):
             prefs_path = os.path.join(
                 self._get_script_path(), name_json).replace('\\', '/')
@@ -63,7 +63,7 @@ class Settings(object):
         self.log.debug('-> gui_write_preferences')
         name_json = name + '.json'
         prefs_path = os.path.join(
-            self.get_user_settings_path(), name_json).replace('\\', '/')
+            self._get_user_settings_path(), name_json).replace('\\', '/')
         if not os.path.exists(os.path.dirname(prefs_path)):
             os.makedirs(os.path.dirname(prefs_path))
         with open(prefs_path, 'w') as outfile:
@@ -84,7 +84,7 @@ class Settings(object):
         self.preset_names
         """
         all_files = self._find_in_dir(self._get_script_path())
-        all_files += self._find_in_dir(self.get_user_settings_path())
+        all_files += self._find_in_dir(self._get_user_settings_path())
         all_files.sort()
         self.preset_names = []
         for one_file in all_files:
@@ -97,7 +97,7 @@ class Settings(object):
         return os.path.dirname(
             os.path.abspath(inspect.stack()[-1][1])).replace("\\", "/")
 
-    def get_user_settings_path(self):
+    def _get_user_settings_path(self):
         if sys.platform.startswith('darvin'):
             # from AppKit import NSSearchPathForDirectoriesInDomains
             # appdata = NSSearchPathForDirectoriesInDomains(14, 1, True)[0]

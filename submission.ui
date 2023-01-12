@@ -933,13 +933,13 @@ p, li { white-space: pre-wrap; }
               <property name="title">
                <string>Package Name:</string>
               </property>
-              <layout class="QHBoxLayout" name="horizontalLayout_92">
+              <layout class="QHBoxLayout" name="horizontalLayout_49">
                <item>
-                <layout class="QVBoxLayout" name="verticalLayout_53">
+                <layout class="QVBoxLayout" name="verticalLayout_32">
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_49">
+                  <layout class="QHBoxLayout" name="horizontalLayout_74">
                    <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_46">
+                    <layout class="QHBoxLayout" name="horizontalLayout_16">
                      <item>
                       <widget class="QLabel" name="label_10">
                        <property name="sizePolicy">
@@ -950,14 +950,8 @@ p, li { white-space: pre-wrap; }
                        </property>
                        <property name="minimumSize">
                         <size>
-                         <width>75</width>
+                         <width>100</width>
                          <height>25</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>70</width>
-                         <height>16777215</height>
                         </size>
                        </property>
                        <property name="text">
@@ -975,14 +969,14 @@ p, li { white-space: pre-wrap; }
                        </property>
                        <property name="minimumSize">
                         <size>
-                         <width>230</width>
+                         <width>200</width>
                          <height>25</height>
                         </size>
                        </property>
                        <property name="maximumSize">
                         <size>
                          <width>16000</width>
-                         <height>25</height>
+                         <height>16777215</height>
                         </size>
                        </property>
                        <property name="toolTip">
@@ -996,7 +990,68 @@ p, li { white-space: pre-wrap; }
                     </layout>
                    </item>
                    <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_16">
+                    <layout class="QHBoxLayout" name="horizontalLayout_40">
+                     <item>
+                      <widget class="QLabel" name="label_36">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>100</width>
+                         <height>25</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>Preview:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="name_preview">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>200</width>
+                         <height>25</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>16000</width>
+                         <height>16777215</height>
+                        </size>
+                       </property>
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder.&lt;br/&gt;For every folder there, it tries to detect date stamp and version  by the regexes.&lt;br/&gt;Then it produces {package_version} keyword, depending on Version options.&lt;br/&gt;Finally, the package name is constructed by Template that contains {package_version} keyword.&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
+                       <property name="text">
+                        <string/>
+                       </property>
+                       <property name="readOnly">
+                        <bool>true</bool>
+                       </property>
+                       <property name="placeholderText">
+                        <string>preview</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_82">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_19">
                      <item>
                       <widget class="QLabel" name="label_37">
                        <property name="sizePolicy">
@@ -1007,14 +1062,8 @@ p, li { white-space: pre-wrap; }
                        </property>
                        <property name="minimumSize">
                         <size>
-                         <width>75</width>
+                         <width>100</width>
                          <height>25</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>90</width>
-                         <height>16777215</height>
                         </size>
                        </property>
                        <property name="text">
@@ -1032,13 +1081,13 @@ p, li { white-space: pre-wrap; }
                        </property>
                        <property name="minimumSize">
                         <size>
-                         <width>125</width>
+                         <width>200</width>
                          <height>25</height>
                         </size>
                        </property>
                        <property name="maximumSize">
                         <size>
-                         <width>200</width>
+                         <width>16000</width>
                          <height>16777215</height>
                         </size>
                        </property>
@@ -1053,34 +1102,9 @@ p, li { white-space: pre-wrap; }
                     </layout>
                    </item>
                    <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_19">
+                    <layout class="QHBoxLayout" name="horizontalLayout_46">
                      <item>
                       <widget class="QLabel" name="label_76">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>90</width>
-                         <height>25</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>90</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="text">
-                        <string>Version Regex:</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="name_version_regex">
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -1093,9 +1117,28 @@ p, li { white-space: pre-wrap; }
                          <height>25</height>
                         </size>
                        </property>
+                       <property name="text">
+                        <string>Version Regex:</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QLineEdit" name="name_version_regex">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>200</width>
+                         <height>25</height>
+                        </size>
+                       </property>
                        <property name="maximumSize">
                         <size>
-                         <width>150</width>
+                         <width>16000</width>
                          <height>16777215</height>
                         </size>
                        </property>
@@ -1118,7 +1161,7 @@ p, li { white-space: pre-wrap; }
                   </layout>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_74">
+                  <layout class="QHBoxLayout" name="horizontalLayout_6">
                    <item>
                     <widget class="QGroupBox" name="groupBox_9">
                      <property name="title">
@@ -1253,48 +1296,6 @@ p, li { white-space: pre-wrap; }
                     </widget>
                    </item>
                    <item>
-                    <widget class="QGroupBox" name="groupBox_20">
-                     <property name="title">
-                      <string>Name From</string>
-                     </property>
-                     <layout class="QVBoxLayout" name="verticalLayout_32">
-                      <item>
-                       <layout class="QHBoxLayout" name="horizontalLayout_6">
-                        <item>
-                         <widget class="QRadioButton" name="name_from_template">
-                          <property name="minimumSize">
-                           <size>
-                            <width>80</width>
-                            <height>25</height>
-                           </size>
-                          </property>
-                          <property name="text">
-                           <string>Template</string>
-                          </property>
-                          <property name="checked">
-                           <bool>true</bool>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QRadioButton" name="name_from_folder">
-                          <property name="minimumSize">
-                           <size>
-                            <width>80</width>
-                            <height>25</height>
-                           </size>
-                          </property>
-                          <property name="text">
-                           <string>Folder</string>
-                          </property>
-                         </widget>
-                        </item>
-                       </layout>
-                      </item>
-                     </layout>
-                    </widget>
-                   </item>
-                   <item>
                     <spacer name="horizontalSpacer_6">
                      <property name="orientation">
                       <enum>Qt::Horizontal</enum>
@@ -1310,7 +1311,7 @@ p, li { white-space: pre-wrap; }
                   </layout>
                  </item>
                  <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_82">
+                  <layout class="QHBoxLayout" name="horizontalLayout_78">
                    <item>
                     <widget class="QPushButton" name="name_rename">
                      <property name="sizePolicy">
@@ -1347,16 +1348,13 @@ p, li { white-space: pre-wrap; }
                      <property name="text">
                       <string>Auto Rename</string>
                      </property>
-                     <property name="checkable">
-                      <bool>false</bool>
-                     </property>
                      <property name="checked">
-                      <bool>false</bool>
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>
                    <item>
-                    <spacer name="horizontalSpacer_8">
+                    <spacer name="horizontalSpacer_20">
                      <property name="orientation">
                       <enum>Qt::Horizontal</enum>
                      </property>
@@ -1367,73 +1365,6 @@ p, li { white-space: pre-wrap; }
                       </size>
                      </property>
                     </spacer>
-                   </item>
-                  </layout>
-                 </item>
-                 <item>
-                  <layout class="QHBoxLayout" name="horizontalLayout_78">
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_40">
-                     <item>
-                      <widget class="QLabel" name="label_36">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>55</width>
-                         <height>25</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>55</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="text">
-                        <string>Preview:</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLineEdit" name="name_preview">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="minimumSize">
-                        <size>
-                         <width>200</width>
-                         <height>25</height>
-                        </size>
-                       </property>
-                       <property name="maximumSize">
-                        <size>
-                         <width>16000</width>
-                         <height>16777215</height>
-                        </size>
-                       </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder.&lt;br/&gt;For every folder there, it tries to detect date stamp and version  by the regexes.&lt;br/&gt;Then it produces {package_version} keyword, depending on Version options.&lt;br/&gt;Finally, the package name is constructed by Template that contains {package_version} keyword.&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
-                       <property name="text">
-                        <string/>
-                       </property>
-                       <property name="readOnly">
-                        <bool>true</bool>
-                       </property>
-                       <property name="placeholderText">
-                        <string>preview</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
                    </item>
                   </layout>
                  </item>
@@ -7012,7 +6943,7 @@ Vendor = AmazingVFX</string>
                       <string>Excel</string>
                      </property>
                      <property name="checked">
-                      <bool>false</bool>
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>
@@ -7717,84 +7648,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;2. Set the Package Name options, till the preview matches what you need&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;3. Use Spreadsheet tab to define columns and their values&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;4. Set the export options in Exports and text tabs&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;5. Press Go to export&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:14pt; color:#e8e8e8;&quot;&gt;Keywords&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;name: file name, no path, no extension&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;printf_pattern: file name, for file sequence number is replaced with %04d for 0001&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;sequence_nuke: file name, number for file sequence is replaced by [start..end]&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;sequence_slate&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;sequence_slate_nuke&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;clean_name: file name with no extension and no trailing number&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;clean_name_no_sep: file name with no extension and no trailing number, if there is dot underscore or dash before trailing number, it is removed&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;clean_name_sep_char: the number separation character&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;number: trailing number&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;start_number: first number in file sequence&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;end_number: last number in file sequence&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;padding: leading zeroes used for trailing number&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;range: start-end frames for file sequence&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;range_slate: same as range, start+1&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;extension: file extension, no dot&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;path_prs: path, with no file, no trailing slash&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;full_path: path to the file or first frame in file sequence&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;relative_path: path to the file, minus the path start to the package. Starts with slash&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;drive: drive letter (windows)&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;size_bytes: file size in bytes, calculated as total for file sequence&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;size_human: same as size_bytes, rounded to one decimal, with units&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;category: files are categorized by extension. still, sequence, video, audio, multiframe, other&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;cnt_sub, cnt_log, cnt_txt: counter for each export&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;total_sub, total_log, total_txt: total number of files for each export&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;files_sub, files_log, files_txt: total files for each export&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;d, dd, y, yy, m, mm: today day, month and year&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;package_date: package renaming date &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;package_name: package renaming name&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;package_version: package renaming version&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;package_name_from_folder: folder name initially provided by user&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;package_name_root: path to the package, without end folder&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_aspect: image aspect, float&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_aspect_x: &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_aspect_y:&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_audio_present&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_audio_present&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_audio_present&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_bits_per_sample_audio&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_channels_audio&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_codec_long_name_audio&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_codec_long_name_video&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_codec_name_audio&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_codec_name_audio&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_data_present&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_duration_audio&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_duration_frames&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_duration_frames_slate&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_duration_secs&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_fields&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_fps&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_fps_a&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_fps_a&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_fps_raw&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_frame_end_from_tc&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_frame_end_from_tc_slate&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_frame_start_from_tc&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_frame_start_from_tc_slate&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_height&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_is_log&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_reel&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_sample_rate_audio&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_time_code&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_time_stamp_audio&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_time_stamp_video&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_video_present&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;meta_width&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#e8e8e8;&quot;&gt;5. Press Go to export&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>

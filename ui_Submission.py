@@ -791,87 +791,112 @@ class Ui_submission(object):
         sizePolicy1.setHeightForWidth(self.groupBox_8.sizePolicy().hasHeightForWidth())
         self.groupBox_8.setSizePolicy(sizePolicy1)
         self.groupBox_8.setMinimumSize(QSize(600, 190))
-        self.horizontalLayout_92 = QHBoxLayout(self.groupBox_8)
-        self.horizontalLayout_92.setObjectName(u"horizontalLayout_92")
-        self.verticalLayout_53 = QVBoxLayout()
-        self.verticalLayout_53.setObjectName(u"verticalLayout_53")
-        self.horizontalLayout_49 = QHBoxLayout()
+        self.horizontalLayout_49 = QHBoxLayout(self.groupBox_8)
         self.horizontalLayout_49.setObjectName(u"horizontalLayout_49")
-        self.horizontalLayout_46 = QHBoxLayout()
-        self.horizontalLayout_46.setObjectName(u"horizontalLayout_46")
+        self.verticalLayout_32 = QVBoxLayout()
+        self.verticalLayout_32.setObjectName(u"verticalLayout_32")
+        self.horizontalLayout_74 = QHBoxLayout()
+        self.horizontalLayout_74.setObjectName(u"horizontalLayout_74")
+        self.horizontalLayout_16 = QHBoxLayout()
+        self.horizontalLayout_16.setObjectName(u"horizontalLayout_16")
         self.label_10 = QLabel(self.groupBox_8)
         self.label_10.setObjectName(u"label_10")
         sizePolicy2.setHeightForWidth(self.label_10.sizePolicy().hasHeightForWidth())
         self.label_10.setSizePolicy(sizePolicy2)
-        self.label_10.setMinimumSize(QSize(75, 25))
-        self.label_10.setMaximumSize(QSize(70, 16777215))
+        self.label_10.setMinimumSize(QSize(100, 25))
 
-        self.horizontalLayout_46.addWidget(self.label_10)
+        self.horizontalLayout_16.addWidget(self.label_10)
 
         self.name_template = QLineEdit(self.groupBox_8)
         self.name_template.setObjectName(u"name_template")
         sizePolicy1.setHeightForWidth(self.name_template.sizePolicy().hasHeightForWidth())
         self.name_template.setSizePolicy(sizePolicy1)
-        self.name_template.setMinimumSize(QSize(230, 25))
-        self.name_template.setMaximumSize(QSize(16000, 25))
+        self.name_template.setMinimumSize(QSize(200, 25))
+        self.name_template.setMaximumSize(QSize(16000, 16777215))
 
-        self.horizontalLayout_46.addWidget(self.name_template)
+        self.horizontalLayout_16.addWidget(self.name_template)
 
 
-        self.horizontalLayout_49.addLayout(self.horizontalLayout_46)
+        self.horizontalLayout_74.addLayout(self.horizontalLayout_16)
 
-        self.horizontalLayout_16 = QHBoxLayout()
-        self.horizontalLayout_16.setObjectName(u"horizontalLayout_16")
+        self.horizontalLayout_40 = QHBoxLayout()
+        self.horizontalLayout_40.setObjectName(u"horizontalLayout_40")
+        self.label_36 = QLabel(self.groupBox_8)
+        self.label_36.setObjectName(u"label_36")
+        sizePolicy2.setHeightForWidth(self.label_36.sizePolicy().hasHeightForWidth())
+        self.label_36.setSizePolicy(sizePolicy2)
+        self.label_36.setMinimumSize(QSize(100, 25))
+
+        self.horizontalLayout_40.addWidget(self.label_36)
+
+        self.name_preview = QLineEdit(self.groupBox_8)
+        self.name_preview.setObjectName(u"name_preview")
+        sizePolicy1.setHeightForWidth(self.name_preview.sizePolicy().hasHeightForWidth())
+        self.name_preview.setSizePolicy(sizePolicy1)
+        self.name_preview.setMinimumSize(QSize(200, 25))
+        self.name_preview.setMaximumSize(QSize(16000, 16777215))
+        self.name_preview.setReadOnly(True)
+
+        self.horizontalLayout_40.addWidget(self.name_preview)
+
+
+        self.horizontalLayout_74.addLayout(self.horizontalLayout_40)
+
+
+        self.verticalLayout_32.addLayout(self.horizontalLayout_74)
+
+        self.horizontalLayout_82 = QHBoxLayout()
+        self.horizontalLayout_82.setObjectName(u"horizontalLayout_82")
+        self.horizontalLayout_19 = QHBoxLayout()
+        self.horizontalLayout_19.setObjectName(u"horizontalLayout_19")
         self.label_37 = QLabel(self.groupBox_8)
         self.label_37.setObjectName(u"label_37")
         sizePolicy2.setHeightForWidth(self.label_37.sizePolicy().hasHeightForWidth())
         self.label_37.setSizePolicy(sizePolicy2)
-        self.label_37.setMinimumSize(QSize(75, 25))
-        self.label_37.setMaximumSize(QSize(90, 16777215))
+        self.label_37.setMinimumSize(QSize(100, 25))
 
-        self.horizontalLayout_16.addWidget(self.label_37)
+        self.horizontalLayout_19.addWidget(self.label_37)
 
         self.name_date_regex = QLineEdit(self.groupBox_8)
         self.name_date_regex.setObjectName(u"name_date_regex")
         sizePolicy1.setHeightForWidth(self.name_date_regex.sizePolicy().hasHeightForWidth())
         self.name_date_regex.setSizePolicy(sizePolicy1)
-        self.name_date_regex.setMinimumSize(QSize(125, 25))
-        self.name_date_regex.setMaximumSize(QSize(200, 16777215))
+        self.name_date_regex.setMinimumSize(QSize(200, 25))
+        self.name_date_regex.setMaximumSize(QSize(16000, 16777215))
 
-        self.horizontalLayout_16.addWidget(self.name_date_regex)
+        self.horizontalLayout_19.addWidget(self.name_date_regex)
 
 
-        self.horizontalLayout_49.addLayout(self.horizontalLayout_16)
+        self.horizontalLayout_82.addLayout(self.horizontalLayout_19)
 
-        self.horizontalLayout_19 = QHBoxLayout()
-        self.horizontalLayout_19.setObjectName(u"horizontalLayout_19")
+        self.horizontalLayout_46 = QHBoxLayout()
+        self.horizontalLayout_46.setObjectName(u"horizontalLayout_46")
         self.label_76 = QLabel(self.groupBox_8)
         self.label_76.setObjectName(u"label_76")
         sizePolicy2.setHeightForWidth(self.label_76.sizePolicy().hasHeightForWidth())
         self.label_76.setSizePolicy(sizePolicy2)
-        self.label_76.setMinimumSize(QSize(90, 25))
-        self.label_76.setMaximumSize(QSize(90, 16777215))
+        self.label_76.setMinimumSize(QSize(100, 25))
 
-        self.horizontalLayout_19.addWidget(self.label_76)
+        self.horizontalLayout_46.addWidget(self.label_76)
 
         self.name_version_regex = QLineEdit(self.groupBox_8)
         self.name_version_regex.setObjectName(u"name_version_regex")
-        sizePolicy2.setHeightForWidth(self.name_version_regex.sizePolicy().hasHeightForWidth())
-        self.name_version_regex.setSizePolicy(sizePolicy2)
-        self.name_version_regex.setMinimumSize(QSize(100, 25))
-        self.name_version_regex.setMaximumSize(QSize(150, 16777215))
+        sizePolicy1.setHeightForWidth(self.name_version_regex.sizePolicy().hasHeightForWidth())
+        self.name_version_regex.setSizePolicy(sizePolicy1)
+        self.name_version_regex.setMinimumSize(QSize(200, 25))
+        self.name_version_regex.setMaximumSize(QSize(16000, 16777215))
         self.name_version_regex.setReadOnly(False)
 
-        self.horizontalLayout_19.addWidget(self.name_version_regex)
+        self.horizontalLayout_46.addWidget(self.name_version_regex)
 
 
-        self.horizontalLayout_49.addLayout(self.horizontalLayout_19)
+        self.horizontalLayout_82.addLayout(self.horizontalLayout_46)
 
 
-        self.verticalLayout_53.addLayout(self.horizontalLayout_49)
+        self.verticalLayout_32.addLayout(self.horizontalLayout_82)
 
-        self.horizontalLayout_74 = QHBoxLayout()
-        self.horizontalLayout_74.setObjectName(u"horizontalLayout_74")
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
         self.groupBox_9 = QGroupBox(self.groupBox_8)
         self.groupBox_9.setObjectName(u"groupBox_9")
         self.verticalLayout = QVBoxLayout(self.groupBox_9)
@@ -931,98 +956,43 @@ class Ui_submission(object):
         self.verticalLayout.addLayout(self.horizontalLayout_17)
 
 
-        self.horizontalLayout_74.addWidget(self.groupBox_9)
+        self.horizontalLayout_6.addWidget(self.groupBox_9)
 
-        self.groupBox_20 = QGroupBox(self.groupBox_8)
-        self.groupBox_20.setObjectName(u"groupBox_20")
-        self.verticalLayout_32 = QVBoxLayout(self.groupBox_20)
-        self.verticalLayout_32.setObjectName(u"verticalLayout_32")
-        self.horizontalLayout_6 = QHBoxLayout()
-        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
-        self.name_from_template = QRadioButton(self.groupBox_20)
-        self.name_from_template.setObjectName(u"name_from_template")
-        self.name_from_template.setMinimumSize(QSize(80, 25))
-        self.name_from_template.setChecked(True)
+        self.horizontalSpacer_6 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.horizontalLayout_6.addWidget(self.name_from_template)
-
-        self.name_from_folder = QRadioButton(self.groupBox_20)
-        self.name_from_folder.setObjectName(u"name_from_folder")
-        self.name_from_folder.setMinimumSize(QSize(80, 25))
-
-        self.horizontalLayout_6.addWidget(self.name_from_folder)
+        self.horizontalLayout_6.addItem(self.horizontalSpacer_6)
 
 
         self.verticalLayout_32.addLayout(self.horizontalLayout_6)
 
-
-        self.horizontalLayout_74.addWidget(self.groupBox_20)
-
-        self.horizontalSpacer_6 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_74.addItem(self.horizontalSpacer_6)
-
-
-        self.verticalLayout_53.addLayout(self.horizontalLayout_74)
-
-        self.horizontalLayout_82 = QHBoxLayout()
-        self.horizontalLayout_82.setObjectName(u"horizontalLayout_82")
+        self.horizontalLayout_78 = QHBoxLayout()
+        self.horizontalLayout_78.setObjectName(u"horizontalLayout_78")
         self.name_rename = QPushButton(self.groupBox_8)
         self.name_rename.setObjectName(u"name_rename")
         sizePolicy2.setHeightForWidth(self.name_rename.sizePolicy().hasHeightForWidth())
         self.name_rename.setSizePolicy(sizePolicy2)
         self.name_rename.setMinimumSize(QSize(120, 25))
 
-        self.horizontalLayout_82.addWidget(self.name_rename)
+        self.horizontalLayout_78.addWidget(self.name_rename)
 
         self.name_rename_auto = QCheckBox(self.groupBox_8)
         self.name_rename_auto.setObjectName(u"name_rename_auto")
         sizePolicy2.setHeightForWidth(self.name_rename_auto.sizePolicy().hasHeightForWidth())
         self.name_rename_auto.setSizePolicy(sizePolicy2)
         self.name_rename_auto.setMinimumSize(QSize(120, 25))
-        self.name_rename_auto.setCheckable(False)
-        self.name_rename_auto.setChecked(False)
+        self.name_rename_auto.setChecked(True)
 
-        self.horizontalLayout_82.addWidget(self.name_rename_auto)
+        self.horizontalLayout_78.addWidget(self.name_rename_auto)
 
-        self.horizontalSpacer_8 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+        self.horizontalSpacer_20 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.horizontalLayout_82.addItem(self.horizontalSpacer_8)
-
-
-        self.verticalLayout_53.addLayout(self.horizontalLayout_82)
-
-        self.horizontalLayout_78 = QHBoxLayout()
-        self.horizontalLayout_78.setObjectName(u"horizontalLayout_78")
-        self.horizontalLayout_40 = QHBoxLayout()
-        self.horizontalLayout_40.setObjectName(u"horizontalLayout_40")
-        self.label_36 = QLabel(self.groupBox_8)
-        self.label_36.setObjectName(u"label_36")
-        sizePolicy2.setHeightForWidth(self.label_36.sizePolicy().hasHeightForWidth())
-        self.label_36.setSizePolicy(sizePolicy2)
-        self.label_36.setMinimumSize(QSize(55, 25))
-        self.label_36.setMaximumSize(QSize(55, 16777215))
-
-        self.horizontalLayout_40.addWidget(self.label_36)
-
-        self.name_preview = QLineEdit(self.groupBox_8)
-        self.name_preview.setObjectName(u"name_preview")
-        sizePolicy1.setHeightForWidth(self.name_preview.sizePolicy().hasHeightForWidth())
-        self.name_preview.setSizePolicy(sizePolicy1)
-        self.name_preview.setMinimumSize(QSize(200, 25))
-        self.name_preview.setMaximumSize(QSize(16000, 16777215))
-        self.name_preview.setReadOnly(True)
-
-        self.horizontalLayout_40.addWidget(self.name_preview)
+        self.horizontalLayout_78.addItem(self.horizontalSpacer_20)
 
 
-        self.horizontalLayout_78.addLayout(self.horizontalLayout_40)
+        self.verticalLayout_32.addLayout(self.horizontalLayout_78)
 
 
-        self.verticalLayout_53.addLayout(self.horizontalLayout_78)
-
-
-        self.horizontalLayout_92.addLayout(self.verticalLayout_53)
+        self.horizontalLayout_49.addLayout(self.verticalLayout_32)
 
 
         self.verticalLayout_33.addWidget(self.groupBox_8)
@@ -3656,7 +3626,7 @@ class Ui_submission(object):
         sizePolicy2.setHeightForWidth(self.export_log_excel.sizePolicy().hasHeightForWidth())
         self.export_log_excel.setSizePolicy(sizePolicy2)
         self.export_log_excel.setMinimumSize(QSize(62, 0))
-        self.export_log_excel.setChecked(False)
+        self.export_log_excel.setChecked(True)
 
         self.horizontalLayout_43.addWidget(self.export_log_excel)
 
@@ -4182,6 +4152,12 @@ class Ui_submission(object):
         self.name_template.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Template for naming the package. <br/><br/>Keywords:<br/>{package_version} : detects consecutive versions one folder up from package folder<br/>{yy}: year<br/>{mm}: month<br/>{dd}: day</p><p><br/></p><p><br/></p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.name_template.setText(QCoreApplication.translate("submission", u"sub_{yy}{mm}{dd}_{package_version}", None))
+        self.label_36.setText(QCoreApplication.translate("submission", u"Preview:", None))
+#if QT_CONFIG(tooltip)
+        self.name_preview.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder.<br/>For every folder there, it tries to detect date stamp and version  by the regexes.<br/>Then it produces {package_version} keyword, depending on Version options.<br/>Finally, the package name is constructed by Template that contains {package_version} keyword.<br/></p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.name_preview.setText("")
+        self.name_preview.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
         self.label_37.setText(QCoreApplication.translate("submission", u"Date Regex:", None))
 #if QT_CONFIG(tooltip)
         self.name_date_regex.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects current date stamp in it by using Date Regex</p><p><br/>Keywords:<br/>{yy}: year<br/>{mm}: month<br/>{dd}: day</p></body></html>", None))
@@ -4210,17 +4186,8 @@ class Ui_submission(object):
         self.name_version_letters_uppercase.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>If using letters for versioning, use upper case instead of lower case letters</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.name_version_letters_uppercase.setText(QCoreApplication.translate("submission", u"Upper Case", None))
-        self.groupBox_20.setTitle(QCoreApplication.translate("submission", u"Name From", None))
-        self.name_from_template.setText(QCoreApplication.translate("submission", u"Template", None))
-        self.name_from_folder.setText(QCoreApplication.translate("submission", u"Folder", None))
         self.name_rename.setText(QCoreApplication.translate("submission", u"Rename", None))
         self.name_rename_auto.setText(QCoreApplication.translate("submission", u"Auto Rename", None))
-        self.label_36.setText(QCoreApplication.translate("submission", u"Preview:", None))
-#if QT_CONFIG(tooltip)
-        self.name_preview.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder.<br/>For every folder there, it tries to detect date stamp and version  by the regexes.<br/>Then it produces {package_version} keyword, depending on Version options.<br/>Finally, the package name is constructed by Template that contains {package_version} keyword.<br/></p></body></html>", None))
-#endif // QT_CONFIG(tooltip)
-        self.name_preview.setText("")
-        self.name_preview.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab), QCoreApplication.translate("submission", u"Package", None))
 #if QT_CONFIG(tooltip)
         self.scrollArea.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Creating new keys<br/>1. source is the text to be searched. For every file, the {keys} are replaced first</p><p>2. Pattern is used for Python re.sub regex</p><p>3. Repl is used for Python re.sub replace. If itr starts with lambda, the repl is evaluated as Python</p><p>4. Result (found group 1 or replace) is named by the name field</p></body></html>", None))
@@ -4517,99 +4484,7 @@ class Ui_submission(object):
                         "in-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">2. Set the Package Name options, till the preview matches what you need</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">3. Use Spreadsheet tab to define columns and their values</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">4. Set the export options in Exports and text tabs</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">5. Press Go to export</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
-"<p style=\" margin-top:0p"
-                        "x; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; color:#e8e8e8;\">Keywords</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">name: file name, no path, no extension</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">printf_pattern: file name, for file sequence number is replaced with %04d for 0001</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">sequence_nuke: file name, number for file sequence is replaced by [sta"
-                        "rt..end]</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">sequence_slate</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">sequence_slate_nuke</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">clean_name: file name with no extension and no trailing number</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">clean_name_no_sep: file name with no extension and no trailing number, if there is dot underscore or dash before trailing number, it is removed</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-b"
-                        "lock-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">clean_name_sep_char: the number separation character</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">number: trailing number</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">start_number: first number in file sequence</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">end_number: last number in file sequence</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; "
-                        "text-indent:0px;\"><span style=\" color:#e8e8e8;\">padding: leading zeroes used for trailing number</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">range: start-end frames for file sequence</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">range_slate: same as range, start+1</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">extension: file extension, no dot</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-i"
-                        "ndent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">path_prs: path, with no file, no trailing slash</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">full_path: path to the file or first frame in file sequence</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">relative_path: path to the file, minus the path start to the package. Starts with slash</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">drive: drive letter (windows)</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0p"
-                        "x; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">size_bytes: file size in bytes, calculated as total for file sequence</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">size_human: same as size_bytes, rounded to one decimal, with units</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">category: files are categorized by extension. still, sequence, video, audio, multiframe, other</span></p>\n"
-"<p sty"
-                        "le=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">cnt_sub, cnt_log, cnt_txt: counter for each export</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">total_sub, total_log, total_txt: total number of files for each export</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">files_sub, files_log, files_txt: total files for each export</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /><"
-                        "/p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">d, dd, y, yy, m, mm: today day, month and year</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">package_date: package renaming date </span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">package_name: package renaming name</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">package_version: package renaming version</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">package_name_from_folder: fold"
-                        "er name initially provided by user</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">package_name_root: path to the package, without end folder</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_aspect: image aspect, float</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_aspect_x: </span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_aspect_y:</span></p>\n"
-"<p s"
-                        "tyle=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_audio_present</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_audio_present</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_audio_present</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_bits_per_sample_audio</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_channels_audio</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt"
-                        "-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_codec_long_name_audio</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_codec_long_name_video</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_codec_name_audio</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_codec_name_audio</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_data_present</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">m"
-                        "eta_duration_audio</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_duration_frames</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_duration_frames_slate</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_duration_secs</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_fields</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_fps</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px;"
-                        " margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_fps_a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_fps_a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_fps_raw</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_frame_end_from_tc</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_frame_end_from_tc_slate</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_fra"
-                        "me_start_from_tc</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_frame_start_from_tc_slate</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_height</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_is_log</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_reel</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_sample_rate_audio</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; m"
-                        "argin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_time_code</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_time_stamp_audio</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_time_stamp_video</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_video_present</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_width</span></p></body></html>", None))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">5. Press Go to export</span></p></body></html>", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_14), QCoreApplication.translate("submission", u"Help", None))
         self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_6), QCoreApplication.translate("submission", u"Submission", None))
         self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_7), QCoreApplication.translate("submission", u"Drive Log", None))

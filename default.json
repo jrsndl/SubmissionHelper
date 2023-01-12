@@ -109,7 +109,7 @@
  },
  "export_log_excel": {
   "category": "checkbox",
-  "value": false
+  "value": true
  },
  "export_log_root": {
   "category": "radiobutton",
@@ -177,8 +177,9 @@
  },
  "load_preset_combobox": {
   "all_items": [
-   "default",
-   "last"
+   "last - Copy",
+   "last",
+   "default"
   ],
   "category": "combobox",
   "value": 0
@@ -232,42 +233,6 @@
   "value": 2
  },
  "package_folder": {
-  "category": "lineedit",
-  "value": ""
- },
- "parse_filter_1": {
-  "category": "lineedit",
-  "value": ""
- },
- "parse_filter_2": {
-  "category": "lineedit",
-  "value": ""
- },
- "parse_filter_3": {
-  "category": "lineedit",
-  "value": ""
- },
- "parse_filter_4": {
-  "category": "lineedit",
-  "value": ""
- },
- "parse_filter_5": {
-  "category": "lineedit",
-  "value": ""
- },
- "parse_filter_6": {
-  "category": "lineedit",
-  "value": ""
- },
- "parse_filter_7": {
-  "category": "lineedit",
-  "value": ""
- },
- "parse_filter_8": {
-  "category": "lineedit",
-  "value": ""
- },
- "parse_filter_9": {
   "category": "lineedit",
   "value": ""
  },
@@ -417,8 +382,8 @@
  },
  "position": {
   "category": "mainwindow_position",
-  "position_x": "280",
-  "position_y": "246"
+  "position_x": "101",
+  "position_y": "421"
  },
  "prefs_counter_start": {
   "category": "spinbox",
@@ -479,84 +444,12 @@
  },
  "save_preset_name": {
   "category": "lineedit",
-  "value": "default"
- },
- "side_copy_1": {
-  "category": "radiobutton",
-  "value": true
- },
- "side_copy_3": {
-  "category": "radiobutton",
-  "value": true
- },
- "side_copy_4": {
-  "category": "radiobutton",
-  "value": true
- },
- "side_dest_1": {
-  "category": "lineedit",
-  "value": ""
- },
- "side_dest_3": {
-  "category": "lineedit",
-  "value": ""
- },
- "side_dest_4": {
-  "category": "lineedit",
-  "value": ""
- },
- "side_match_1": {
-  "category": "lineedit",
-  "value": ""
- },
- "side_match_3": {
-  "category": "lineedit",
-  "value": ""
- },
- "side_match_4": {
-  "category": "lineedit",
-  "value": ""
- },
- "side_pattern_1": {
-  "category": "lineedit",
-  "value": ""
- },
- "side_pattern_3": {
-  "category": "lineedit",
-  "value": ""
- },
- "side_pattern_4": {
-  "category": "lineedit",
-  "value": ""
- },
- "side_rename_1": {
-  "category": "radiobutton",
-  "value": false
- },
- "side_rename_3": {
-  "category": "radiobutton",
-  "value": false
- },
- "side_rename_4": {
-  "category": "radiobutton",
-  "value": false
- },
- "side_repl_1": {
-  "category": "lineedit",
-  "value": ""
- },
- "side_repl_3": {
-  "category": "lineedit",
-  "value": ""
- },
- "side_repl_4": {
-  "category": "lineedit",
   "value": ""
  },
  "size": {
   "category": "mainwindow_size",
-  "size_x": "1903",
-  "size_y": "990"
+  "size_x": "1593",
+  "size_y": "1030"
  },
  "sub_columns": {
   "category": "plaintextedit",
@@ -567,14 +460,6 @@
   "value": ""
  },
  "sub_include": {
-  "category": "lineedit",
-  "value": ""
- },
- "sub_include_2": {
-  "category": "lineedit",
-  "value": ""
- },
- "sub_include_3": {
   "category": "lineedit",
   "value": ""
  },
@@ -591,10 +476,6 @@
   "value": false
  },
  "text_custom_path": {
-  "category": "lineedit",
-  "value": ""
- },
- "text_custom_path_2": {
   "category": "lineedit",
   "value": ""
  },
