@@ -1494,7 +1494,7 @@ p, li { white-space: pre-wrap; }
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
+               <y>-10</y>
                <width>751</width>
                <height>311</height>
               </rect>
@@ -3394,7 +3394,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="text_custom_path_2">
+                   <widget class="QLineEdit" name="side_folder">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -3531,7 +3531,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="sub_include_2">
+                   <widget class="QLineEdit" name="side_exclude">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -3576,7 +3576,7 @@ p, li { white-space: pre-wrap; }
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLineEdit" name="sub_include_3">
+                   <widget class="QLineEdit" name="side_include">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -7320,7 +7320,7 @@ Vendor = AmazingVFX</string>
                     <string>Add Column Titles</string>
                    </property>
                    <property name="checked">
-                    <bool>true</bool>
+                    <bool>false</bool>
                    </property>
                   </widget>
                  </item>
@@ -7819,7 +7819,7 @@ p, li { white-space: pre-wrap; }
            </size>
           </property>
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="tab_6">
            <attribute name="title">

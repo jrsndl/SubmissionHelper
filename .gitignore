@@ -8,3 +8,5 @@ ffmpeg/ffplay.exe
 ffmpeg/ffmpeg.exe
 
 .idea/*
+
+__pycache__/

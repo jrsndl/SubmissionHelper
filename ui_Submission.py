@@ -1051,7 +1051,7 @@ class Ui_submission(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 751, 311))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, -10, 751, 311))
         sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
@@ -1891,13 +1891,13 @@ class Ui_submission(object):
 
         self.horizontalLayout_62.addWidget(self.label_86)
 
-        self.text_custom_path_2 = QLineEdit(self.tab_13)
-        self.text_custom_path_2.setObjectName(u"text_custom_path_2")
-        sizePolicy1.setHeightForWidth(self.text_custom_path_2.sizePolicy().hasHeightForWidth())
-        self.text_custom_path_2.setSizePolicy(sizePolicy1)
-        self.text_custom_path_2.setMinimumSize(QSize(300, 25))
+        self.side_folder = QLineEdit(self.tab_13)
+        self.side_folder.setObjectName(u"side_folder")
+        sizePolicy1.setHeightForWidth(self.side_folder.sizePolicy().hasHeightForWidth())
+        self.side_folder.setSizePolicy(sizePolicy1)
+        self.side_folder.setMinimumSize(QSize(300, 25))
 
-        self.horizontalLayout_62.addWidget(self.text_custom_path_2)
+        self.horizontalLayout_62.addWidget(self.side_folder)
 
 
         self.horizontalLayout_71.addLayout(self.horizontalLayout_62)
@@ -1946,13 +1946,13 @@ class Ui_submission(object):
 
         self.horizontalLayout_84.addWidget(self.label_92)
 
-        self.sub_include_2 = QLineEdit(self.tab_13)
-        self.sub_include_2.setObjectName(u"sub_include_2")
-        sizePolicy1.setHeightForWidth(self.sub_include_2.sizePolicy().hasHeightForWidth())
-        self.sub_include_2.setSizePolicy(sizePolicy1)
-        self.sub_include_2.setMinimumSize(QSize(80, 25))
+        self.side_exclude = QLineEdit(self.tab_13)
+        self.side_exclude.setObjectName(u"side_exclude")
+        sizePolicy1.setHeightForWidth(self.side_exclude.sizePolicy().hasHeightForWidth())
+        self.side_exclude.setSizePolicy(sizePolicy1)
+        self.side_exclude.setMinimumSize(QSize(80, 25))
 
-        self.horizontalLayout_84.addWidget(self.sub_include_2)
+        self.horizontalLayout_84.addWidget(self.side_exclude)
 
 
         self.horizontalLayout_85.addLayout(self.horizontalLayout_84)
@@ -1968,13 +1968,13 @@ class Ui_submission(object):
 
         self.horizontalLayout_83.addWidget(self.label_93)
 
-        self.sub_include_3 = QLineEdit(self.tab_13)
-        self.sub_include_3.setObjectName(u"sub_include_3")
-        sizePolicy1.setHeightForWidth(self.sub_include_3.sizePolicy().hasHeightForWidth())
-        self.sub_include_3.setSizePolicy(sizePolicy1)
-        self.sub_include_3.setMinimumSize(QSize(80, 25))
+        self.side_include = QLineEdit(self.tab_13)
+        self.side_include.setObjectName(u"side_include")
+        sizePolicy1.setHeightForWidth(self.side_include.sizePolicy().hasHeightForWidth())
+        self.side_include.setSizePolicy(sizePolicy1)
+        self.side_include.setMinimumSize(QSize(80, 25))
 
-        self.horizontalLayout_83.addWidget(self.sub_include_3)
+        self.horizontalLayout_83.addWidget(self.side_include)
 
 
         self.horizontalLayout_85.addLayout(self.horizontalLayout_83)
@@ -3826,7 +3826,7 @@ class Ui_submission(object):
         self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
         self.text_add_titles = QCheckBox(self.groupBox_6)
         self.text_add_titles.setObjectName(u"text_add_titles")
-        self.text_add_titles.setChecked(True)
+        self.text_add_titles.setChecked(False)
 
         self.horizontalLayout_21.addWidget(self.text_add_titles)
 
@@ -4132,7 +4132,7 @@ class Ui_submission(object):
         self.package_explore_2.setDefault(True)
         self.package_browse_2.setDefault(True)
         self.prefs_frame_rate.setCurrentIndex(1)
-        self.BottomTab.setCurrentIndex(0)
+        self.BottomTab.setCurrentIndex(2)
         self.write_button.setDefault(True)
         self.reload.setDefault(True)
 

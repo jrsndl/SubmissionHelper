@@ -47,10 +47,10 @@ class Settings(object):
                 self.log.error("-> Error opening prefs file {}".format(
                     str(prefs_path)))
         else:
-            if name_json != 'Default':
+            if name_json != 'default':
                 self.log.warning("-> {} settings file not found"
                                  .format(str(name_json)))
-                self.read('Default')
+                self.read('default')
             else:
                 self.log.error("-> error opening prefs file {}"
                                .format(str(prefs_path)))

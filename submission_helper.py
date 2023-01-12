@@ -3,7 +3,6 @@ import os
 import subprocess
 import inspect
 from functools import partial
-import xlsxwriter
 import logging
 import time
 
@@ -14,7 +13,6 @@ from ui_Submission import Ui_submission
 from sequencer import Sequencer
 from settings import Settings
 import parse_file_name
-import pprint
 
 
 class ImgWidget1(QtWidgets.QLabel):
@@ -53,7 +51,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         for url in e.mimeData().urls():
             file_name = url.toLocalFile()
             self.ui.package_folder.setText(str(file_name))
-            print("Dropped file: " + file_name)
+            #print("Dropped file: " + file_name)
 
     def __init__(self, no_gui=False, s=None):
         super().__init__()

@@ -40,7 +40,7 @@ class Sequencer(object):
         if os.path.exists(self.in_path):
             self.read_files()
             self.transform_data()
-            pprint.pprint(self.merged_list)
+            #pprint.pprint(self.merged_list)
 
             # logging.debug('-> Sequencer Init')
 
@@ -1285,8 +1285,6 @@ class Sequencer(object):
 
     def export_spreadsheet(self, export_root, do_excel, do_csv,
                            table, titles, column_widths=None):
-
-        pprint.pprint(column_widths)
 
         _excel = 0.15
         if table and titles:
