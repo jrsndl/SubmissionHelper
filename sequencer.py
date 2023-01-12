@@ -946,6 +946,10 @@ class Sequencer(object):
         self.output['status'] = "Making package name." \
                                 " (prepare_package_name)"
 
+        _from_template = False
+        if self.settings['name_from_template']['value'] is not None:
+            _from_template = bool(self.settings['name_from_template']['value'])
+
         if self.settings['name_template']['value'] is not None:
             _template = self.settings['name_template']['value']
         if self.settings['name_date_regex']['value'] is not None:
@@ -976,12 +980,13 @@ class Sequencer(object):
         except KeyError:
             self.log.error("Package name template failed")
 
-        d = _date_compiled.search(_temp_expanded)
-        if d:
-            try:
-                current_date = d.group(1)
-            except :
-                self.log.error("Package date failed")
+        if _date_compiled:
+            d = _date_compiled.search(_temp_expanded)
+            if d:
+                try:
+                    current_date = d.group(1)
+                except :
+                    self.log.error("Package date failed")
 
         # make sure path exists, it is a directory and has no trailing slash
         if os.path.exists(_pkg_folder):
@@ -1002,25 +1007,26 @@ class Sequencer(object):
         dir_list = []
         for filename in os.listdir(one_up):
             if os.path.isdir(os.path.join(one_up, filename)):
-                d = _date_compiled.search(filename)
-                dd = ''
-                if d:
-                    try:
-                        dd = d.group(1)
-                    except:
-                        dd = ''
-                v = _version_compiled.search(filename)
-                vv = ''
-                if v:
-                    try:
-                        vv = v.group(1)
-                    except:
-                        vv = ''
-                dir_list.append({
-                    'folder': filename,
-                    'date': dd,
-                    'version': vv
-                })
+                if filename != name_from_folder:
+                    d = _date_compiled.search(filename)
+                    dd = ''
+                    if d:
+                        try:
+                            dd = d.group(1)
+                        except:
+                            dd = ''
+                    v = _version_compiled.search(filename)
+                    vv = ''
+                    if v:
+                        try:
+                            vv = v.group(1)
+                        except:
+                            vv = ''
+                    dir_list.append({
+                        'folder': filename,
+                        'date': dd,
+                        'version': vv
+                    })
 
         if _per_date:
             # each date has separate version chain
@@ -1068,12 +1074,16 @@ class Sequencer(object):
             'package_name_from_folder': name_from_folder,
             'package_name_root': one_up
         })
-        # expand template to make package name
-        try:
-            _pkg_new_name = _template.format(**date_keys)
-        except:
-            # use source folder as name
-            _pkg_new_name = name_from_folder
+
+        # use source folder as name
+        _pkg_new_name = name_from_folder
+        if _from_template:
+            # expand template to make package name
+            try:
+                _pkg_new_name = _template.format(**date_keys)
+            except:
+                pass
+
         date_keys.update({
             'package_name': _pkg_new_name,
         })
@@ -1217,7 +1227,7 @@ class Sequencer(object):
             _footer = txt_footer
         self.table_txt = _header + '\n' + _titles + body_txt + '\n' + _footer
 
-    def export_all(self):
+    def export_all(self, column_width_sub=None, column_width_log=None):
 
         if self.settings and self.static_keywords:
             one_above = str(self.static_keywords['package_name_root']).replace('\\', '/') + '/'
@@ -1234,8 +1244,10 @@ class Sequencer(object):
             elif s_pth_above:
                 s_export_root = one_above
             s_export_root += self.static_keywords['package_name']
+
             self.export_spreadsheet(s_export_root, s_do_excel, s_do_csv,
-                                    self.table_sub, self.column_titles_sub)
+                                    self.table_sub, self.column_titles_sub,
+                                    column_width_sub)
 
             # Drive Log
             d_pth_above = bool(self.settings['export_log_above']['value'])
@@ -1249,8 +1261,11 @@ class Sequencer(object):
             elif d_pth_above:
                 d_export_root = one_above
             d_export_root += self.static_keywords['package_name']
+            d_export_root += '_log'
+
             self.export_spreadsheet(d_export_root, d_do_excel, d_do_csv,
-                                    self.table_log, self.column_titles_log)
+                                    self.table_log, self.column_titles_log,
+                                    column_width_log)
 
             # Text
             t_pth_above = bool(self.settings['text_above']['value'])
@@ -1268,7 +1283,10 @@ class Sequencer(object):
                 with open(t_export_root, 'w') as f:
                     f.write(self.table_txt)
 
-    def export_spreadsheet(self, export_root, do_excel, do_csv, table, titles):
+    def export_spreadsheet(self, export_root, do_excel, do_csv,
+                           table, titles, column_widths=None):
+
+        pprint.pprint(column_widths)
 
         _excel = 0.15
         if table and titles:
@@ -1276,9 +1294,18 @@ class Sequencer(object):
             if do_excel:
                 workbook = xlsxwriter.Workbook(export_root + '.xlsx')
                 worksheet = workbook.add_worksheet()
+                cnt = -1
                 for column_number, one_column in enumerate(
                         titles):
-                    worksheet.set_column(column_number, column_number)
+                    cnt += 1
+                    if column_widths:
+                        worksheet.set_column(
+                            column_number,
+                            column_number,
+                            column_widths[cnt] * _excel
+                        )
+                    else:
+                        worksheet.set_column(column_number, column_number)
                     worksheet.write(0, column_number, one_column)
                 for row, line in enumerate(table):
                     for column_number, one_column in enumerate(

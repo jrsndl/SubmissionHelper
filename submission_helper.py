@@ -3,14 +3,18 @@ import os
 import subprocess
 import inspect
 from functools import partial
+import xlsxwriter
 import logging
 import time
 
 from PySide2 import QtCore, QtGui, QtWidgets
+
 from ui_Submission import Ui_submission
+
 from sequencer import Sequencer
 from settings import Settings
 import parse_file_name
+import pprint
 
 
 class ImgWidget1(QtWidgets.QLabel):
@@ -101,8 +105,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.name_version_letters_uppercase.clicked.connect(
             partial(self.handler,
                     'name_version_letters_uppercase', 'package_rename'))
-        self.ui.name_rename.clicked.connect(
-            partial(self.handler, 'name_rename', 'package_rename'))
+        self.ui.name_from_template.clicked.connect(
+            partial(self.handler, 'name_from_template', 'package_rename'))
+        self.ui.name_from_folder.clicked.connect(
+            partial(self.handler, 'name_from_folder', 'package_rename'))
+
+        self.ui.name_rename_auto.clicked.connect(
+            partial(self.handler, 'name_rename_auto', 'package_rename'))
         self.ui.name_rename_auto.clicked.connect(
             partial(self.handler, 'name_rename_auto', 'package_rename'))
 
@@ -363,6 +372,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'save_preset_text', 'save_presets'))
         self.ui.save_preset_button.clicked.connect(
             partial(self.handler, 'save_preset_button', 'save_presets'))
+        self.ui.preset_explore.clicked.connect(
+            partial(self.handler, 'preset_explore', 'preset_explore'))
 
         # GO button
         self.ui.write_button.clicked.connect(
@@ -419,7 +430,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.show_all()
 
         if sender == 'write_button':
-            self.data.export_all()
+            # read column widths from tablewidget for excel column sizes
+            # there is no way to change excel column sizes by content
+            column_widths_sub = []
+            for column_number, one_column in enumerate(self.data.column_titles_sub):
+                column_widths_sub.append(
+                    (float(self.ui.sub_table.columnWidth(column_number))))
+            column_widths_log = []
+            for column_number, one_column in enumerate(self.data.column_titles_log):
+                column_widths_log.append(
+                    (float(self.ui.log_table.columnWidth(column_number))))
+
+            self.data.export_all(column_widths_sub, column_widths_log)
+
+        if sender == 'preset_explore':
+            self.expore_local_presets()
 
         if group == 'save_presets':
             preset_name = str(self.ui.save_preset_name.displayText())
@@ -514,6 +539,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             dir_name.replace('\\', '/')
         return dir_name
 
+    def expore_local_presets(self):
+        """
+        Open user presets button
+        :return:
+        """
+        self.explore(self.settings_obj.get_user_settings_path())
+
     def go_button(self):
 
         log.debug('-> save_submission')
@@ -560,6 +592,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                         log.error("can't display table row")
             table_ui.resizeColumnsToContents()
             table_ui.resizeRowsToContents()
+
+    def clear_all_tables(self):
+        """
+        table data to ui
+        """
+        self.ui.sub_table.setRowCount(0)
+        self.ui.log_table.setRowCount(0)
+        self.ui.txt_table.setPlainText('')
 
     def settings_update_dropbox(self):
         self.ui.load_preset_combobox.blockSignals(True)
@@ -664,6 +704,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             'load_preset_combobox',
             'save_preset_name'
         ]
+        # indicate to user that reload or browse for package folder is needed
+        self.clear_all_tables()
 
         # Restore main window geometry only if it is app start, not preset load
         if self.ui_start:
