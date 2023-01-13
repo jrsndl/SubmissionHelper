@@ -4132,7 +4132,7 @@ class Ui_submission(object):
         self.package_explore_2.setDefault(True)
         self.package_browse_2.setDefault(True)
         self.prefs_frame_rate.setCurrentIndex(1)
-        self.BottomTab.setCurrentIndex(2)
+        self.BottomTab.setCurrentIndex(0)
         self.write_button.setDefault(True)
         self.reload.setDefault(True)
 

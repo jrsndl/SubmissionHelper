@@ -5,6 +5,7 @@ import inspect
 from functools import partial
 import logging
 import time
+import getpass
 
 from PySide2 import QtCore, QtGui, QtWidgets
 
@@ -431,15 +432,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             # read column widths from tablewidget for excel column sizes
             # there is no way to change excel column sizes by content
             column_widths_sub = []
-            for column_number, one_column in enumerate(self.data.column_titles_sub):
-                column_widths_sub.append(
-                    (float(self.ui.sub_table.columnWidth(column_number))))
-            column_widths_log = []
-            for column_number, one_column in enumerate(self.data.column_titles_log):
-                column_widths_log.append(
-                    (float(self.ui.log_table.columnWidth(column_number))))
+            if self.data and self.data.column_titles_sub:
+                for column_number, one_column in enumerate(self.data.column_titles_sub):
+                    column_widths_sub.append(
+                        (float(self.ui.sub_table.columnWidth(column_number))))
+                column_widths_log = []
+                for column_number, one_column in enumerate(self.data.column_titles_log):
+                    column_widths_log.append(
+                        (float(self.ui.log_table.columnWidth(column_number))))
 
-            self.data.export_all(column_widths_sub, column_widths_log)
+                self.data.export_all(column_widths_sub, column_widths_log)
 
         if sender == 'preset_explore':
             self.expore_local_presets()
@@ -595,9 +597,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         """
         table data to ui
         """
+        self.ui.sub_table.clear()
         self.ui.sub_table.setRowCount(0)
+        self.ui.log_table.clear()
         self.ui.log_table.setRowCount(0)
         self.ui.txt_table.setPlainText('')
+
+        # set go to gray
+        self.ui.write_button.setStyleSheet("""
+                QPushButton {background:rgb(81,81,81); color: white;} 
+            """)
+
 
     def settings_update_dropbox(self):
         self.ui.load_preset_combobox.blockSignals(True)
@@ -805,10 +815,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 elif one_setting["category"] == "combobox":
                     pass
 
+    def get_user_name(self):
+        return getpass.getuser()
+
     def closeEvent(self, event):
         self.settings_from_gui()
         self.settings_obj.settings = self.settings
-        self.settings_obj.write('last')
+        self.settings_obj.write('last_' + self.get_user_name())
         log.info('Finished')
         # prevents second call
         sys.exit()
@@ -826,7 +839,7 @@ if __name__ == "__main__":
 
 
     # Settings
-    settings_obj = Settings("last")
+    settings_obj = Settings('last_' + getpass.getuser())
 
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle("Plastique")

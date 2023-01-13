@@ -16,9 +16,32 @@ class Settings(object):
         self.preset_names = []
         self.current_settings_name = ""
 
+        self.install_settings = None
+        self.read_install()
+
         # start by reading last settings
         self.find_all()
         self.read(name)
+
+    def read_install(self):
+
+        pth = self._get_script_path() + '/install.json'
+        try:
+            with open(pth, 'r') as json_data:
+                self.install_settings = json.load(json_data)
+
+            # replace relative path in ffprobe path
+            if self.install_settings is not None:
+                if self.install_settings['ffprobe_path']:
+                    if self.install_settings['ffprobe_path'].startswith('./'):
+                        _p = self._get_script_path() + self.install_settings[
+                                                           'ffprobe_path'][1:]
+                        self.install_settings['ffprobe_path'] = _p
+
+        except IOError:
+            # no prefs found
+            self.log.error("-> Error opening install prefs file {}".format(
+                str(pth)))
 
     def read(self, name):
         """
@@ -55,6 +78,16 @@ class Settings(object):
                 self.log.error("-> error opening prefs file {}"
                                .format(str(prefs_path)))
 
+    def get_global_settings_path(self):
+        _p = None
+        if self.install_settings is not None:
+            if bool(self.install_settings['global_prefs_enabled']):
+                if self.install_settings['global_prefs_path']:
+                    if os.path.exists(
+                            self.install_settings['global_prefs_path']):
+                                _p = self.install_settings['global_prefs_path']
+        return _p
+
     def write(self, name):
         """
         Writes self.settings to hdd as json
@@ -62,8 +95,13 @@ class Settings(object):
 
         self.log.debug('-> gui_write_preferences')
         name_json = name + '.json'
-        prefs_path = os.path.join(
-            self.get_user_settings_path(), name_json).replace('\\', '/')
+
+        _gsp = self.get_global_settings_path()
+        if _gsp:
+            prefs_path = os.path.join(_gsp, name_json).replace('\\', '/')
+        else:
+            prefs_path = os.path.join(
+                self.get_user_settings_path(), name_json).replace('\\', '/')
         if not os.path.exists(os.path.dirname(prefs_path)):
             os.makedirs(os.path.dirname(prefs_path))
         with open(prefs_path, 'w') as outfile:
@@ -83,8 +121,16 @@ class Settings(object):
         :return:
         self.preset_names
         """
-        all_files = self._find_in_dir(self._get_script_path())
-        all_files += self._find_in_dir(self.get_user_settings_path())
+
+        # local prefs path
+        all_files = self._find_in_dir(self.get_user_settings_path())
+        _gsp = self.get_global_settings_path()
+        if _gsp:
+            # replace by global prefs path
+            all_files = self._find_in_dir(_gsp)
+            self.log.debug('-> reading prefs from global prefs folder')
+        # always add app root path
+        all_files += self._find_in_dir(self._get_script_path())
         all_files.sort()
         self.preset_names = []
         for one_file in all_files:
@@ -122,5 +168,6 @@ class Settings(object):
             return files
         for one_file in os.listdir(_dir):
             if one_file.endswith(".json"):
-                files.append(_dir + '/' + one_file)
+                if one_file != 'install.json':
+                    files.append(_dir + '/' + one_file)
         return files
