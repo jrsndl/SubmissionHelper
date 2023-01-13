@@ -84,7 +84,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.package_browse.clicked.connect(
             partial(self.handler, 'package_browse', 'browse'))
         self.ui.package_explore.clicked.connect(
-            partial(self.handler, 'shot_explore', 'explore'))
+            partial(self.handler, 'package_explore', 'explore'))
         self.ui.reload.clicked.connect(
             partial(self.handler, 'package_reload', 'source_change'))
 
@@ -446,6 +446,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         if sender == 'preset_explore':
             self.expore_local_presets()
 
+        if sender == 'package_explore':
+            self.expore_package()
+
         if group == 'save_presets':
             preset_name = str(self.ui.save_preset_name.displayText())
             if preset_name and preset_name != '':
@@ -519,7 +522,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             if platform == 'win':
                 if os.path.isdir(path):
                     path = path + '/'
-                subprocess.Popen('explorer /select,  \"' + path.replace('/', '\\') + '\"')
+                subprocess.Popen('explorer /root,  \"' + path.replace('/', '\\') + '\"')
             if platform == 'mac':
                 subprocess.call(['open', "-R", path])
             if platform == 'nix':
@@ -544,7 +547,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         Open user presets button
         :return:
         """
-        self.explore(self.settings_obj.get_user_settings_path())
+        self.explore(self.settings_obj.get_settings_path())
+
+    def expore_package(self):
+        _p = str(self.settings['package_folder']['value'])
+        if _p:
+            self.explore(_p.replace('\\', '/'))
+
+
 
     def go_button(self):
 
@@ -821,7 +831,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
     def closeEvent(self, event):
         self.settings_from_gui()
         self.settings_obj.settings = self.settings
-        self.settings_obj.write('last_' + self.get_user_name())
+        _last_prefs = 'last_' + self.get_user_name()
+        self.settings_obj.write(_last_prefs)
+        log.info('Writing {}'.format(_last_prefs))
         log.info('Finished')
         # prevents second call
         sys.exit()

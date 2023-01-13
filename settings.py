@@ -53,12 +53,14 @@ class Settings(object):
         self.log.debug('-> settings_read')
         name_json = name + '.json'
 
-        # try both possible prefs locations
-        prefs_path = os.path.join(
-            self.get_user_settings_path(), name_json).replace('\\', '/')
-        if not os.path.exists(prefs_path):
+        _gsp = self.get_settings_path()
+        prefs_path = None
+        if _gsp:
+            prefs_path = os.path.join(_gsp, name_json).replace('\\', '/')
+        if not prefs_path:
             prefs_path = os.path.join(
                 self._get_script_path(), name_json).replace('\\', '/')
+
         if os.path.exists(prefs_path):
             self.log.debug("Reading settings from {}".format(prefs_path))
             try:
@@ -78,16 +80,6 @@ class Settings(object):
                 self.log.error("-> error opening prefs file {}"
                                .format(str(prefs_path)))
 
-    def get_global_settings_path(self):
-        _p = None
-        if self.install_settings is not None:
-            if bool(self.install_settings['global_prefs_enabled']):
-                if self.install_settings['global_prefs_path']:
-                    if os.path.exists(
-                            self.install_settings['global_prefs_path']):
-                                _p = self.install_settings['global_prefs_path']
-        return _p
-
     def write(self, name):
         """
         Writes self.settings to hdd as json
@@ -96,14 +88,13 @@ class Settings(object):
         self.log.debug('-> gui_write_preferences')
         name_json = name + '.json'
 
-        _gsp = self.get_global_settings_path()
+        _gsp = self.get_settings_path()
         if _gsp:
             prefs_path = os.path.join(_gsp, name_json).replace('\\', '/')
-        else:
-            prefs_path = os.path.join(
-                self.get_user_settings_path(), name_json).replace('\\', '/')
+
         if not os.path.exists(os.path.dirname(prefs_path)):
             os.makedirs(os.path.dirname(prefs_path))
+
         with open(prefs_path, 'w') as outfile:
             json.dump(
                 self.settings,
@@ -155,6 +146,25 @@ class Settings(object):
             appdata = os.path.join(appdata, self.app_name)
             appdata = appdata.replace('\\', '/')
         return appdata
+
+    def get_global_settings_path(self):
+        _p = None
+        if self.install_settings is not None:
+            if bool(self.install_settings['global_prefs_enabled']):
+                if self.install_settings['global_prefs_path']:
+                    if os.path.exists(
+                            self.install_settings['global_prefs_path']):
+                                _p = self.install_settings['global_prefs_path']
+                                _p + _p.replace('\\', '/')
+        return _p
+
+    def get_settings_path(self):
+        self.get_global_settings_path()
+        if self.get_global_settings_path():
+            return self.get_global_settings_path()
+        else:
+            return self.get_user_settings_path()
+
 
     @staticmethod
     def _find_in_dir(dir_path):
