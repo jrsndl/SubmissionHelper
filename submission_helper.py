@@ -1,3 +1,5 @@
+import pprint
+
 import sys
 import os
 import subprocess
@@ -591,6 +593,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             table_ui.setRowCount(len(table))
 
             for row, line in enumerate(table):
+                # set row color by check list
+                color = 'white'
+                one_item = line[-1]
+
                 for column_number, one_column in enumerate(titles):
                     my_title = str(one_column).lstrip().rstrip()
                     try:
@@ -600,8 +606,30 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                                          )
                     except:
                         log.error("can't display table row")
+
+                    #colorize
+                    itm = table_ui.item(row, column_number)
+                    color = 'white'
+                    _size_warning = one_item.get('size_warning', '')
+                    if _size_warning != '':
+                        color = 'red'
+                    if itm:
+                        if color == 'green':
+                            itm.setBackground(QtGui.QColor('darkgreen'))
+                        elif color == 'orange':
+                            itm.setBackground(QtGui.QColor('sienna'))
+                        elif color == 'red':
+                            itm.setBackground(QtGui.QColor('maroon'))
+                        elif color == 'purple':
+                            itm.setBackground(QtGui.QColor('purple'))
+                        else:
+                            # white
+                            itm.setBackground(QtGui.QColor("#4d4d4d"))
+
+
             table_ui.resizeColumnsToContents()
             table_ui.resizeRowsToContents()
+
 
     def clear_all_tables(self):
         """
@@ -711,6 +739,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 _b = True
             elif my_str == "False":
                 _b = False
+            if my_str == "true":
+                _b = True
+            elif my_str == "false":
+                _b = False
             else:
                 _b = bool(my_str)
             return _b
@@ -770,7 +802,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 try:
                     if one_setting['value']:
                         # restore checkbox
-                        obj.setChecked(str_to_bool(one_setting['value']))
+                        obj.setChecked(True)
+                    else:
+                        obj.setChecked(False)
                 except:
                     logging.error("Error restoring QCheckBox {}".format(
                         str(obj.objectName())))

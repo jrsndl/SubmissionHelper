@@ -61,6 +61,11 @@ class Settings(object):
             prefs_path = os.path.join(
                 self._get_script_path(), name_json).replace('\\', '/')
 
+        if not os.path.exists(prefs_path):
+            self.log.warning("{} settings file not found, trying default."
+                             .format(str(name_json)))
+            prefs_path = self._get_script_path() + '/default.json'
+
         if os.path.exists(prefs_path):
             self.log.debug("Reading settings from {}".format(prefs_path))
             try:
@@ -72,13 +77,8 @@ class Settings(object):
                 self.log.error("-> Error opening prefs file {}".format(
                     str(prefs_path)))
         else:
-            if name_json != 'default':
-                self.log.warning("-> {} settings file not found"
-                                 .format(str(name_json)))
-                self.read('default')
-            else:
-                self.log.error("-> error opening prefs file {}"
-                               .format(str(prefs_path)))
+            self.log.error("-> error opening prefs file {}"
+                           .format(str(prefs_path)))
 
     def write(self, name):
         """
@@ -129,10 +129,15 @@ class Settings(object):
                 os.path.splitext(os.path.basename(one_file))[0])
         self.preset_names.sort()
 
-    @staticmethod
-    def _get_script_path():
+    def _get_script_path(self):
+
+        pth = os.path.abspath(os.path.dirname(__file__)).replace("\\", "/")
+        self.log.debug('-> App Location: {}'.format(pth))
+        return pth
+        """
         return os.path.dirname(
             os.path.abspath(inspect.stack()[-1][1])).replace("\\", "/")
+        """
 
     def get_user_settings_path(self):
         if sys.platform.startswith('darvin'):

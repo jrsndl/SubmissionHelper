@@ -64,7 +64,7 @@ class MetaData(object):
             'meta_fps_b': str(self.meta['fps_b']),
             'meta_fps_raw': self.meta['fps_raw'],
             'meta_duration_frames': str(self.meta['duration_frames']),
-            'meta_duration_frames_slate': str(self.meta['duration_frames_slate']),
+            'meta_duration_frames_slate': str(self.meta.get('duration_frames_slate', '')),
             'meta_duration_secs': str(self.meta['duration_secs']),
             'meta_bitrate_video': str(self.meta['bitrate_video']),
             'meta_aspect': str(self.meta['aspect']),
@@ -90,10 +90,10 @@ class MetaData(object):
             'meta_audio_present': str(self.meta['audio_present']),
             'meta_data_present': str(self.meta['data_present']),
             'meta_is_log': str(self.meta['is_log']),
-            'meta_frame_start_from_tc': str(self.meta['frame_start_from_tc']),
-            'meta_frame_start_from_tc_slate': str(self.meta['frame_start_from_tc_slate']),
-            'meta_frame_end_from_tc': str(self.meta['frame_end_from_tc']),
-            'meta_frame_end_from_tc_slate': str(self.meta['frame_end_from_tc_slate']),
+            'meta_frame_start_from_tc': str(self.meta.get('frame_start_from_tc', '')),
+            'meta_frame_start_from_tc_slate': str(self.meta.get('frame_start_from_tc_slate', '')),
+            'meta_frame_end_from_tc': str(self.meta.get('frame_end_from_tc', '')),
+            'meta_frame_end_from_tc_slate': str(self.meta.get('frame_end_from_tc_slate', '')),
         }
 
         return meta_data

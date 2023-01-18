@@ -40,7 +40,7 @@ class Sequencer(object):
         if os.path.exists(self.in_path):
             self.read_files()
             self.transform_data()
-            #pprint.pprint(self.merged_list)
+            pprint.pprint(self.merged_list)
 
             # logging.debug('-> Sequencer Init')
 
@@ -148,17 +148,42 @@ class Sequencer(object):
                 dif.append(float(one)/float(med))
             return dif
 
-        def get_big_devs(difs, treshold=0.3):
+        def get_big_devs(difs, treshold=0.3, start = 0):
             dif = []
             low = 1.0 - treshold
             high = 1.0 + treshold
             for one in difs:
                 if one < low or one > high:
-                    dif.append(one)
+                    dif.append(start)
+                start += 1
             return dif
 
         self.output['status'] = "Getting file sizes" \
                                 " (get_file_sizes)"
+
+        _consistency = True
+        _holes = True
+        _sizes = True
+        _ignore_first = 1
+        _neighbrs = 2
+        _tresh = 0.3
+        if self.settings:
+            if self.settings['check_sequence_size_consistency']['value']:
+                _consistency = bool(self.settings['check_sequence_size_consistency']['value'])
+            if self.settings['check_sequence_holes']['value']:
+                _holes = bool(self.settings['check_sequence_holes']['value'])
+            if self.settings['prefs_size_scan']['value']:
+                _sizes = bool(self.settings['prefs_size_scan']['value'])
+            if self.settings['prefs_size_ignore_first']['value']:
+                _ignore_first = int(self.settings['prefs_size_ignore_first']['value'])
+            if self.settings['prefs_size_neighborhood']['value']:
+                _neighbrs = int(self.settings['prefs_size_neighborhood']['value'])
+            if self.settings['prefs_size_threshold']['value']:
+                _tresh = float(int(self.settings['prefs_size_threshold']['value']))*0.01
+
+        # end this if sizes should not be worked on
+        if not _sizes:
+            return
 
         if self.merged_list is not None and len(self.merged_list) > 0:
             for one_item in self.merged_list:
@@ -177,47 +202,95 @@ class Sequencer(object):
                     # calculate sequence size
                     my_size = 0
                     sizes = []
+                    zero_size = []
                     for one_frame in range(start, end):
                         one_file = one_pth + '/' + clean + str(one_frame).zfill(pad) + ext
                         try:
                             stat_info = os.stat(one_file)
+                            one_size = stat_info.st_size
                             # size in bytes
-                            my_size = my_size + stat_info.st_size
-                            if my_size == 0:
-                                one_item['size_warning'] = 'file has zero size'
-                            sizes.append(stat_info.st_size)
+                            my_size = my_size + one_size
+                            if one_size == 0:
+                                zero_size.append(one_frame)
+                            sizes.append(one_size)
                         except:
                             pass
 
                     if sizes is not None and len(sizes) > 0:
-                        # warn if files are missing
-                        missing = len(one_item['missing_numbers'])
-                        if missing > 0:
-                            if one_item['size_warning'] == "":
-                                one_item['size_warning'] = str(missing) + " missing files"
-                            else:
-                                one_item['size_warning'] += ", " + str(missing) + " missing files"
-
-                        # analyze sizes
-                        size_median = median(sizes)
-                        size_differences = median_difference(sizes, size_median)
-                        # consider 30% difference as big
-                        big_deviations = get_big_devs(size_differences, 0.3)
-                        # warn if 5 or more files differ greatly in size
-                        if len(big_deviations) > 4:
-                            if one_item['size_warning'] == '':
-                                one_item['size_warning'] = str(len(big_deviations)) + ' files greatly differs in size'
-                            else:
-                                one_item['size_warning'] += ', ' + str(len(big_deviations)) + ' files greatly differs in size'
 
                         one_item['size_bytes'] = my_size
-                        one_item['size_human'] = helpers.humanize_file_size(my_size)
+                        one_item['size_human'] = helpers.humanize_file_size(
+                            my_size)
+
+                        # warn if files are missing
+                        empty = len(zero_size)
+                        if empty > 0:
+                            warn = one_item.get('size_warning', '')
+                            new_warn = "{} files have zero size: {}".format(
+                                str(len(zero_size)),
+                                zero_size
+                            )
+                            if warn == "":
+                                one_item['size_warning'] = new_warn
+                            else:
+                                one_item['size_warning'] += ", " + new_warn
+
+                        missing = len(one_item['missing_numbers'])
+                        if missing > 0:
+                            warn = one_item.get('size_warning', '')
+                            new_warn = "{} missing files: {}".format(
+                                str(missing),
+                                one_item['missing_numbers']
+                            )
+                            if warn == "":
+                                one_item['size_warning'] = new_warn
+                            else:
+                                one_item[
+                                    'size_warning'] += ", " + new_warn
+
+                        # analyze sizes
+                        if _consistency:
+                            # trim out frames to be ignored
+                            # this is done for slates, they are often small
+                            sizes = sizes[_ignore_first:]
+                            start = start + _ignore_first
+
+                            # add the last item neighbor times
+                            _s = sizes
+                            if _neighbrs > 0:
+                                _st = [sizes[0] for i in range(_neighbrs)]
+                                _end = [sizes[-1] for i in range(_neighbrs)]
+                                _s = _st + sizes + _end
+
+                            inconsistent = []
+                            itms = 2 * _neighbrs + 1
+                            for cnt in range(_neighbrs, len(_s)-_neighbrs-1):
+                                all_neighbrs = 0
+                                for i in range(cnt - _neighbrs, cnt + _neighbrs):
+                                    all_neighbrs += _s[i]
+                                average = float(all_neighbrs / itms)
+
+                                _diff = float(_s[cnt] / average)
+                                if _diff < 1:
+                                    _diff += 1
+                                _diff -= 1
+                                if _diff > _tresh:
+                                    inconsistent.append(cnt+start)
+                            if len(inconsistent) > 0:
+                                warn = one_item.get('size_warning', '')
+                                new_warn = "{} file sizes greatly differ: {}"\
+                                    .format(str(len(inconsistent)),
+                                            str(inconsistent))
+                                if warn == '':
+                                    one_item['size_warning'] = new_warn
+                                else:
+                                    one_item['size_warning'] += ', ' + new_warn
                 else:
                     # video (multiframe container)
                     try:
-                        statinfo = os.stat(one_item['path'])
+                        stat_info = os.stat(one_item['path'])
                         # size in bytes
-                        my_size = statinfo.st_size
+                        my_size = stat_info.st_size
                         one_item['size_bytes'] = my_size
                         one_item['size_human'] = helpers.humanize_file_size(my_size)
                         if my_size == 0:
@@ -362,6 +435,16 @@ class Sequencer(object):
 
                 prs['path_prs'] = prs.pop('path')  # path in one_dict shadows path from parse
                 onedict.update(prs)
+
+                numbered_parts = {}
+                for one_dir in range(-9, 0):
+                    try:
+                        numbered_parts['part' + str(-1 * one_dir)] = \
+                        prs['parts'][one_dir]
+                    except:
+                        numbered_parts['part' + str(-1 * one_dir)] = ''
+                onedict.update(numbered_parts)
+
                 output_list.append(onedict)
 
         return sorted(output_list, key=itemgetter('path'))
@@ -448,6 +531,16 @@ class Sequencer(object):
 
                 prs['path_prs'] = prs.pop('path') # path in one_dict shadows path from parse
                 onedict.update(prs)
+
+                numbered_parts = {}
+                for one_dir in range(-9, 0):
+                    try:
+                        numbered_parts['part' + str(-1 * one_dir)] = \
+                            prs['parts'][one_dir]
+                    except:
+                        numbered_parts['part' + str(-1 * one_dir)] = ''
+                onedict.update(numbered_parts)
+
                 output_list.append(onedict)
 
         return sorted(output_list, key=itemgetter('path'))
@@ -575,6 +668,7 @@ class Sequencer(object):
                 one_rec['category'] = 'still'
             elif one_rec['end_number'] == one_rec['start_number']:
                 one_rec['category'] = 'still'
+
             else:
                 # file name sequence
                 _range = str(one_rec['start_number']).zfill(parsed['padding']) \
@@ -592,6 +686,16 @@ class Sequencer(object):
                          "sequence_nuke": _sequence_nuke,
                          "sequence_slate_nuke": _sequence_slate_nuke,
                          }
+                one_rec.update(_more)
+
+            # fill sequence for still as well, for convenience
+            if one_rec['category'] == 'still':
+                _more = {
+                    "sequence": parsed['name'],
+                    "sequence_slate": parsed['name'],
+                    "sequence_nuke": parsed['name'],
+                    "sequence_slate_nuke": parsed['name'],
+                }
                 one_rec.update(_more)
 
             return one_rec
@@ -668,6 +772,14 @@ class Sequencer(object):
                                     'category': 'sequence'}
                     prs['path_prs'] = prs.pop('path')  # path in one_dict shadows path from parse
                     one_record.update(prs)
+                    numbered_parts = {}
+                    for one_dir in range(-9, 0):
+                        try:
+                            numbered_parts['part' + str(-1 * one_dir)] = prs['parts'][one_dir]
+                        except:
+                            numbered_parts['part' + str(-1 * one_dir)] = ''
+                    one_record.update(numbered_parts)
+
                     if mode == 'to_first_hole':
                         # seq can have holes, but only first sub is valid
                         one_record['start_number'] = frames[0]
@@ -855,6 +967,8 @@ class Sequencer(object):
                 key = self.settings[name_key]["value"]
                 name_pat = "parse_pattern_" + one
                 pat = self.settings[name_pat]["value"]
+                name_filter = "parse_filter_" + one
+                fltr = self.settings[name_filter]["value"]
                 try:
                     pat_compiled = re.compile(pat)
                     pat_valid = True
@@ -868,11 +982,13 @@ class Sequencer(object):
 
                 # only add regex if it is valid and not empty
                 if key and pat and src and pat_valid:
-                    one_regex = {key: {"pattern": pat,
+                    one_regex = {one: {"key": key,
+                                       "pattern": pat,
                                        "valid": pat_valid,
                                        "compiled": pat_compiled,
                                        "repl": rep,
-                                       "source": src
+                                       "source": src,
+                                       "filter": fltr
                                        }}
                     self.regexes.update(one_regex)
 
@@ -885,6 +1001,11 @@ class Sequencer(object):
         if self.merged_list and len(self.merged_list) > 0:
             for one_item in self.merged_list:
                 for k, one_regex in self.regexes.items():
+                    do_filter = False
+                    if one_regex['filter'] != '':
+                        if not (one_regex['filter'] in one_item['path']):
+                            continue
+                        do_filter = True
                     # expand keywords in source
                     try:
                         expanded = one_regex["source"].format(**one_item)
@@ -902,8 +1023,8 @@ class Sequencer(object):
                                 #LAMBDA!
                                 result = re.sub(one_regex["compiled"], eval(str(one_regex["repl"])), expanded)
                             else:
-                                #result = re.sub(one_regex["compiled"], one_regex["repl"], expanded)
-                                result = ""
+                                result = re.sub(one_regex["compiled"], one_regex["repl"], expanded)
+                                #result = ""
                         else:
                             m = one_regex["compiled"].search(expanded)
                             if m:
@@ -920,7 +1041,7 @@ class Sequencer(object):
                                 result = ""
                     else:
                         result = ""
-                    one_item.update({k: result})
+                    one_item.update({one_regex["key"]: result})
 
     def prepare_package_name(self):
 
