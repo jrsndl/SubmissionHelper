@@ -1051,7 +1051,7 @@ class Ui_submission(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, -10, 751, 311))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 751, 311))
         sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
@@ -1877,8 +1877,10 @@ class Ui_submission(object):
         self.verticalLayout_52.setObjectName(u"verticalLayout_52")
         self.verticalLayout_46 = QVBoxLayout()
         self.verticalLayout_46.setObjectName(u"verticalLayout_46")
-        self.verticalLayout_43 = QVBoxLayout()
-        self.verticalLayout_43.setObjectName(u"verticalLayout_43")
+        self.horizontalLayout_137 = QHBoxLayout()
+        self.horizontalLayout_137.setObjectName(u"horizontalLayout_137")
+        self.verticalLayout_44 = QVBoxLayout()
+        self.verticalLayout_44.setObjectName(u"verticalLayout_44")
         self.horizontalLayout_71 = QHBoxLayout()
         self.horizontalLayout_71.setObjectName(u"horizontalLayout_71")
         self.horizontalLayout_62 = QHBoxLayout()
@@ -1895,7 +1897,7 @@ class Ui_submission(object):
         self.side_folder.setObjectName(u"side_folder")
         sizePolicy1.setHeightForWidth(self.side_folder.sizePolicy().hasHeightForWidth())
         self.side_folder.setSizePolicy(sizePolicy1)
-        self.side_folder.setMinimumSize(QSize(300, 25))
+        self.side_folder.setMinimumSize(QSize(100, 25))
 
         self.horizontalLayout_62.addWidget(self.side_folder)
 
@@ -1908,7 +1910,7 @@ class Ui_submission(object):
         self.package_explore_2.setObjectName(u"package_explore_2")
         sizePolicy2.setHeightForWidth(self.package_explore_2.sizePolicy().hasHeightForWidth())
         self.package_explore_2.setSizePolicy(sizePolicy2)
-        self.package_explore_2.setMinimumSize(QSize(20, 25))
+        self.package_explore_2.setMinimumSize(QSize(30, 25))
         self.package_explore_2.setAutoFillBackground(False)
         self.package_explore_2.setIcon(icon1)
         self.package_explore_2.setFlat(True)
@@ -1919,8 +1921,8 @@ class Ui_submission(object):
         self.package_browse_2.setObjectName(u"package_browse_2")
         sizePolicy2.setHeightForWidth(self.package_browse_2.sizePolicy().hasHeightForWidth())
         self.package_browse_2.setSizePolicy(sizePolicy2)
-        self.package_browse_2.setMinimumSize(QSize(60, 25))
-        self.package_browse_2.setMaximumSize(QSize(60, 24))
+        self.package_browse_2.setMinimumSize(QSize(30, 25))
+        self.package_browse_2.setMaximumSize(QSize(20, 24))
         self.package_browse_2.setAutoFillBackground(False)
         self.package_browse_2.setIcon(icon)
         self.package_browse_2.setFlat(True)
@@ -1931,12 +1933,12 @@ class Ui_submission(object):
         self.horizontalLayout_71.addLayout(self.horizontalLayout_61)
 
 
-        self.verticalLayout_43.addLayout(self.horizontalLayout_71)
+        self.verticalLayout_44.addLayout(self.horizontalLayout_71)
 
+        self.horizontalLayout_136 = QHBoxLayout()
+        self.horizontalLayout_136.setObjectName(u"horizontalLayout_136")
         self.horizontalLayout_85 = QHBoxLayout()
         self.horizontalLayout_85.setObjectName(u"horizontalLayout_85")
-        self.horizontalLayout_84 = QHBoxLayout()
-        self.horizontalLayout_84.setObjectName(u"horizontalLayout_84")
         self.label_92 = QLabel(self.tab_13)
         self.label_92.setObjectName(u"label_92")
         sizePolicy2.setHeightForWidth(self.label_92.sizePolicy().hasHeightForWidth())
@@ -1944,7 +1946,7 @@ class Ui_submission(object):
         self.label_92.setMinimumSize(QSize(85, 25))
         self.label_92.setMaximumSize(QSize(80, 25))
 
-        self.horizontalLayout_84.addWidget(self.label_92)
+        self.horizontalLayout_85.addWidget(self.label_92)
 
         self.side_exclude = QLineEdit(self.tab_13)
         self.side_exclude.setObjectName(u"side_exclude")
@@ -1952,10 +1954,10 @@ class Ui_submission(object):
         self.side_exclude.setSizePolicy(sizePolicy1)
         self.side_exclude.setMinimumSize(QSize(80, 25))
 
-        self.horizontalLayout_84.addWidget(self.side_exclude)
+        self.horizontalLayout_85.addWidget(self.side_exclude)
 
 
-        self.horizontalLayout_85.addLayout(self.horizontalLayout_84)
+        self.horizontalLayout_136.addLayout(self.horizontalLayout_85)
 
         self.horizontalLayout_83 = QHBoxLayout()
         self.horizontalLayout_83.setObjectName(u"horizontalLayout_83")
@@ -1963,7 +1965,7 @@ class Ui_submission(object):
         self.label_93.setObjectName(u"label_93")
         sizePolicy2.setHeightForWidth(self.label_93.sizePolicy().hasHeightForWidth())
         self.label_93.setSizePolicy(sizePolicy2)
-        self.label_93.setMinimumSize(QSize(85, 25))
+        self.label_93.setMinimumSize(QSize(60, 25))
         self.label_93.setMaximumSize(QSize(80, 25))
 
         self.horizontalLayout_83.addWidget(self.label_93)
@@ -1977,25 +1979,70 @@ class Ui_submission(object):
         self.horizontalLayout_83.addWidget(self.side_include)
 
 
-        self.horizontalLayout_85.addLayout(self.horizontalLayout_83)
+        self.horizontalLayout_136.addLayout(self.horizontalLayout_83)
 
 
-        self.verticalLayout_43.addLayout(self.horizontalLayout_85)
+        self.verticalLayout_44.addLayout(self.horizontalLayout_136)
 
 
-        self.verticalLayout_46.addLayout(self.verticalLayout_43)
+        self.horizontalLayout_137.addLayout(self.verticalLayout_44)
 
-        self.verticalLayout_44 = QVBoxLayout()
-        self.verticalLayout_44.setObjectName(u"verticalLayout_44")
-        self.groupBox_11 = QGroupBox(self.tab_13)
-        self.groupBox_11.setObjectName(u"groupBox_11")
-        self.horizontalLayout_109 = QHBoxLayout(self.groupBox_11)
-        self.horizontalLayout_109.setObjectName(u"horizontalLayout_109")
-        self.horizontalLayout_96 = QHBoxLayout()
-        self.horizontalLayout_96.setObjectName(u"horizontalLayout_96")
+        self.side_copy = QPushButton(self.tab_13)
+        self.side_copy.setObjectName(u"side_copy")
+        sizePolicy2.setHeightForWidth(self.side_copy.sizePolicy().hasHeightForWidth())
+        self.side_copy.setSizePolicy(sizePolicy2)
+        self.side_copy.setMinimumSize(QSize(150, 60))
+
+        self.horizontalLayout_137.addWidget(self.side_copy)
+
+        self.verticalLayout_43 = QVBoxLayout()
+        self.verticalLayout_43.setObjectName(u"verticalLayout_43")
+        self.side_copywithgo = QCheckBox(self.tab_13)
+        self.side_copywithgo.setObjectName(u"side_copywithgo")
+
+        self.verticalLayout_43.addWidget(self.side_copywithgo)
+
+        self.horizontalLayout_84 = QHBoxLayout()
+        self.horizontalLayout_84.setObjectName(u"horizontalLayout_84")
+        self.side_sub_only = QRadioButton(self.tab_13)
+        self.side_sub_only.setObjectName(u"side_sub_only")
+        self.side_sub_only.setMinimumSize(QSize(120, 25))
+
+        self.horizontalLayout_84.addWidget(self.side_sub_only)
+
+        self.side_log_only = QRadioButton(self.tab_13)
+        self.side_log_only.setObjectName(u"side_log_only")
+        self.side_log_only.setMinimumSize(QSize(80, 25))
+
+        self.horizontalLayout_84.addWidget(self.side_log_only)
+
+        self.side_all = QRadioButton(self.tab_13)
+        self.side_all.setObjectName(u"side_all")
+        self.side_all.setMinimumSize(QSize(50, 25))
+
+        self.horizontalLayout_84.addWidget(self.side_all)
+
+
+        self.verticalLayout_43.addLayout(self.horizontalLayout_84)
+
+
+        self.horizontalLayout_137.addLayout(self.verticalLayout_43)
+
+
+        self.verticalLayout_46.addLayout(self.horizontalLayout_137)
+
+        self.line = QFrame(self.tab_13)
+        self.line.setObjectName(u"line")
+        self.line.setFrameShape(QFrame.HLine)
+        self.line.setFrameShadow(QFrame.Sunken)
+
+        self.verticalLayout_46.addWidget(self.line)
+
+        self.horizontalLayout_89 = QHBoxLayout()
+        self.horizontalLayout_89.setObjectName(u"horizontalLayout_89")
         self.horizontalLayout_86 = QHBoxLayout()
         self.horizontalLayout_86.setObjectName(u"horizontalLayout_86")
-        self.label_95 = QLabel(self.groupBox_11)
+        self.label_95 = QLabel(self.tab_13)
         self.label_95.setObjectName(u"label_95")
         sizePolicy2.setHeightForWidth(self.label_95.sizePolicy().hasHeightForWidth())
         self.label_95.setSizePolicy(sizePolicy2)
@@ -2003,7 +2050,7 @@ class Ui_submission(object):
 
         self.horizontalLayout_86.addWidget(self.label_95)
 
-        self.side_pattern_1 = QLineEdit(self.groupBox_11)
+        self.side_pattern_1 = QLineEdit(self.tab_13)
         self.side_pattern_1.setObjectName(u"side_pattern_1")
         sizePolicy1.setHeightForWidth(self.side_pattern_1.sizePolicy().hasHeightForWidth())
         self.side_pattern_1.setSizePolicy(sizePolicy1)
@@ -2012,11 +2059,11 @@ class Ui_submission(object):
         self.horizontalLayout_86.addWidget(self.side_pattern_1)
 
 
-        self.horizontalLayout_96.addLayout(self.horizontalLayout_86)
+        self.horizontalLayout_89.addLayout(self.horizontalLayout_86)
 
         self.horizontalLayout_87 = QHBoxLayout()
         self.horizontalLayout_87.setObjectName(u"horizontalLayout_87")
-        self.label_94 = QLabel(self.groupBox_11)
+        self.label_94 = QLabel(self.tab_13)
         self.label_94.setObjectName(u"label_94")
         sizePolicy2.setHeightForWidth(self.label_94.sizePolicy().hasHeightForWidth())
         self.label_94.setSizePolicy(sizePolicy2)
@@ -2024,7 +2071,7 @@ class Ui_submission(object):
 
         self.horizontalLayout_87.addWidget(self.label_94)
 
-        self.side_repl_1 = QLineEdit(self.groupBox_11)
+        self.side_repl_1 = QLineEdit(self.tab_13)
         self.side_repl_1.setObjectName(u"side_repl_1")
         sizePolicy1.setHeightForWidth(self.side_repl_1.sizePolicy().hasHeightForWidth())
         self.side_repl_1.setSizePolicy(sizePolicy1)
@@ -2034,11 +2081,11 @@ class Ui_submission(object):
         self.horizontalLayout_87.addWidget(self.side_repl_1)
 
 
-        self.horizontalLayout_96.addLayout(self.horizontalLayout_87)
+        self.horizontalLayout_89.addLayout(self.horizontalLayout_87)
 
         self.horizontalLayout_88 = QHBoxLayout()
         self.horizontalLayout_88.setObjectName(u"horizontalLayout_88")
-        self.label_96 = QLabel(self.groupBox_11)
+        self.label_96 = QLabel(self.tab_13)
         self.label_96.setObjectName(u"label_96")
         sizePolicy2.setHeightForWidth(self.label_96.sizePolicy().hasHeightForWidth())
         self.label_96.setSizePolicy(sizePolicy2)
@@ -2046,7 +2093,7 @@ class Ui_submission(object):
 
         self.horizontalLayout_88.addWidget(self.label_96)
 
-        self.side_match_1 = QLineEdit(self.groupBox_11)
+        self.side_match_1 = QLineEdit(self.tab_13)
         self.side_match_1.setObjectName(u"side_match_1")
         sizePolicy1.setHeightForWidth(self.side_match_1.sizePolicy().hasHeightForWidth())
         self.side_match_1.setSizePolicy(sizePolicy1)
@@ -2056,33 +2103,11 @@ class Ui_submission(object):
         self.horizontalLayout_88.addWidget(self.side_match_1)
 
 
-        self.horizontalLayout_96.addLayout(self.horizontalLayout_88)
-
-        self.horizontalLayout_89 = QHBoxLayout()
-        self.horizontalLayout_89.setObjectName(u"horizontalLayout_89")
-        self.side_copy_1 = QRadioButton(self.groupBox_11)
-        self.side_copy_1.setObjectName(u"side_copy_1")
-        sizePolicy2.setHeightForWidth(self.side_copy_1.sizePolicy().hasHeightForWidth())
-        self.side_copy_1.setSizePolicy(sizePolicy2)
-        self.side_copy_1.setMinimumSize(QSize(60, 25))
-        self.side_copy_1.setChecked(True)
-
-        self.horizontalLayout_89.addWidget(self.side_copy_1)
-
-        self.side_rename_1 = QRadioButton(self.groupBox_11)
-        self.side_rename_1.setObjectName(u"side_rename_1")
-        sizePolicy2.setHeightForWidth(self.side_rename_1.sizePolicy().hasHeightForWidth())
-        self.side_rename_1.setSizePolicy(sizePolicy2)
-        self.side_rename_1.setMinimumSize(QSize(70, 25))
-
-        self.horizontalLayout_89.addWidget(self.side_rename_1)
-
-
-        self.horizontalLayout_96.addLayout(self.horizontalLayout_89)
+        self.horizontalLayout_89.addLayout(self.horizontalLayout_88)
 
         self.horizontalLayout_90 = QHBoxLayout()
         self.horizontalLayout_90.setObjectName(u"horizontalLayout_90")
-        self.label_97 = QLabel(self.groupBox_11)
+        self.label_97 = QLabel(self.tab_13)
         self.label_97.setObjectName(u"label_97")
         sizePolicy2.setHeightForWidth(self.label_97.sizePolicy().hasHeightForWidth())
         self.label_97.setSizePolicy(sizePolicy2)
@@ -2090,7 +2115,7 @@ class Ui_submission(object):
 
         self.horizontalLayout_90.addWidget(self.label_97)
 
-        self.side_dest_1 = QLineEdit(self.groupBox_11)
+        self.side_dest_1 = QLineEdit(self.tab_13)
         self.side_dest_1.setObjectName(u"side_dest_1")
         sizePolicy1.setHeightForWidth(self.side_dest_1.sizePolicy().hasHeightForWidth())
         self.side_dest_1.setSizePolicy(sizePolicy1)
@@ -2100,231 +2125,173 @@ class Ui_submission(object):
         self.horizontalLayout_90.addWidget(self.side_dest_1)
 
 
-        self.horizontalLayout_96.addLayout(self.horizontalLayout_90)
+        self.horizontalLayout_89.addLayout(self.horizontalLayout_90)
+
+        self.horizontalLayout_93 = QHBoxLayout()
+        self.horizontalLayout_93.setObjectName(u"horizontalLayout_93")
+        self.label_98 = QLabel(self.tab_13)
+        self.label_98.setObjectName(u"label_98")
+        sizePolicy2.setHeightForWidth(self.label_98.sizePolicy().hasHeightForWidth())
+        self.label_98.setSizePolicy(sizePolicy2)
+        self.label_98.setMinimumSize(QSize(35, 25))
+
+        self.horizontalLayout_93.addWidget(self.label_98)
+
+        self.side_filter_1 = QLineEdit(self.tab_13)
+        self.side_filter_1.setObjectName(u"side_filter_1")
+        sizePolicy1.setHeightForWidth(self.side_filter_1.sizePolicy().hasHeightForWidth())
+        self.side_filter_1.setSizePolicy(sizePolicy1)
+        self.side_filter_1.setMinimumSize(QSize(50, 25))
+        self.side_filter_1.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_93.addWidget(self.side_filter_1)
 
 
-        self.horizontalLayout_109.addLayout(self.horizontalLayout_96)
+        self.horizontalLayout_89.addLayout(self.horizontalLayout_93)
 
 
-        self.verticalLayout_44.addWidget(self.groupBox_11)
+        self.verticalLayout_46.addLayout(self.horizontalLayout_89)
 
-        self.groupBox_19 = QGroupBox(self.tab_13)
-        self.groupBox_19.setObjectName(u"groupBox_19")
-        self.horizontalLayout_110 = QHBoxLayout(self.groupBox_19)
-        self.horizontalLayout_110.setObjectName(u"horizontalLayout_110")
-        self.horizontalLayout_103 = QHBoxLayout()
-        self.horizontalLayout_103.setObjectName(u"horizontalLayout_103")
-        self.horizontalLayout_104 = QHBoxLayout()
-        self.horizontalLayout_104.setObjectName(u"horizontalLayout_104")
-        self.label_106 = QLabel(self.groupBox_19)
-        self.label_106.setObjectName(u"label_106")
-        sizePolicy2.setHeightForWidth(self.label_106.sizePolicy().hasHeightForWidth())
-        self.label_106.setSizePolicy(sizePolicy2)
-        self.label_106.setMinimumSize(QSize(50, 25))
+        self.horizontalLayout_94 = QHBoxLayout()
+        self.horizontalLayout_94.setObjectName(u"horizontalLayout_94")
+        self.horizontalLayout_95 = QHBoxLayout()
+        self.horizontalLayout_95.setObjectName(u"horizontalLayout_95")
+        self.label_99 = QLabel(self.tab_13)
+        self.label_99.setObjectName(u"label_99")
+        sizePolicy2.setHeightForWidth(self.label_99.sizePolicy().hasHeightForWidth())
+        self.label_99.setSizePolicy(sizePolicy2)
+        self.label_99.setMinimumSize(QSize(50, 25))
 
-        self.horizontalLayout_104.addWidget(self.label_106)
+        self.horizontalLayout_95.addWidget(self.label_99)
 
-        self.side_pattern_4 = QLineEdit(self.groupBox_19)
-        self.side_pattern_4.setObjectName(u"side_pattern_4")
-        sizePolicy1.setHeightForWidth(self.side_pattern_4.sizePolicy().hasHeightForWidth())
-        self.side_pattern_4.setSizePolicy(sizePolicy1)
-        self.side_pattern_4.setMinimumSize(QSize(50, 25))
+        self.side_pattern_2 = QLineEdit(self.tab_13)
+        self.side_pattern_2.setObjectName(u"side_pattern_2")
+        sizePolicy1.setHeightForWidth(self.side_pattern_2.sizePolicy().hasHeightForWidth())
+        self.side_pattern_2.setSizePolicy(sizePolicy1)
+        self.side_pattern_2.setMinimumSize(QSize(50, 25))
 
-        self.horizontalLayout_104.addWidget(self.side_pattern_4)
+        self.horizontalLayout_95.addWidget(self.side_pattern_2)
 
 
-        self.horizontalLayout_103.addLayout(self.horizontalLayout_104)
+        self.horizontalLayout_94.addLayout(self.horizontalLayout_95)
 
-        self.horizontalLayout_105 = QHBoxLayout()
-        self.horizontalLayout_105.setObjectName(u"horizontalLayout_105")
-        self.label_107 = QLabel(self.groupBox_19)
-        self.label_107.setObjectName(u"label_107")
-        sizePolicy2.setHeightForWidth(self.label_107.sizePolicy().hasHeightForWidth())
-        self.label_107.setSizePolicy(sizePolicy2)
-        self.label_107.setMinimumSize(QSize(30, 25))
+        self.horizontalLayout_96 = QHBoxLayout()
+        self.horizontalLayout_96.setObjectName(u"horizontalLayout_96")
+        self.label_100 = QLabel(self.tab_13)
+        self.label_100.setObjectName(u"label_100")
+        sizePolicy2.setHeightForWidth(self.label_100.sizePolicy().hasHeightForWidth())
+        self.label_100.setSizePolicy(sizePolicy2)
+        self.label_100.setMinimumSize(QSize(30, 25))
 
-        self.horizontalLayout_105.addWidget(self.label_107)
+        self.horizontalLayout_96.addWidget(self.label_100)
 
-        self.side_repl_4 = QLineEdit(self.groupBox_19)
-        self.side_repl_4.setObjectName(u"side_repl_4")
-        sizePolicy1.setHeightForWidth(self.side_repl_4.sizePolicy().hasHeightForWidth())
-        self.side_repl_4.setSizePolicy(sizePolicy1)
-        self.side_repl_4.setMinimumSize(QSize(50, 25))
-        self.side_repl_4.setMaximumSize(QSize(1600, 16777215))
+        self.side_repl_2 = QLineEdit(self.tab_13)
+        self.side_repl_2.setObjectName(u"side_repl_2")
+        sizePolicy1.setHeightForWidth(self.side_repl_2.sizePolicy().hasHeightForWidth())
+        self.side_repl_2.setSizePolicy(sizePolicy1)
+        self.side_repl_2.setMinimumSize(QSize(50, 25))
+        self.side_repl_2.setMaximumSize(QSize(1600, 16777215))
 
-        self.horizontalLayout_105.addWidget(self.side_repl_4)
-
-
-        self.horizontalLayout_103.addLayout(self.horizontalLayout_105)
-
-        self.horizontalLayout_106 = QHBoxLayout()
-        self.horizontalLayout_106.setObjectName(u"horizontalLayout_106")
-        self.label_108 = QLabel(self.groupBox_19)
-        self.label_108.setObjectName(u"label_108")
-        sizePolicy2.setHeightForWidth(self.label_108.sizePolicy().hasHeightForWidth())
-        self.label_108.setSizePolicy(sizePolicy2)
-        self.label_108.setMinimumSize(QSize(75, 25))
-
-        self.horizontalLayout_106.addWidget(self.label_108)
-
-        self.side_match_4 = QLineEdit(self.groupBox_19)
-        self.side_match_4.setObjectName(u"side_match_4")
-        sizePolicy1.setHeightForWidth(self.side_match_4.sizePolicy().hasHeightForWidth())
-        self.side_match_4.setSizePolicy(sizePolicy1)
-        self.side_match_4.setMinimumSize(QSize(50, 25))
-        self.side_match_4.setMaximumSize(QSize(1600, 16777215))
-
-        self.horizontalLayout_106.addWidget(self.side_match_4)
+        self.horizontalLayout_96.addWidget(self.side_repl_2)
 
 
-        self.horizontalLayout_103.addLayout(self.horizontalLayout_106)
+        self.horizontalLayout_94.addLayout(self.horizontalLayout_96)
 
-        self.horizontalLayout_107 = QHBoxLayout()
-        self.horizontalLayout_107.setObjectName(u"horizontalLayout_107")
-        self.side_copy_4 = QRadioButton(self.groupBox_19)
-        self.side_copy_4.setObjectName(u"side_copy_4")
-        sizePolicy2.setHeightForWidth(self.side_copy_4.sizePolicy().hasHeightForWidth())
-        self.side_copy_4.setSizePolicy(sizePolicy2)
-        self.side_copy_4.setMinimumSize(QSize(60, 25))
-        self.side_copy_4.setChecked(True)
-
-        self.horizontalLayout_107.addWidget(self.side_copy_4)
-
-        self.side_rename_4 = QRadioButton(self.groupBox_19)
-        self.side_rename_4.setObjectName(u"side_rename_4")
-        sizePolicy2.setHeightForWidth(self.side_rename_4.sizePolicy().hasHeightForWidth())
-        self.side_rename_4.setSizePolicy(sizePolicy2)
-        self.side_rename_4.setMinimumSize(QSize(70, 25))
-
-        self.horizontalLayout_107.addWidget(self.side_rename_4)
-
-
-        self.horizontalLayout_103.addLayout(self.horizontalLayout_107)
-
-        self.horizontalLayout_108 = QHBoxLayout()
-        self.horizontalLayout_108.setObjectName(u"horizontalLayout_108")
-        self.label_109 = QLabel(self.groupBox_19)
-        self.label_109.setObjectName(u"label_109")
-        sizePolicy2.setHeightForWidth(self.label_109.sizePolicy().hasHeightForWidth())
-        self.label_109.setSizePolicy(sizePolicy2)
-        self.label_109.setMinimumSize(QSize(30, 25))
-
-        self.horizontalLayout_108.addWidget(self.label_109)
-
-        self.side_dest_4 = QLineEdit(self.groupBox_19)
-        self.side_dest_4.setObjectName(u"side_dest_4")
-        sizePolicy1.setHeightForWidth(self.side_dest_4.sizePolicy().hasHeightForWidth())
-        self.side_dest_4.setSizePolicy(sizePolicy1)
-        self.side_dest_4.setMinimumSize(QSize(50, 25))
-        self.side_dest_4.setMaximumSize(QSize(1600, 16777215))
-
-        self.horizontalLayout_108.addWidget(self.side_dest_4)
-
-
-        self.horizontalLayout_103.addLayout(self.horizontalLayout_108)
-
-
-        self.horizontalLayout_110.addLayout(self.horizontalLayout_103)
-
-
-        self.verticalLayout_44.addWidget(self.groupBox_19)
-
-        self.groupBox_12 = QGroupBox(self.tab_13)
-        self.groupBox_12.setObjectName(u"groupBox_12")
-        self.horizontalLayout_111 = QHBoxLayout(self.groupBox_12)
-        self.horizontalLayout_111.setObjectName(u"horizontalLayout_111")
         self.horizontalLayout_97 = QHBoxLayout()
         self.horizontalLayout_97.setObjectName(u"horizontalLayout_97")
+        self.label_101 = QLabel(self.tab_13)
+        self.label_101.setObjectName(u"label_101")
+        sizePolicy2.setHeightForWidth(self.label_101.sizePolicy().hasHeightForWidth())
+        self.label_101.setSizePolicy(sizePolicy2)
+        self.label_101.setMinimumSize(QSize(75, 25))
+
+        self.horizontalLayout_97.addWidget(self.label_101)
+
+        self.side_match_2 = QLineEdit(self.tab_13)
+        self.side_match_2.setObjectName(u"side_match_2")
+        sizePolicy1.setHeightForWidth(self.side_match_2.sizePolicy().hasHeightForWidth())
+        self.side_match_2.setSizePolicy(sizePolicy1)
+        self.side_match_2.setMinimumSize(QSize(50, 25))
+        self.side_match_2.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_97.addWidget(self.side_match_2)
+
+
+        self.horizontalLayout_94.addLayout(self.horizontalLayout_97)
+
         self.horizontalLayout_98 = QHBoxLayout()
         self.horizontalLayout_98.setObjectName(u"horizontalLayout_98")
-        self.label_102 = QLabel(self.groupBox_12)
+        self.label_102 = QLabel(self.tab_13)
         self.label_102.setObjectName(u"label_102")
         sizePolicy2.setHeightForWidth(self.label_102.sizePolicy().hasHeightForWidth())
         self.label_102.setSizePolicy(sizePolicy2)
-        self.label_102.setMinimumSize(QSize(50, 25))
+        self.label_102.setMinimumSize(QSize(30, 25))
 
         self.horizontalLayout_98.addWidget(self.label_102)
 
-        self.side_pattern_3 = QLineEdit(self.groupBox_12)
+        self.side_dest_2 = QLineEdit(self.tab_13)
+        self.side_dest_2.setObjectName(u"side_dest_2")
+        sizePolicy1.setHeightForWidth(self.side_dest_2.sizePolicy().hasHeightForWidth())
+        self.side_dest_2.setSizePolicy(sizePolicy1)
+        self.side_dest_2.setMinimumSize(QSize(50, 25))
+        self.side_dest_2.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_98.addWidget(self.side_dest_2)
+
+
+        self.horizontalLayout_94.addLayout(self.horizontalLayout_98)
+
+        self.horizontalLayout_99 = QHBoxLayout()
+        self.horizontalLayout_99.setObjectName(u"horizontalLayout_99")
+        self.label_103 = QLabel(self.tab_13)
+        self.label_103.setObjectName(u"label_103")
+        sizePolicy2.setHeightForWidth(self.label_103.sizePolicy().hasHeightForWidth())
+        self.label_103.setSizePolicy(sizePolicy2)
+        self.label_103.setMinimumSize(QSize(35, 25))
+
+        self.horizontalLayout_99.addWidget(self.label_103)
+
+        self.side_filter_2 = QLineEdit(self.tab_13)
+        self.side_filter_2.setObjectName(u"side_filter_2")
+        sizePolicy1.setHeightForWidth(self.side_filter_2.sizePolicy().hasHeightForWidth())
+        self.side_filter_2.setSizePolicy(sizePolicy1)
+        self.side_filter_2.setMinimumSize(QSize(50, 25))
+        self.side_filter_2.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_99.addWidget(self.side_filter_2)
+
+
+        self.horizontalLayout_94.addLayout(self.horizontalLayout_99)
+
+
+        self.verticalLayout_46.addLayout(self.horizontalLayout_94)
+
+        self.horizontalLayout_100 = QHBoxLayout()
+        self.horizontalLayout_100.setObjectName(u"horizontalLayout_100")
+        self.horizontalLayout_101 = QHBoxLayout()
+        self.horizontalLayout_101.setObjectName(u"horizontalLayout_101")
+        self.label_104 = QLabel(self.tab_13)
+        self.label_104.setObjectName(u"label_104")
+        sizePolicy2.setHeightForWidth(self.label_104.sizePolicy().hasHeightForWidth())
+        self.label_104.setSizePolicy(sizePolicy2)
+        self.label_104.setMinimumSize(QSize(50, 25))
+
+        self.horizontalLayout_101.addWidget(self.label_104)
+
+        self.side_pattern_3 = QLineEdit(self.tab_13)
         self.side_pattern_3.setObjectName(u"side_pattern_3")
         sizePolicy1.setHeightForWidth(self.side_pattern_3.sizePolicy().hasHeightForWidth())
         self.side_pattern_3.setSizePolicy(sizePolicy1)
         self.side_pattern_3.setMinimumSize(QSize(50, 25))
 
-        self.horizontalLayout_98.addWidget(self.side_pattern_3)
+        self.horizontalLayout_101.addWidget(self.side_pattern_3)
 
 
-        self.horizontalLayout_97.addLayout(self.horizontalLayout_98)
-
-        self.horizontalLayout_99 = QHBoxLayout()
-        self.horizontalLayout_99.setObjectName(u"horizontalLayout_99")
-        self.label_103 = QLabel(self.groupBox_12)
-        self.label_103.setObjectName(u"label_103")
-        sizePolicy2.setHeightForWidth(self.label_103.sizePolicy().hasHeightForWidth())
-        self.label_103.setSizePolicy(sizePolicy2)
-        self.label_103.setMinimumSize(QSize(30, 25))
-
-        self.horizontalLayout_99.addWidget(self.label_103)
-
-        self.side_repl_3 = QLineEdit(self.groupBox_12)
-        self.side_repl_3.setObjectName(u"side_repl_3")
-        sizePolicy1.setHeightForWidth(self.side_repl_3.sizePolicy().hasHeightForWidth())
-        self.side_repl_3.setSizePolicy(sizePolicy1)
-        self.side_repl_3.setMinimumSize(QSize(50, 25))
-        self.side_repl_3.setMaximumSize(QSize(1600, 16777215))
-
-        self.horizontalLayout_99.addWidget(self.side_repl_3)
-
-
-        self.horizontalLayout_97.addLayout(self.horizontalLayout_99)
-
-        self.horizontalLayout_100 = QHBoxLayout()
-        self.horizontalLayout_100.setObjectName(u"horizontalLayout_100")
-        self.label_104 = QLabel(self.groupBox_12)
-        self.label_104.setObjectName(u"label_104")
-        sizePolicy2.setHeightForWidth(self.label_104.sizePolicy().hasHeightForWidth())
-        self.label_104.setSizePolicy(sizePolicy2)
-        self.label_104.setMinimumSize(QSize(75, 25))
-
-        self.horizontalLayout_100.addWidget(self.label_104)
-
-        self.side_match_3 = QLineEdit(self.groupBox_12)
-        self.side_match_3.setObjectName(u"side_match_3")
-        sizePolicy1.setHeightForWidth(self.side_match_3.sizePolicy().hasHeightForWidth())
-        self.side_match_3.setSizePolicy(sizePolicy1)
-        self.side_match_3.setMinimumSize(QSize(50, 25))
-        self.side_match_3.setMaximumSize(QSize(1600, 16777215))
-
-        self.horizontalLayout_100.addWidget(self.side_match_3)
-
-
-        self.horizontalLayout_97.addLayout(self.horizontalLayout_100)
-
-        self.horizontalLayout_101 = QHBoxLayout()
-        self.horizontalLayout_101.setObjectName(u"horizontalLayout_101")
-        self.side_copy_3 = QRadioButton(self.groupBox_12)
-        self.side_copy_3.setObjectName(u"side_copy_3")
-        sizePolicy2.setHeightForWidth(self.side_copy_3.sizePolicy().hasHeightForWidth())
-        self.side_copy_3.setSizePolicy(sizePolicy2)
-        self.side_copy_3.setMinimumSize(QSize(60, 25))
-        self.side_copy_3.setChecked(True)
-
-        self.horizontalLayout_101.addWidget(self.side_copy_3)
-
-        self.side_rename_3 = QRadioButton(self.groupBox_12)
-        self.side_rename_3.setObjectName(u"side_rename_3")
-        sizePolicy2.setHeightForWidth(self.side_rename_3.sizePolicy().hasHeightForWidth())
-        self.side_rename_3.setSizePolicy(sizePolicy2)
-        self.side_rename_3.setMinimumSize(QSize(70, 25))
-
-        self.horizontalLayout_101.addWidget(self.side_rename_3)
-
-
-        self.horizontalLayout_97.addLayout(self.horizontalLayout_101)
+        self.horizontalLayout_100.addLayout(self.horizontalLayout_101)
 
         self.horizontalLayout_102 = QHBoxLayout()
         self.horizontalLayout_102.setObjectName(u"horizontalLayout_102")
-        self.label_105 = QLabel(self.groupBox_12)
+        self.label_105 = QLabel(self.tab_13)
         self.label_105.setObjectName(u"label_105")
         sizePolicy2.setHeightForWidth(self.label_105.sizePolicy().hasHeightForWidth())
         self.label_105.setSizePolicy(sizePolicy2)
@@ -2332,26 +2299,432 @@ class Ui_submission(object):
 
         self.horizontalLayout_102.addWidget(self.label_105)
 
-        self.side_dest_3 = QLineEdit(self.groupBox_12)
+        self.side_repl_3 = QLineEdit(self.tab_13)
+        self.side_repl_3.setObjectName(u"side_repl_3")
+        sizePolicy1.setHeightForWidth(self.side_repl_3.sizePolicy().hasHeightForWidth())
+        self.side_repl_3.setSizePolicy(sizePolicy1)
+        self.side_repl_3.setMinimumSize(QSize(50, 25))
+        self.side_repl_3.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_102.addWidget(self.side_repl_3)
+
+
+        self.horizontalLayout_100.addLayout(self.horizontalLayout_102)
+
+        self.horizontalLayout_103 = QHBoxLayout()
+        self.horizontalLayout_103.setObjectName(u"horizontalLayout_103")
+        self.label_106 = QLabel(self.tab_13)
+        self.label_106.setObjectName(u"label_106")
+        sizePolicy2.setHeightForWidth(self.label_106.sizePolicy().hasHeightForWidth())
+        self.label_106.setSizePolicy(sizePolicy2)
+        self.label_106.setMinimumSize(QSize(75, 25))
+
+        self.horizontalLayout_103.addWidget(self.label_106)
+
+        self.side_match_3 = QLineEdit(self.tab_13)
+        self.side_match_3.setObjectName(u"side_match_3")
+        sizePolicy1.setHeightForWidth(self.side_match_3.sizePolicy().hasHeightForWidth())
+        self.side_match_3.setSizePolicy(sizePolicy1)
+        self.side_match_3.setMinimumSize(QSize(50, 25))
+        self.side_match_3.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_103.addWidget(self.side_match_3)
+
+
+        self.horizontalLayout_100.addLayout(self.horizontalLayout_103)
+
+        self.horizontalLayout_104 = QHBoxLayout()
+        self.horizontalLayout_104.setObjectName(u"horizontalLayout_104")
+        self.label_107 = QLabel(self.tab_13)
+        self.label_107.setObjectName(u"label_107")
+        sizePolicy2.setHeightForWidth(self.label_107.sizePolicy().hasHeightForWidth())
+        self.label_107.setSizePolicy(sizePolicy2)
+        self.label_107.setMinimumSize(QSize(30, 25))
+
+        self.horizontalLayout_104.addWidget(self.label_107)
+
+        self.side_dest_3 = QLineEdit(self.tab_13)
         self.side_dest_3.setObjectName(u"side_dest_3")
         sizePolicy1.setHeightForWidth(self.side_dest_3.sizePolicy().hasHeightForWidth())
         self.side_dest_3.setSizePolicy(sizePolicy1)
         self.side_dest_3.setMinimumSize(QSize(50, 25))
         self.side_dest_3.setMaximumSize(QSize(1600, 16777215))
 
-        self.horizontalLayout_102.addWidget(self.side_dest_3)
+        self.horizontalLayout_104.addWidget(self.side_dest_3)
 
 
-        self.horizontalLayout_97.addLayout(self.horizontalLayout_102)
+        self.horizontalLayout_100.addLayout(self.horizontalLayout_104)
+
+        self.horizontalLayout_105 = QHBoxLayout()
+        self.horizontalLayout_105.setObjectName(u"horizontalLayout_105")
+        self.label_108 = QLabel(self.tab_13)
+        self.label_108.setObjectName(u"label_108")
+        sizePolicy2.setHeightForWidth(self.label_108.sizePolicy().hasHeightForWidth())
+        self.label_108.setSizePolicy(sizePolicy2)
+        self.label_108.setMinimumSize(QSize(35, 25))
+
+        self.horizontalLayout_105.addWidget(self.label_108)
+
+        self.side_filter_3 = QLineEdit(self.tab_13)
+        self.side_filter_3.setObjectName(u"side_filter_3")
+        sizePolicy1.setHeightForWidth(self.side_filter_3.sizePolicy().hasHeightForWidth())
+        self.side_filter_3.setSizePolicy(sizePolicy1)
+        self.side_filter_3.setMinimumSize(QSize(50, 25))
+        self.side_filter_3.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_105.addWidget(self.side_filter_3)
 
 
-        self.horizontalLayout_111.addLayout(self.horizontalLayout_97)
+        self.horizontalLayout_100.addLayout(self.horizontalLayout_105)
 
 
-        self.verticalLayout_44.addWidget(self.groupBox_12)
+        self.verticalLayout_46.addLayout(self.horizontalLayout_100)
+
+        self.horizontalLayout_106 = QHBoxLayout()
+        self.horizontalLayout_106.setObjectName(u"horizontalLayout_106")
+        self.horizontalLayout_107 = QHBoxLayout()
+        self.horizontalLayout_107.setObjectName(u"horizontalLayout_107")
+        self.label_109 = QLabel(self.tab_13)
+        self.label_109.setObjectName(u"label_109")
+        sizePolicy2.setHeightForWidth(self.label_109.sizePolicy().hasHeightForWidth())
+        self.label_109.setSizePolicy(sizePolicy2)
+        self.label_109.setMinimumSize(QSize(50, 25))
+
+        self.horizontalLayout_107.addWidget(self.label_109)
+
+        self.side_pattern_4 = QLineEdit(self.tab_13)
+        self.side_pattern_4.setObjectName(u"side_pattern_4")
+        sizePolicy1.setHeightForWidth(self.side_pattern_4.sizePolicy().hasHeightForWidth())
+        self.side_pattern_4.setSizePolicy(sizePolicy1)
+        self.side_pattern_4.setMinimumSize(QSize(50, 25))
+
+        self.horizontalLayout_107.addWidget(self.side_pattern_4)
 
 
-        self.verticalLayout_46.addLayout(self.verticalLayout_44)
+        self.horizontalLayout_106.addLayout(self.horizontalLayout_107)
+
+        self.horizontalLayout_108 = QHBoxLayout()
+        self.horizontalLayout_108.setObjectName(u"horizontalLayout_108")
+        self.label_110 = QLabel(self.tab_13)
+        self.label_110.setObjectName(u"label_110")
+        sizePolicy2.setHeightForWidth(self.label_110.sizePolicy().hasHeightForWidth())
+        self.label_110.setSizePolicy(sizePolicy2)
+        self.label_110.setMinimumSize(QSize(30, 25))
+
+        self.horizontalLayout_108.addWidget(self.label_110)
+
+        self.side_repl_4 = QLineEdit(self.tab_13)
+        self.side_repl_4.setObjectName(u"side_repl_4")
+        sizePolicy1.setHeightForWidth(self.side_repl_4.sizePolicy().hasHeightForWidth())
+        self.side_repl_4.setSizePolicy(sizePolicy1)
+        self.side_repl_4.setMinimumSize(QSize(50, 25))
+        self.side_repl_4.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_108.addWidget(self.side_repl_4)
+
+
+        self.horizontalLayout_106.addLayout(self.horizontalLayout_108)
+
+        self.horizontalLayout_109 = QHBoxLayout()
+        self.horizontalLayout_109.setObjectName(u"horizontalLayout_109")
+        self.label_111 = QLabel(self.tab_13)
+        self.label_111.setObjectName(u"label_111")
+        sizePolicy2.setHeightForWidth(self.label_111.sizePolicy().hasHeightForWidth())
+        self.label_111.setSizePolicy(sizePolicy2)
+        self.label_111.setMinimumSize(QSize(75, 25))
+
+        self.horizontalLayout_109.addWidget(self.label_111)
+
+        self.side_match_4 = QLineEdit(self.tab_13)
+        self.side_match_4.setObjectName(u"side_match_4")
+        sizePolicy1.setHeightForWidth(self.side_match_4.sizePolicy().hasHeightForWidth())
+        self.side_match_4.setSizePolicy(sizePolicy1)
+        self.side_match_4.setMinimumSize(QSize(50, 25))
+        self.side_match_4.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_109.addWidget(self.side_match_4)
+
+
+        self.horizontalLayout_106.addLayout(self.horizontalLayout_109)
+
+        self.horizontalLayout_110 = QHBoxLayout()
+        self.horizontalLayout_110.setObjectName(u"horizontalLayout_110")
+        self.label_112 = QLabel(self.tab_13)
+        self.label_112.setObjectName(u"label_112")
+        sizePolicy2.setHeightForWidth(self.label_112.sizePolicy().hasHeightForWidth())
+        self.label_112.setSizePolicy(sizePolicy2)
+        self.label_112.setMinimumSize(QSize(30, 25))
+
+        self.horizontalLayout_110.addWidget(self.label_112)
+
+        self.side_dest_4 = QLineEdit(self.tab_13)
+        self.side_dest_4.setObjectName(u"side_dest_4")
+        sizePolicy1.setHeightForWidth(self.side_dest_4.sizePolicy().hasHeightForWidth())
+        self.side_dest_4.setSizePolicy(sizePolicy1)
+        self.side_dest_4.setMinimumSize(QSize(50, 25))
+        self.side_dest_4.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_110.addWidget(self.side_dest_4)
+
+
+        self.horizontalLayout_106.addLayout(self.horizontalLayout_110)
+
+        self.horizontalLayout_111 = QHBoxLayout()
+        self.horizontalLayout_111.setObjectName(u"horizontalLayout_111")
+        self.label_113 = QLabel(self.tab_13)
+        self.label_113.setObjectName(u"label_113")
+        sizePolicy2.setHeightForWidth(self.label_113.sizePolicy().hasHeightForWidth())
+        self.label_113.setSizePolicy(sizePolicy2)
+        self.label_113.setMinimumSize(QSize(35, 25))
+
+        self.horizontalLayout_111.addWidget(self.label_113)
+
+        self.side_filter_4 = QLineEdit(self.tab_13)
+        self.side_filter_4.setObjectName(u"side_filter_4")
+        sizePolicy1.setHeightForWidth(self.side_filter_4.sizePolicy().hasHeightForWidth())
+        self.side_filter_4.setSizePolicy(sizePolicy1)
+        self.side_filter_4.setMinimumSize(QSize(50, 25))
+        self.side_filter_4.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_111.addWidget(self.side_filter_4)
+
+
+        self.horizontalLayout_106.addLayout(self.horizontalLayout_111)
+
+
+        self.verticalLayout_46.addLayout(self.horizontalLayout_106)
+
+        self.horizontalLayout_138 = QHBoxLayout()
+        self.horizontalLayout_138.setObjectName(u"horizontalLayout_138")
+        self.horizontalLayout_140 = QHBoxLayout()
+        self.horizontalLayout_140.setObjectName(u"horizontalLayout_140")
+        self.label_134 = QLabel(self.tab_13)
+        self.label_134.setObjectName(u"label_134")
+        sizePolicy2.setHeightForWidth(self.label_134.sizePolicy().hasHeightForWidth())
+        self.label_134.setSizePolicy(sizePolicy2)
+        self.label_134.setMinimumSize(QSize(50, 25))
+
+        self.horizontalLayout_140.addWidget(self.label_134)
+
+        self.side_pattern_5 = QLineEdit(self.tab_13)
+        self.side_pattern_5.setObjectName(u"side_pattern_5")
+        sizePolicy1.setHeightForWidth(self.side_pattern_5.sizePolicy().hasHeightForWidth())
+        self.side_pattern_5.setSizePolicy(sizePolicy1)
+        self.side_pattern_5.setMinimumSize(QSize(50, 25))
+
+        self.horizontalLayout_140.addWidget(self.side_pattern_5)
+
+
+        self.horizontalLayout_138.addLayout(self.horizontalLayout_140)
+
+        self.horizontalLayout_141 = QHBoxLayout()
+        self.horizontalLayout_141.setObjectName(u"horizontalLayout_141")
+        self.label_135 = QLabel(self.tab_13)
+        self.label_135.setObjectName(u"label_135")
+        sizePolicy2.setHeightForWidth(self.label_135.sizePolicy().hasHeightForWidth())
+        self.label_135.setSizePolicy(sizePolicy2)
+        self.label_135.setMinimumSize(QSize(30, 25))
+
+        self.horizontalLayout_141.addWidget(self.label_135)
+
+        self.side_repl_5 = QLineEdit(self.tab_13)
+        self.side_repl_5.setObjectName(u"side_repl_5")
+        sizePolicy1.setHeightForWidth(self.side_repl_5.sizePolicy().hasHeightForWidth())
+        self.side_repl_5.setSizePolicy(sizePolicy1)
+        self.side_repl_5.setMinimumSize(QSize(50, 25))
+        self.side_repl_5.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_141.addWidget(self.side_repl_5)
+
+
+        self.horizontalLayout_138.addLayout(self.horizontalLayout_141)
+
+        self.horizontalLayout_142 = QHBoxLayout()
+        self.horizontalLayout_142.setObjectName(u"horizontalLayout_142")
+        self.label_136 = QLabel(self.tab_13)
+        self.label_136.setObjectName(u"label_136")
+        sizePolicy2.setHeightForWidth(self.label_136.sizePolicy().hasHeightForWidth())
+        self.label_136.setSizePolicy(sizePolicy2)
+        self.label_136.setMinimumSize(QSize(75, 25))
+
+        self.horizontalLayout_142.addWidget(self.label_136)
+
+        self.side_match_5 = QLineEdit(self.tab_13)
+        self.side_match_5.setObjectName(u"side_match_5")
+        sizePolicy1.setHeightForWidth(self.side_match_5.sizePolicy().hasHeightForWidth())
+        self.side_match_5.setSizePolicy(sizePolicy1)
+        self.side_match_5.setMinimumSize(QSize(50, 25))
+        self.side_match_5.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_142.addWidget(self.side_match_5)
+
+
+        self.horizontalLayout_138.addLayout(self.horizontalLayout_142)
+
+        self.horizontalLayout_143 = QHBoxLayout()
+        self.horizontalLayout_143.setObjectName(u"horizontalLayout_143")
+        self.label_137 = QLabel(self.tab_13)
+        self.label_137.setObjectName(u"label_137")
+        sizePolicy2.setHeightForWidth(self.label_137.sizePolicy().hasHeightForWidth())
+        self.label_137.setSizePolicy(sizePolicy2)
+        self.label_137.setMinimumSize(QSize(30, 25))
+
+        self.horizontalLayout_143.addWidget(self.label_137)
+
+        self.side_dest_5 = QLineEdit(self.tab_13)
+        self.side_dest_5.setObjectName(u"side_dest_5")
+        sizePolicy1.setHeightForWidth(self.side_dest_5.sizePolicy().hasHeightForWidth())
+        self.side_dest_5.setSizePolicy(sizePolicy1)
+        self.side_dest_5.setMinimumSize(QSize(50, 25))
+        self.side_dest_5.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_143.addWidget(self.side_dest_5)
+
+
+        self.horizontalLayout_138.addLayout(self.horizontalLayout_143)
+
+        self.horizontalLayout_144 = QHBoxLayout()
+        self.horizontalLayout_144.setObjectName(u"horizontalLayout_144")
+        self.label_138 = QLabel(self.tab_13)
+        self.label_138.setObjectName(u"label_138")
+        sizePolicy2.setHeightForWidth(self.label_138.sizePolicy().hasHeightForWidth())
+        self.label_138.setSizePolicy(sizePolicy2)
+        self.label_138.setMinimumSize(QSize(35, 25))
+
+        self.horizontalLayout_144.addWidget(self.label_138)
+
+        self.side_filter_5 = QLineEdit(self.tab_13)
+        self.side_filter_5.setObjectName(u"side_filter_5")
+        sizePolicy1.setHeightForWidth(self.side_filter_5.sizePolicy().hasHeightForWidth())
+        self.side_filter_5.setSizePolicy(sizePolicy1)
+        self.side_filter_5.setMinimumSize(QSize(50, 25))
+        self.side_filter_5.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_144.addWidget(self.side_filter_5)
+
+
+        self.horizontalLayout_138.addLayout(self.horizontalLayout_144)
+
+
+        self.verticalLayout_46.addLayout(self.horizontalLayout_138)
+
+        self.horizontalLayout_145 = QHBoxLayout()
+        self.horizontalLayout_145.setObjectName(u"horizontalLayout_145")
+        self.horizontalLayout_146 = QHBoxLayout()
+        self.horizontalLayout_146.setObjectName(u"horizontalLayout_146")
+        self.label_139 = QLabel(self.tab_13)
+        self.label_139.setObjectName(u"label_139")
+        sizePolicy2.setHeightForWidth(self.label_139.sizePolicy().hasHeightForWidth())
+        self.label_139.setSizePolicy(sizePolicy2)
+        self.label_139.setMinimumSize(QSize(50, 25))
+
+        self.horizontalLayout_146.addWidget(self.label_139)
+
+        self.side_pattern_6 = QLineEdit(self.tab_13)
+        self.side_pattern_6.setObjectName(u"side_pattern_6")
+        sizePolicy1.setHeightForWidth(self.side_pattern_6.sizePolicy().hasHeightForWidth())
+        self.side_pattern_6.setSizePolicy(sizePolicy1)
+        self.side_pattern_6.setMinimumSize(QSize(50, 25))
+
+        self.horizontalLayout_146.addWidget(self.side_pattern_6)
+
+
+        self.horizontalLayout_145.addLayout(self.horizontalLayout_146)
+
+        self.horizontalLayout_147 = QHBoxLayout()
+        self.horizontalLayout_147.setObjectName(u"horizontalLayout_147")
+        self.label_140 = QLabel(self.tab_13)
+        self.label_140.setObjectName(u"label_140")
+        sizePolicy2.setHeightForWidth(self.label_140.sizePolicy().hasHeightForWidth())
+        self.label_140.setSizePolicy(sizePolicy2)
+        self.label_140.setMinimumSize(QSize(30, 25))
+
+        self.horizontalLayout_147.addWidget(self.label_140)
+
+        self.side_repl_6 = QLineEdit(self.tab_13)
+        self.side_repl_6.setObjectName(u"side_repl_6")
+        sizePolicy1.setHeightForWidth(self.side_repl_6.sizePolicy().hasHeightForWidth())
+        self.side_repl_6.setSizePolicy(sizePolicy1)
+        self.side_repl_6.setMinimumSize(QSize(50, 25))
+        self.side_repl_6.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_147.addWidget(self.side_repl_6)
+
+
+        self.horizontalLayout_145.addLayout(self.horizontalLayout_147)
+
+        self.horizontalLayout_148 = QHBoxLayout()
+        self.horizontalLayout_148.setObjectName(u"horizontalLayout_148")
+        self.label_141 = QLabel(self.tab_13)
+        self.label_141.setObjectName(u"label_141")
+        sizePolicy2.setHeightForWidth(self.label_141.sizePolicy().hasHeightForWidth())
+        self.label_141.setSizePolicy(sizePolicy2)
+        self.label_141.setMinimumSize(QSize(75, 25))
+
+        self.horizontalLayout_148.addWidget(self.label_141)
+
+        self.side_match_6 = QLineEdit(self.tab_13)
+        self.side_match_6.setObjectName(u"side_match_6")
+        sizePolicy1.setHeightForWidth(self.side_match_6.sizePolicy().hasHeightForWidth())
+        self.side_match_6.setSizePolicy(sizePolicy1)
+        self.side_match_6.setMinimumSize(QSize(50, 25))
+        self.side_match_6.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_148.addWidget(self.side_match_6)
+
+
+        self.horizontalLayout_145.addLayout(self.horizontalLayout_148)
+
+        self.horizontalLayout_149 = QHBoxLayout()
+        self.horizontalLayout_149.setObjectName(u"horizontalLayout_149")
+        self.label_142 = QLabel(self.tab_13)
+        self.label_142.setObjectName(u"label_142")
+        sizePolicy2.setHeightForWidth(self.label_142.sizePolicy().hasHeightForWidth())
+        self.label_142.setSizePolicy(sizePolicy2)
+        self.label_142.setMinimumSize(QSize(30, 25))
+
+        self.horizontalLayout_149.addWidget(self.label_142)
+
+        self.side_dest_6 = QLineEdit(self.tab_13)
+        self.side_dest_6.setObjectName(u"side_dest_6")
+        sizePolicy1.setHeightForWidth(self.side_dest_6.sizePolicy().hasHeightForWidth())
+        self.side_dest_6.setSizePolicy(sizePolicy1)
+        self.side_dest_6.setMinimumSize(QSize(50, 25))
+        self.side_dest_6.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_149.addWidget(self.side_dest_6)
+
+
+        self.horizontalLayout_145.addLayout(self.horizontalLayout_149)
+
+        self.horizontalLayout_150 = QHBoxLayout()
+        self.horizontalLayout_150.setObjectName(u"horizontalLayout_150")
+        self.label_143 = QLabel(self.tab_13)
+        self.label_143.setObjectName(u"label_143")
+        sizePolicy2.setHeightForWidth(self.label_143.sizePolicy().hasHeightForWidth())
+        self.label_143.setSizePolicy(sizePolicy2)
+        self.label_143.setMinimumSize(QSize(35, 25))
+
+        self.horizontalLayout_150.addWidget(self.label_143)
+
+        self.side_filter_6 = QLineEdit(self.tab_13)
+        self.side_filter_6.setObjectName(u"side_filter_6")
+        sizePolicy1.setHeightForWidth(self.side_filter_6.sizePolicy().hasHeightForWidth())
+        self.side_filter_6.setSizePolicy(sizePolicy1)
+        self.side_filter_6.setMinimumSize(QSize(50, 25))
+        self.side_filter_6.setMaximumSize(QSize(1600, 16777215))
+
+        self.horizontalLayout_150.addWidget(self.side_filter_6)
+
+
+        self.horizontalLayout_145.addLayout(self.horizontalLayout_150)
+
+
+        self.verticalLayout_46.addLayout(self.horizontalLayout_145)
+
+        self.verticalSpacer_4 = QSpacerItem(20, 18, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout_46.addItem(self.verticalSpacer_4)
 
 
         self.verticalLayout_52.addLayout(self.verticalLayout_46)
@@ -4077,6 +4450,20 @@ class Ui_submission(object):
         self.verticalLayout_42.addWidget(self.txt_table)
 
         self.BottomTab.addTab(self.tab_8, "")
+        self.tab_15 = QWidget()
+        self.tab_15.setObjectName(u"tab_15")
+        self.horizontalLayout_139 = QHBoxLayout(self.tab_15)
+        self.horizontalLayout_139.setObjectName(u"horizontalLayout_139")
+        self.side_table = QTableWidget(self.tab_15)
+        self.side_table.setObjectName(u"side_table")
+        sizePolicy.setHeightForWidth(self.side_table.sizePolicy().hasHeightForWidth())
+        self.side_table.setSizePolicy(sizePolicy)
+        self.side_table.setMinimumSize(QSize(600, 100))
+        self.side_table.setMaximumSize(QSize(16000, 16000))
+
+        self.horizontalLayout_139.addWidget(self.side_table)
+
+        self.BottomTab.addTab(self.tab_15, "")
 
         self.verticalLayout_10.addWidget(self.BottomTab)
 
@@ -4089,6 +4476,7 @@ class Ui_submission(object):
         self.write_button.setMinimumSize(QSize(350, 40))
         self.write_button.setBaseSize(QSize(520, 51))
         self.write_button.setAutoFillBackground(False)
+        self.write_button.setStyleSheet(u"background-color: rgb(0, 100, 25);")
         self.write_button.setFlat(True)
 
         self.horizontalLayout_3.addWidget(self.write_button)
@@ -4294,33 +4682,53 @@ class Ui_submission(object):
         self.package_browse_2.setText("")
         self.label_92.setText(QCoreApplication.translate("submission", u"Exclude:", None))
         self.label_93.setText(QCoreApplication.translate("submission", u"Include:", None))
-        self.groupBox_11.setTitle(QCoreApplication.translate("submission", u"Sidecar Files 1", None))
+        self.side_copy.setText(QCoreApplication.translate("submission", u"Copy Sidecar Files", None))
+        self.side_copywithgo.setText(QCoreApplication.translate("submission", u"Copy with Go", None))
+        self.side_sub_only.setText(QCoreApplication.translate("submission", u"Submission Only", None))
+        self.side_log_only.setText(QCoreApplication.translate("submission", u"Log Only", None))
+        self.side_all.setText(QCoreApplication.translate("submission", u"All", None))
         self.label_95.setText(QCoreApplication.translate("submission", u"Pattern:", None))
         self.side_pattern_1.setText("")
         self.label_94.setText(QCoreApplication.translate("submission", u"Repl:", None))
         self.label_96.setText(QCoreApplication.translate("submission", u"If match to:", None))
         self.side_match_1.setText("")
-        self.side_copy_1.setText(QCoreApplication.translate("submission", u"Copy", None))
-        self.side_rename_1.setText(QCoreApplication.translate("submission", u"Rename", None))
         self.label_97.setText(QCoreApplication.translate("submission", u"Dest:", None))
-        self.groupBox_19.setTitle(QCoreApplication.translate("submission", u"Sidecar Files 2", None))
-        self.label_106.setText(QCoreApplication.translate("submission", u"Pattern:", None))
-        self.side_pattern_4.setText("")
-        self.label_107.setText(QCoreApplication.translate("submission", u"Repl:", None))
-        self.label_108.setText(QCoreApplication.translate("submission", u"If match to:", None))
-        self.side_match_4.setText("")
-        self.side_copy_4.setText(QCoreApplication.translate("submission", u"Copy", None))
-        self.side_rename_4.setText(QCoreApplication.translate("submission", u"Rename", None))
-        self.label_109.setText(QCoreApplication.translate("submission", u"Dest:", None))
-        self.groupBox_12.setTitle(QCoreApplication.translate("submission", u"Sidecar Files 3", None))
-        self.label_102.setText(QCoreApplication.translate("submission", u"Pattern:", None))
+        self.label_98.setText(QCoreApplication.translate("submission", u"Filter:", None))
+        self.label_99.setText(QCoreApplication.translate("submission", u"Pattern:", None))
+        self.side_pattern_2.setText("")
+        self.label_100.setText(QCoreApplication.translate("submission", u"Repl:", None))
+        self.label_101.setText(QCoreApplication.translate("submission", u"If match to:", None))
+        self.side_match_2.setText("")
+        self.label_102.setText(QCoreApplication.translate("submission", u"Dest:", None))
+        self.label_103.setText(QCoreApplication.translate("submission", u"Filter:", None))
+        self.label_104.setText(QCoreApplication.translate("submission", u"Pattern:", None))
         self.side_pattern_3.setText("")
-        self.label_103.setText(QCoreApplication.translate("submission", u"Repl:", None))
-        self.label_104.setText(QCoreApplication.translate("submission", u"If match to:", None))
+        self.label_105.setText(QCoreApplication.translate("submission", u"Repl:", None))
+        self.label_106.setText(QCoreApplication.translate("submission", u"If match to:", None))
         self.side_match_3.setText("")
-        self.side_copy_3.setText(QCoreApplication.translate("submission", u"Copy", None))
-        self.side_rename_3.setText(QCoreApplication.translate("submission", u"Rename", None))
-        self.label_105.setText(QCoreApplication.translate("submission", u"Dest:", None))
+        self.label_107.setText(QCoreApplication.translate("submission", u"Dest:", None))
+        self.label_108.setText(QCoreApplication.translate("submission", u"Filter:", None))
+        self.label_109.setText(QCoreApplication.translate("submission", u"Pattern:", None))
+        self.side_pattern_4.setText("")
+        self.label_110.setText(QCoreApplication.translate("submission", u"Repl:", None))
+        self.label_111.setText(QCoreApplication.translate("submission", u"If match to:", None))
+        self.side_match_4.setText("")
+        self.label_112.setText(QCoreApplication.translate("submission", u"Dest:", None))
+        self.label_113.setText(QCoreApplication.translate("submission", u"Filter:", None))
+        self.label_134.setText(QCoreApplication.translate("submission", u"Pattern:", None))
+        self.side_pattern_5.setText("")
+        self.label_135.setText(QCoreApplication.translate("submission", u"Repl:", None))
+        self.label_136.setText(QCoreApplication.translate("submission", u"If match to:", None))
+        self.side_match_5.setText("")
+        self.label_137.setText(QCoreApplication.translate("submission", u"Dest:", None))
+        self.label_138.setText(QCoreApplication.translate("submission", u"Filter:", None))
+        self.label_139.setText(QCoreApplication.translate("submission", u"Pattern:", None))
+        self.side_pattern_6.setText("")
+        self.label_140.setText(QCoreApplication.translate("submission", u"Repl:", None))
+        self.label_141.setText(QCoreApplication.translate("submission", u"If match to:", None))
+        self.side_match_6.setText("")
+        self.label_142.setText(QCoreApplication.translate("submission", u"Dest:", None))
+        self.label_143.setText(QCoreApplication.translate("submission", u"Filter:", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_13), QCoreApplication.translate("submission", u"Sidecar Files", None))
         self.ftrack_use.setText(QCoreApplication.translate("submission", u"Use Ftrack", None))
         self.label_88.setText(QCoreApplication.translate("submission", u"Ftrack Server:", None))
@@ -4614,6 +5022,7 @@ class Ui_submission(object):
         self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_6), QCoreApplication.translate("submission", u"Submission", None))
         self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_7), QCoreApplication.translate("submission", u"Drive Log", None))
         self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_8), QCoreApplication.translate("submission", u"Text", None))
+        self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_15), QCoreApplication.translate("submission", u"Sidecar Files", None))
         self.write_button.setText(QCoreApplication.translate("submission", u"Go", None))
         self.reload.setText(QCoreApplication.translate("submission", u"Reload", None))
     # retranslateUi

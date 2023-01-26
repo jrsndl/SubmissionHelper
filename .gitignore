@@ -9,4 +9,10 @@ ffmpeg/ffmpeg.exe
 
 .idea/*
 
+build/*
+
+dist/*
+
+tests/*
+
 __pycache__/

@@ -505,6 +505,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.data.column_titles_log
             )
             self.ui.txt_table.setPlainText(self.data.table_txt)
+            self.display_table(
+                self.data.table_side,
+                self.ui.side_table,
+                self.data.columns_side
+            )
 
             # display Package name
             _preview = self.data.output.get('package_name', '')
@@ -595,7 +600,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             for row, line in enumerate(table):
                 # set row color by check list
                 color = 'white'
+
+                # sub and log tables have merged list data
+                # stored as a last item
                 one_item = line[-1]
+                if type(one_item) is str:
+                    one_item = None
 
                 for column_number, one_column in enumerate(titles):
                     my_title = str(one_column).lstrip().rstrip()
@@ -607,25 +617,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                     except:
                         log.error("can't display table row")
 
+                    if one_item:
                     #colorize
-                    itm = table_ui.item(row, column_number)
-                    color = 'white'
-                    _size_warning = one_item.get('size_warning', '')
-                    if _size_warning != '':
-                        color = 'red'
-                    if itm:
-                        if color == 'green':
-                            itm.setBackground(QtGui.QColor('darkgreen'))
-                        elif color == 'orange':
-                            itm.setBackground(QtGui.QColor('sienna'))
-                        elif color == 'red':
-                            itm.setBackground(QtGui.QColor('maroon'))
-                        elif color == 'purple':
-                            itm.setBackground(QtGui.QColor('purple'))
-                        else:
-                            # white
-                            itm.setBackground(QtGui.QColor("#4d4d4d"))
-
+                        itm = table_ui.item(row, column_number)
+                        color = 'white'
+                        _size_warning = one_item.get('size_warning', '')
+                        if _size_warning != '':
+                            color = 'red'
+                        if itm:
+                            if color == 'green':
+                                itm.setBackground(QtGui.QColor('darkgreen'))
+                            elif color == 'orange':
+                                itm.setBackground(QtGui.QColor('sienna'))
+                            elif color == 'red':
+                                itm.setBackground(QtGui.QColor('maroon'))
+                            elif color == 'purple':
+                                itm.setBackground(QtGui.QColor('purple'))
+                            else:
+                                # white
+                                itm.setBackground(QtGui.QColor("#4d4d4d"))
 
             table_ui.resizeColumnsToContents()
             table_ui.resizeRowsToContents()

@@ -1,5 +1,6 @@
 import os
 import re
+import shutil
 from operator import itemgetter
 import pprint
 import time
@@ -103,6 +104,9 @@ class Sequencer(object):
 
         # for every found item prepare regex items
         self.fill_regexes()
+
+        # sidecar files
+        self.sidecar_files_find()
 
         # parse table headers
         self.prepare_all_columns()
@@ -916,12 +920,13 @@ class Sequencer(object):
                         one_item['hide_txt'] = True
 
                 # add counter to the items that are not hidden
+                _frames = int(one_item.get('meta_duration_frames', 0))
                 if not one_item['hide_sub']:
                     one_item.update({"cnt_sub": str(cnt_sub).zfill(counter_zeroes)})
                     cnt_sub += counter_step
                     total_sub += 1
                     if one_item['category'] == 'sequence':
-                        files_sub += int(one_item['meta_duration_frames'])
+                        files_sub += _frames
                     else:
                         files_sub += 1
                 if not one_item['hide_log']:
@@ -929,7 +934,7 @@ class Sequencer(object):
                     cnt_log += counter_step
                     total_log += 1
                     if one_item['category'] == 'sequence':
-                        files_log += int(one_item['meta_duration_frames'])
+                        files_log += _frames
                     else:
                         files_log += 1
                 if not one_item['hide_txt']:
@@ -937,7 +942,7 @@ class Sequencer(object):
                     cnt_txt += counter_step
                     total_txt += 1
                     if one_item['category'] == 'sequence':
-                        files_txt += int(one_item['meta_duration_frames'])
+                        files_txt += _frames
                     else:
                         files_txt += 1
 
@@ -1124,90 +1129,98 @@ class Sequencer(object):
                 one_up = '/'.join(_spl[:-1])
                 name_from_folder = _spl[-1]
 
-        # list all dirs, parse date and version
-        dir_list = []
-        for filename in os.listdir(one_up):
-            if os.path.isdir(os.path.join(one_up, filename)):
-                if filename != name_from_folder:
-                    d = _date_compiled.search(filename)
-                    dd = ''
-                    if d:
-                        try:
-                            dd = d.group(1)
-                        except:
-                            dd = ''
-                    v = _version_compiled.search(filename)
-                    vv = ''
-                    if v:
-                        try:
-                            vv = v.group(1)
-                        except:
-                            vv = ''
-                    dir_list.append({
-                        'folder': filename,
-                        'date': dd,
-                        'version': vv
-                    })
+        if not _from_template:
+            # take submission name from folder name
+            date_keys.update({
+                'package_version': '',
+                'package_date': '',
+                'package_name_from_folder': name_from_folder,
+                'package_name_root': one_up
+            })
+        else:
+            # list all dirs, parse date and version
+            dir_list = []
+            for filename in os.listdir(one_up):
+                if os.path.isdir(os.path.join(one_up, filename)):
+                    if filename != name_from_folder:
+                        d = _date_compiled.search(filename)
+                        dd = ''
+                        if d:
+                            try:
+                                dd = d.group(1)
+                            except:
+                                dd = ''
+                        v = _version_compiled.search(filename)
+                        vv = ''
+                        if v:
+                            try:
+                                vv = v.group(1)
+                            except:
+                                vv = ''
+                        dir_list.append({
+                            'folder': filename,
+                            'date': dd,
+                            'version': vv
+                        })
 
-        if _per_date:
-            # each date has separate version chain
-            _today_subs = []
-            for one_dir in dir_list:
-                if one_dir['date'] == current_date:
-                    _today_subs.append(one_dir)
-            if _today_subs:
-                last_dir = sorted(_today_subs, key=lambda i: i['version'])[-1]
+            if _per_date:
+                # each date has separate version chain
+                _today_subs = []
+                for one_dir in dir_list:
+                    if one_dir['date'] == current_date:
+                        _today_subs.append(one_dir)
+                if _today_subs:
+                    last_dir = sorted(_today_subs, key=lambda i: i['version'])[-1]
+                else:
+                    last_dir = None
             else:
-                last_dir = None
-        else:
-            # sort by version, take highest
-            last_dir = sorted(dir_list, key=lambda i: i['version'])[-1]
-        if last_dir:
-            last_version = last_dir['version']
-        else:
-            last_version = None
+                # sort by version, take highest
+                last_dir = sorted(dir_list, key=lambda i: i['version'])[-1]
+            if last_dir:
+                last_version = last_dir['version']
+            else:
+                last_version = None
 
-        if _ver_letters:
-            if last_version is None:
-                last_version = 'Z'
-            try:
-                _test = last_version.upper()
-            except:
-                last_version = 'Z'
-            next_version = chr(
-                (ord(last_version.upper()) + 1 - 65) % 26 + 65)
-            if not _ver_upper:
-                next_version = next_version.lower()
-        else:
-            if last_version is None:
-                last_version = 0
-            try:
-                _test = int(last_version)
-            except ValueError:
-                last_version = 0
-            # version is number
-            next_version = str(int(last_version) + 1).zfill(_ver_zeroes)
+            if _ver_letters:
+                if last_version is None:
+                    last_version = 'Z'
+                try:
+                    _test = last_version.upper()
+                except:
+                    last_version = 'Z'
+                next_version = chr(
+                    (ord(last_version.upper()) + 1 - 65) % 26 + 65)
+                if not _ver_upper:
+                    next_version = next_version.lower()
+            else:
+                if last_version is None:
+                    last_version = 0
+                try:
+                    _test = int(last_version)
+                except ValueError:
+                    last_version = 0
+                # version is number
+                next_version = str(int(last_version) + 1).zfill(_ver_zeroes)
 
-        # add what we know
-        date_keys.update({
-            'package_version': next_version,
-            'package_date': current_date,
-            'package_name_from_folder': name_from_folder,
-            'package_name_root': one_up
-        })
+            # add what we know
+            date_keys.update({
+                'package_version': next_version,
+                'package_date': current_date,
+                'package_name_from_folder': name_from_folder,
+                'package_name_root': one_up
+            })
 
-        # use source folder as name
-        _pkg_new_name = name_from_folder
-        if _from_template:
+            # use source folder as name
+            _pkg_new_name = name_from_folder
             # expand template to make package name
             try:
                 _pkg_new_name = _template.format(**date_keys)
             except:
                 pass
 
-        date_keys.update({
-            'package_name': _pkg_new_name,
-        })
+            date_keys.update({
+                'package_name': _pkg_new_name,
+            })
 
         # make public
         self.static_keywords = date_keys
@@ -1272,6 +1285,8 @@ class Sequencer(object):
         self.table_sub = []
         self.table_log = []
         self.table_txt = ""
+        self.table_side = []
+        self.columns_side = ['match', 'destination', 'source']
         body_txt = ""
         txt_sep = " "
 
@@ -1290,6 +1305,7 @@ class Sequencer(object):
             for one_item in self.merged_list:
                 one_item.update(self.static_keywords)
                 # build one row, if not hidden
+
                 if not one_item['hide_sub']:
                     one_row_sub = []
                     for one_expression in self.column_expressions_sub:
@@ -1334,6 +1350,14 @@ class Sequencer(object):
                             one_row_txt.append("")
                     whole_row = str(txt_sep.join(one_row_txt)) + "\n"
                     body_txt += whole_row
+
+                sides = one_item.get('sidecars', None)
+                if sides:
+                    for one_side in sides:
+                        one_row_side = [one_side['result'], one_side['dest'],
+                                        one_side['file']]
+                        self.table_side.append(one_row_side)
+
         try:
             _header = txt_header.format(**self.static_keywords)
         except KeyError:
@@ -1349,6 +1373,8 @@ class Sequencer(object):
         self.table_txt = _header + '\n' + _titles + body_txt + '\n' + _footer
 
     def export_all(self, column_width_sub=None, column_width_log=None):
+
+        self.sidecar_files_copy()
 
         if self.settings and self.static_keywords:
             one_above = str(self.static_keywords['package_name_root']).replace('\\', '/') + '/'
@@ -1439,6 +1465,220 @@ class Sequencer(object):
                     writer.writerow(titles)
                     for row, line in enumerate(table):
                         writer.writerow(line[:len(titles)])
+
+    def sidecar_files_copy(self):
+
+        self.output['status'] = "Copying sidecar files."
+
+        if not self.settings:
+            return
+        side_sub_only = False
+        if self.settings['side_sub_only']['value']:
+            side_sub_only = bool(self.settings['side_sub_only']['value'])
+        side_log_only = False
+        if self.settings['side_log_only']['value']:
+            side_log_only = bool(self.settings['side_log_only']['value'])
+
+        if self.merged_list and len(self.merged_list) > 0:
+            for one_item in self.merged_list:
+                _s = one_item.get('sidecars', None)
+                if _s and len(_s) > 0:
+                    for one in _s:
+                        _src = one.get('file', None)
+                        _dst = one.get('dest', None)
+                        if _src and _dst:
+                            print("Sidecar file copy {} -> {}".format(_src, _dst))
+                            shutil.copy(_src, _dst)
+
+
+    def sidecar_files_find(self):
+
+        class Default(dict):
+            def __missing__(self, key):
+                return '{' + key + '}'
+
+        self.output['status'] = "Finding sidecar files."
+        if not self.settings:
+            return
+
+        # get all files that can be sidecar files
+        sidecars = []
+        side_exclude_list = []
+        if self.settings['side_exclude']['value']:
+            side_exclude_list = self.settings['side_exclude']['value'].split()
+        side_include_list = []
+        if self.settings['side_include']['value']:
+            side_include_list = self.settings['side_include']['value'].split()
+        if self.settings['side_folder']['value'] is not None:
+            side_folder = self.settings['side_folder']['value']
+            if side_folder != '':
+                side_folder = side_folder.replace('\\', '/')
+                if side_folder[-1] != '/':
+                    side_folder += '/'
+                file_list = self.walk_dirs(side_folder)
+
+            # filter out exclude and include
+            for one in file_list:
+                one_sidecar = one.replace('\\', '/')
+                include_keep = False
+                if side_include_list:
+                    for one_included in side_include_list:
+                        if one_included in one_sidecar:
+                            include_keep = True
+                            break
+                else:
+                    include_keep = True
+                exclude_keep = True
+                if side_exclude_list:
+                    for one_excluded in side_exclude_list:
+                        if one_excluded in one_sidecar:
+                            exclude_keep = False
+                            break
+                if include_keep and exclude_keep:
+                    sidecars.append(one_sidecar)
+        do_sidecar = False
+        if sidecars is not None:
+            if len(sidecars) > 0:
+                do_sidecar = True
+
+        if not do_sidecar:
+            return
+
+        # Get regexes from UI
+        side_regexes = {}
+        indexes = [str(x) for x in range(1, 6)]
+        for one in indexes:
+            name_pat = 'side_pattern_' + one
+            pat = self.settings[name_pat]['value']
+            name_rep = 'side_repl_' + one
+            rep = self.settings[name_rep]['value']
+            name_match = "side_match_" + one
+            match = self.settings[name_match]['value']
+            name_dest = 'side_dest_' + one
+            dest = self.settings[name_dest]['value']
+            name_filter = 'side_filter_' + one
+            my_filter = self.settings[name_filter]['value']
+            pat_valid = True
+            try:
+                pat_compiled = re.compile(pat)
+            except re.error:
+                pat_compiled = None
+                pat_valid = False
+            # only add regex if it is valid and not empty
+            if match and pat and dest and pat_valid:
+                one_regex = {one: {
+                                    'pattern': pat,
+                                    'valid': pat_valid,
+                                    'compiled': pat_compiled,
+                                    'repl': rep,
+                                    'match': match,
+                                    'destination': dest,
+                                    'filter': my_filter
+                                   }}
+                side_regexes.update(one_regex)
+
+        if side_regexes is None:
+            return
+
+        if self.merged_list is None:
+            return
+
+        if len(self.merged_list) == 0:
+            return
+
+        for one_item in sidecars:
+            one_file = one_item
+            _s = one_item.split('/')
+            if not _s:
+                break
+            else:
+                one_file = _s[-1]
+                one_path = '/'.join(_s[:-1])
+
+            if one_file:
+                _e = one_item.split('.')
+                if not _e:
+                    break
+                else:
+                    one_file_noext = '.'.join(_e[:-1])
+                    one_file_ext = _e[-1]
+
+            for k, one_regex in side_regexes.items():
+                result = None
+                if one_regex['repl'] and one_regex['repl'] != '':
+                    # it is a replace
+                    if one_regex['repl'].startswith("lambda "):
+                        # LAMBDA!
+                        result = re.sub(one_regex['compiled'],
+                                        eval(str(one_regex['repl'])),
+                                        one_file)
+                    else:
+                        result = re.sub(one_regex['compiled'],
+                                        one_regex['repl'], one_file)
+                else:
+                    m = one_regex['compiled'].search(one_file)
+                    if m:
+                        # if user made a group, assign the group,
+                        # otherwise use whole found string
+                        try:
+                            result = m.group(1)
+                        except:
+                            result = None
+                    else:
+                        # shot name exists but doesn't match the regex,
+                        # so set shot name to empty string
+                        result = None
+
+                sidecar_keywords = {
+                    'sidecar_path': one_path,
+                    'sidecar_file': one_file,
+                    'sidecar_file_noext': one_file_noext,
+                    'sidecar_ext': one_file_ext,
+                    'sidecar_result': str(result)}
+                if result:
+                    # now we have the match or repl, see if it matches
+                    # to some package item
+                    for item in self.merged_list:
+                        expanded = None
+                        try:
+                            expanded = one_regex['match'].format_map(Default(item))
+                            expanded = expanded.format_map(Default(self.static_keywords))
+                            dest = None
+                            try:
+                                dest = str(one_regex['destination'])
+                                try:
+                                    dest = dest.format_map(Default(sidecar_keywords))
+                                except:
+                                    pass
+                                try:
+                                    dest = dest.format_map(Default(self.static_keywords))
+                                except:
+                                    pass
+                                try:
+                                    dest = dest.format_map(Default(item))
+                                except:
+                                    pass
+                                try:
+                                    dest = dest.replace('\\', '/')
+                                except:
+                                    pass
+                            except:
+                                pass
+                            if expanded is not None:
+                                if expanded == result:
+                                    #sidecar file matches the package file
+                                    one_side = {
+                                        'result': result,
+                                        'file': one_item,
+                                        'dest': dest
+                                    }
+                                    try:
+                                        item['sidecars'].append(one_side)
+                                    except:
+                                        item['sidecars'] = [one_side]
+                        except KeyError:
+                            pass
+
 
 if __name__ == "__main__":
     # import doctest
