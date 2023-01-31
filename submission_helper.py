@@ -193,6 +193,86 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.parse_source_9.textChanged.connect(
             partial(self.handler, 'parse_source_9', 'refresh_parsing'))
 
+        # Sidecar Tab
+        self.ui.side_folder.textChanged.connect(
+            partial(self.handler, 'side_folder', 'refresh_side_files'))
+        self.ui.side_exclude.textChanged.connect(
+            partial(self.handler, 'side_exclude', 'refresh_side_files'))
+        self.ui.side_include.textChanged.connect(
+            partial(self.handler, 'side_include', 'refresh_side_files'))
+
+        self.ui.side_sub_only.clicked.connect(
+            partial(self.handler, 'side_sub_only', 'refresh_side'))
+        self.ui.side_log_only.clicked.connect(
+            partial(self.handler, 'side_log_only', 'refresh_side'))
+        self.ui.side_all.clicked.connect(
+            partial(self.handler, 'side_all', 'refresh_side'))
+
+        self.ui.side_pattern_1.textChanged.connect(
+            partial(self.handler, 'side_pattern_1', 'refresh_side'))
+        self.ui.side_repl_1.textChanged.connect(
+            partial(self.handler, 'side_repl_1', 'refresh_side'))
+        self.ui.side_match_1.textChanged.connect(
+            partial(self.handler, 'side_match_1', 'refresh_side'))
+        self.ui.side_dest_1.textChanged.connect(
+            partial(self.handler, 'side_dest_1', 'refresh_side'))
+        self.ui.side_filter_1.textChanged.connect(
+            partial(self.handler, 'side_filter_1', 'refresh_side'))
+        self.ui.side_pattern_2.textChanged.connect(
+            partial(self.handler, 'side_pattern_2', 'refresh_side'))
+        self.ui.side_repl_2.textChanged.connect(
+            partial(self.handler, 'side_repl_2', 'refresh_side'))
+        self.ui.side_match_2.textChanged.connect(
+            partial(self.handler, 'side_match_2', 'refresh_side'))
+        self.ui.side_dest_2.textChanged.connect(
+            partial(self.handler, 'side_dest_2', 'refresh_side'))
+        self.ui.side_filter_2.textChanged.connect(
+            partial(self.handler, 'side_filter_2', 'refresh_side'))
+        self.ui.side_pattern_3.textChanged.connect(
+            partial(self.handler, 'side_pattern_3', 'refresh_side'))
+        self.ui.side_repl_3.textChanged.connect(
+            partial(self.handler, 'side_repl_3', 'refresh_side'))
+        self.ui.side_match_3.textChanged.connect(
+            partial(self.handler, 'side_match_3', 'refresh_side'))
+        self.ui.side_dest_3.textChanged.connect(
+            partial(self.handler, 'side_dest_3', 'refresh_side'))
+        self.ui.side_filter_3.textChanged.connect(
+            partial(self.handler, 'side_filter_3', 'refresh_side'))
+        self.ui.side_pattern_4.textChanged.connect(
+            partial(self.handler, 'side_pattern_4', 'refresh_side'))
+        self.ui.side_repl_4.textChanged.connect(
+            partial(self.handler, 'side_repl_4', 'refresh_side'))
+        self.ui.side_match_4.textChanged.connect(
+            partial(self.handler, 'side_match_4', 'refresh_side'))
+        self.ui.side_dest_4.textChanged.connect(
+            partial(self.handler, 'side_dest_4', 'refresh_side'))
+        self.ui.side_filter_4.textChanged.connect(
+            partial(self.handler, 'side_filter_4', 'refresh_side'))
+        self.ui.side_pattern_5.textChanged.connect(
+            partial(self.handler, 'side_pattern_5', 'refresh_side'))
+        self.ui.side_repl_5.textChanged.connect(
+            partial(self.handler, 'side_repl_5', 'refresh_side'))
+        self.ui.side_match_5.textChanged.connect(
+            partial(self.handler, 'side_match_5', 'refresh_side'))
+        self.ui.side_dest_5.textChanged.connect(
+            partial(self.handler, 'side_dest_5', 'refresh_side'))
+        self.ui.side_filter_5.textChanged.connect(
+            partial(self.handler, 'side_filter_5', 'refresh_side'))
+        self.ui.side_pattern_6.textChanged.connect(
+            partial(self.handler, 'side_pattern_6', 'refresh_side'))
+        self.ui.side_repl_6.textChanged.connect(
+            partial(self.handler, 'side_repl_6', 'refresh_side'))
+        self.ui.side_match_6.textChanged.connect(
+            partial(self.handler, 'side_match_6', 'refresh_side'))
+        self.ui.side_dest_6.textChanged.connect(
+            partial(self.handler, 'side_dest_6', 'refresh_side'))
+        self.ui.side_filter_6.textChanged.connect(
+            partial(self.handler, 'side_filter_6', 'refresh_side'))
+
+        # copy files button
+        self.ui.side_copy.clicked.connect(
+            partial(self.handler, 'side_copy', 'side_copy'))
+
         # Ftrack Tab
         self.ui.ftrack_use.clicked.connect(
             partial(self.handler, 'ftrack_use', 'refresh_ftrack'))
@@ -383,6 +463,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         # preset name is empty, disable save button
         self.ui.save_preset_button.setEnabled(False)
 
+
     def handler(self, sender, group, *more):
         """
 
@@ -429,6 +510,32 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             if self.data:
                 self.data.transform_data()
                 self.show_all()
+
+        if group == 'refresh_side_files':
+            if self.data:
+                self.data.sidecar_files_find()
+                # sidecar files filter
+                self.data.sidecar_files_filter()
+                # parse table headers
+                self.data.prepare_all_columns()
+                # fill tables for export and display
+                self.data.prepare_tables()
+                self.show_all()
+
+        if group == 'refresh_side':
+            if self.data:
+                # sidecar files filter
+                self.data.sidecar_files_filter()
+                # parse table headers
+                self.data.prepare_all_columns()
+                # fill tables for export and display
+                self.data.prepare_tables()
+                self.show_all()
+
+        if sender == 'side_copy':
+            if self.data:
+                # sidecar files filter
+                self.data.sidecar_files_copy()
 
         if sender == 'write_button':
             # read column widths from tablewidget for excel column sizes

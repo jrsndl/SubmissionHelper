@@ -13,6 +13,8 @@ import parse_file_name
 from metadata import MetaData
 import helpers
 
+import ftrack_api
+import arrow
 
 class Sequencer(object):
     def __init__(self, in_path, sequence_mode='to_subsequences', gui=None):
@@ -81,8 +83,11 @@ class Sequencer(object):
         # get file sizes for merged list
         self.get_file_sizes()
 
+        # sidecar files
+        self.sidecar_files_find()
+
         # matadata
-        self.get_metadata()
+        #self.get_metadata()
 
     def transform_data(self):
         """
@@ -105,8 +110,8 @@ class Sequencer(object):
         # for every found item prepare regex items
         self.fill_regexes()
 
-        # sidecar files
-        self.sidecar_files_find()
+        # sidecar files filter
+        self.sidecar_files_filter()
 
         # parse table headers
         self.prepare_all_columns()
@@ -1301,6 +1306,13 @@ class Sequencer(object):
             if self.settings['text_footer']['value'] is not None:
                 txt_footer = self.settings['text_footer']['value']
 
+            side_sub_only = False
+            if self.settings['side_sub_only']['value'] is not None:
+                side_sub_only = bool(self.settings['side_sub_only']['value'])
+            side_log_only = False
+            if self.settings['side_log_only']['value'] is not None:
+                side_log_only = bool(self.settings['side_log_only']['value'])
+
         if self.merged_list and len(self.merged_list) > 0:
             for one_item in self.merged_list:
                 one_item.update(self.static_keywords)
@@ -1353,10 +1365,21 @@ class Sequencer(object):
 
                 sides = one_item.get('sidecars', None)
                 if sides:
-                    for one_side in sides:
-                        one_row_side = [one_side['result'], one_side['dest'],
-                                        one_side['file']]
-                        self.table_side.append(one_row_side)
+                    do_side = False
+                    if side_sub_only and not one_item['hide_sub']:
+                        do_side = True
+                    elif side_log_only and not one_item['hide_log']:
+                        do_side = True
+                    else:
+                        do_side = True
+                    if do_side:
+                        for one_side in sides:
+                            one_row_side = [
+                                one_side['result'],
+                                one_side['dest'],
+                                one_side['file']
+                            ]
+                            self.table_side.append(one_row_side)
 
         try:
             _header = txt_header.format(**self.static_keywords)
@@ -1374,7 +1397,8 @@ class Sequencer(object):
 
     def export_all(self, column_width_sub=None, column_width_log=None):
 
-        self.sidecar_files_copy()
+        if self.settings and bool(self.settings['side_copywithgo']['value']):
+            self.sidecar_files_copy()
 
         if self.settings and self.static_keywords:
             one_above = str(self.static_keywords['package_name_root']).replace('\\', '/') + '/'
@@ -1470,26 +1494,13 @@ class Sequencer(object):
 
         self.output['status'] = "Copying sidecar files."
 
-        if not self.settings:
-            return
-        side_sub_only = False
-        if self.settings['side_sub_only']['value']:
-            side_sub_only = bool(self.settings['side_sub_only']['value'])
-        side_log_only = False
-        if self.settings['side_log_only']['value']:
-            side_log_only = bool(self.settings['side_log_only']['value'])
-
-        if self.merged_list and len(self.merged_list) > 0:
-            for one_item in self.merged_list:
-                _s = one_item.get('sidecars', None)
-                if _s and len(_s) > 0:
-                    for one in _s:
-                        _src = one.get('file', None)
-                        _dst = one.get('dest', None)
-                        if _src and _dst:
-                            print("Sidecar file copy {} -> {}".format(_src, _dst))
-                            shutil.copy(_src, _dst)
-
+        if self.table_side is not None and len(self.table_side) > 0:
+            for one_item in self.table_side:
+                _src = one_item[2]
+                _dst = one_item[1]
+                if _src and _dst:
+                    print("Sidecar file copy {} -> {}".format(_src, _dst))
+                    shutil.copy(_src, _dst)
 
     def sidecar_files_find(self):
 
@@ -1536,13 +1547,30 @@ class Sequencer(object):
                             break
                 if include_keep and exclude_keep:
                     sidecars.append(one_sidecar)
-        do_sidecar = False
-        if sidecars is not None:
-            if len(sidecars) > 0:
-                do_sidecar = True
+        self.sidecars = sidecars
 
+    def sidecar_files_filter(self):
+
+        class Default(dict):
+            def __missing__(self, key):
+                return '{' + key + '}'
+
+        self.output['status'] = "Filtering sidecar files."
+        if not self.settings:
+            return
+
+        do_sidecar = False
+        if self.sidecars is not None:
+            if len(self.sidecars) > 0:
+                do_sidecar = True
         if not do_sidecar:
             return
+
+        # clear the sidecar files
+        for item in self.merged_list:
+            sides = item.get('sidecars', None)
+            if sides is not None:
+                item['sides'] = []
 
         # Get regexes from UI
         side_regexes = {}
@@ -1567,14 +1595,14 @@ class Sequencer(object):
             # only add regex if it is valid and not empty
             if match and pat and dest and pat_valid:
                 one_regex = {one: {
-                                    'pattern': pat,
-                                    'valid': pat_valid,
-                                    'compiled': pat_compiled,
-                                    'repl': rep,
-                                    'match': match,
-                                    'destination': dest,
-                                    'filter': my_filter
-                                   }}
+                    'pattern': pat,
+                    'valid': pat_valid,
+                    'compiled': pat_compiled,
+                    'repl': rep,
+                    'match': match,
+                    'destination': dest,
+                    'filter': my_filter
+                }}
                 side_regexes.update(one_regex)
 
         if side_regexes is None:
@@ -1586,7 +1614,7 @@ class Sequencer(object):
         if len(self.merged_list) == 0:
             return
 
-        for one_item in sidecars:
+        for one_item in self.sidecars:
             one_file = one_item
             _s = one_item.split('/')
             if not _s:
@@ -1641,17 +1669,21 @@ class Sequencer(object):
                     for item in self.merged_list:
                         expanded = None
                         try:
-                            expanded = one_regex['match'].format_map(Default(item))
-                            expanded = expanded.format_map(Default(self.static_keywords))
+                            expanded = one_regex['match'].format_map(
+                                Default(item))
+                            expanded = expanded.format_map(
+                                Default(self.static_keywords))
                             dest = None
                             try:
                                 dest = str(one_regex['destination'])
                                 try:
-                                    dest = dest.format_map(Default(sidecar_keywords))
+                                    dest = dest.format_map(
+                                        Default(sidecar_keywords))
                                 except:
                                     pass
                                 try:
-                                    dest = dest.format_map(Default(self.static_keywords))
+                                    dest = dest.format_map(
+                                        Default(self.static_keywords))
                                 except:
                                     pass
                                 try:
@@ -1666,7 +1698,7 @@ class Sequencer(object):
                                 pass
                             if expanded is not None:
                                 if expanded == result:
-                                    #sidecar file matches the package file
+                                    # sidecar file matches the package file
                                     one_side = {
                                         'result': result,
                                         'file': one_item,
@@ -1678,6 +1710,16 @@ class Sequencer(object):
                                         item['sidecars'] = [one_side]
                         except KeyError:
                             pass
+
+    def get_ftrack_events(self):
+
+        session = ftrack_api.Session(
+            server_url='https://dazzle.ftrackapp.com',
+            api_key='xxx',
+            api_user='jiri.sindelar'
+        )
+
+        pass
 
 
 if __name__ == "__main__":
