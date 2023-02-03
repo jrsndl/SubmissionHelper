@@ -971,7 +971,7 @@ class Sequencer(object):
 
         self.regexes = {}
         if self.settings:
-            indexes = [str(x) for x in range(1, 9)]
+            indexes = [str(x).zfill(2) for x in range(1, 16)]
             for one in indexes:
                 name_key = "parse_name_" + one
                 key = self.settings[name_key]["value"]

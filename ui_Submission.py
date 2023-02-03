@@ -1051,7 +1051,7 @@ class Ui_submission(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 751, 311))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 500, 542))
         sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
@@ -1072,14 +1072,14 @@ class Ui_submission(object):
 
         self.hl_parse1.addWidget(self.label_18)
 
-        self.parse_name_1 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_name_1.setObjectName(u"parse_name_1")
-        sizePolicy1.setHeightForWidth(self.parse_name_1.sizePolicy().hasHeightForWidth())
-        self.parse_name_1.setSizePolicy(sizePolicy1)
-        self.parse_name_1.setMinimumSize(QSize(30, 25))
-        self.parse_name_1.setMaximumSize(QSize(16000, 16777215))
+        self.parse_name_01 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_name_01.setObjectName(u"parse_name_01")
+        sizePolicy1.setHeightForWidth(self.parse_name_01.sizePolicy().hasHeightForWidth())
+        self.parse_name_01.setSizePolicy(sizePolicy1)
+        self.parse_name_01.setMinimumSize(QSize(30, 25))
+        self.parse_name_01.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse1.addWidget(self.parse_name_1)
+        self.hl_parse1.addWidget(self.parse_name_01)
 
         self.label_20 = QLabel(self.scrollAreaWidgetContents)
         self.label_20.setObjectName(u"label_20")
@@ -1089,13 +1089,13 @@ class Ui_submission(object):
 
         self.hl_parse1.addWidget(self.label_20)
 
-        self.parse_pattern_1 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_pattern_1.setObjectName(u"parse_pattern_1")
-        sizePolicy1.setHeightForWidth(self.parse_pattern_1.sizePolicy().hasHeightForWidth())
-        self.parse_pattern_1.setSizePolicy(sizePolicy1)
-        self.parse_pattern_1.setMinimumSize(QSize(100, 25))
+        self.parse_pattern_01 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_pattern_01.setObjectName(u"parse_pattern_01")
+        sizePolicy1.setHeightForWidth(self.parse_pattern_01.sizePolicy().hasHeightForWidth())
+        self.parse_pattern_01.setSizePolicy(sizePolicy1)
+        self.parse_pattern_01.setMinimumSize(QSize(100, 25))
 
-        self.hl_parse1.addWidget(self.parse_pattern_1)
+        self.hl_parse1.addWidget(self.parse_pattern_01)
 
         self.label_19 = QLabel(self.scrollAreaWidgetContents)
         self.label_19.setObjectName(u"label_19")
@@ -1105,14 +1105,14 @@ class Ui_submission(object):
 
         self.hl_parse1.addWidget(self.label_19)
 
-        self.parse_repl_1 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_repl_1.setObjectName(u"parse_repl_1")
-        sizePolicy1.setHeightForWidth(self.parse_repl_1.sizePolicy().hasHeightForWidth())
-        self.parse_repl_1.setSizePolicy(sizePolicy1)
-        self.parse_repl_1.setMinimumSize(QSize(80, 25))
-        self.parse_repl_1.setMaximumSize(QSize(1600, 16777215))
+        self.parse_repl_01 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_repl_01.setObjectName(u"parse_repl_01")
+        sizePolicy1.setHeightForWidth(self.parse_repl_01.sizePolicy().hasHeightForWidth())
+        self.parse_repl_01.setSizePolicy(sizePolicy1)
+        self.parse_repl_01.setMinimumSize(QSize(80, 25))
+        self.parse_repl_01.setMaximumSize(QSize(1600, 16777215))
 
-        self.hl_parse1.addWidget(self.parse_repl_1)
+        self.hl_parse1.addWidget(self.parse_repl_01)
 
         self.label_21 = QLabel(self.scrollAreaWidgetContents)
         self.label_21.setObjectName(u"label_21")
@@ -1122,14 +1122,14 @@ class Ui_submission(object):
 
         self.hl_parse1.addWidget(self.label_21)
 
-        self.parse_source_1 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_source_1.setObjectName(u"parse_source_1")
-        sizePolicy1.setHeightForWidth(self.parse_source_1.sizePolicy().hasHeightForWidth())
-        self.parse_source_1.setSizePolicy(sizePolicy1)
-        self.parse_source_1.setMinimumSize(QSize(30, 25))
-        self.parse_source_1.setMaximumSize(QSize(16000, 16777215))
+        self.parse_source_01 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_source_01.setObjectName(u"parse_source_01")
+        sizePolicy1.setHeightForWidth(self.parse_source_01.sizePolicy().hasHeightForWidth())
+        self.parse_source_01.setSizePolicy(sizePolicy1)
+        self.parse_source_01.setMinimumSize(QSize(30, 25))
+        self.parse_source_01.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse1.addWidget(self.parse_source_1)
+        self.hl_parse1.addWidget(self.parse_source_01)
 
         self.label_77 = QLabel(self.scrollAreaWidgetContents)
         self.label_77.setObjectName(u"label_77")
@@ -1139,14 +1139,14 @@ class Ui_submission(object):
 
         self.hl_parse1.addWidget(self.label_77)
 
-        self.parse_filter_1 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_filter_1.setObjectName(u"parse_filter_1")
-        sizePolicy1.setHeightForWidth(self.parse_filter_1.sizePolicy().hasHeightForWidth())
-        self.parse_filter_1.setSizePolicy(sizePolicy1)
-        self.parse_filter_1.setMinimumSize(QSize(30, 25))
-        self.parse_filter_1.setMaximumSize(QSize(16000, 16777215))
+        self.parse_filter_01 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_filter_01.setObjectName(u"parse_filter_01")
+        sizePolicy1.setHeightForWidth(self.parse_filter_01.sizePolicy().hasHeightForWidth())
+        self.parse_filter_01.setSizePolicy(sizePolicy1)
+        self.parse_filter_01.setMinimumSize(QSize(30, 25))
+        self.parse_filter_01.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse1.addWidget(self.parse_filter_1)
+        self.hl_parse1.addWidget(self.parse_filter_01)
 
 
         self.verticalLayout_30.addLayout(self.hl_parse1)
@@ -1161,14 +1161,14 @@ class Ui_submission(object):
 
         self.hl_parse2.addWidget(self.label_22)
 
-        self.parse_name_2 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_name_2.setObjectName(u"parse_name_2")
-        sizePolicy1.setHeightForWidth(self.parse_name_2.sizePolicy().hasHeightForWidth())
-        self.parse_name_2.setSizePolicy(sizePolicy1)
-        self.parse_name_2.setMinimumSize(QSize(30, 25))
-        self.parse_name_2.setMaximumSize(QSize(16000, 16777215))
+        self.parse_name_02 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_name_02.setObjectName(u"parse_name_02")
+        sizePolicy1.setHeightForWidth(self.parse_name_02.sizePolicy().hasHeightForWidth())
+        self.parse_name_02.setSizePolicy(sizePolicy1)
+        self.parse_name_02.setMinimumSize(QSize(30, 25))
+        self.parse_name_02.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse2.addWidget(self.parse_name_2)
+        self.hl_parse2.addWidget(self.parse_name_02)
 
         self.label_38 = QLabel(self.scrollAreaWidgetContents)
         self.label_38.setObjectName(u"label_38")
@@ -1178,13 +1178,13 @@ class Ui_submission(object):
 
         self.hl_parse2.addWidget(self.label_38)
 
-        self.parse_pattern_2 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_pattern_2.setObjectName(u"parse_pattern_2")
-        sizePolicy1.setHeightForWidth(self.parse_pattern_2.sizePolicy().hasHeightForWidth())
-        self.parse_pattern_2.setSizePolicy(sizePolicy1)
-        self.parse_pattern_2.setMinimumSize(QSize(100, 25))
+        self.parse_pattern_02 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_pattern_02.setObjectName(u"parse_pattern_02")
+        sizePolicy1.setHeightForWidth(self.parse_pattern_02.sizePolicy().hasHeightForWidth())
+        self.parse_pattern_02.setSizePolicy(sizePolicy1)
+        self.parse_pattern_02.setMinimumSize(QSize(100, 25))
 
-        self.hl_parse2.addWidget(self.parse_pattern_2)
+        self.hl_parse2.addWidget(self.parse_pattern_02)
 
         self.label_39 = QLabel(self.scrollAreaWidgetContents)
         self.label_39.setObjectName(u"label_39")
@@ -1194,14 +1194,14 @@ class Ui_submission(object):
 
         self.hl_parse2.addWidget(self.label_39)
 
-        self.parse_repl_2 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_repl_2.setObjectName(u"parse_repl_2")
-        sizePolicy1.setHeightForWidth(self.parse_repl_2.sizePolicy().hasHeightForWidth())
-        self.parse_repl_2.setSizePolicy(sizePolicy1)
-        self.parse_repl_2.setMinimumSize(QSize(80, 25))
-        self.parse_repl_2.setMaximumSize(QSize(1600, 16777215))
+        self.parse_repl_02 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_repl_02.setObjectName(u"parse_repl_02")
+        sizePolicy1.setHeightForWidth(self.parse_repl_02.sizePolicy().hasHeightForWidth())
+        self.parse_repl_02.setSizePolicy(sizePolicy1)
+        self.parse_repl_02.setMinimumSize(QSize(80, 25))
+        self.parse_repl_02.setMaximumSize(QSize(1600, 16777215))
 
-        self.hl_parse2.addWidget(self.parse_repl_2)
+        self.hl_parse2.addWidget(self.parse_repl_02)
 
         self.label_40 = QLabel(self.scrollAreaWidgetContents)
         self.label_40.setObjectName(u"label_40")
@@ -1211,14 +1211,14 @@ class Ui_submission(object):
 
         self.hl_parse2.addWidget(self.label_40)
 
-        self.parse_source_2 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_source_2.setObjectName(u"parse_source_2")
-        sizePolicy1.setHeightForWidth(self.parse_source_2.sizePolicy().hasHeightForWidth())
-        self.parse_source_2.setSizePolicy(sizePolicy1)
-        self.parse_source_2.setMinimumSize(QSize(30, 25))
-        self.parse_source_2.setMaximumSize(QSize(16000, 16777215))
+        self.parse_source_02 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_source_02.setObjectName(u"parse_source_02")
+        sizePolicy1.setHeightForWidth(self.parse_source_02.sizePolicy().hasHeightForWidth())
+        self.parse_source_02.setSizePolicy(sizePolicy1)
+        self.parse_source_02.setMinimumSize(QSize(30, 25))
+        self.parse_source_02.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse2.addWidget(self.parse_source_2)
+        self.hl_parse2.addWidget(self.parse_source_02)
 
         self.label_78 = QLabel(self.scrollAreaWidgetContents)
         self.label_78.setObjectName(u"label_78")
@@ -1228,14 +1228,14 @@ class Ui_submission(object):
 
         self.hl_parse2.addWidget(self.label_78)
 
-        self.parse_filter_2 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_filter_2.setObjectName(u"parse_filter_2")
-        sizePolicy1.setHeightForWidth(self.parse_filter_2.sizePolicy().hasHeightForWidth())
-        self.parse_filter_2.setSizePolicy(sizePolicy1)
-        self.parse_filter_2.setMinimumSize(QSize(30, 25))
-        self.parse_filter_2.setMaximumSize(QSize(16000, 16777215))
+        self.parse_filter_02 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_filter_02.setObjectName(u"parse_filter_02")
+        sizePolicy1.setHeightForWidth(self.parse_filter_02.sizePolicy().hasHeightForWidth())
+        self.parse_filter_02.setSizePolicy(sizePolicy1)
+        self.parse_filter_02.setMinimumSize(QSize(30, 25))
+        self.parse_filter_02.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse2.addWidget(self.parse_filter_2)
+        self.hl_parse2.addWidget(self.parse_filter_02)
 
 
         self.verticalLayout_30.addLayout(self.hl_parse2)
@@ -1250,14 +1250,14 @@ class Ui_submission(object):
 
         self.hl_parse3.addWidget(self.label_41)
 
-        self.parse_name_3 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_name_3.setObjectName(u"parse_name_3")
-        sizePolicy1.setHeightForWidth(self.parse_name_3.sizePolicy().hasHeightForWidth())
-        self.parse_name_3.setSizePolicy(sizePolicy1)
-        self.parse_name_3.setMinimumSize(QSize(30, 25))
-        self.parse_name_3.setMaximumSize(QSize(16000, 16777215))
+        self.parse_name_03 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_name_03.setObjectName(u"parse_name_03")
+        sizePolicy1.setHeightForWidth(self.parse_name_03.sizePolicy().hasHeightForWidth())
+        self.parse_name_03.setSizePolicy(sizePolicy1)
+        self.parse_name_03.setMinimumSize(QSize(30, 25))
+        self.parse_name_03.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse3.addWidget(self.parse_name_3)
+        self.hl_parse3.addWidget(self.parse_name_03)
 
         self.label_42 = QLabel(self.scrollAreaWidgetContents)
         self.label_42.setObjectName(u"label_42")
@@ -1267,13 +1267,13 @@ class Ui_submission(object):
 
         self.hl_parse3.addWidget(self.label_42)
 
-        self.parse_pattern_3 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_pattern_3.setObjectName(u"parse_pattern_3")
-        sizePolicy1.setHeightForWidth(self.parse_pattern_3.sizePolicy().hasHeightForWidth())
-        self.parse_pattern_3.setSizePolicy(sizePolicy1)
-        self.parse_pattern_3.setMinimumSize(QSize(100, 25))
+        self.parse_pattern_03 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_pattern_03.setObjectName(u"parse_pattern_03")
+        sizePolicy1.setHeightForWidth(self.parse_pattern_03.sizePolicy().hasHeightForWidth())
+        self.parse_pattern_03.setSizePolicy(sizePolicy1)
+        self.parse_pattern_03.setMinimumSize(QSize(100, 25))
 
-        self.hl_parse3.addWidget(self.parse_pattern_3)
+        self.hl_parse3.addWidget(self.parse_pattern_03)
 
         self.label_43 = QLabel(self.scrollAreaWidgetContents)
         self.label_43.setObjectName(u"label_43")
@@ -1283,14 +1283,14 @@ class Ui_submission(object):
 
         self.hl_parse3.addWidget(self.label_43)
 
-        self.parse_repl_3 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_repl_3.setObjectName(u"parse_repl_3")
-        sizePolicy1.setHeightForWidth(self.parse_repl_3.sizePolicy().hasHeightForWidth())
-        self.parse_repl_3.setSizePolicy(sizePolicy1)
-        self.parse_repl_3.setMinimumSize(QSize(80, 25))
-        self.parse_repl_3.setMaximumSize(QSize(1600, 16777215))
+        self.parse_repl_03 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_repl_03.setObjectName(u"parse_repl_03")
+        sizePolicy1.setHeightForWidth(self.parse_repl_03.sizePolicy().hasHeightForWidth())
+        self.parse_repl_03.setSizePolicy(sizePolicy1)
+        self.parse_repl_03.setMinimumSize(QSize(80, 25))
+        self.parse_repl_03.setMaximumSize(QSize(1600, 16777215))
 
-        self.hl_parse3.addWidget(self.parse_repl_3)
+        self.hl_parse3.addWidget(self.parse_repl_03)
 
         self.label_44 = QLabel(self.scrollAreaWidgetContents)
         self.label_44.setObjectName(u"label_44")
@@ -1300,14 +1300,14 @@ class Ui_submission(object):
 
         self.hl_parse3.addWidget(self.label_44)
 
-        self.parse_source_3 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_source_3.setObjectName(u"parse_source_3")
-        sizePolicy1.setHeightForWidth(self.parse_source_3.sizePolicy().hasHeightForWidth())
-        self.parse_source_3.setSizePolicy(sizePolicy1)
-        self.parse_source_3.setMinimumSize(QSize(30, 25))
-        self.parse_source_3.setMaximumSize(QSize(16000, 16777215))
+        self.parse_source_03 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_source_03.setObjectName(u"parse_source_03")
+        sizePolicy1.setHeightForWidth(self.parse_source_03.sizePolicy().hasHeightForWidth())
+        self.parse_source_03.setSizePolicy(sizePolicy1)
+        self.parse_source_03.setMinimumSize(QSize(30, 25))
+        self.parse_source_03.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse3.addWidget(self.parse_source_3)
+        self.hl_parse3.addWidget(self.parse_source_03)
 
         self.label_79 = QLabel(self.scrollAreaWidgetContents)
         self.label_79.setObjectName(u"label_79")
@@ -1317,14 +1317,14 @@ class Ui_submission(object):
 
         self.hl_parse3.addWidget(self.label_79)
 
-        self.parse_filter_3 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_filter_3.setObjectName(u"parse_filter_3")
-        sizePolicy1.setHeightForWidth(self.parse_filter_3.sizePolicy().hasHeightForWidth())
-        self.parse_filter_3.setSizePolicy(sizePolicy1)
-        self.parse_filter_3.setMinimumSize(QSize(30, 25))
-        self.parse_filter_3.setMaximumSize(QSize(16000, 16777215))
+        self.parse_filter_03 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_filter_03.setObjectName(u"parse_filter_03")
+        sizePolicy1.setHeightForWidth(self.parse_filter_03.sizePolicy().hasHeightForWidth())
+        self.parse_filter_03.setSizePolicy(sizePolicy1)
+        self.parse_filter_03.setMinimumSize(QSize(30, 25))
+        self.parse_filter_03.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse3.addWidget(self.parse_filter_3)
+        self.hl_parse3.addWidget(self.parse_filter_03)
 
 
         self.verticalLayout_30.addLayout(self.hl_parse3)
@@ -1339,14 +1339,14 @@ class Ui_submission(object):
 
         self.hl_parse4.addWidget(self.label_47)
 
-        self.parse_name_4 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_name_4.setObjectName(u"parse_name_4")
-        sizePolicy1.setHeightForWidth(self.parse_name_4.sizePolicy().hasHeightForWidth())
-        self.parse_name_4.setSizePolicy(sizePolicy1)
-        self.parse_name_4.setMinimumSize(QSize(30, 25))
-        self.parse_name_4.setMaximumSize(QSize(16000, 16777215))
+        self.parse_name_04 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_name_04.setObjectName(u"parse_name_04")
+        sizePolicy1.setHeightForWidth(self.parse_name_04.sizePolicy().hasHeightForWidth())
+        self.parse_name_04.setSizePolicy(sizePolicy1)
+        self.parse_name_04.setMinimumSize(QSize(30, 25))
+        self.parse_name_04.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse4.addWidget(self.parse_name_4)
+        self.hl_parse4.addWidget(self.parse_name_04)
 
         self.label_48 = QLabel(self.scrollAreaWidgetContents)
         self.label_48.setObjectName(u"label_48")
@@ -1356,13 +1356,13 @@ class Ui_submission(object):
 
         self.hl_parse4.addWidget(self.label_48)
 
-        self.parse_pattern_4 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_pattern_4.setObjectName(u"parse_pattern_4")
-        sizePolicy1.setHeightForWidth(self.parse_pattern_4.sizePolicy().hasHeightForWidth())
-        self.parse_pattern_4.setSizePolicy(sizePolicy1)
-        self.parse_pattern_4.setMinimumSize(QSize(100, 25))
+        self.parse_pattern_04 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_pattern_04.setObjectName(u"parse_pattern_04")
+        sizePolicy1.setHeightForWidth(self.parse_pattern_04.sizePolicy().hasHeightForWidth())
+        self.parse_pattern_04.setSizePolicy(sizePolicy1)
+        self.parse_pattern_04.setMinimumSize(QSize(100, 25))
 
-        self.hl_parse4.addWidget(self.parse_pattern_4)
+        self.hl_parse4.addWidget(self.parse_pattern_04)
 
         self.label_49 = QLabel(self.scrollAreaWidgetContents)
         self.label_49.setObjectName(u"label_49")
@@ -1372,14 +1372,14 @@ class Ui_submission(object):
 
         self.hl_parse4.addWidget(self.label_49)
 
-        self.parse_repl_4 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_repl_4.setObjectName(u"parse_repl_4")
-        sizePolicy1.setHeightForWidth(self.parse_repl_4.sizePolicy().hasHeightForWidth())
-        self.parse_repl_4.setSizePolicy(sizePolicy1)
-        self.parse_repl_4.setMinimumSize(QSize(80, 25))
-        self.parse_repl_4.setMaximumSize(QSize(1600, 16777215))
+        self.parse_repl_04 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_repl_04.setObjectName(u"parse_repl_04")
+        sizePolicy1.setHeightForWidth(self.parse_repl_04.sizePolicy().hasHeightForWidth())
+        self.parse_repl_04.setSizePolicy(sizePolicy1)
+        self.parse_repl_04.setMinimumSize(QSize(80, 25))
+        self.parse_repl_04.setMaximumSize(QSize(1600, 16777215))
 
-        self.hl_parse4.addWidget(self.parse_repl_4)
+        self.hl_parse4.addWidget(self.parse_repl_04)
 
         self.label_50 = QLabel(self.scrollAreaWidgetContents)
         self.label_50.setObjectName(u"label_50")
@@ -1389,14 +1389,14 @@ class Ui_submission(object):
 
         self.hl_parse4.addWidget(self.label_50)
 
-        self.parse_source_4 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_source_4.setObjectName(u"parse_source_4")
-        sizePolicy1.setHeightForWidth(self.parse_source_4.sizePolicy().hasHeightForWidth())
-        self.parse_source_4.setSizePolicy(sizePolicy1)
-        self.parse_source_4.setMinimumSize(QSize(30, 25))
-        self.parse_source_4.setMaximumSize(QSize(16000, 16777215))
+        self.parse_source_04 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_source_04.setObjectName(u"parse_source_04")
+        sizePolicy1.setHeightForWidth(self.parse_source_04.sizePolicy().hasHeightForWidth())
+        self.parse_source_04.setSizePolicy(sizePolicy1)
+        self.parse_source_04.setMinimumSize(QSize(30, 25))
+        self.parse_source_04.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse4.addWidget(self.parse_source_4)
+        self.hl_parse4.addWidget(self.parse_source_04)
 
         self.label_80 = QLabel(self.scrollAreaWidgetContents)
         self.label_80.setObjectName(u"label_80")
@@ -1406,14 +1406,14 @@ class Ui_submission(object):
 
         self.hl_parse4.addWidget(self.label_80)
 
-        self.parse_filter_4 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_filter_4.setObjectName(u"parse_filter_4")
-        sizePolicy1.setHeightForWidth(self.parse_filter_4.sizePolicy().hasHeightForWidth())
-        self.parse_filter_4.setSizePolicy(sizePolicy1)
-        self.parse_filter_4.setMinimumSize(QSize(30, 25))
-        self.parse_filter_4.setMaximumSize(QSize(16000, 16777215))
+        self.parse_filter_04 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_filter_04.setObjectName(u"parse_filter_04")
+        sizePolicy1.setHeightForWidth(self.parse_filter_04.sizePolicy().hasHeightForWidth())
+        self.parse_filter_04.setSizePolicy(sizePolicy1)
+        self.parse_filter_04.setMinimumSize(QSize(30, 25))
+        self.parse_filter_04.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse4.addWidget(self.parse_filter_4)
+        self.hl_parse4.addWidget(self.parse_filter_04)
 
 
         self.verticalLayout_30.addLayout(self.hl_parse4)
@@ -1428,14 +1428,14 @@ class Ui_submission(object):
 
         self.hl_parse5.addWidget(self.label_55)
 
-        self.parse_name_5 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_name_5.setObjectName(u"parse_name_5")
-        sizePolicy1.setHeightForWidth(self.parse_name_5.sizePolicy().hasHeightForWidth())
-        self.parse_name_5.setSizePolicy(sizePolicy1)
-        self.parse_name_5.setMinimumSize(QSize(30, 25))
-        self.parse_name_5.setMaximumSize(QSize(16000, 16777215))
+        self.parse_name_05 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_name_05.setObjectName(u"parse_name_05")
+        sizePolicy1.setHeightForWidth(self.parse_name_05.sizePolicy().hasHeightForWidth())
+        self.parse_name_05.setSizePolicy(sizePolicy1)
+        self.parse_name_05.setMinimumSize(QSize(30, 25))
+        self.parse_name_05.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse5.addWidget(self.parse_name_5)
+        self.hl_parse5.addWidget(self.parse_name_05)
 
         self.label_56 = QLabel(self.scrollAreaWidgetContents)
         self.label_56.setObjectName(u"label_56")
@@ -1445,13 +1445,13 @@ class Ui_submission(object):
 
         self.hl_parse5.addWidget(self.label_56)
 
-        self.parse_pattern_5 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_pattern_5.setObjectName(u"parse_pattern_5")
-        sizePolicy1.setHeightForWidth(self.parse_pattern_5.sizePolicy().hasHeightForWidth())
-        self.parse_pattern_5.setSizePolicy(sizePolicy1)
-        self.parse_pattern_5.setMinimumSize(QSize(100, 25))
+        self.parse_pattern_05 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_pattern_05.setObjectName(u"parse_pattern_05")
+        sizePolicy1.setHeightForWidth(self.parse_pattern_05.sizePolicy().hasHeightForWidth())
+        self.parse_pattern_05.setSizePolicy(sizePolicy1)
+        self.parse_pattern_05.setMinimumSize(QSize(100, 25))
 
-        self.hl_parse5.addWidget(self.parse_pattern_5)
+        self.hl_parse5.addWidget(self.parse_pattern_05)
 
         self.label_57 = QLabel(self.scrollAreaWidgetContents)
         self.label_57.setObjectName(u"label_57")
@@ -1461,14 +1461,14 @@ class Ui_submission(object):
 
         self.hl_parse5.addWidget(self.label_57)
 
-        self.parse_repl_5 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_repl_5.setObjectName(u"parse_repl_5")
-        sizePolicy1.setHeightForWidth(self.parse_repl_5.sizePolicy().hasHeightForWidth())
-        self.parse_repl_5.setSizePolicy(sizePolicy1)
-        self.parse_repl_5.setMinimumSize(QSize(80, 25))
-        self.parse_repl_5.setMaximumSize(QSize(1600, 16777215))
+        self.parse_repl_05 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_repl_05.setObjectName(u"parse_repl_05")
+        sizePolicy1.setHeightForWidth(self.parse_repl_05.sizePolicy().hasHeightForWidth())
+        self.parse_repl_05.setSizePolicy(sizePolicy1)
+        self.parse_repl_05.setMinimumSize(QSize(80, 25))
+        self.parse_repl_05.setMaximumSize(QSize(1600, 16777215))
 
-        self.hl_parse5.addWidget(self.parse_repl_5)
+        self.hl_parse5.addWidget(self.parse_repl_05)
 
         self.label_58 = QLabel(self.scrollAreaWidgetContents)
         self.label_58.setObjectName(u"label_58")
@@ -1478,14 +1478,14 @@ class Ui_submission(object):
 
         self.hl_parse5.addWidget(self.label_58)
 
-        self.parse_source_5 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_source_5.setObjectName(u"parse_source_5")
-        sizePolicy1.setHeightForWidth(self.parse_source_5.sizePolicy().hasHeightForWidth())
-        self.parse_source_5.setSizePolicy(sizePolicy1)
-        self.parse_source_5.setMinimumSize(QSize(30, 25))
-        self.parse_source_5.setMaximumSize(QSize(16000, 16777215))
+        self.parse_source_05 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_source_05.setObjectName(u"parse_source_05")
+        sizePolicy1.setHeightForWidth(self.parse_source_05.sizePolicy().hasHeightForWidth())
+        self.parse_source_05.setSizePolicy(sizePolicy1)
+        self.parse_source_05.setMinimumSize(QSize(30, 25))
+        self.parse_source_05.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse5.addWidget(self.parse_source_5)
+        self.hl_parse5.addWidget(self.parse_source_05)
 
         self.label_81 = QLabel(self.scrollAreaWidgetContents)
         self.label_81.setObjectName(u"label_81")
@@ -1495,14 +1495,14 @@ class Ui_submission(object):
 
         self.hl_parse5.addWidget(self.label_81)
 
-        self.parse_filter_5 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_filter_5.setObjectName(u"parse_filter_5")
-        sizePolicy1.setHeightForWidth(self.parse_filter_5.sizePolicy().hasHeightForWidth())
-        self.parse_filter_5.setSizePolicy(sizePolicy1)
-        self.parse_filter_5.setMinimumSize(QSize(30, 25))
-        self.parse_filter_5.setMaximumSize(QSize(16000, 16777215))
+        self.parse_filter_05 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_filter_05.setObjectName(u"parse_filter_05")
+        sizePolicy1.setHeightForWidth(self.parse_filter_05.sizePolicy().hasHeightForWidth())
+        self.parse_filter_05.setSizePolicy(sizePolicy1)
+        self.parse_filter_05.setMinimumSize(QSize(30, 25))
+        self.parse_filter_05.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse5.addWidget(self.parse_filter_5)
+        self.hl_parse5.addWidget(self.parse_filter_05)
 
 
         self.verticalLayout_30.addLayout(self.hl_parse5)
@@ -1517,14 +1517,14 @@ class Ui_submission(object):
 
         self.hl_parse6.addWidget(self.label_59)
 
-        self.parse_name_6 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_name_6.setObjectName(u"parse_name_6")
-        sizePolicy1.setHeightForWidth(self.parse_name_6.sizePolicy().hasHeightForWidth())
-        self.parse_name_6.setSizePolicy(sizePolicy1)
-        self.parse_name_6.setMinimumSize(QSize(30, 25))
-        self.parse_name_6.setMaximumSize(QSize(16000, 16777215))
+        self.parse_name_06 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_name_06.setObjectName(u"parse_name_06")
+        sizePolicy1.setHeightForWidth(self.parse_name_06.sizePolicy().hasHeightForWidth())
+        self.parse_name_06.setSizePolicy(sizePolicy1)
+        self.parse_name_06.setMinimumSize(QSize(30, 25))
+        self.parse_name_06.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse6.addWidget(self.parse_name_6)
+        self.hl_parse6.addWidget(self.parse_name_06)
 
         self.label_60 = QLabel(self.scrollAreaWidgetContents)
         self.label_60.setObjectName(u"label_60")
@@ -1534,13 +1534,13 @@ class Ui_submission(object):
 
         self.hl_parse6.addWidget(self.label_60)
 
-        self.parse_pattern_6 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_pattern_6.setObjectName(u"parse_pattern_6")
-        sizePolicy1.setHeightForWidth(self.parse_pattern_6.sizePolicy().hasHeightForWidth())
-        self.parse_pattern_6.setSizePolicy(sizePolicy1)
-        self.parse_pattern_6.setMinimumSize(QSize(100, 25))
+        self.parse_pattern_06 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_pattern_06.setObjectName(u"parse_pattern_06")
+        sizePolicy1.setHeightForWidth(self.parse_pattern_06.sizePolicy().hasHeightForWidth())
+        self.parse_pattern_06.setSizePolicy(sizePolicy1)
+        self.parse_pattern_06.setMinimumSize(QSize(100, 25))
 
-        self.hl_parse6.addWidget(self.parse_pattern_6)
+        self.hl_parse6.addWidget(self.parse_pattern_06)
 
         self.label_61 = QLabel(self.scrollAreaWidgetContents)
         self.label_61.setObjectName(u"label_61")
@@ -1550,14 +1550,14 @@ class Ui_submission(object):
 
         self.hl_parse6.addWidget(self.label_61)
 
-        self.parse_repl_6 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_repl_6.setObjectName(u"parse_repl_6")
-        sizePolicy1.setHeightForWidth(self.parse_repl_6.sizePolicy().hasHeightForWidth())
-        self.parse_repl_6.setSizePolicy(sizePolicy1)
-        self.parse_repl_6.setMinimumSize(QSize(80, 25))
-        self.parse_repl_6.setMaximumSize(QSize(1600, 16777215))
+        self.parse_repl_06 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_repl_06.setObjectName(u"parse_repl_06")
+        sizePolicy1.setHeightForWidth(self.parse_repl_06.sizePolicy().hasHeightForWidth())
+        self.parse_repl_06.setSizePolicy(sizePolicy1)
+        self.parse_repl_06.setMinimumSize(QSize(80, 25))
+        self.parse_repl_06.setMaximumSize(QSize(1600, 16777215))
 
-        self.hl_parse6.addWidget(self.parse_repl_6)
+        self.hl_parse6.addWidget(self.parse_repl_06)
 
         self.label_62 = QLabel(self.scrollAreaWidgetContents)
         self.label_62.setObjectName(u"label_62")
@@ -1567,14 +1567,14 @@ class Ui_submission(object):
 
         self.hl_parse6.addWidget(self.label_62)
 
-        self.parse_source_6 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_source_6.setObjectName(u"parse_source_6")
-        sizePolicy1.setHeightForWidth(self.parse_source_6.sizePolicy().hasHeightForWidth())
-        self.parse_source_6.setSizePolicy(sizePolicy1)
-        self.parse_source_6.setMinimumSize(QSize(30, 25))
-        self.parse_source_6.setMaximumSize(QSize(16000, 16777215))
+        self.parse_source_06 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_source_06.setObjectName(u"parse_source_06")
+        sizePolicy1.setHeightForWidth(self.parse_source_06.sizePolicy().hasHeightForWidth())
+        self.parse_source_06.setSizePolicy(sizePolicy1)
+        self.parse_source_06.setMinimumSize(QSize(30, 25))
+        self.parse_source_06.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse6.addWidget(self.parse_source_6)
+        self.hl_parse6.addWidget(self.parse_source_06)
 
         self.label_82 = QLabel(self.scrollAreaWidgetContents)
         self.label_82.setObjectName(u"label_82")
@@ -1584,14 +1584,14 @@ class Ui_submission(object):
 
         self.hl_parse6.addWidget(self.label_82)
 
-        self.parse_filter_6 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_filter_6.setObjectName(u"parse_filter_6")
-        sizePolicy1.setHeightForWidth(self.parse_filter_6.sizePolicy().hasHeightForWidth())
-        self.parse_filter_6.setSizePolicy(sizePolicy1)
-        self.parse_filter_6.setMinimumSize(QSize(30, 25))
-        self.parse_filter_6.setMaximumSize(QSize(16000, 16777215))
+        self.parse_filter_06 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_filter_06.setObjectName(u"parse_filter_06")
+        sizePolicy1.setHeightForWidth(self.parse_filter_06.sizePolicy().hasHeightForWidth())
+        self.parse_filter_06.setSizePolicy(sizePolicy1)
+        self.parse_filter_06.setMinimumSize(QSize(30, 25))
+        self.parse_filter_06.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse6.addWidget(self.parse_filter_6)
+        self.hl_parse6.addWidget(self.parse_filter_06)
 
 
         self.verticalLayout_30.addLayout(self.hl_parse6)
@@ -1606,14 +1606,14 @@ class Ui_submission(object):
 
         self.hl_parse7.addWidget(self.label_63)
 
-        self.parse_name_7 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_name_7.setObjectName(u"parse_name_7")
-        sizePolicy1.setHeightForWidth(self.parse_name_7.sizePolicy().hasHeightForWidth())
-        self.parse_name_7.setSizePolicy(sizePolicy1)
-        self.parse_name_7.setMinimumSize(QSize(30, 25))
-        self.parse_name_7.setMaximumSize(QSize(16000, 16777215))
+        self.parse_name_07 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_name_07.setObjectName(u"parse_name_07")
+        sizePolicy1.setHeightForWidth(self.parse_name_07.sizePolicy().hasHeightForWidth())
+        self.parse_name_07.setSizePolicy(sizePolicy1)
+        self.parse_name_07.setMinimumSize(QSize(30, 25))
+        self.parse_name_07.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse7.addWidget(self.parse_name_7)
+        self.hl_parse7.addWidget(self.parse_name_07)
 
         self.label_64 = QLabel(self.scrollAreaWidgetContents)
         self.label_64.setObjectName(u"label_64")
@@ -1623,13 +1623,13 @@ class Ui_submission(object):
 
         self.hl_parse7.addWidget(self.label_64)
 
-        self.parse_pattern_7 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_pattern_7.setObjectName(u"parse_pattern_7")
-        sizePolicy1.setHeightForWidth(self.parse_pattern_7.sizePolicy().hasHeightForWidth())
-        self.parse_pattern_7.setSizePolicy(sizePolicy1)
-        self.parse_pattern_7.setMinimumSize(QSize(100, 25))
+        self.parse_pattern_07 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_pattern_07.setObjectName(u"parse_pattern_07")
+        sizePolicy1.setHeightForWidth(self.parse_pattern_07.sizePolicy().hasHeightForWidth())
+        self.parse_pattern_07.setSizePolicy(sizePolicy1)
+        self.parse_pattern_07.setMinimumSize(QSize(100, 25))
 
-        self.hl_parse7.addWidget(self.parse_pattern_7)
+        self.hl_parse7.addWidget(self.parse_pattern_07)
 
         self.label_65 = QLabel(self.scrollAreaWidgetContents)
         self.label_65.setObjectName(u"label_65")
@@ -1639,14 +1639,14 @@ class Ui_submission(object):
 
         self.hl_parse7.addWidget(self.label_65)
 
-        self.parse_repl_7 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_repl_7.setObjectName(u"parse_repl_7")
-        sizePolicy1.setHeightForWidth(self.parse_repl_7.sizePolicy().hasHeightForWidth())
-        self.parse_repl_7.setSizePolicy(sizePolicy1)
-        self.parse_repl_7.setMinimumSize(QSize(80, 25))
-        self.parse_repl_7.setMaximumSize(QSize(1600, 16777215))
+        self.parse_repl_07 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_repl_07.setObjectName(u"parse_repl_07")
+        sizePolicy1.setHeightForWidth(self.parse_repl_07.sizePolicy().hasHeightForWidth())
+        self.parse_repl_07.setSizePolicy(sizePolicy1)
+        self.parse_repl_07.setMinimumSize(QSize(80, 25))
+        self.parse_repl_07.setMaximumSize(QSize(1600, 16777215))
 
-        self.hl_parse7.addWidget(self.parse_repl_7)
+        self.hl_parse7.addWidget(self.parse_repl_07)
 
         self.label_66 = QLabel(self.scrollAreaWidgetContents)
         self.label_66.setObjectName(u"label_66")
@@ -1656,14 +1656,14 @@ class Ui_submission(object):
 
         self.hl_parse7.addWidget(self.label_66)
 
-        self.parse_source_7 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_source_7.setObjectName(u"parse_source_7")
-        sizePolicy1.setHeightForWidth(self.parse_source_7.sizePolicy().hasHeightForWidth())
-        self.parse_source_7.setSizePolicy(sizePolicy1)
-        self.parse_source_7.setMinimumSize(QSize(30, 25))
-        self.parse_source_7.setMaximumSize(QSize(16000, 16777215))
+        self.parse_source_07 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_source_07.setObjectName(u"parse_source_07")
+        sizePolicy1.setHeightForWidth(self.parse_source_07.sizePolicy().hasHeightForWidth())
+        self.parse_source_07.setSizePolicy(sizePolicy1)
+        self.parse_source_07.setMinimumSize(QSize(30, 25))
+        self.parse_source_07.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse7.addWidget(self.parse_source_7)
+        self.hl_parse7.addWidget(self.parse_source_07)
 
         self.label_83 = QLabel(self.scrollAreaWidgetContents)
         self.label_83.setObjectName(u"label_83")
@@ -1673,14 +1673,14 @@ class Ui_submission(object):
 
         self.hl_parse7.addWidget(self.label_83)
 
-        self.parse_filter_7 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_filter_7.setObjectName(u"parse_filter_7")
-        sizePolicy1.setHeightForWidth(self.parse_filter_7.sizePolicy().hasHeightForWidth())
-        self.parse_filter_7.setSizePolicy(sizePolicy1)
-        self.parse_filter_7.setMinimumSize(QSize(30, 25))
-        self.parse_filter_7.setMaximumSize(QSize(16000, 16777215))
+        self.parse_filter_07 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_filter_07.setObjectName(u"parse_filter_07")
+        sizePolicy1.setHeightForWidth(self.parse_filter_07.sizePolicy().hasHeightForWidth())
+        self.parse_filter_07.setSizePolicy(sizePolicy1)
+        self.parse_filter_07.setMinimumSize(QSize(30, 25))
+        self.parse_filter_07.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse7.addWidget(self.parse_filter_7)
+        self.hl_parse7.addWidget(self.parse_filter_07)
 
 
         self.verticalLayout_30.addLayout(self.hl_parse7)
@@ -1695,14 +1695,14 @@ class Ui_submission(object):
 
         self.hl_parse8.addWidget(self.label_67)
 
-        self.parse_name_8 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_name_8.setObjectName(u"parse_name_8")
-        sizePolicy1.setHeightForWidth(self.parse_name_8.sizePolicy().hasHeightForWidth())
-        self.parse_name_8.setSizePolicy(sizePolicy1)
-        self.parse_name_8.setMinimumSize(QSize(30, 25))
-        self.parse_name_8.setMaximumSize(QSize(16000, 16777215))
+        self.parse_name_08 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_name_08.setObjectName(u"parse_name_08")
+        sizePolicy1.setHeightForWidth(self.parse_name_08.sizePolicy().hasHeightForWidth())
+        self.parse_name_08.setSizePolicy(sizePolicy1)
+        self.parse_name_08.setMinimumSize(QSize(30, 25))
+        self.parse_name_08.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse8.addWidget(self.parse_name_8)
+        self.hl_parse8.addWidget(self.parse_name_08)
 
         self.label_68 = QLabel(self.scrollAreaWidgetContents)
         self.label_68.setObjectName(u"label_68")
@@ -1712,13 +1712,13 @@ class Ui_submission(object):
 
         self.hl_parse8.addWidget(self.label_68)
 
-        self.parse_pattern_8 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_pattern_8.setObjectName(u"parse_pattern_8")
-        sizePolicy1.setHeightForWidth(self.parse_pattern_8.sizePolicy().hasHeightForWidth())
-        self.parse_pattern_8.setSizePolicy(sizePolicy1)
-        self.parse_pattern_8.setMinimumSize(QSize(100, 25))
+        self.parse_pattern_08 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_pattern_08.setObjectName(u"parse_pattern_08")
+        sizePolicy1.setHeightForWidth(self.parse_pattern_08.sizePolicy().hasHeightForWidth())
+        self.parse_pattern_08.setSizePolicy(sizePolicy1)
+        self.parse_pattern_08.setMinimumSize(QSize(100, 25))
 
-        self.hl_parse8.addWidget(self.parse_pattern_8)
+        self.hl_parse8.addWidget(self.parse_pattern_08)
 
         self.label_69 = QLabel(self.scrollAreaWidgetContents)
         self.label_69.setObjectName(u"label_69")
@@ -1728,14 +1728,14 @@ class Ui_submission(object):
 
         self.hl_parse8.addWidget(self.label_69)
 
-        self.parse_repl_8 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_repl_8.setObjectName(u"parse_repl_8")
-        sizePolicy1.setHeightForWidth(self.parse_repl_8.sizePolicy().hasHeightForWidth())
-        self.parse_repl_8.setSizePolicy(sizePolicy1)
-        self.parse_repl_8.setMinimumSize(QSize(80, 25))
-        self.parse_repl_8.setMaximumSize(QSize(1600, 16777215))
+        self.parse_repl_08 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_repl_08.setObjectName(u"parse_repl_08")
+        sizePolicy1.setHeightForWidth(self.parse_repl_08.sizePolicy().hasHeightForWidth())
+        self.parse_repl_08.setSizePolicy(sizePolicy1)
+        self.parse_repl_08.setMinimumSize(QSize(80, 25))
+        self.parse_repl_08.setMaximumSize(QSize(1600, 16777215))
 
-        self.hl_parse8.addWidget(self.parse_repl_8)
+        self.hl_parse8.addWidget(self.parse_repl_08)
 
         self.label_70 = QLabel(self.scrollAreaWidgetContents)
         self.label_70.setObjectName(u"label_70")
@@ -1745,14 +1745,14 @@ class Ui_submission(object):
 
         self.hl_parse8.addWidget(self.label_70)
 
-        self.parse_source_8 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_source_8.setObjectName(u"parse_source_8")
-        sizePolicy1.setHeightForWidth(self.parse_source_8.sizePolicy().hasHeightForWidth())
-        self.parse_source_8.setSizePolicy(sizePolicy1)
-        self.parse_source_8.setMinimumSize(QSize(30, 25))
-        self.parse_source_8.setMaximumSize(QSize(16000, 16777215))
+        self.parse_source_08 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_source_08.setObjectName(u"parse_source_08")
+        sizePolicy1.setHeightForWidth(self.parse_source_08.sizePolicy().hasHeightForWidth())
+        self.parse_source_08.setSizePolicy(sizePolicy1)
+        self.parse_source_08.setMinimumSize(QSize(30, 25))
+        self.parse_source_08.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse8.addWidget(self.parse_source_8)
+        self.hl_parse8.addWidget(self.parse_source_08)
 
         self.label_84 = QLabel(self.scrollAreaWidgetContents)
         self.label_84.setObjectName(u"label_84")
@@ -1762,14 +1762,14 @@ class Ui_submission(object):
 
         self.hl_parse8.addWidget(self.label_84)
 
-        self.parse_filter_8 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_filter_8.setObjectName(u"parse_filter_8")
-        sizePolicy1.setHeightForWidth(self.parse_filter_8.sizePolicy().hasHeightForWidth())
-        self.parse_filter_8.setSizePolicy(sizePolicy1)
-        self.parse_filter_8.setMinimumSize(QSize(30, 25))
-        self.parse_filter_8.setMaximumSize(QSize(16000, 16777215))
+        self.parse_filter_08 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_filter_08.setObjectName(u"parse_filter_08")
+        sizePolicy1.setHeightForWidth(self.parse_filter_08.sizePolicy().hasHeightForWidth())
+        self.parse_filter_08.setSizePolicy(sizePolicy1)
+        self.parse_filter_08.setMinimumSize(QSize(30, 25))
+        self.parse_filter_08.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse8.addWidget(self.parse_filter_8)
+        self.hl_parse8.addWidget(self.parse_filter_08)
 
 
         self.verticalLayout_30.addLayout(self.hl_parse8)
@@ -1784,14 +1784,14 @@ class Ui_submission(object):
 
         self.hl_parse9.addWidget(self.label_71)
 
-        self.parse_name_9 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_name_9.setObjectName(u"parse_name_9")
-        sizePolicy1.setHeightForWidth(self.parse_name_9.sizePolicy().hasHeightForWidth())
-        self.parse_name_9.setSizePolicy(sizePolicy1)
-        self.parse_name_9.setMinimumSize(QSize(30, 25))
-        self.parse_name_9.setMaximumSize(QSize(16000, 16777215))
+        self.parse_name_09 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_name_09.setObjectName(u"parse_name_09")
+        sizePolicy1.setHeightForWidth(self.parse_name_09.sizePolicy().hasHeightForWidth())
+        self.parse_name_09.setSizePolicy(sizePolicy1)
+        self.parse_name_09.setMinimumSize(QSize(30, 25))
+        self.parse_name_09.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse9.addWidget(self.parse_name_9)
+        self.hl_parse9.addWidget(self.parse_name_09)
 
         self.label_72 = QLabel(self.scrollAreaWidgetContents)
         self.label_72.setObjectName(u"label_72")
@@ -1801,13 +1801,13 @@ class Ui_submission(object):
 
         self.hl_parse9.addWidget(self.label_72)
 
-        self.parse_pattern_9 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_pattern_9.setObjectName(u"parse_pattern_9")
-        sizePolicy1.setHeightForWidth(self.parse_pattern_9.sizePolicy().hasHeightForWidth())
-        self.parse_pattern_9.setSizePolicy(sizePolicy1)
-        self.parse_pattern_9.setMinimumSize(QSize(100, 25))
+        self.parse_pattern_09 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_pattern_09.setObjectName(u"parse_pattern_09")
+        sizePolicy1.setHeightForWidth(self.parse_pattern_09.sizePolicy().hasHeightForWidth())
+        self.parse_pattern_09.setSizePolicy(sizePolicy1)
+        self.parse_pattern_09.setMinimumSize(QSize(100, 25))
 
-        self.hl_parse9.addWidget(self.parse_pattern_9)
+        self.hl_parse9.addWidget(self.parse_pattern_09)
 
         self.label_73 = QLabel(self.scrollAreaWidgetContents)
         self.label_73.setObjectName(u"label_73")
@@ -1817,14 +1817,14 @@ class Ui_submission(object):
 
         self.hl_parse9.addWidget(self.label_73)
 
-        self.parse_repl_9 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_repl_9.setObjectName(u"parse_repl_9")
-        sizePolicy1.setHeightForWidth(self.parse_repl_9.sizePolicy().hasHeightForWidth())
-        self.parse_repl_9.setSizePolicy(sizePolicy1)
-        self.parse_repl_9.setMinimumSize(QSize(80, 25))
-        self.parse_repl_9.setMaximumSize(QSize(1600, 16777215))
+        self.parse_repl_09 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_repl_09.setObjectName(u"parse_repl_09")
+        sizePolicy1.setHeightForWidth(self.parse_repl_09.sizePolicy().hasHeightForWidth())
+        self.parse_repl_09.setSizePolicy(sizePolicy1)
+        self.parse_repl_09.setMinimumSize(QSize(80, 25))
+        self.parse_repl_09.setMaximumSize(QSize(1600, 16777215))
 
-        self.hl_parse9.addWidget(self.parse_repl_9)
+        self.hl_parse9.addWidget(self.parse_repl_09)
 
         self.label_74 = QLabel(self.scrollAreaWidgetContents)
         self.label_74.setObjectName(u"label_74")
@@ -1834,14 +1834,14 @@ class Ui_submission(object):
 
         self.hl_parse9.addWidget(self.label_74)
 
-        self.parse_source_9 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_source_9.setObjectName(u"parse_source_9")
-        sizePolicy1.setHeightForWidth(self.parse_source_9.sizePolicy().hasHeightForWidth())
-        self.parse_source_9.setSizePolicy(sizePolicy1)
-        self.parse_source_9.setMinimumSize(QSize(30, 25))
-        self.parse_source_9.setMaximumSize(QSize(16000, 16777215))
+        self.parse_source_09 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_source_09.setObjectName(u"parse_source_09")
+        sizePolicy1.setHeightForWidth(self.parse_source_09.sizePolicy().hasHeightForWidth())
+        self.parse_source_09.setSizePolicy(sizePolicy1)
+        self.parse_source_09.setMinimumSize(QSize(30, 25))
+        self.parse_source_09.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse9.addWidget(self.parse_source_9)
+        self.hl_parse9.addWidget(self.parse_source_09)
 
         self.label_85 = QLabel(self.scrollAreaWidgetContents)
         self.label_85.setObjectName(u"label_85")
@@ -1851,17 +1851,640 @@ class Ui_submission(object):
 
         self.hl_parse9.addWidget(self.label_85)
 
-        self.parse_filter_9 = QLineEdit(self.scrollAreaWidgetContents)
-        self.parse_filter_9.setObjectName(u"parse_filter_9")
-        sizePolicy1.setHeightForWidth(self.parse_filter_9.sizePolicy().hasHeightForWidth())
-        self.parse_filter_9.setSizePolicy(sizePolicy1)
-        self.parse_filter_9.setMinimumSize(QSize(30, 25))
-        self.parse_filter_9.setMaximumSize(QSize(16000, 16777215))
+        self.parse_filter_09 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_filter_09.setObjectName(u"parse_filter_09")
+        sizePolicy1.setHeightForWidth(self.parse_filter_09.sizePolicy().hasHeightForWidth())
+        self.parse_filter_09.setSizePolicy(sizePolicy1)
+        self.parse_filter_09.setMinimumSize(QSize(30, 25))
+        self.parse_filter_09.setMaximumSize(QSize(16000, 16777215))
 
-        self.hl_parse9.addWidget(self.parse_filter_9)
+        self.hl_parse9.addWidget(self.parse_filter_09)
 
 
         self.verticalLayout_30.addLayout(self.hl_parse9)
+
+        self.hl_parse10 = QHBoxLayout()
+        self.hl_parse10.setObjectName(u"hl_parse10")
+        self.label_87 = QLabel(self.scrollAreaWidgetContents)
+        self.label_87.setObjectName(u"label_87")
+        sizePolicy2.setHeightForWidth(self.label_87.sizePolicy().hasHeightForWidth())
+        self.label_87.setSizePolicy(sizePolicy2)
+        self.label_87.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse10.addWidget(self.label_87)
+
+        self.parse_name_10 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_name_10.setObjectName(u"parse_name_10")
+        sizePolicy1.setHeightForWidth(self.parse_name_10.sizePolicy().hasHeightForWidth())
+        self.parse_name_10.setSizePolicy(sizePolicy1)
+        self.parse_name_10.setMinimumSize(QSize(30, 25))
+        self.parse_name_10.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse10.addWidget(self.parse_name_10)
+
+        self.label_114 = QLabel(self.scrollAreaWidgetContents)
+        self.label_114.setObjectName(u"label_114")
+        sizePolicy2.setHeightForWidth(self.label_114.sizePolicy().hasHeightForWidth())
+        self.label_114.setSizePolicy(sizePolicy2)
+        self.label_114.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse10.addWidget(self.label_114)
+
+        self.parse_pattern_10 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_pattern_10.setObjectName(u"parse_pattern_10")
+        sizePolicy1.setHeightForWidth(self.parse_pattern_10.sizePolicy().hasHeightForWidth())
+        self.parse_pattern_10.setSizePolicy(sizePolicy1)
+        self.parse_pattern_10.setMinimumSize(QSize(100, 25))
+
+        self.hl_parse10.addWidget(self.parse_pattern_10)
+
+        self.label_115 = QLabel(self.scrollAreaWidgetContents)
+        self.label_115.setObjectName(u"label_115")
+        sizePolicy2.setHeightForWidth(self.label_115.sizePolicy().hasHeightForWidth())
+        self.label_115.setSizePolicy(sizePolicy2)
+        self.label_115.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse10.addWidget(self.label_115)
+
+        self.parse_repl_10 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_repl_10.setObjectName(u"parse_repl_10")
+        sizePolicy1.setHeightForWidth(self.parse_repl_10.sizePolicy().hasHeightForWidth())
+        self.parse_repl_10.setSizePolicy(sizePolicy1)
+        self.parse_repl_10.setMinimumSize(QSize(80, 25))
+        self.parse_repl_10.setMaximumSize(QSize(1600, 16777215))
+
+        self.hl_parse10.addWidget(self.parse_repl_10)
+
+        self.label_116 = QLabel(self.scrollAreaWidgetContents)
+        self.label_116.setObjectName(u"label_116")
+        sizePolicy2.setHeightForWidth(self.label_116.sizePolicy().hasHeightForWidth())
+        self.label_116.setSizePolicy(sizePolicy2)
+        self.label_116.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse10.addWidget(self.label_116)
+
+        self.parse_source_10 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_source_10.setObjectName(u"parse_source_10")
+        sizePolicy1.setHeightForWidth(self.parse_source_10.sizePolicy().hasHeightForWidth())
+        self.parse_source_10.setSizePolicy(sizePolicy1)
+        self.parse_source_10.setMinimumSize(QSize(30, 25))
+        self.parse_source_10.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse10.addWidget(self.parse_source_10)
+
+        self.label_117 = QLabel(self.scrollAreaWidgetContents)
+        self.label_117.setObjectName(u"label_117")
+        sizePolicy2.setHeightForWidth(self.label_117.sizePolicy().hasHeightForWidth())
+        self.label_117.setSizePolicy(sizePolicy2)
+        self.label_117.setMinimumSize(QSize(40, 25))
+
+        self.hl_parse10.addWidget(self.label_117)
+
+        self.parse_filter_10 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_filter_10.setObjectName(u"parse_filter_10")
+        sizePolicy1.setHeightForWidth(self.parse_filter_10.sizePolicy().hasHeightForWidth())
+        self.parse_filter_10.setSizePolicy(sizePolicy1)
+        self.parse_filter_10.setMinimumSize(QSize(30, 25))
+        self.parse_filter_10.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse10.addWidget(self.parse_filter_10)
+
+
+        self.verticalLayout_30.addLayout(self.hl_parse10)
+
+        self.hl_parse11 = QHBoxLayout()
+        self.hl_parse11.setObjectName(u"hl_parse11")
+        self.label_118 = QLabel(self.scrollAreaWidgetContents)
+        self.label_118.setObjectName(u"label_118")
+        sizePolicy2.setHeightForWidth(self.label_118.sizePolicy().hasHeightForWidth())
+        self.label_118.setSizePolicy(sizePolicy2)
+        self.label_118.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse11.addWidget(self.label_118)
+
+        self.parse_name_11 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_name_11.setObjectName(u"parse_name_11")
+        sizePolicy1.setHeightForWidth(self.parse_name_11.sizePolicy().hasHeightForWidth())
+        self.parse_name_11.setSizePolicy(sizePolicy1)
+        self.parse_name_11.setMinimumSize(QSize(30, 25))
+        self.parse_name_11.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse11.addWidget(self.parse_name_11)
+
+        self.label_119 = QLabel(self.scrollAreaWidgetContents)
+        self.label_119.setObjectName(u"label_119")
+        sizePolicy2.setHeightForWidth(self.label_119.sizePolicy().hasHeightForWidth())
+        self.label_119.setSizePolicy(sizePolicy2)
+        self.label_119.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse11.addWidget(self.label_119)
+
+        self.parse_pattern_11 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_pattern_11.setObjectName(u"parse_pattern_11")
+        sizePolicy1.setHeightForWidth(self.parse_pattern_11.sizePolicy().hasHeightForWidth())
+        self.parse_pattern_11.setSizePolicy(sizePolicy1)
+        self.parse_pattern_11.setMinimumSize(QSize(100, 25))
+
+        self.hl_parse11.addWidget(self.parse_pattern_11)
+
+        self.label_120 = QLabel(self.scrollAreaWidgetContents)
+        self.label_120.setObjectName(u"label_120")
+        sizePolicy2.setHeightForWidth(self.label_120.sizePolicy().hasHeightForWidth())
+        self.label_120.setSizePolicy(sizePolicy2)
+        self.label_120.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse11.addWidget(self.label_120)
+
+        self.parse_repl_11 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_repl_11.setObjectName(u"parse_repl_11")
+        sizePolicy1.setHeightForWidth(self.parse_repl_11.sizePolicy().hasHeightForWidth())
+        self.parse_repl_11.setSizePolicy(sizePolicy1)
+        self.parse_repl_11.setMinimumSize(QSize(80, 25))
+        self.parse_repl_11.setMaximumSize(QSize(1600, 16777215))
+
+        self.hl_parse11.addWidget(self.parse_repl_11)
+
+        self.label_121 = QLabel(self.scrollAreaWidgetContents)
+        self.label_121.setObjectName(u"label_121")
+        sizePolicy2.setHeightForWidth(self.label_121.sizePolicy().hasHeightForWidth())
+        self.label_121.setSizePolicy(sizePolicy2)
+        self.label_121.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse11.addWidget(self.label_121)
+
+        self.parse_source_11 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_source_11.setObjectName(u"parse_source_11")
+        sizePolicy1.setHeightForWidth(self.parse_source_11.sizePolicy().hasHeightForWidth())
+        self.parse_source_11.setSizePolicy(sizePolicy1)
+        self.parse_source_11.setMinimumSize(QSize(30, 25))
+        self.parse_source_11.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse11.addWidget(self.parse_source_11)
+
+        self.label_122 = QLabel(self.scrollAreaWidgetContents)
+        self.label_122.setObjectName(u"label_122")
+        sizePolicy2.setHeightForWidth(self.label_122.sizePolicy().hasHeightForWidth())
+        self.label_122.setSizePolicy(sizePolicy2)
+        self.label_122.setMinimumSize(QSize(40, 25))
+
+        self.hl_parse11.addWidget(self.label_122)
+
+        self.parse_filter_11 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_filter_11.setObjectName(u"parse_filter_11")
+        sizePolicy1.setHeightForWidth(self.parse_filter_11.sizePolicy().hasHeightForWidth())
+        self.parse_filter_11.setSizePolicy(sizePolicy1)
+        self.parse_filter_11.setMinimumSize(QSize(30, 25))
+        self.parse_filter_11.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse11.addWidget(self.parse_filter_11)
+
+
+        self.verticalLayout_30.addLayout(self.hl_parse11)
+
+        self.hl_parse12 = QHBoxLayout()
+        self.hl_parse12.setObjectName(u"hl_parse12")
+        self.label_123 = QLabel(self.scrollAreaWidgetContents)
+        self.label_123.setObjectName(u"label_123")
+        sizePolicy2.setHeightForWidth(self.label_123.sizePolicy().hasHeightForWidth())
+        self.label_123.setSizePolicy(sizePolicy2)
+        self.label_123.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse12.addWidget(self.label_123)
+
+        self.parse_name_12 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_name_12.setObjectName(u"parse_name_12")
+        sizePolicy1.setHeightForWidth(self.parse_name_12.sizePolicy().hasHeightForWidth())
+        self.parse_name_12.setSizePolicy(sizePolicy1)
+        self.parse_name_12.setMinimumSize(QSize(30, 25))
+        self.parse_name_12.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse12.addWidget(self.parse_name_12)
+
+        self.label_124 = QLabel(self.scrollAreaWidgetContents)
+        self.label_124.setObjectName(u"label_124")
+        sizePolicy2.setHeightForWidth(self.label_124.sizePolicy().hasHeightForWidth())
+        self.label_124.setSizePolicy(sizePolicy2)
+        self.label_124.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse12.addWidget(self.label_124)
+
+        self.parse_pattern_12 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_pattern_12.setObjectName(u"parse_pattern_12")
+        sizePolicy1.setHeightForWidth(self.parse_pattern_12.sizePolicy().hasHeightForWidth())
+        self.parse_pattern_12.setSizePolicy(sizePolicy1)
+        self.parse_pattern_12.setMinimumSize(QSize(100, 25))
+
+        self.hl_parse12.addWidget(self.parse_pattern_12)
+
+        self.label_125 = QLabel(self.scrollAreaWidgetContents)
+        self.label_125.setObjectName(u"label_125")
+        sizePolicy2.setHeightForWidth(self.label_125.sizePolicy().hasHeightForWidth())
+        self.label_125.setSizePolicy(sizePolicy2)
+        self.label_125.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse12.addWidget(self.label_125)
+
+        self.parse_repl_12 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_repl_12.setObjectName(u"parse_repl_12")
+        sizePolicy1.setHeightForWidth(self.parse_repl_12.sizePolicy().hasHeightForWidth())
+        self.parse_repl_12.setSizePolicy(sizePolicy1)
+        self.parse_repl_12.setMinimumSize(QSize(80, 25))
+        self.parse_repl_12.setMaximumSize(QSize(1600, 16777215))
+
+        self.hl_parse12.addWidget(self.parse_repl_12)
+
+        self.label_126 = QLabel(self.scrollAreaWidgetContents)
+        self.label_126.setObjectName(u"label_126")
+        sizePolicy2.setHeightForWidth(self.label_126.sizePolicy().hasHeightForWidth())
+        self.label_126.setSizePolicy(sizePolicy2)
+        self.label_126.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse12.addWidget(self.label_126)
+
+        self.parse_source_12 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_source_12.setObjectName(u"parse_source_12")
+        sizePolicy1.setHeightForWidth(self.parse_source_12.sizePolicy().hasHeightForWidth())
+        self.parse_source_12.setSizePolicy(sizePolicy1)
+        self.parse_source_12.setMinimumSize(QSize(30, 25))
+        self.parse_source_12.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse12.addWidget(self.parse_source_12)
+
+        self.label_127 = QLabel(self.scrollAreaWidgetContents)
+        self.label_127.setObjectName(u"label_127")
+        sizePolicy2.setHeightForWidth(self.label_127.sizePolicy().hasHeightForWidth())
+        self.label_127.setSizePolicy(sizePolicy2)
+        self.label_127.setMinimumSize(QSize(40, 25))
+
+        self.hl_parse12.addWidget(self.label_127)
+
+        self.parse_filter_12 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_filter_12.setObjectName(u"parse_filter_12")
+        sizePolicy1.setHeightForWidth(self.parse_filter_12.sizePolicy().hasHeightForWidth())
+        self.parse_filter_12.setSizePolicy(sizePolicy1)
+        self.parse_filter_12.setMinimumSize(QSize(30, 25))
+        self.parse_filter_12.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse12.addWidget(self.parse_filter_12)
+
+
+        self.verticalLayout_30.addLayout(self.hl_parse12)
+
+        self.hl_parse13 = QHBoxLayout()
+        self.hl_parse13.setObjectName(u"hl_parse13")
+        self.label_128 = QLabel(self.scrollAreaWidgetContents)
+        self.label_128.setObjectName(u"label_128")
+        sizePolicy2.setHeightForWidth(self.label_128.sizePolicy().hasHeightForWidth())
+        self.label_128.setSizePolicy(sizePolicy2)
+        self.label_128.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse13.addWidget(self.label_128)
+
+        self.parse_name_13 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_name_13.setObjectName(u"parse_name_13")
+        sizePolicy1.setHeightForWidth(self.parse_name_13.sizePolicy().hasHeightForWidth())
+        self.parse_name_13.setSizePolicy(sizePolicy1)
+        self.parse_name_13.setMinimumSize(QSize(30, 25))
+        self.parse_name_13.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse13.addWidget(self.parse_name_13)
+
+        self.label_129 = QLabel(self.scrollAreaWidgetContents)
+        self.label_129.setObjectName(u"label_129")
+        sizePolicy2.setHeightForWidth(self.label_129.sizePolicy().hasHeightForWidth())
+        self.label_129.setSizePolicy(sizePolicy2)
+        self.label_129.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse13.addWidget(self.label_129)
+
+        self.parse_pattern_13 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_pattern_13.setObjectName(u"parse_pattern_13")
+        sizePolicy1.setHeightForWidth(self.parse_pattern_13.sizePolicy().hasHeightForWidth())
+        self.parse_pattern_13.setSizePolicy(sizePolicy1)
+        self.parse_pattern_13.setMinimumSize(QSize(100, 25))
+
+        self.hl_parse13.addWidget(self.parse_pattern_13)
+
+        self.label_130 = QLabel(self.scrollAreaWidgetContents)
+        self.label_130.setObjectName(u"label_130")
+        sizePolicy2.setHeightForWidth(self.label_130.sizePolicy().hasHeightForWidth())
+        self.label_130.setSizePolicy(sizePolicy2)
+        self.label_130.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse13.addWidget(self.label_130)
+
+        self.parse_repl_13 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_repl_13.setObjectName(u"parse_repl_13")
+        sizePolicy1.setHeightForWidth(self.parse_repl_13.sizePolicy().hasHeightForWidth())
+        self.parse_repl_13.setSizePolicy(sizePolicy1)
+        self.parse_repl_13.setMinimumSize(QSize(80, 25))
+        self.parse_repl_13.setMaximumSize(QSize(1600, 16777215))
+
+        self.hl_parse13.addWidget(self.parse_repl_13)
+
+        self.label_131 = QLabel(self.scrollAreaWidgetContents)
+        self.label_131.setObjectName(u"label_131")
+        sizePolicy2.setHeightForWidth(self.label_131.sizePolicy().hasHeightForWidth())
+        self.label_131.setSizePolicy(sizePolicy2)
+        self.label_131.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse13.addWidget(self.label_131)
+
+        self.parse_source_13 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_source_13.setObjectName(u"parse_source_13")
+        sizePolicy1.setHeightForWidth(self.parse_source_13.sizePolicy().hasHeightForWidth())
+        self.parse_source_13.setSizePolicy(sizePolicy1)
+        self.parse_source_13.setMinimumSize(QSize(30, 25))
+        self.parse_source_13.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse13.addWidget(self.parse_source_13)
+
+        self.label_132 = QLabel(self.scrollAreaWidgetContents)
+        self.label_132.setObjectName(u"label_132")
+        sizePolicy2.setHeightForWidth(self.label_132.sizePolicy().hasHeightForWidth())
+        self.label_132.setSizePolicy(sizePolicy2)
+        self.label_132.setMinimumSize(QSize(40, 25))
+
+        self.hl_parse13.addWidget(self.label_132)
+
+        self.parse_filter_13 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_filter_13.setObjectName(u"parse_filter_13")
+        sizePolicy1.setHeightForWidth(self.parse_filter_13.sizePolicy().hasHeightForWidth())
+        self.parse_filter_13.setSizePolicy(sizePolicy1)
+        self.parse_filter_13.setMinimumSize(QSize(30, 25))
+        self.parse_filter_13.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse13.addWidget(self.parse_filter_13)
+
+
+        self.verticalLayout_30.addLayout(self.hl_parse13)
+
+        self.hl_parse14 = QHBoxLayout()
+        self.hl_parse14.setObjectName(u"hl_parse14")
+        self.label_133 = QLabel(self.scrollAreaWidgetContents)
+        self.label_133.setObjectName(u"label_133")
+        sizePolicy2.setHeightForWidth(self.label_133.sizePolicy().hasHeightForWidth())
+        self.label_133.setSizePolicy(sizePolicy2)
+        self.label_133.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse14.addWidget(self.label_133)
+
+        self.parse_name_14 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_name_14.setObjectName(u"parse_name_14")
+        sizePolicy1.setHeightForWidth(self.parse_name_14.sizePolicy().hasHeightForWidth())
+        self.parse_name_14.setSizePolicy(sizePolicy1)
+        self.parse_name_14.setMinimumSize(QSize(30, 25))
+        self.parse_name_14.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse14.addWidget(self.parse_name_14)
+
+        self.label_144 = QLabel(self.scrollAreaWidgetContents)
+        self.label_144.setObjectName(u"label_144")
+        sizePolicy2.setHeightForWidth(self.label_144.sizePolicy().hasHeightForWidth())
+        self.label_144.setSizePolicy(sizePolicy2)
+        self.label_144.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse14.addWidget(self.label_144)
+
+        self.parse_pattern_14 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_pattern_14.setObjectName(u"parse_pattern_14")
+        sizePolicy1.setHeightForWidth(self.parse_pattern_14.sizePolicy().hasHeightForWidth())
+        self.parse_pattern_14.setSizePolicy(sizePolicy1)
+        self.parse_pattern_14.setMinimumSize(QSize(100, 25))
+
+        self.hl_parse14.addWidget(self.parse_pattern_14)
+
+        self.label_145 = QLabel(self.scrollAreaWidgetContents)
+        self.label_145.setObjectName(u"label_145")
+        sizePolicy2.setHeightForWidth(self.label_145.sizePolicy().hasHeightForWidth())
+        self.label_145.setSizePolicy(sizePolicy2)
+        self.label_145.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse14.addWidget(self.label_145)
+
+        self.parse_repl_14 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_repl_14.setObjectName(u"parse_repl_14")
+        sizePolicy1.setHeightForWidth(self.parse_repl_14.sizePolicy().hasHeightForWidth())
+        self.parse_repl_14.setSizePolicy(sizePolicy1)
+        self.parse_repl_14.setMinimumSize(QSize(80, 25))
+        self.parse_repl_14.setMaximumSize(QSize(1600, 16777215))
+
+        self.hl_parse14.addWidget(self.parse_repl_14)
+
+        self.label_146 = QLabel(self.scrollAreaWidgetContents)
+        self.label_146.setObjectName(u"label_146")
+        sizePolicy2.setHeightForWidth(self.label_146.sizePolicy().hasHeightForWidth())
+        self.label_146.setSizePolicy(sizePolicy2)
+        self.label_146.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse14.addWidget(self.label_146)
+
+        self.parse_source_14 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_source_14.setObjectName(u"parse_source_14")
+        sizePolicy1.setHeightForWidth(self.parse_source_14.sizePolicy().hasHeightForWidth())
+        self.parse_source_14.setSizePolicy(sizePolicy1)
+        self.parse_source_14.setMinimumSize(QSize(30, 25))
+        self.parse_source_14.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse14.addWidget(self.parse_source_14)
+
+        self.label_147 = QLabel(self.scrollAreaWidgetContents)
+        self.label_147.setObjectName(u"label_147")
+        sizePolicy2.setHeightForWidth(self.label_147.sizePolicy().hasHeightForWidth())
+        self.label_147.setSizePolicy(sizePolicy2)
+        self.label_147.setMinimumSize(QSize(40, 25))
+
+        self.hl_parse14.addWidget(self.label_147)
+
+        self.parse_filter_14 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_filter_14.setObjectName(u"parse_filter_14")
+        sizePolicy1.setHeightForWidth(self.parse_filter_14.sizePolicy().hasHeightForWidth())
+        self.parse_filter_14.setSizePolicy(sizePolicy1)
+        self.parse_filter_14.setMinimumSize(QSize(30, 25))
+        self.parse_filter_14.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse14.addWidget(self.parse_filter_14)
+
+
+        self.verticalLayout_30.addLayout(self.hl_parse14)
+
+        self.hl_parse15 = QHBoxLayout()
+        self.hl_parse15.setObjectName(u"hl_parse15")
+        self.label_148 = QLabel(self.scrollAreaWidgetContents)
+        self.label_148.setObjectName(u"label_148")
+        sizePolicy2.setHeightForWidth(self.label_148.sizePolicy().hasHeightForWidth())
+        self.label_148.setSizePolicy(sizePolicy2)
+        self.label_148.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse15.addWidget(self.label_148)
+
+        self.parse_name_15 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_name_15.setObjectName(u"parse_name_15")
+        sizePolicy1.setHeightForWidth(self.parse_name_15.sizePolicy().hasHeightForWidth())
+        self.parse_name_15.setSizePolicy(sizePolicy1)
+        self.parse_name_15.setMinimumSize(QSize(30, 25))
+        self.parse_name_15.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse15.addWidget(self.parse_name_15)
+
+        self.label_149 = QLabel(self.scrollAreaWidgetContents)
+        self.label_149.setObjectName(u"label_149")
+        sizePolicy2.setHeightForWidth(self.label_149.sizePolicy().hasHeightForWidth())
+        self.label_149.setSizePolicy(sizePolicy2)
+        self.label_149.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse15.addWidget(self.label_149)
+
+        self.parse_pattern_15 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_pattern_15.setObjectName(u"parse_pattern_15")
+        sizePolicy1.setHeightForWidth(self.parse_pattern_15.sizePolicy().hasHeightForWidth())
+        self.parse_pattern_15.setSizePolicy(sizePolicy1)
+        self.parse_pattern_15.setMinimumSize(QSize(100, 25))
+
+        self.hl_parse15.addWidget(self.parse_pattern_15)
+
+        self.label_150 = QLabel(self.scrollAreaWidgetContents)
+        self.label_150.setObjectName(u"label_150")
+        sizePolicy2.setHeightForWidth(self.label_150.sizePolicy().hasHeightForWidth())
+        self.label_150.setSizePolicy(sizePolicy2)
+        self.label_150.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse15.addWidget(self.label_150)
+
+        self.parse_repl_15 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_repl_15.setObjectName(u"parse_repl_15")
+        sizePolicy1.setHeightForWidth(self.parse_repl_15.sizePolicy().hasHeightForWidth())
+        self.parse_repl_15.setSizePolicy(sizePolicy1)
+        self.parse_repl_15.setMinimumSize(QSize(80, 25))
+        self.parse_repl_15.setMaximumSize(QSize(1600, 16777215))
+
+        self.hl_parse15.addWidget(self.parse_repl_15)
+
+        self.label_151 = QLabel(self.scrollAreaWidgetContents)
+        self.label_151.setObjectName(u"label_151")
+        sizePolicy2.setHeightForWidth(self.label_151.sizePolicy().hasHeightForWidth())
+        self.label_151.setSizePolicy(sizePolicy2)
+        self.label_151.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse15.addWidget(self.label_151)
+
+        self.parse_source_15 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_source_15.setObjectName(u"parse_source_15")
+        sizePolicy1.setHeightForWidth(self.parse_source_15.sizePolicy().hasHeightForWidth())
+        self.parse_source_15.setSizePolicy(sizePolicy1)
+        self.parse_source_15.setMinimumSize(QSize(30, 25))
+        self.parse_source_15.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse15.addWidget(self.parse_source_15)
+
+        self.label_152 = QLabel(self.scrollAreaWidgetContents)
+        self.label_152.setObjectName(u"label_152")
+        sizePolicy2.setHeightForWidth(self.label_152.sizePolicy().hasHeightForWidth())
+        self.label_152.setSizePolicy(sizePolicy2)
+        self.label_152.setMinimumSize(QSize(40, 25))
+
+        self.hl_parse15.addWidget(self.label_152)
+
+        self.parse_filter_15 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_filter_15.setObjectName(u"parse_filter_15")
+        sizePolicy1.setHeightForWidth(self.parse_filter_15.sizePolicy().hasHeightForWidth())
+        self.parse_filter_15.setSizePolicy(sizePolicy1)
+        self.parse_filter_15.setMinimumSize(QSize(30, 25))
+        self.parse_filter_15.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse15.addWidget(self.parse_filter_15)
+
+
+        self.verticalLayout_30.addLayout(self.hl_parse15)
+
+        self.hl_parse16 = QHBoxLayout()
+        self.hl_parse16.setObjectName(u"hl_parse16")
+        self.label_153 = QLabel(self.scrollAreaWidgetContents)
+        self.label_153.setObjectName(u"label_153")
+        sizePolicy2.setHeightForWidth(self.label_153.sizePolicy().hasHeightForWidth())
+        self.label_153.setSizePolicy(sizePolicy2)
+        self.label_153.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse16.addWidget(self.label_153)
+
+        self.parse_name_16 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_name_16.setObjectName(u"parse_name_16")
+        sizePolicy1.setHeightForWidth(self.parse_name_16.sizePolicy().hasHeightForWidth())
+        self.parse_name_16.setSizePolicy(sizePolicy1)
+        self.parse_name_16.setMinimumSize(QSize(30, 25))
+        self.parse_name_16.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse16.addWidget(self.parse_name_16)
+
+        self.label_154 = QLabel(self.scrollAreaWidgetContents)
+        self.label_154.setObjectName(u"label_154")
+        sizePolicy2.setHeightForWidth(self.label_154.sizePolicy().hasHeightForWidth())
+        self.label_154.setSizePolicy(sizePolicy2)
+        self.label_154.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse16.addWidget(self.label_154)
+
+        self.parse_pattern_16 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_pattern_16.setObjectName(u"parse_pattern_16")
+        sizePolicy1.setHeightForWidth(self.parse_pattern_16.sizePolicy().hasHeightForWidth())
+        self.parse_pattern_16.setSizePolicy(sizePolicy1)
+        self.parse_pattern_16.setMinimumSize(QSize(100, 25))
+
+        self.hl_parse16.addWidget(self.parse_pattern_16)
+
+        self.label_155 = QLabel(self.scrollAreaWidgetContents)
+        self.label_155.setObjectName(u"label_155")
+        sizePolicy2.setHeightForWidth(self.label_155.sizePolicy().hasHeightForWidth())
+        self.label_155.setSizePolicy(sizePolicy2)
+        self.label_155.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse16.addWidget(self.label_155)
+
+        self.parse_repl_16 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_repl_16.setObjectName(u"parse_repl_16")
+        sizePolicy1.setHeightForWidth(self.parse_repl_16.sizePolicy().hasHeightForWidth())
+        self.parse_repl_16.setSizePolicy(sizePolicy1)
+        self.parse_repl_16.setMinimumSize(QSize(80, 25))
+        self.parse_repl_16.setMaximumSize(QSize(1600, 16777215))
+
+        self.hl_parse16.addWidget(self.parse_repl_16)
+
+        self.label_156 = QLabel(self.scrollAreaWidgetContents)
+        self.label_156.setObjectName(u"label_156")
+        sizePolicy2.setHeightForWidth(self.label_156.sizePolicy().hasHeightForWidth())
+        self.label_156.setSizePolicy(sizePolicy2)
+        self.label_156.setMinimumSize(QSize(50, 25))
+
+        self.hl_parse16.addWidget(self.label_156)
+
+        self.parse_source_16 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_source_16.setObjectName(u"parse_source_16")
+        sizePolicy1.setHeightForWidth(self.parse_source_16.sizePolicy().hasHeightForWidth())
+        self.parse_source_16.setSizePolicy(sizePolicy1)
+        self.parse_source_16.setMinimumSize(QSize(30, 25))
+        self.parse_source_16.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse16.addWidget(self.parse_source_16)
+
+        self.label_157 = QLabel(self.scrollAreaWidgetContents)
+        self.label_157.setObjectName(u"label_157")
+        sizePolicy2.setHeightForWidth(self.label_157.sizePolicy().hasHeightForWidth())
+        self.label_157.setSizePolicy(sizePolicy2)
+        self.label_157.setMinimumSize(QSize(40, 25))
+
+        self.hl_parse16.addWidget(self.label_157)
+
+        self.parse_filter_16 = QLineEdit(self.scrollAreaWidgetContents)
+        self.parse_filter_16.setObjectName(u"parse_filter_16")
+        sizePolicy1.setHeightForWidth(self.parse_filter_16.sizePolicy().hasHeightForWidth())
+        self.parse_filter_16.setSizePolicy(sizePolicy1)
+        self.parse_filter_16.setMinimumSize(QSize(30, 25))
+        self.parse_filter_16.setMaximumSize(QSize(16000, 16777215))
+
+        self.hl_parse16.addWidget(self.parse_filter_16)
+
+
+        self.verticalLayout_30.addLayout(self.hl_parse16)
 
 
         self.verticalLayout_31.addLayout(self.verticalLayout_30)
@@ -2910,7 +3533,7 @@ class Ui_submission(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 756, 269))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 548, 218))
         sizePolicy5 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         sizePolicy5.setHorizontalStretch(0)
         sizePolicy5.setVerticalStretch(0)
@@ -3199,7 +3822,7 @@ class Ui_submission(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollAreaWidgetContents_4 = QWidget()
         self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
-        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 749, 296))
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 620, 296))
         self.verticalLayout_47 = QVBoxLayout(self.scrollAreaWidgetContents_4)
         self.verticalLayout_47.setObjectName(u"verticalLayout_47")
         self.verticalLayout_36 = QVBoxLayout()
@@ -4381,6 +5004,12 @@ class Ui_submission(object):
 
         self.verticalLayout_12.addWidget(self.preset_explore)
 
+        self.version = QLineEdit(self.tab_3)
+        self.version.setObjectName(u"version")
+        self.version.setReadOnly(True)
+
+        self.verticalLayout_12.addWidget(self.version)
+
         self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
         self.verticalLayout_12.addItem(self.verticalSpacer_2)
@@ -4476,7 +5105,7 @@ class Ui_submission(object):
         self.write_button.setMinimumSize(QSize(350, 40))
         self.write_button.setBaseSize(QSize(520, 51))
         self.write_button.setAutoFillBackground(False)
-        self.write_button.setStyleSheet(u"background-color: rgb(0, 100, 25);")
+        self.write_button.setStyleSheet(u"")
         self.write_button.setFlat(True)
 
         self.horizontalLayout_3.addWidget(self.write_button)
@@ -4614,14 +5243,14 @@ class Ui_submission(object):
         self.scrollArea.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Creating new keys<br/>1. source is the text to be searched. For every file, the {keys} are replaced first</p><p>2. Pattern is used for Python re.sub regex</p><p>3. Repl is used for Python re.sub replace. If itr starts with lambda, the repl is evaluated as Python</p><p>4. Result (found group 1 or replace) is named by the name field</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.label_18.setText(QCoreApplication.translate("submission", u"Name:", None))
-        self.parse_name_1.setText(QCoreApplication.translate("submission", u"shot", None))
+        self.parse_name_01.setText(QCoreApplication.translate("submission", u"shot", None))
         self.label_20.setText(QCoreApplication.translate("submission", u"Pattern:", None))
-        self.parse_pattern_1.setText(QCoreApplication.translate("submission", u"([^_*]_[^_*]_)", None))
+        self.parse_pattern_01.setText(QCoreApplication.translate("submission", u"([^_*]_[^_*]_)", None))
         self.label_19.setText(QCoreApplication.translate("submission", u"Repl:", None))
         self.label_21.setText(QCoreApplication.translate("submission", u"Source:", None))
-        self.parse_source_1.setText(QCoreApplication.translate("submission", u"{name}", None))
+        self.parse_source_01.setText(QCoreApplication.translate("submission", u"{name}", None))
         self.label_77.setText(QCoreApplication.translate("submission", u"Filter:", None))
-        self.parse_filter_1.setText("")
+        self.parse_filter_01.setText("")
         self.label_22.setText(QCoreApplication.translate("submission", u"Name:", None))
         self.label_38.setText(QCoreApplication.translate("submission", u"Pattern:", None))
         self.label_39.setText(QCoreApplication.translate("submission", u"Repl:", None))
@@ -4662,6 +5291,41 @@ class Ui_submission(object):
         self.label_73.setText(QCoreApplication.translate("submission", u"Repl:", None))
         self.label_74.setText(QCoreApplication.translate("submission", u"Source:", None))
         self.label_85.setText(QCoreApplication.translate("submission", u"Filter:", None))
+        self.label_87.setText(QCoreApplication.translate("submission", u"Name:", None))
+        self.label_114.setText(QCoreApplication.translate("submission", u"Pattern:", None))
+        self.label_115.setText(QCoreApplication.translate("submission", u"Repl:", None))
+        self.label_116.setText(QCoreApplication.translate("submission", u"Source:", None))
+        self.label_117.setText(QCoreApplication.translate("submission", u"Filter:", None))
+        self.label_118.setText(QCoreApplication.translate("submission", u"Name:", None))
+        self.label_119.setText(QCoreApplication.translate("submission", u"Pattern:", None))
+        self.label_120.setText(QCoreApplication.translate("submission", u"Repl:", None))
+        self.label_121.setText(QCoreApplication.translate("submission", u"Source:", None))
+        self.label_122.setText(QCoreApplication.translate("submission", u"Filter:", None))
+        self.label_123.setText(QCoreApplication.translate("submission", u"Name:", None))
+        self.label_124.setText(QCoreApplication.translate("submission", u"Pattern:", None))
+        self.label_125.setText(QCoreApplication.translate("submission", u"Repl:", None))
+        self.label_126.setText(QCoreApplication.translate("submission", u"Source:", None))
+        self.label_127.setText(QCoreApplication.translate("submission", u"Filter:", None))
+        self.label_128.setText(QCoreApplication.translate("submission", u"Name:", None))
+        self.label_129.setText(QCoreApplication.translate("submission", u"Pattern:", None))
+        self.label_130.setText(QCoreApplication.translate("submission", u"Repl:", None))
+        self.label_131.setText(QCoreApplication.translate("submission", u"Source:", None))
+        self.label_132.setText(QCoreApplication.translate("submission", u"Filter:", None))
+        self.label_133.setText(QCoreApplication.translate("submission", u"Name:", None))
+        self.label_144.setText(QCoreApplication.translate("submission", u"Pattern:", None))
+        self.label_145.setText(QCoreApplication.translate("submission", u"Repl:", None))
+        self.label_146.setText(QCoreApplication.translate("submission", u"Source:", None))
+        self.label_147.setText(QCoreApplication.translate("submission", u"Filter:", None))
+        self.label_148.setText(QCoreApplication.translate("submission", u"Name:", None))
+        self.label_149.setText(QCoreApplication.translate("submission", u"Pattern:", None))
+        self.label_150.setText(QCoreApplication.translate("submission", u"Repl:", None))
+        self.label_151.setText(QCoreApplication.translate("submission", u"Source:", None))
+        self.label_152.setText(QCoreApplication.translate("submission", u"Filter:", None))
+        self.label_153.setText(QCoreApplication.translate("submission", u"Name:", None))
+        self.label_154.setText(QCoreApplication.translate("submission", u"Pattern:", None))
+        self.label_155.setText(QCoreApplication.translate("submission", u"Repl:", None))
+        self.label_156.setText(QCoreApplication.translate("submission", u"Source:", None))
+        self.label_157.setText(QCoreApplication.translate("submission", u"Filter:", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_10), QCoreApplication.translate("submission", u"Parsing", None))
         self.label_86.setText(QCoreApplication.translate("submission", u"Search Folder:", None))
 #if QT_CONFIG(tooltip)
@@ -4881,6 +5545,7 @@ class Ui_submission(object):
         self.label_29.setText(QCoreApplication.translate("submission", u"Preset Name:", None))
         self.save_preset_button.setText(QCoreApplication.translate("submission", u"Save Preset", None))
         self.preset_explore.setText(QCoreApplication.translate("submission", u"Open Preset Folder", None))
+        self.version.setText(QCoreApplication.translate("submission", u"Release 2023-03-02", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_3), QCoreApplication.translate("submission", u"Presets", None))
         self.textEdit.setHtml(QCoreApplication.translate("submission", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
