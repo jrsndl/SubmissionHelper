@@ -47,6 +47,8 @@ class MetaData(object):
                      'video_present': 0, 'audio_present': 0, 'data_present': 0,
                      'is_log': False}
 
+        self.meta_exr = {}
+
         self.platform, self.platform_extension = self.__get_platform()
         self.ffmpeg_path, self.ffprobe_path = self.__get_ffmpeg_path()
         self.__read_from_drive()
@@ -95,6 +97,9 @@ class MetaData(object):
             'meta_frame_end_from_tc': str(self.meta.get('frame_end_from_tc', '')),
             'meta_frame_end_from_tc_slate': str(self.meta.get('frame_end_from_tc_slate', '')),
         }
+
+        # add exr header
+        meta_data.update(self.meta_exr)
 
         return meta_data
 
@@ -149,6 +154,11 @@ class MetaData(object):
         # DPX:
         if my_extension == 'dpx':
             self.meta.update(self.read_metadata_from_dpx())
+
+        # EXR
+        if my_extension == 'exr':
+            self.meta_exr = self.read_metadata_from_exr()
+
 
         # Other TCs
         self.meta['time_code_from_metadata'] =\
@@ -594,16 +604,38 @@ class MetaData(object):
 
         return metadict
 
+    def read_metadata_from_exr(self):
+        """ Read some metadata from exr header."""
+        import parse_metadata
+
+        exr_metadata = {}
+        exr_fpstc = {}
+        exr_metadata = parse_metadata.read_exr_header(self.meta['file'])
+
+        try:
+            # this updates tc and framerate from ffprobe
+            # to be taken from EX instead
+            fps_a = int(exr_metadata['metaExr_framesPerSecond']['first_num'])
+            fps_b = int(exr_metadata['metaExr_framesPerSecond']['second_num'])
+            tc = int(exr_metadata['metaExr_timeCode']['timeAndFlags'])
+            tc_ud = int(exr_metadata['metaExr_timeCode']['userData'])
+            t4, t3, t2, t1 = struct.unpack("BBBB", tc.to_bytes(4, 'little'))
+            timecode = "{}:{}:{}:{}".format(str(t1).zfill(2), str(t2).zfill(2), str(t3).zfill(2), str(t4).zfill(2))
+            #print("TC: {} {} {}".format(tc, tc_ud, timecode))
+            exr_metadata['fps_a'] = fps_a
+            exr_metadata['fps_b'] = fps_b
+            exr_metadata['fps_raw'] = '{}/{}'.format(str(exr_metadata['fps_a']), str(exr_metadata['fps_b'])) # "24/1"
+            exr_metadata['fps'] = float(fps_a) / float(fps_b)
+            exr_metadata['fps_str'] = helpers.get_fps_for_PyTimeCode(exr_metadata['fps'])
+            exr_metadata['time_code'] = timecode
+        except:
+            pass
+
+        exr_renamed = {}
+        for k,v in exr_metadata.items():
+            exr_renamed['metaExr_'+str(k)] = v
+        return exr_renamed
+
 
 if __name__ == "__main__":
     pass
-
-
-
-
-
-
-
-
-
-

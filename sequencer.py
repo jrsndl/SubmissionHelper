@@ -87,7 +87,7 @@ class Sequencer(object):
         self.sidecar_files_find()
 
         # matadata
-        #self.get_metadata()
+        self.get_metadata()
 
     def transform_data(self):
         """
@@ -261,39 +261,43 @@ class Sequencer(object):
                         if _consistency:
                             # trim out frames to be ignored
                             # this is done for slates, they are often small
-                            sizes = sizes[_ignore_first:]
-                            start = start + _ignore_first
+                            try:
+                                sizes = sizes[_ignore_first:]
+                                start = start + _ignore_first
 
-                            # add the last item neighbor times
-                            _s = sizes
-                            if _neighbrs > 0:
-                                _st = [sizes[0] for i in range(_neighbrs)]
-                                _end = [sizes[-1] for i in range(_neighbrs)]
-                                _s = _st + sizes + _end
+                                # add the last item neighbor times
+                                _s = sizes
+                                if _neighbrs > 0:
+                                    _st = [sizes[0] for i in range(_neighbrs)]
+                                    _end = [sizes[-1] for i in range(_neighbrs)]
+                                    _s = _st + sizes + _end
 
-                            inconsistent = []
-                            itms = 2 * _neighbrs + 1
-                            for cnt in range(_neighbrs, len(_s)-_neighbrs-1):
-                                all_neighbrs = 0
-                                for i in range(cnt - _neighbrs, cnt + _neighbrs):
-                                    all_neighbrs += _s[i]
-                                average = float(all_neighbrs / itms)
+                                inconsistent = []
+                                itms = 2 * _neighbrs + 1
+                                for cnt in range(_neighbrs, len(_s)-_neighbrs-1):
+                                    all_neighbrs = 0
+                                    for i in range(cnt - _neighbrs, cnt + _neighbrs):
+                                        all_neighbrs += _s[i]
+                                    average = float(all_neighbrs / itms)
 
-                                _diff = float(_s[cnt] / average)
-                                if _diff < 1:
-                                    _diff += 1
-                                _diff -= 1
-                                if _diff > _tresh:
-                                    inconsistent.append(cnt+start)
-                            if len(inconsistent) > 0:
-                                warn = one_item.get('size_warning', '')
-                                new_warn = "{} file sizes greatly differ: {}"\
-                                    .format(str(len(inconsistent)),
-                                            str(inconsistent))
-                                if warn == '':
-                                    one_item['size_warning'] = new_warn
-                                else:
-                                    one_item['size_warning'] += ', ' + new_warn
+                                    _diff = float(_s[cnt] / average)
+                                    if _diff < 1:
+                                        _diff += 1
+                                    _diff -= 1
+                                    if _diff > _tresh:
+                                        inconsistent.append(cnt+start)
+                                if len(inconsistent) > 0:
+                                    warn = one_item.get('size_warning', '')
+                                    new_warn = "{} file sizes greatly differ: {}"\
+                                        .format(str(len(inconsistent)),
+                                                str(inconsistent))
+                                    if warn == '':
+                                        one_item['size_warning'] = new_warn
+                                    else:
+                                        one_item['size_warning'] += ', ' + new_warn
+                            except:
+                                # TODO fix for very short sequences (ln=2, ifnofe frst 1 = fail)
+                                pass
                 else:
                     # video (multiframe container)
                     try:
@@ -1008,52 +1012,63 @@ class Sequencer(object):
         it generates the regex keywords
         :return:
         """
+
+        class Default(dict):
+            def __missing__(self, key):
+                return '{' + key + '}'
+
         if self.merged_list and len(self.merged_list) > 0:
             for one_item in self.merged_list:
                 for k, one_regex in self.regexes.items():
                     do_filter = False
                     if one_regex['filter'] != '':
                         if not (one_regex['filter'] in one_item['path']):
-                            continue
-                        do_filter = True
-                    # expand keywords in source
-                    try:
-                        expanded = one_regex["source"].format(**one_item)
-                    except KeyError:
-                        expanded = None
-                    if expanded and expanded != '':
-                        # expand static keywords
+                            do_filter = True
+                    if not do_filter:
+                        # expand keywords in source
                         try:
-                            expanded = expanded.format(**self.static_keywords)
+                            expanded = one_regex["source"].format(**one_item)
+                            #expanded = one_regex['source'].format_map(Default(one_item))
                         except KeyError:
-                            pass
-                        if one_regex["repl"] and one_regex["repl"] != "":
-                            # it is a replace
-                            if one_regex["repl"].startswith("lambda "):
-                                #LAMBDA!
-                                result = re.sub(one_regex["compiled"], eval(str(one_regex["repl"])), expanded)
+                            expanded = None
+                        if expanded and expanded != '':
+                            # expand static keywords
+                            try:
+                                expanded = expanded.format(**self.static_keywords)
+                                #expanded = expanded.format_map(Default(self.static_keywords))
+                            except KeyError:
+                                pass
+                            if one_regex["repl"] and one_regex["repl"] != "":
+                                # it is a replace
+                                if one_regex["repl"].startswith("lambda "):
+                                    #LAMBDA!
+                                    result = re.sub(one_regex["compiled"], eval(str(one_regex["repl"])), expanded)
+                                else:
+                                    result = re.sub(one_regex["compiled"], one_regex["repl"], expanded)
+                                    #result = ""
                             else:
-                                result = re.sub(one_regex["compiled"], one_regex["repl"], expanded)
-                                #result = ""
-                        else:
-                            m = one_regex["compiled"].search(expanded)
-                            if m:
-                                # if user made a group, assign the group, otherwise use whole found string
-                                try:
-                                    capture = m.group(1)
-                                    result = capture
-                                except:
-                                    capture = None
-                                    #result = m.group(0)
+                                m = one_regex["compiled"].search(expanded)
+                                if m:
+                                    # if user made a group, assign the group, otherwise use whole found string
+                                    try:
+                                        capture = m.group(1)
+                                        result = capture
+                                    except:
+                                        capture = None
+                                        #result = m.group(0)
+                                        result = ""
+                                else:
+                                    # shot name exists but doesn't match the regex, so set shot name to empty string
                                     result = ""
-                            else:
-                                # shot name exists but doesn't match the regex, so set shot name to empty string
-                                result = ""
-                    else:
-                        result = ""
-                    one_item.update({one_regex["key"]: result})
+                        else:
+                            result = ""
+                        one_item.update({one_regex["key"]: result})
 
     def prepare_package_name(self):
+
+        class Default(dict):
+            def __missing__(self, key):
+                return '{' + key + '}'
 
         def str_to_bool(my_str):
             if my_str == "True":
@@ -1108,6 +1123,7 @@ class Sequencer(object):
         # get current date by applying regex to expanded template
         try:
             _temp_expanded = _template.format(**date_keys)
+            #_temp_expanded = _template.format_map(Default(date_keys))
         except KeyError:
             self.log.error("Package name template failed")
 
@@ -1220,6 +1236,7 @@ class Sequencer(object):
             # expand template to make package name
             try:
                 _pkg_new_name = _template.format(**date_keys)
+                #_pkg_new_name = _template.format_map(Default(date_keys))
             except:
                 pass
 
@@ -1287,6 +1304,10 @@ class Sequencer(object):
 
     def prepare_tables(self):
 
+        class Default(dict):
+            def __missing__(self, key):
+                return '{' + key + '}'
+
         self.table_sub = []
         self.table_log = []
         self.table_txt = ""
@@ -1323,6 +1344,7 @@ class Sequencer(object):
                     for one_expression in self.column_expressions_sub:
                         try:
                             formatted = one_expression.format(**one_item)
+                            #formatted = one_expression.format_map(Default(one_item))
                             one_row_sub.append(formatted)
                         except KeyError:
                             # can't parse expression, put it in original form
@@ -1339,6 +1361,7 @@ class Sequencer(object):
                     for one_expression in self.column_expressions_log:
                         try:
                             formatted = one_expression.format(**one_item)
+                            #formatted = one_expression.format_map(Default(one_item))
                             one_row_log.append(formatted)
                         except KeyError:
                             # can't parse expression, put it in original form
@@ -1355,6 +1378,7 @@ class Sequencer(object):
                     for one_expression in self.column_expressions_txt:
                         try:
                             formatted = one_expression.format(**one_item)
+                            #formatted = one_expression.format_map(Default(one_item))
                             one_row_txt.append(formatted)
                         except KeyError:
                             # can't parse expression, put it in original form
@@ -1383,6 +1407,7 @@ class Sequencer(object):
 
         try:
             _header = txt_header.format(**self.static_keywords)
+            #_header = txt_header.format_map(Default(self.static_keywords))
         except KeyError:
             _header = txt_header
         if do_txt_titles:
@@ -1391,6 +1416,7 @@ class Sequencer(object):
             _titles = ""
         try:
             _footer = txt_footer.format(**self.static_keywords)
+            #_footer = txt_footer.format_map(Default(self.static_keywords))
         except KeyError:
             _footer = txt_footer
         self.table_txt = _header + '\n' + _titles + body_txt + '\n' + _footer
@@ -1499,6 +1525,8 @@ class Sequencer(object):
                 _src = one_item[2]
                 _dst = one_item[1]
                 if _src and _dst:
+                    if not os.path.exists(os.path.dirname(_dst)):
+                        os.makedirs(os.path.dirname(_dst))
                     print("Sidecar file copy {} -> {}".format(_src, _dst))
                     shutil.copy(_src, _dst)
 
@@ -1515,6 +1543,7 @@ class Sequencer(object):
         # get all files that can be sidecar files
         sidecars = []
         side_exclude_list = []
+        file_list = []
         if self.settings['side_exclude']['value']:
             side_exclude_list = self.settings['side_exclude']['value'].split()
         side_include_list = []
