@@ -68,6 +68,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui_start = True
         self.settings_obj = s
         self.settings = self.settings_obj.settings
+        self.settings_inst = self.settings_obj.install_settings
 
         self.settings_to_gui()
         self.settings_update_app_title()
@@ -332,22 +333,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         # Ftrack Tab
         self.ui.ftrack_use.clicked.connect(
             partial(self.handler, 'ftrack_use', 'refresh_ftrack'))
-        self.ui.ftrack_server.textChanged.connect(
-            partial(self.handler, 'ftrack_server', 'refresh_ftrack'))
-        self.ui.ftrack_api_key.textChanged.connect(
-            partial(self.handler, 'ftrack_api_key', 'refresh_ftrack'))
         self.ui.ftrack_project.textChanged.connect(
             partial(self.handler, 'ftrack_project', 'refresh_ftrack'))
-        self.ui.ftrack_shot_use.clicked.connect(
-            partial(self.handler, 'ftrack_shot_use', 'refresh_ftrack'))
         self.ui.ftrack_shot.textChanged.connect(
             partial(self.handler, 'ftrack_shot', 'refresh_ftrack'))
+        self.ui.ftrack_task.textChanged.connect(
+            partial(self.handler, 'ftrack_task', 'refresh_ftrack'))
         self.ui.ftrack_label_use.clicked.connect(
             partial(self.handler, 'ftrack_label_use', 'refresh_ftrack'))
         self.ui.ftrack_label.textChanged.connect(
             partial(self.handler, 'ftrack_label', 'refresh_ftrack'))
-        self.ui.ftrack_note.textChanged.connect(
-            partial(self.handler, 'ftrack_note', 'refresh_ftrack'))
+        self.ui.ftrack_version_use.clicked.connect(
+            partial(self.handler, 'ftrack_version_use', 'refresh_ftrack'))
+        self.ui.ftrack_version.textChanged.connect(
+            partial(self.handler, 'ftrack_version', 'refresh_ftrack'))
+        self.ui.ftrack_note_pattern.textChanged.connect(
+            partial(self.handler, 'ftrack_note_pattern', 'refresh_ftrack'))
+        self.ui.ftrack_note_repl.textChanged.connect(
+            partial(self.handler, 'ftrack_note_repl', 'refresh_ftrack'))
 
         # Spreadsheet
         self.ui.sub_columns.textChanged.connect(
@@ -544,7 +547,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         if group == 'source_change':
             pth = str(self.settings['package_folder']['value']).replace('\\', '/')
-            self.data = Sequencer(pth, sequence_mode='holes_allowed', gui=self.settings)
+            self.data = Sequencer(pth, sequence_mode='holes_allowed', gui=self.settings, more_settings=self.settings_inst)
             self.show_all()
 
         if group == 'package_rename':
@@ -925,7 +928,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             'package_folder',
             'name_preview',
             'load_preset_combobox',
-            'save_preset_name'
+            'save_preset_name',
+            'global_prefs_path',
+            'global_prefs_enabled',
+            'ffprobe_path'
         ]
         # indicate to user that reload or browse for package folder is needed
         self.clear_all_tables()

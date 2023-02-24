@@ -1051,7 +1051,7 @@ class Ui_submission(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 500, 542))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 751, 542))
         sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
@@ -3355,117 +3355,99 @@ class Ui_submission(object):
         self.TopTab.addTab(self.tab_13, "")
         self.tab_11 = QWidget()
         self.tab_11.setObjectName(u"tab_11")
-        self.horizontalLayout_81 = QHBoxLayout(self.tab_11)
-        self.horizontalLayout_81.setObjectName(u"horizontalLayout_81")
-        self.verticalLayout_40 = QVBoxLayout()
-        self.verticalLayout_40.setObjectName(u"verticalLayout_40")
+        self.horizontalLayout_80 = QHBoxLayout(self.tab_11)
+        self.horizontalLayout_80.setObjectName(u"horizontalLayout_80")
+        self.verticalLayout_38 = QVBoxLayout()
+        self.verticalLayout_38.setObjectName(u"verticalLayout_38")
         self.ftrack_use = QCheckBox(self.tab_11)
         self.ftrack_use.setObjectName(u"ftrack_use")
         self.ftrack_use.setMinimumSize(QSize(120, 25))
         self.ftrack_use.setChecked(True)
 
-        self.verticalLayout_40.addWidget(self.ftrack_use)
+        self.verticalLayout_38.addWidget(self.ftrack_use)
 
-        self.horizontalLayout_80 = QHBoxLayout()
-        self.horizontalLayout_80.setObjectName(u"horizontalLayout_80")
-        self.verticalLayout_38 = QVBoxLayout()
-        self.verticalLayout_38.setObjectName(u"verticalLayout_38")
-        self.horizontalLayout_72 = QHBoxLayout()
-        self.horizontalLayout_72.setObjectName(u"horizontalLayout_72")
-        self.label_88 = QLabel(self.tab_11)
-        self.label_88.setObjectName(u"label_88")
-        sizePolicy2.setHeightForWidth(self.label_88.sizePolicy().hasHeightForWidth())
-        self.label_88.setSizePolicy(sizePolicy2)
-        self.label_88.setMinimumSize(QSize(120, 25))
-
-        self.horizontalLayout_72.addWidget(self.label_88)
-
-        self.ftrack_server = QLineEdit(self.tab_11)
-        self.ftrack_server.setObjectName(u"ftrack_server")
-        sizePolicy2.setHeightForWidth(self.ftrack_server.sizePolicy().hasHeightForWidth())
-        self.ftrack_server.setSizePolicy(sizePolicy2)
-        self.ftrack_server.setMinimumSize(QSize(150, 25))
-
-        self.horizontalLayout_72.addWidget(self.ftrack_server)
-
-
-        self.verticalLayout_38.addLayout(self.horizontalLayout_72)
-
-        self.horizontalLayout_73 = QHBoxLayout()
-        self.horizontalLayout_73.setObjectName(u"horizontalLayout_73")
-        self.label_89 = QLabel(self.tab_11)
-        self.label_89.setObjectName(u"label_89")
-        sizePolicy2.setHeightForWidth(self.label_89.sizePolicy().hasHeightForWidth())
-        self.label_89.setSizePolicy(sizePolicy2)
-        self.label_89.setMinimumSize(QSize(120, 25))
-
-        self.horizontalLayout_73.addWidget(self.label_89)
-
-        self.ftrack_api_key = QLineEdit(self.tab_11)
-        self.ftrack_api_key.setObjectName(u"ftrack_api_key")
-        sizePolicy2.setHeightForWidth(self.ftrack_api_key.sizePolicy().hasHeightForWidth())
-        self.ftrack_api_key.setSizePolicy(sizePolicy2)
-        self.ftrack_api_key.setMinimumSize(QSize(150, 25))
-
-        self.horizontalLayout_73.addWidget(self.ftrack_api_key)
-
-
-        self.verticalLayout_38.addLayout(self.horizontalLayout_73)
-
-        self.horizontalLayout_75 = QHBoxLayout()
-        self.horizontalLayout_75.setObjectName(u"horizontalLayout_75")
+        self.horizontalLayout_76 = QHBoxLayout()
+        self.horizontalLayout_76.setObjectName(u"horizontalLayout_76")
         self.label_90 = QLabel(self.tab_11)
         self.label_90.setObjectName(u"label_90")
         sizePolicy2.setHeightForWidth(self.label_90.sizePolicy().hasHeightForWidth())
         self.label_90.setSizePolicy(sizePolicy2)
-        self.label_90.setMinimumSize(QSize(120, 25))
+        self.label_90.setMinimumSize(QSize(80, 25))
 
-        self.horizontalLayout_75.addWidget(self.label_90)
+        self.horizontalLayout_76.addWidget(self.label_90)
 
         self.ftrack_project = QLineEdit(self.tab_11)
         self.ftrack_project.setObjectName(u"ftrack_project")
         sizePolicy2.setHeightForWidth(self.ftrack_project.sizePolicy().hasHeightForWidth())
         self.ftrack_project.setSizePolicy(sizePolicy2)
-        self.ftrack_project.setMinimumSize(QSize(150, 25))
+        self.ftrack_project.setMinimumSize(QSize(200, 25))
 
-        self.horizontalLayout_75.addWidget(self.ftrack_project)
+        self.horizontalLayout_76.addWidget(self.ftrack_project)
+
+        self.horizontalSpacer_10 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_76.addItem(self.horizontalSpacer_10)
 
 
-        self.verticalLayout_38.addLayout(self.horizontalLayout_75)
+        self.verticalLayout_38.addLayout(self.horizontalLayout_76)
 
+        self.horizontalLayout_75 = QHBoxLayout()
+        self.horizontalLayout_75.setObjectName(u"horizontalLayout_75")
+        self.label_158 = QLabel(self.tab_11)
+        self.label_158.setObjectName(u"label_158")
+        sizePolicy2.setHeightForWidth(self.label_158.sizePolicy().hasHeightForWidth())
+        self.label_158.setSizePolicy(sizePolicy2)
+        self.label_158.setMinimumSize(QSize(80, 25))
 
-        self.horizontalLayout_80.addLayout(self.verticalLayout_38)
-
-        self.horizontalSpacer_31 = QSpacerItem(40, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
-
-        self.horizontalLayout_80.addItem(self.horizontalSpacer_31)
-
-        self.verticalLayout_39 = QVBoxLayout()
-        self.verticalLayout_39.setObjectName(u"verticalLayout_39")
-        self.horizontalLayout_76 = QHBoxLayout()
-        self.horizontalLayout_76.setObjectName(u"horizontalLayout_76")
-        self.ftrack_shot_use = QCheckBox(self.tab_11)
-        self.ftrack_shot_use.setObjectName(u"ftrack_shot_use")
-        self.ftrack_shot_use.setMinimumSize(QSize(120, 25))
-
-        self.horizontalLayout_76.addWidget(self.ftrack_shot_use)
+        self.horizontalLayout_75.addWidget(self.label_158)
 
         self.ftrack_shot = QLineEdit(self.tab_11)
         self.ftrack_shot.setObjectName(u"ftrack_shot")
         sizePolicy2.setHeightForWidth(self.ftrack_shot.sizePolicy().hasHeightForWidth())
         self.ftrack_shot.setSizePolicy(sizePolicy2)
-        self.ftrack_shot.setMinimumSize(QSize(150, 25))
+        self.ftrack_shot.setMinimumSize(QSize(200, 25))
 
-        self.horizontalLayout_76.addWidget(self.ftrack_shot)
+        self.horizontalLayout_75.addWidget(self.ftrack_shot)
+
+        self.horizontalSpacer_16 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_75.addItem(self.horizontalSpacer_16)
 
 
-        self.verticalLayout_39.addLayout(self.horizontalLayout_76)
+        self.verticalLayout_38.addLayout(self.horizontalLayout_75)
+
+        self.horizontalLayout_73 = QHBoxLayout()
+        self.horizontalLayout_73.setObjectName(u"horizontalLayout_73")
+        self.label_159 = QLabel(self.tab_11)
+        self.label_159.setObjectName(u"label_159")
+        sizePolicy2.setHeightForWidth(self.label_159.sizePolicy().hasHeightForWidth())
+        self.label_159.setSizePolicy(sizePolicy2)
+        self.label_159.setMinimumSize(QSize(80, 25))
+
+        self.horizontalLayout_73.addWidget(self.label_159)
+
+        self.ftrack_task = QLineEdit(self.tab_11)
+        self.ftrack_task.setObjectName(u"ftrack_task")
+        sizePolicy2.setHeightForWidth(self.ftrack_task.sizePolicy().hasHeightForWidth())
+        self.ftrack_task.setSizePolicy(sizePolicy2)
+        self.ftrack_task.setMinimumSize(QSize(200, 25))
+
+        self.horizontalLayout_73.addWidget(self.ftrack_task)
+
+        self.horizontalSpacer_18 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_73.addItem(self.horizontalSpacer_18)
+
+
+        self.verticalLayout_38.addLayout(self.horizontalLayout_73)
 
         self.horizontalLayout_77 = QHBoxLayout()
         self.horizontalLayout_77.setObjectName(u"horizontalLayout_77")
         self.ftrack_label_use = QCheckBox(self.tab_11)
         self.ftrack_label_use.setObjectName(u"ftrack_label_use")
-        self.ftrack_label_use.setMinimumSize(QSize(120, 25))
+        sizePolicy2.setHeightForWidth(self.ftrack_label_use.sizePolicy().hasHeightForWidth())
+        self.ftrack_label_use.setSizePolicy(sizePolicy2)
+        self.ftrack_label_use.setMinimumSize(QSize(80, 25))
 
         self.horizontalLayout_77.addWidget(self.ftrack_label_use)
 
@@ -3473,50 +3455,89 @@ class Ui_submission(object):
         self.ftrack_label.setObjectName(u"ftrack_label")
         sizePolicy2.setHeightForWidth(self.ftrack_label.sizePolicy().hasHeightForWidth())
         self.ftrack_label.setSizePolicy(sizePolicy2)
-        self.ftrack_label.setMinimumSize(QSize(150, 25))
+        self.ftrack_label.setMinimumSize(QSize(200, 25))
 
         self.horizontalLayout_77.addWidget(self.ftrack_label)
 
+        self.horizontalSpacer_20 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.verticalLayout_39.addLayout(self.horizontalLayout_77)
+        self.horizontalLayout_77.addItem(self.horizontalSpacer_20)
+
+
+        self.verticalLayout_38.addLayout(self.horizontalLayout_77)
 
         self.horizontalLayout_79 = QHBoxLayout()
         self.horizontalLayout_79.setObjectName(u"horizontalLayout_79")
+        self.ftrack_version_use = QCheckBox(self.tab_11)
+        self.ftrack_version_use.setObjectName(u"ftrack_version_use")
+        sizePolicy2.setHeightForWidth(self.ftrack_version_use.sizePolicy().hasHeightForWidth())
+        self.ftrack_version_use.setSizePolicy(sizePolicy2)
+        self.ftrack_version_use.setMinimumSize(QSize(80, 25))
+
+        self.horizontalLayout_79.addWidget(self.ftrack_version_use)
+
+        self.ftrack_version = QLineEdit(self.tab_11)
+        self.ftrack_version.setObjectName(u"ftrack_version")
+        sizePolicy2.setHeightForWidth(self.ftrack_version.sizePolicy().hasHeightForWidth())
+        self.ftrack_version.setSizePolicy(sizePolicy2)
+        self.ftrack_version.setMinimumSize(QSize(200, 25))
+
+        self.horizontalLayout_79.addWidget(self.ftrack_version)
+
+        self.horizontalSpacer_24 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_79.addItem(self.horizontalSpacer_24)
+
+
+        self.verticalLayout_38.addLayout(self.horizontalLayout_79)
+
+        self.horizontalLayout_72 = QHBoxLayout()
+        self.horizontalLayout_72.setObjectName(u"horizontalLayout_72")
         self.label_91 = QLabel(self.tab_11)
         self.label_91.setObjectName(u"label_91")
         sizePolicy2.setHeightForWidth(self.label_91.sizePolicy().hasHeightForWidth())
         self.label_91.setSizePolicy(sizePolicy2)
-        self.label_91.setMinimumSize(QSize(120, 25))
+        self.label_91.setMinimumSize(QSize(80, 25))
 
-        self.horizontalLayout_79.addWidget(self.label_91)
+        self.horizontalLayout_72.addWidget(self.label_91)
 
-        self.ftrack_note = QLineEdit(self.tab_11)
-        self.ftrack_note.setObjectName(u"ftrack_note")
-        sizePolicy2.setHeightForWidth(self.ftrack_note.sizePolicy().hasHeightForWidth())
-        self.ftrack_note.setSizePolicy(sizePolicy2)
-        self.ftrack_note.setMinimumSize(QSize(150, 25))
+        self.ftrack_note_pattern = QLineEdit(self.tab_11)
+        self.ftrack_note_pattern.setObjectName(u"ftrack_note_pattern")
+        sizePolicy2.setHeightForWidth(self.ftrack_note_pattern.sizePolicy().hasHeightForWidth())
+        self.ftrack_note_pattern.setSizePolicy(sizePolicy2)
+        self.ftrack_note_pattern.setMinimumSize(QSize(200, 25))
 
-        self.horizontalLayout_79.addWidget(self.ftrack_note)
+        self.horizontalLayout_72.addWidget(self.ftrack_note_pattern)
+
+        self.label_160 = QLabel(self.tab_11)
+        self.label_160.setObjectName(u"label_160")
+        sizePolicy2.setHeightForWidth(self.label_160.sizePolicy().hasHeightForWidth())
+        self.label_160.setSizePolicy(sizePolicy2)
+        self.label_160.setMinimumSize(QSize(70, 25))
+
+        self.horizontalLayout_72.addWidget(self.label_160)
+
+        self.ftrack_note_repl = QLineEdit(self.tab_11)
+        self.ftrack_note_repl.setObjectName(u"ftrack_note_repl")
+        sizePolicy2.setHeightForWidth(self.ftrack_note_repl.sizePolicy().hasHeightForWidth())
+        self.ftrack_note_repl.setSizePolicy(sizePolicy2)
+        self.ftrack_note_repl.setMinimumSize(QSize(200, 25))
+
+        self.horizontalLayout_72.addWidget(self.ftrack_note_repl)
+
+        self.horizontalSpacer_21 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_72.addItem(self.horizontalSpacer_21)
 
 
-        self.verticalLayout_39.addLayout(self.horizontalLayout_79)
-
-
-        self.horizontalLayout_80.addLayout(self.verticalLayout_39)
-
-        self.horizontalSpacer_30 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_80.addItem(self.horizontalSpacer_30)
-
-
-        self.verticalLayout_40.addLayout(self.horizontalLayout_80)
+        self.verticalLayout_38.addLayout(self.horizontalLayout_72)
 
         self.verticalSpacer_6 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
-        self.verticalLayout_40.addItem(self.verticalSpacer_6)
+        self.verticalLayout_38.addItem(self.verticalSpacer_6)
 
 
-        self.horizontalLayout_81.addLayout(self.verticalLayout_40)
+        self.horizontalLayout_80.addLayout(self.verticalLayout_38)
 
         self.TopTab.addTab(self.tab_11, "")
         self.tab_2 = QWidget()
@@ -3533,7 +3554,7 @@ class Ui_submission(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 548, 218))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 756, 269))
         sizePolicy5 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         sizePolicy5.setHorizontalStretch(0)
         sizePolicy5.setVerticalStretch(0)
@@ -3822,7 +3843,7 @@ class Ui_submission(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollAreaWidgetContents_4 = QWidget()
         self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
-        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 620, 296))
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 749, 296))
         self.verticalLayout_47 = QVBoxLayout(self.scrollAreaWidgetContents_4)
         self.verticalLayout_47.setObjectName(u"verticalLayout_47")
         self.verticalLayout_36 = QVBoxLayout()
@@ -5395,17 +5416,20 @@ class Ui_submission(object):
         self.label_143.setText(QCoreApplication.translate("submission", u"Filter:", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_13), QCoreApplication.translate("submission", u"Sidecar Files", None))
         self.ftrack_use.setText(QCoreApplication.translate("submission", u"Use Ftrack", None))
-        self.label_88.setText(QCoreApplication.translate("submission", u"Ftrack Server:", None))
-        self.label_89.setText(QCoreApplication.translate("submission", u"Ftrack Api Key:", None))
-        self.ftrack_api_key.setText("")
-        self.label_90.setText(QCoreApplication.translate("submission", u"Ftrack Project:", None))
+        self.label_90.setText(QCoreApplication.translate("submission", u"Project:", None))
         self.ftrack_project.setText("")
-        self.ftrack_shot_use.setText(QCoreApplication.translate("submission", u"Shot", None))
-        self.ftrack_shot.setText("")
+        self.label_158.setText(QCoreApplication.translate("submission", u"Shot", None))
+        self.ftrack_shot.setText(QCoreApplication.translate("submission", u"{shot}", None))
+        self.label_159.setText(QCoreApplication.translate("submission", u"Task", None))
+        self.ftrack_task.setText(QCoreApplication.translate("submission", u"{task}", None))
         self.ftrack_label_use.setText(QCoreApplication.translate("submission", u"Note Label", None))
         self.ftrack_label.setText("")
-        self.label_91.setText(QCoreApplication.translate("submission", u"Note Match:", None))
-        self.ftrack_note.setText(QCoreApplication.translate("submission", u"4client v{version}", None))
+        self.ftrack_version_use.setText(QCoreApplication.translate("submission", u"Version", None))
+        self.ftrack_version.setText("")
+        self.label_91.setText(QCoreApplication.translate("submission", u"Note Pattern:", None))
+        self.ftrack_note_pattern.setText(QCoreApplication.translate("submission", u"4client v{version}(.*)", None))
+        self.label_160.setText(QCoreApplication.translate("submission", u"Note Repl:", None))
+        self.ftrack_note_repl.setText(QCoreApplication.translate("submission", u"4client v{version}(.*)", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_11), QCoreApplication.translate("submission", u"Ftrack Note", None))
 #if QT_CONFIG(tooltip)
         self.scrollArea_2.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Defines output columns for submission, drive log and text outputs.</p></body></html>", None))

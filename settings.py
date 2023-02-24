@@ -4,7 +4,6 @@ import json
 import inspect
 import logging
 
-
 class Settings(object):
     def __init__(self, name):
         self.settings = None
@@ -22,6 +21,9 @@ class Settings(object):
         # start by reading last settings
         self.find_all()
         self.read(name)
+
+        # merge install settings to settings
+        #self.settings = {**self.settings, **self.install_settings}
 
     def read_install(self):
 

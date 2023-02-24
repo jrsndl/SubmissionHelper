@@ -17,7 +17,7 @@ import ftrack_api
 import arrow
 
 class Sequencer(object):
-    def __init__(self, in_path, sequence_mode='to_subsequences', gui=None):
+    def __init__(self, in_path, sequence_mode='to_subsequences', gui=None, more_settings=None):
 
         self.log = logging.getLogger("mylog")
         self.sequence_mode = sequence_mode
@@ -39,6 +39,17 @@ class Sequencer(object):
 
         self.in_path = in_path
         self._prepare_in_path()
+
+        self.more_settings = more_settings
+        do_ftrack = False
+        self.ftrack_session = None
+        if self.settings:
+            if self.settings['ftrack_use']['value']:
+                do_ftrack = bool(self.settings['ftrack_use']['value'])
+        if do_ftrack:
+            self.get_ftrack_session()
+            if self.ftrack_session is not None:
+                self.get_ftrack_notes()
 
         if os.path.exists(self.in_path):
             self.read_files()
@@ -1042,10 +1053,19 @@ class Sequencer(object):
                                 # it is a replace
                                 if one_regex["repl"].startswith("lambda "):
                                     #LAMBDA!
-                                    result = re.sub(one_regex["compiled"], eval(str(one_regex["repl"])), expanded)
+                                    try:
+                                        _eval = eval(str(one_regex["repl"]))
+                                    except:
+                                        _eval = one_regex["repl"]
+                                    try:
+                                        result = re.sub(one_regex["compiled"], _eval, expanded)
+                                    except:
+                                        result = ""
                                 else:
-                                    result = re.sub(one_regex["compiled"], one_regex["repl"], expanded)
-                                    #result = ""
+                                    try:
+                                        result = re.sub(one_regex["compiled"], one_regex["repl"], expanded)
+                                    except:
+                                        result = ""
                             else:
                                 m = one_regex["compiled"].search(expanded)
                                 if m:
@@ -1740,15 +1760,173 @@ class Sequencer(object):
                         except KeyError:
                             pass
 
-    def get_ftrack_events(self):
+    def get_ftrack_session(self):
+        """
+        Reads ftrack install prefs and gui settings
+        Tries to connect to Ftrack
+        Tries to query project id from project name and
+        label object from label name
 
-        session = ftrack_api.Session(
-            server_url='https://dazzle.ftrackapp.com',
-            api_key='xxx',
-            api_user='jiri.sindelar'
-        )
+        :return:
+        self.ftrack dict with all ftrack info gathered
+        """
 
-        pass
+        if self.settings:
+            self.ftrack['do_ftrack'] = bool(
+                self.settings['ftrack_use']['value'])
+            self.ftrack['project'] = str(
+                self.settings['ftrack_project']['value'])
+            self.ftrack['shot'] = str(
+                self.settings['ftrack_shot']['value'])
+            self.ftrack['task'] = str(
+                self.settings['ftrack_task']['value'])
+            self.ftrack['do_label'] = bool(
+                self.settings['ftrack_label_use']['value'])
+            self.ftrack['label'] = str(
+                self.settings['ftrack_label']['value'])
+            self.ftrack['do_version'] = bool(
+                self.settings['ftrack_version_use']['value'])
+            self.ftrack['version'] = str(
+                self.settings['ftrack_version']['value'])
+            self.ftrack['note_pattern'] = str(
+                self.settings['ftrack_note_pattern']['value'])
+            self.ftrack['note_repl'] = str(
+                self.settings['ftrack_note_repl']['value'])
+
+            self.ftrack['session'] = None
+            self.ftrack['project_id'] = None
+            self.ftrack['label_obj'] = None
+            if self.ftrack['do_ftrack']:
+                self.ftrack['url'] = self.more_settings.get('server_url', '')
+                self.ftrack['key'] = self.more_settings.get('api_key', '')
+                self.ftrack['user'] = self.more_settings.get('api_user', '')
+                self.ftrack['session'] = ftrack_api.Session(
+                    server_url=self.ftrack['url'],
+                    api_key=self.ftrack['key'],
+                    api_user=self.ftrack['user']
+                )
+
+                if self.ftrack['session'] is not None:
+                    try:
+                        all_projects = self.ftrack['session'].query(
+                            'Project where status is "Active"').all()
+                        for p in all_projects:
+                            if p["full_name"] == self.ftrack['project']:
+                                self.ftrack['project_id'] = p["id"]
+                    except ftrack_api.exception.NoResultFoundError:
+                        pass
+
+                if self.ftrack['label'] != '' and self.ftrack['do_label']:
+                    try:
+                        self.ftrack['label_obj'] = self.ftrack['session']\
+                            .query('NoteLabel where name is "{}"'.format(
+                            self.ftrack['label'])).first()
+                    except:
+                        pass
+
+    def get_ftrack_notes(self):
+        """
+        For every merged list item it tries to get Ftrack note
+        :return:
+        item['ftrack_note']
+        """
+
+        if self.ftrack is None:
+            return
+
+        if self.ftrack['project_id'] is None or self.ftrack['shot'] == '' or self.ftrack['task'] == '':
+            return
+
+        for item in self.merged_list:
+            current_shot = self.ftrack['shot']
+            current_task = self.ftrack['task']
+            current_version = self.ftrack['version']
+            current_note = self.ftrack['note_pattern']
+
+            item['ftrack_note'] = self.get_one_ftrack_note(current_shot, current_task, current_version, current_note)
+
+    def get_one_ftrack_note(self, current_shot, current_task, current_version, current_note):
+
+        def version_matching(content, note_pattern, note_repl):
+            compiled = re.compile(note_pattern)
+            result = None
+            if note_repl and note_repl != "":
+                # it is a replace
+                if note_repl.startswith("lambda "):
+                    try:
+                        _eval = eval(str(note_repl))
+                    except:
+                        _eval = note_repl
+                    try:
+                        result = re.sub(compiled, _eval, content)
+                    except:
+                        result = None
+                else:
+                    try:
+                        result = re.sub(compiled, note_repl, content)
+                    except:
+                        result = None
+            else:
+                m = compiled.search(content)
+                if m:
+                    try:
+                        result = m.group(1)
+                    except:
+                        result = None
+                else:
+                    result = None
+            return result
+
+        notes = []
+
+        # get task from Ftrack
+        f_task = self.ftrack['session'].query(
+            'Task where name is {} and parent.name is {}'
+            ' and project.full_name is {}'.format(
+                current_task, current_shot, self.ftrack['project'])).first()
+
+        # get sorted versions on the task
+        if self.ftrack['do_version']:
+            assets = self.ftrack['session'].query(
+                'select asset.name, version from AssetVersion '
+                'where task_id is "{}" and asset.name is_not '
+                'none order by version desc'.format(
+                    f_task['id'])).all()
+
+            version_gui = int(current_version)
+            for one_asset in assets:
+                version_asset = int(one_asset['version'])
+                if version_gui == version_asset:
+                    for one_note in one_asset['notes']:
+                        content = one_note['content']
+                        _save = False
+                        if self.ftrack['do_label']:
+                            l = one_note['note_label_links']
+                            if self.ftrack['label_obj']['id'] in l:
+                                _save = True
+                        else:
+                            _save = True
+                        if _save:
+                            v = version_matching(content, current_note, self.ftrack['note_repl'])
+                            if v is not None:
+                                notes.append(v)
+        else:
+            for one_note in f_task['notes']:
+                _save = False
+                content = one_note['content']
+                if self.ftrack['do_label']:
+                    l = one_note['note_label_links']
+                    if self.ftrack['label_obj']['id'] in l:
+                        _save = True
+                else:
+                    _save = True
+                if _save:
+                    v = version_matching(content, current_note, self.ftrack['note_repl'])
+                    if v is not None:
+                        notes.append(v)
+
+        pprint.pprint(notes)
+        return notes
 
 
 if __name__ == "__main__":
