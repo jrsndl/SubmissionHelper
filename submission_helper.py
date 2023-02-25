@@ -348,9 +348,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.ftrack_version.textChanged.connect(
             partial(self.handler, 'ftrack_version', 'refresh_ftrack'))
         self.ui.ftrack_note_pattern.textChanged.connect(
-            partial(self.handler, 'ftrack_note_pattern', 'refresh_ftrack'))
+            partial(self.handler, 'ftrack_note_pattern', 'select_ftrack'))
         self.ui.ftrack_note_repl.textChanged.connect(
-            partial(self.handler, 'ftrack_note_repl', 'refresh_ftrack'))
+            partial(self.handler, 'ftrack_note_repl', 'select_ftrack'))
 
         # Spreadsheet
         self.ui.sub_columns.textChanged.connect(
@@ -383,12 +383,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         self.ui.check_if_1.textChanged.connect(
             partial(self.handler, 'check_if_1', 'refresh_checks'))
-        self.ui.check_if_eq_1.textChanged.connect(
-            partial(self.handler, 'check_if_eq_1', 'refresh_checks'))
         self.ui.check_check_1.textChanged.connect(
             partial(self.handler, 'check_check_1', 'refresh_checks'))
-        self.ui.check_check_eq_1.textChanged.connect(
-            partial(self.handler, 'check_check_eq_1', 'refresh_checks'))
         self.ui.check_warning_1.clicked.connect(
             partial(self.handler, 'check_warning_1', 'refresh_shots'))
         self.ui.check_error_1.clicked.connect(
@@ -398,12 +394,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         self.ui.check_if_2.textChanged.connect(
             partial(self.handler, 'check_if_2', 'refresh_checks'))
-        self.ui.check_if_eq_2.textChanged.connect(
-            partial(self.handler, 'check_if_eq_2', 'refresh_checks'))
         self.ui.check_check_2.textChanged.connect(
             partial(self.handler, 'check_check_2', 'refresh_checks'))
-        self.ui.check_check_eq_2.textChanged.connect(
-            partial(self.handler, 'check_check_eq_2', 'refresh_checks'))
         self.ui.check_warning_2.clicked.connect(
             partial(self.handler, 'check_warning_2', 'refresh_shots'))
         self.ui.check_error_2.clicked.connect(
@@ -413,12 +405,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         self.ui.check_if_3.textChanged.connect(
             partial(self.handler, 'check_if_3', 'refresh_checks'))
-        self.ui.check_if_eq_3.textChanged.connect(
-            partial(self.handler, 'check_if_eq_3', 'refresh_checks'))
         self.ui.check_check_3.textChanged.connect(
             partial(self.handler, 'check_check_3', 'refresh_checks'))
-        self.ui.check_check_eq_3.textChanged.connect(
-            partial(self.handler, 'check_check_eq_3', 'refresh_checks'))
         self.ui.check_warning_3.clicked.connect(
             partial(self.handler, 'check_warning_3', 'refresh_checks'))
         self.ui.check_error_3.clicked.connect(
@@ -591,6 +579,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.data.prepare_tables()
                 self.show_all()
 
+        if group == 'refresh_ftrack':
+            if self.data:
+                self.data.ftrack_query()
+                self.data.select_ftrack_note()
+                self.data.prepare_all_columns()
+                self.data.prepare_tables()
+                self.show_all()
+
+        if group == 'select_ftrack':
+            # Skipping ftrack queries for speed
+            if self.data:
+                self.data.select_ftrack_note()
+                self.data.prepare_all_columns()
+                self.data.prepare_tables()
+                self.show_all()
+
         if sender == 'side_copy':
             if self.data:
                 # sidecar files filter
@@ -665,17 +669,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.ui.sub_table,
                 self.data.column_titles_sub
             )
+            #self.ui.sub_table.update()
             self.display_table(
                 self.data.table_log,
                 self.ui.log_table,
                 self.data.column_titles_log
             )
+            #self.ui.log_table.update()
             self.ui.txt_table.setPlainText(self.data.table_txt)
             self.display_table(
                 self.data.table_side,
                 self.ui.side_table,
                 self.data.columns_side
             )
+            #self.ui.side_table.update()
 
             # display Package name
             _preview = self.data.output.get('package_name', '')
@@ -789,6 +796,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                         color = 'white'
                         _size_warning = one_item.get('size_warning', '')
                         if _size_warning != '':
+                            color = 'purple'
+                        _warning = one_item.get('warning', '')
+                        if _warning != '':
+                            color = 'orange'
+                        _error = one_item.get('error', '')
+                        if _error != '':
                             color = 'red'
                         if itm:
                             if color == 'green':
@@ -1050,7 +1063,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         log.info('Finished')
         # prevents second call
         sys.exit()
-
 
 if __name__ == "__main__":
     # log

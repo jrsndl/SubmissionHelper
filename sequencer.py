@@ -40,23 +40,19 @@ class Sequencer(object):
         self.in_path = in_path
         self._prepare_in_path()
 
-        self.more_settings = more_settings
-        do_ftrack = False
-        self.ftrack_session = None
-        if self.settings:
-            if self.settings['ftrack_use']['value']:
-                do_ftrack = bool(self.settings['ftrack_use']['value'])
-        if do_ftrack:
-            self.get_ftrack_session()
-            if self.ftrack_session is not None:
-                self.get_ftrack_notes()
-
         if os.path.exists(self.in_path):
             self.read_files()
             self.transform_data()
-            pprint.pprint(self.merged_list)
 
-            # logging.debug('-> Sequencer Init')
+        self.more_settings = more_settings
+        self.ftrack = {}
+        self.ftrack_query()
+        self.select_ftrack_note()
+
+        self.checks = []
+        self.run_checks()
+        pprint.pprint(self.merged_list)
+        # logging.debug('-> Sequencer Init')
 
     def _prepare_in_path(self):
 
@@ -1039,7 +1035,7 @@ class Sequencer(object):
                         # expand keywords in source
                         try:
                             expanded = one_regex["source"].format(**one_item)
-                            #expanded = one_regex['source'].format_map(Default(one_item))
+                            #
                         except KeyError:
                             expanded = None
                         if expanded and expanded != '':
@@ -1760,6 +1756,26 @@ class Sequencer(object):
                         except KeyError:
                             pass
 
+    def ftrack_query(self):
+        self.ftrack_clean_notes()
+        do_ftrack = False
+        if self.settings:
+            if self.settings['ftrack_use']['value']:
+                do_ftrack = bool(self.settings['ftrack_use']['value'])
+        if do_ftrack:
+            self.get_ftrack_session()
+            if self.ftrack['session'] is not None:
+                self.get_ftrack_notes()
+
+    def ftrack_clean_notes(self):
+        for item in self.merged_list:
+            item['ftrack_notes'] = []
+            item['ftrack_note'] = ''
+
+    def ftrack_clean_note(self):
+        for item in self.merged_list:
+            item['ftrack_note'] = ''
+
     def get_ftrack_session(self):
         """
         Reads ftrack install prefs and gui settings
@@ -1774,6 +1790,8 @@ class Sequencer(object):
         if self.settings:
             self.ftrack['do_ftrack'] = bool(
                 self.settings['ftrack_use']['value'])
+            self.ftrack['include'] = str(
+                self.settings['ftrack_include']['value'])
             self.ftrack['project'] = str(
                 self.settings['ftrack_project']['value'])
             self.ftrack['shot'] = str(
@@ -1792,6 +1810,11 @@ class Sequencer(object):
                 self.settings['ftrack_note_pattern']['value'])
             self.ftrack['note_repl'] = str(
                 self.settings['ftrack_note_repl']['value'])
+
+            if self.ftrack['include'] != None:
+                self.ftrack['include'] = self.ftrack['include'].split()
+            else:
+                self.ftrack['include'] = []
 
             self.ftrack['session'] = None
             self.ftrack['project_id'] = None
@@ -1828,77 +1851,86 @@ class Sequencer(object):
         """
         For every merged list item it tries to get Ftrack note
         :return:
-        item['ftrack_note']
+        item['ftrack_notes']
         """
 
         if self.ftrack is None:
             return
-
         if self.ftrack['project_id'] is None or self.ftrack['shot'] == '' or self.ftrack['task'] == '':
             return
+        if self.merged_list is None:
+            return
 
+        do_filter = False
+        if len(self.ftrack['include']) > 0:
+            do_filter = True
         for item in self.merged_list:
-            current_shot = self.ftrack['shot']
-            current_task = self.ftrack['task']
-            current_version = self.ftrack['version']
-            current_note = self.ftrack['note_pattern']
-
-            item['ftrack_note'] = self.get_one_ftrack_note(current_shot, current_task, current_version, current_note)
-
-    def get_one_ftrack_note(self, current_shot, current_task, current_version, current_note):
-
-        def version_matching(content, note_pattern, note_repl):
-            compiled = re.compile(note_pattern)
-            result = None
-            if note_repl and note_repl != "":
-                # it is a replace
-                if note_repl.startswith("lambda "):
-                    try:
-                        _eval = eval(str(note_repl))
-                    except:
-                        _eval = note_repl
-                    try:
-                        result = re.sub(compiled, _eval, content)
-                    except:
-                        result = None
-                else:
-                    try:
-                        result = re.sub(compiled, note_repl, content)
-                    except:
-                        result = None
+            if do_filter:
+                e = item.get('extension', '')
+                if e in self.ftrack['include']:
+                    self.assign_ftrack_notes(item)
             else:
-                m = compiled.search(content)
-                if m:
-                    try:
-                        result = m.group(1)
-                    except:
-                        result = None
-                else:
-                    result = None
-            return result
+                self.assign_ftrack_notes(item)
 
-        notes = []
+    def assign_ftrack_notes(self, item):
+        """
+        for item in merged_list, query all ftrack notes
+        that fit project, shot, task, optional label, optional version
+        :param item:
+        :return:
+        add to item['ftrack_notes'] all notes on task or version
+        """
+
+        class Default(dict):
+            def __missing__(self, key):
+                return '{' + key + '}'
+
+        all_notes = []
+        current_shot = self.ftrack.get('shot', '').format_map(Default(item))
+        current_task = self.ftrack.get('task', '').format_map(Default(item))
+        current_version = self.ftrack.get('version', '').format_map(Default(item))
+
+        version_gui = 0
+        if self.ftrack['do_version']:
+            try:
+                version_gui = int(current_version)
+            except:
+                return ''
+
+        if current_shot =='' or current_task =='' or self.ftrack['project'] =='':
+            return ''
 
         # get task from Ftrack
-        f_task = self.ftrack['session'].query(
-            'Task where name is {} and parent.name is {}'
-            ' and project.full_name is {}'.format(
-                current_task, current_shot, self.ftrack['project'])).first()
+        try:
+            f_task = self.ftrack['session'].query(
+                'Task where name is {} and parent.name is {}'
+                ' and project.full_name is {}'.format(
+                    current_task, current_shot, self.ftrack['project'])).first()
+        except:
+            return ''
+        if f_task is None:
+            return ''
 
         # get sorted versions on the task
         if self.ftrack['do_version']:
-            assets = self.ftrack['session'].query(
-                'select asset.name, version from AssetVersion '
-                'where task_id is "{}" and asset.name is_not '
-                'none order by version desc'.format(
-                    f_task['id'])).all()
-
-            version_gui = int(current_version)
+            try:
+                assets = self.ftrack['session'].query(
+                    'select asset.name, version from AssetVersion '
+                    'where task_id is "{}" and asset.name is_not '
+                    'none order by version desc'.format(
+                        f_task['id'])).all()
+            except:
+                assets = None
+            if assets is None:
+                return ''
             for one_asset in assets:
-                version_asset = int(one_asset['version'])
+                try:
+                    version_asset = int(one_asset['version'])
+                except:
+                    version_asset = 0
                 if version_gui == version_asset:
                     for one_note in one_asset['notes']:
-                        content = one_note['content']
+                        content = str(one_note['content'])
                         _save = False
                         if self.ftrack['do_label']:
                             l = one_note['note_label_links']
@@ -1907,13 +1939,11 @@ class Sequencer(object):
                         else:
                             _save = True
                         if _save:
-                            v = version_matching(content, current_note, self.ftrack['note_repl'])
-                            if v is not None:
-                                notes.append(v)
+                            all_notes.append(content)
         else:
             for one_note in f_task['notes']:
                 _save = False
-                content = one_note['content']
+                content = str(one_note['content'])
                 if self.ftrack['do_label']:
                     l = one_note['note_label_links']
                     if self.ftrack['label_obj']['id'] in l:
@@ -1921,13 +1951,153 @@ class Sequencer(object):
                 else:
                     _save = True
                 if _save:
-                    v = version_matching(content, current_note, self.ftrack['note_repl'])
-                    if v is not None:
-                        notes.append(v)
+                    all_notes.append(content)
 
-        pprint.pprint(notes)
-        return notes
+        item['ftrack_notes'] = all_notes
 
+    def select_ftrack_note(self):
+        """
+        from item['ftrack_notes'] queried from ftrack by assign_ftrack_notes
+        filter the first note that fits note regex and optionally repl
+        :return:
+        """
+
+        class Default(dict):
+            def __missing__(self, key):
+                return '{' + key + '}'
+
+        self.ftrack_clean_note()
+        self.ftrack['note_pattern'] = str(
+            self.settings['ftrack_note_pattern']['value'])
+        self.ftrack['note_repl'] = str(
+            self.settings['ftrack_note_repl']['value'])
+        for item in self.merged_list:
+            all_notes = item.get('ftrack_notes', [])
+            if all_notes == []:
+                continue
+            current_note = self.ftrack.get('note_pattern', '').format_map(
+                Default(item))
+            notes = []
+            for one in all_notes:
+                v = self.note_regex(one, current_note, self.ftrack['note_repl'])
+                if v is not None:
+                    notes.append(v)
+
+            out_note = ''
+            if notes is not None:
+                if len(notes) > 0:
+                    #out_note = notes[0]
+                    out_note = "\n---\n".join(notes)
+            item['ftrack_note'] = out_note
+
+
+    def note_regex(self, content, note_pattern, note_repl):
+        try:
+            compiled = re.compile(note_pattern, re.MULTILINE)
+        except:
+            return None
+        result = None
+        if note_repl and note_repl != "":
+            # it is a replace
+            if note_repl.startswith("lambda "):
+                try:
+                    _eval = eval(str(note_repl))
+                except:
+                    _eval = note_repl
+                try:
+                    result = re.sub(compiled, _eval, content)
+                except:
+                    result = None
+            else:
+                try:
+                    result = compiled.match(content).expand(note_repl)
+                except:
+                    result = None
+        else:
+            try:
+                m = re.search(note_pattern, content)
+            except:
+                pass
+            if m:
+                try:
+                    result = content
+                except:
+                    result = None
+            else:
+                result = None
+        return result
+
+    def run_checks(self):
+
+        class Default(dict):
+            def __missing__(self, key):
+                return '{' + key + '}'
+
+        self.checks_init()
+        if self.checks is None:
+            return
+
+        for item in self.merged_list:
+            for one_check in self.checks:
+                # filter out first
+                _if_eval = False
+                if one_check['filter'] != '':
+                    try:
+                        _if = one_check['filter'].format_map(Default(item))
+                        _if_eval = bool(eval(_if))
+                    except:
+                        pass
+                else:
+                    # no filtering, so true for all
+                    _if_eval = True
+
+                if _if_eval:
+                    # not filtered out
+                    _check_eval = False
+                    try:
+                        _check = one_check['check'].format_map(Default(item))
+                        _check_eval = bool(eval(_check))
+                    except:
+                        pass
+                    if _check_eval:
+                        # it is warning or error
+                        m = one_check['message'].format_map(Default(item))
+                        if one_check['is_error']:
+                            try:
+                                item['error'] = item['error'] + '\n' + m
+                            except:
+                                item['error'] = m
+                        else:
+                            try:
+                                item['warning'] = item['warning'] + '\n' + m
+                            except:
+                                item['warning'] = m
+
+
+    def checks_init(self):
+        self.checks = []
+        if self.settings:
+            # read checks from gui, save to self.checks
+            indexes = [str(x) for x in range(1, 3)]
+            for one in indexes:
+                if_filter = str(self.settings["check_if_" + one]["value"])
+                check = str(self.settings["check_check_" + one]["value"])
+                is_error = bool(self.settings["check_error_" + one]["value"])
+                message = str(self.settings["check_message_" + one]["value"])
+                if message == '':
+                    if is_error:
+                        message = "Error check {}".format(one)
+                    else:
+                        message = "Warning check {}".format(one)
+                if check != '':
+                    # only add if check is not empty
+                    one_check = {
+                        "filter": if_filter,
+                        "check": check,
+                        "is_error": is_error,
+                        "message": message,
+                       }
+                    self.checks.append(one_check)
 
 if __name__ == "__main__":
     # import doctest
