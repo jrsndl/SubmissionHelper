@@ -1348,10 +1348,10 @@ p, li { white-space: pre-wrap; }
                       <string>Auto Rename</string>
                      </property>
                      <property name="checkable">
-                      <bool>false</bool>
+                      <bool>true</bool>
                      </property>
                      <property name="checked">
-                      <bool>false</bool>
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>
@@ -1401,6 +1401,9 @@ p, li { white-space: pre-wrap; }
                      </item>
                      <item>
                       <widget class="QLineEdit" name="name_preview">
+                       <property name="enabled">
+                        <bool>true</bool>
+                       </property>
                        <property name="sizePolicy">
                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                          <horstretch>0</horstretch>
@@ -8136,20 +8139,8 @@ Vendor = AmazingVFX</string>
                <string>Frame Rate:</string>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_5">
-               <property name="spacing">
-                <number>3</number>
-               </property>
-               <property name="topMargin">
-                <number>5</number>
-               </property>
-               <property name="bottomMargin">
-                <number>5</number>
-               </property>
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_36">
-                 <property name="spacing">
-                  <number>3</number>
-                 </property>
                  <item>
                   <widget class="QLabel" name="label_45">
                    <property name="sizePolicy">
@@ -8176,13 +8167,7 @@ Vendor = AmazingVFX</string>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QComboBox" name="prefs_frame_rate">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
+                  <widget class="QLineEdit" name="prefs_frame_rate_txt">
                    <property name="minimumSize">
                     <size>
                      <width>80</width>
@@ -8195,44 +8180,9 @@ Vendor = AmazingVFX</string>
                      <height>25</height>
                     </size>
                    </property>
-                   <property name="currentIndex">
-                    <number>1</number>
+                   <property name="text">
+                    <string>24</string>
                    </property>
-                   <item>
-                    <property name="text">
-                     <string>23.97</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>24</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>25</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>29.97</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>50</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>59.94</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>60</string>
-                    </property>
-                   </item>
                   </widget>
                  </item>
                  <item>
@@ -9735,7 +9685,7 @@ Vendor = AmazingVFX</string>
             <item>
              <widget class="QLineEdit" name="version">
               <property name="text">
-               <string>Release 2023-03-02</string>
+               <string>Release 2023-02-28</string>
               </property>
               <property name="readOnly">
                <bool>true</bool>

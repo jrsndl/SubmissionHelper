@@ -15,19 +15,19 @@ import logging
 
 class MetaData(object):
 
-    def __init__(self, item, gui, gui_force_fps=False, gui_fps='24'):
+    def __init__(self, item, gui):
 
         self.log = logging.getLogger("mylog")
         self.settings = gui
 
         self.gui_fps = '24'
-        if self.settings['prefs_frame_rate']['value'] is not None:
-            self.gui_fps = self.settings['prefs_frame_rate']['value']
+        if self.settings['prefs_frame_rate_txt']['value'] is not None:
+            self.gui_fps = self.settings['prefs_frame_rate_txt']['value']
 
         self.gui_force_fps = False
         if self.settings['prefs_frame_rate_use_meta']['value'] is not None:
             self.gui_force_fps = \
-                not self.settings['prefs_frame_rate_use_meta']['value']
+                not bool(self.settings['prefs_frame_rate_use_meta']['value'])
 
         self.default_tc = '01:00:00:00'
         if self.settings['prefs_tc_default']['value'] is not None:
@@ -120,7 +120,7 @@ class MetaData(object):
 
         script_path = os.path.dirname(os.path.abspath(inspect.stack()[-1][1])).replace("\\", "/")
         #TODO remove before packaging
-        script_path = 'D:/_code/SubmissionHelper'
+        #script_path = 'D:/_code/SubmissionHelper'
         probe = script_path + '/ffmpeg/ffprobe' + self.platform_extension
         if not os.path.exists(probe):
             probe = None
@@ -239,7 +239,7 @@ class MetaData(object):
             if self.gui_force_fps and self.meta['fps_str'] == '':
                 # get fps from gui if meta not available
                 self.meta['fps_str'] = self.gui_fps
-            elif not self.gui_force_fps:
+            elif self.gui_force_fps:
                 # get fps from gui ALWAYS
                 self.meta['fps_str'] = self.gui_fps
 

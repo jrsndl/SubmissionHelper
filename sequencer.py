@@ -39,18 +39,12 @@ class Sequencer(object):
 
         self.in_path = in_path
         self._prepare_in_path()
+        self.more_settings = more_settings
 
         if os.path.exists(self.in_path):
             self.read_files()
             self.transform_data()
 
-        self.more_settings = more_settings
-        self.ftrack = {}
-        self.ftrack_query()
-        self.select_ftrack_note()
-
-        self.checks = []
-        self.run_checks()
         pprint.pprint(self.merged_list)
         # logging.debug('-> Sequencer Init')
 
@@ -87,6 +81,7 @@ class Sequencer(object):
         # other (audio, office, graphics, other)
         self.merged_list.extend(self.other_files_from_file_list(file_list))
 
+        self.clear_errors()
         # get file sizes for merged list
         self.get_file_sizes()
 
@@ -95,6 +90,9 @@ class Sequencer(object):
 
         # matadata
         self.get_metadata()
+
+        self.ftrack = {}
+        self.ftrack_query()
 
     def transform_data(self):
         """
@@ -126,6 +124,11 @@ class Sequencer(object):
         # fill tables for export and display
         self.prepare_tables()
 
+        self.select_ftrack_note()
+
+        self.checks = []
+        self.run_checks()
+
     def get_metadata(self):
 
         self.output['status'] = "Getting meta data" \
@@ -148,6 +151,12 @@ class Sequencer(object):
         if self.merged_list and len(self.merged_list) > 0:
             for one_item in self.merged_list:
                 one_item['relative_path'] = one_item['path'][root_dir_length:]
+
+    def clear_errors(self):
+        if self.merged_list is not None and len(self.merged_list) > 0:
+            for one_item in self.merged_list:
+                one_item['warning'] = ''
+                one_item['error'] = ''
 
     def get_file_sizes(self):
 
@@ -219,7 +228,7 @@ class Sequencer(object):
                     my_size = 0
                     sizes = []
                     zero_size = []
-                    for one_frame in range(start, end):
+                    for one_frame in range(start, end+1):
                         one_file = one_pth + '/' + clean + str(one_frame).zfill(pad) + ext
                         try:
                             stat_info = os.stat(one_file)
@@ -241,31 +250,32 @@ class Sequencer(object):
                         # warn if files are missing
                         empty = len(zero_size)
                         if empty > 0:
-                            warn = one_item.get('size_warning', '')
+                            warn = one_item.get('warning', '')
                             new_warn = "{} files have zero size: {}".format(
                                 str(len(zero_size)),
                                 zero_size
                             )
-                            if warn == "":
-                                one_item['size_warning'] = new_warn
+                            if warn == '':
+                                one_item['warning'] = new_warn
                             else:
-                                one_item['size_warning'] += ", " + new_warn
+                                one_item['warning'] += ", " + new_warn
 
                         missing = len(one_item['missing_numbers'])
                         if missing > 0:
-                            warn = one_item.get('size_warning', '')
+                            warn = one_item.get('warning', '')
                             new_warn = "{} missing files: {}".format(
                                 str(missing),
                                 one_item['missing_numbers']
                             )
                             if warn == "":
-                                one_item['size_warning'] = new_warn
+                                one_item['warning'] = new_warn
                             else:
                                 one_item[
-                                    'size_warning'] += ", " + new_warn
+                                    'warning'] += ", " + new_warn
 
                         # analyze sizes
                         if _consistency:
+                            pprint.pprint(sizes)
                             # trim out frames to be ignored
                             # this is done for slates, they are often small
                             try:
@@ -279,29 +289,30 @@ class Sequencer(object):
                                     _end = [sizes[-1] for i in range(_neighbrs)]
                                     _s = _st + sizes + _end
 
+                                pprint.pprint(_s)
+
                                 inconsistent = []
                                 itms = 2 * _neighbrs + 1
-                                for cnt in range(_neighbrs, len(_s)-_neighbrs-1):
-                                    all_neighbrs = 0
-                                    for i in range(cnt - _neighbrs, cnt + _neighbrs):
-                                        all_neighbrs += _s[i]
-                                    average = float(all_neighbrs / itms)
 
-                                    _diff = float(_s[cnt] / average)
-                                    if _diff < 1:
-                                        _diff += 1
-                                    _diff -= 1
+                                for cnt in range(_neighbrs, len(_s)-_neighbrs):
+                                    _frame = start + _ignore_first + cnt - _neighbrs - 1
+                                    _w = _s[(cnt - _neighbrs):(cnt + _neighbrs)+1]
+                                    all_neighbrs = sum([i for i in _w if isinstance(i, int)])
+                                    average = float(all_neighbrs / itms)
+                                    _diff = abs(1 - float(float(_s[cnt]) / average))
+                                    _diff_percent = int(round(_diff*100, 0))
+                                    #print("{} {}: {} ave: {} diff: {}".format(cnt, _frame, _w, average, _diff_percent))
                                     if _diff > _tresh:
-                                        inconsistent.append(cnt+start)
+                                        inconsistent.append(_frame)
                                 if len(inconsistent) > 0:
-                                    warn = one_item.get('size_warning', '')
+                                    warn = one_item.get('warning', '')
                                     new_warn = "{} file sizes greatly differ: {}"\
                                         .format(str(len(inconsistent)),
                                                 str(inconsistent))
                                     if warn == '':
-                                        one_item['size_warning'] = new_warn
+                                        one_item['warning'] = new_warn
                                     else:
-                                        one_item['size_warning'] += ', ' + new_warn
+                                        one_item['warning'] += ', ' + new_warn
                             except:
                                 # TODO fix for very short sequences (ln=2, ifnofe frst 1 = fail)
                                 pass
@@ -314,7 +325,7 @@ class Sequencer(object):
                         one_item['size_bytes'] = my_size
                         one_item['size_human'] = helpers.humanize_file_size(my_size)
                         if my_size == 0:
-                            one_item['size_warning'] = 'file has zero size'
+                            one_item['warning'] = 'file has zero size'
                     except:
                         pass
 
@@ -889,6 +900,10 @@ class Sequencer(object):
             files_sub = 0
             files_log = 0
             files_txt = 0
+            total_size_sub = 0
+            total_size_log = 0
+            total_size_txt = 0
+
 
             for one_item in self.merged_list:
                 one_item.update({"hide_sub": False})
@@ -945,6 +960,9 @@ class Sequencer(object):
                         files_sub += _frames
                     else:
                         files_sub += 1
+                    _bytes = one_item.get('size_bytes', 0)
+                    total_size_sub += _bytes
+
                 if not one_item['hide_log']:
                     one_item.update({"cnt_log": str(cnt_log).zfill(counter_zeroes)})
                     cnt_log += counter_step
@@ -953,6 +971,9 @@ class Sequencer(object):
                         files_log += _frames
                     else:
                         files_log += 1
+                    _bytes = one_item.get('size_bytes', 0)
+                    total_size_log += _bytes
+
                 if not one_item['hide_txt']:
                     one_item.update({"cnt_txt": str(cnt_txt).zfill(counter_zeroes)})
                     cnt_txt += counter_step
@@ -961,6 +982,8 @@ class Sequencer(object):
                         files_txt += _frames
                     else:
                         files_txt += 1
+                    _bytes = one_item.get('size_bytes', 0)
+                    total_size_txt += _bytes
 
         totals = {
             'total_sub': total_sub,
@@ -968,7 +991,16 @@ class Sequencer(object):
             'total_txt': total_txt,
             'files_sub': files_sub,
             'files_log': files_log,
-            'files_txt': files_txt
+            'files_txt': files_txt,
+            'total_size_sub': total_size_sub,
+            'total_size_log': total_size_log,
+            'total_size_txt': total_size_txt,
+            'total_size_sub_human': helpers.humanize_file_size(
+            total_size_sub),
+            'total_size_log_human': helpers.humanize_file_size(
+            total_size_log),
+            'total_size_txt_human': helpers.humanize_file_size(
+            total_size_txt)
         }
         self.static_keywords.update(totals)
 
@@ -1495,6 +1527,29 @@ class Sequencer(object):
             if self.table_txt is not None and t_do_txt:
                 with open(t_export_root, 'w') as f:
                     f.write(self.table_txt)
+
+        # rename if autorename is ON
+        if self.settings and\
+                bool(self.settings['name_rename_auto']['value']) and\
+                bool(self.settings['name_from_template']['value']):
+            self.rename_folder()
+
+    def manual_rename(self):
+        if self.settings and\
+                bool(self.settings['name_from_template']['value']):
+            self.rename_folder()
+
+    def rename_folder(self):
+
+        if self.static_keywords is None:
+            return None
+        try:
+            pth = self.static_keywords['package_name_root'] + '/'
+            src = self.static_keywords['package_name_from_folder']
+            dst = self.static_keywords['package_name']
+            os.rename(pth + src, pth + dst)
+        except:
+            logging.error('Renaming {} {} -> {} failed'.format(pth, src, dst))
 
     def export_spreadsheet(self, export_root, do_excel, do_csv,
                            table, titles, column_widths=None):

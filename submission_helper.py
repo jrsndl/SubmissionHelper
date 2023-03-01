@@ -94,7 +94,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         # Rename Package
         self.ui.name_template.textChanged.connect(
             partial(self.handler, 'name_template', 'package_rename'))
-
         self.ui.name_date_regex.textChanged.connect(
             partial(self.handler, 'name_date_regex', 'package_rename'))
         self.ui.name_version_per_date.clicked.connect(
@@ -112,8 +111,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.name_from_folder.clicked.connect(
             partial(self.handler, 'name_from_folder', 'package_rename'))
 
-        self.ui.name_rename_auto.clicked.connect(
-            partial(self.handler, 'name_rename_auto', 'package_rename'))
+        self.ui.name_rename.clicked.connect(
+            partial(self.handler, 'name_rename', 'package_rename'))
         self.ui.name_rename_auto.clicked.connect(
             partial(self.handler, 'name_rename_auto', 'package_rename'))
 
@@ -415,16 +414,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'check_message_3', 'refresh_checks'))
 
         # Preferences Tab
-        # ignore fps for now?
 
         self.ui.prefs_size_scan.clicked.connect(
-            partial(self.handler, 'prefs_size_scan', 'refresh_checks'))
+            partial(self.handler, 'prefs_size_scan', 'refresh_size_checks'))
         self.ui.prefs_size_ignore_first.valueChanged.connect(
-            partial(self.handler, 'prefs_size_ignore_first', 'refresh_checks'))
+            partial(self.handler, 'prefs_size_ignore_first', 'refresh_size_checks'))
         self.ui.prefs_size_neighborhood.valueChanged.connect(
-            partial(self.handler, 'prefs_size_neighborhood', 'refresh_checks'))
+            partial(self.handler, 'prefs_size_neighborhood', 'refresh_size_checks'))
         self.ui.prefs_size_threshold.valueChanged.connect(
-            partial(self.handler, 'prefs_size_threshold', 'refresh_checks'))
+            partial(self.handler, 'prefs_size_threshold', 'refresh_size_checks'))
 
         self.ui.prefs_tc_from_meta.clicked.connect(
             partial(self.handler, 'prefs_tc_from_meta', 'refresh_parsing'))
@@ -538,6 +536,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             self.data = Sequencer(pth, sequence_mode='holes_allowed', gui=self.settings, more_settings=self.settings_inst)
             self.show_all()
 
+        if sender == 'name_rename':
+            if self.data:
+                pth = self.data.static_keywords['package_name_root'] + '/'
+                dst = self.data.static_keywords['package_name']
+                renamed = (pth + dst).replace('\\', '/')
+                self.data.manual_rename()
+                if os.path.isdir(renamed):
+                    self.ui.package_folder.setText(renamed)
+                    self.settings_from_gui()
+                    self.data = Sequencer(renamed, sequence_mode='holes_allowed',
+                                          gui=self.settings,
+                                          more_settings=self.settings_inst)
+                    self.show_all()
+
         if group == 'package_rename':
             if self.data:
                 self.data.transform_data()
@@ -555,6 +567,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         if group == 'refresh_text':
             if self.data:
+                self.data.transform_data()
+                self.show_all()
+
+        if group == 'refresh_checks':
+            if self.data:
+                self.data.run_checks()
+                self.show_all()
+
+        if group == 'refresh_size_checks':
+            if self.data:
+                self.data.clear_errors()
+                self.data.get_file_sizes()
                 self.data.transform_data()
                 self.show_all()
 
