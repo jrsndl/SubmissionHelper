@@ -60,7 +60,14 @@ def convert_to_unicode_string(data):
     elif isinstance(data, list):
         return [convert_to_unicode_string(v) for v in data]
     elif isinstance(data, bytes):
-        return str(data, encoding='utf-8')
+        try:
+            _r = str(data, encoding='utf-8')
+        except:
+            try:
+                _r = "".join(chr(x) for x in bytearray(data))
+            except:
+                _r = ''
+        return _r
     else:
         return data
 

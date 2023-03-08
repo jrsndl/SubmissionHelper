@@ -91,8 +91,6 @@ class Sequencer(object):
         # matadata
         self.get_metadata()
 
-        self.ftrack = {}
-        self.ftrack_query()
 
     def transform_data(self):
         """
@@ -114,6 +112,10 @@ class Sequencer(object):
 
         # for every found item prepare regex items
         self.fill_regexes()
+
+        self.ftrack = {}
+        self.ftrack_query()
+        self.select_ftrack_note()
 
         # sidecar files filter
         self.sidecar_files_filter()
@@ -275,7 +277,7 @@ class Sequencer(object):
 
                         # analyze sizes
                         if _consistency:
-                            pprint.pprint(sizes)
+                            #pprint.pprint(sizes)
                             # trim out frames to be ignored
                             # this is done for slates, they are often small
                             try:
@@ -289,7 +291,7 @@ class Sequencer(object):
                                     _end = [sizes[-1] for i in range(_neighbrs)]
                                     _s = _st + sizes + _end
 
-                                pprint.pprint(_s)
+                                #pprint.pprint(_s)
 
                                 inconsistent = []
                                 itms = 2 * _neighbrs + 1
@@ -1156,17 +1158,17 @@ class Sequencer(object):
         if self.settings['package_folder']['value'] is not None:
             _pkg_folder = self.settings['package_folder']['value']
         if self.settings['name_version_per_date']['value'] is not None:
-            _per_date = self.settings[
-                                 'name_version_per_date']['value']
+            _per_date = bool(self.settings[
+                                 'name_version_per_date']['value'])
         if self.settings['name_version_zeroes']['value'] is not None:
             _ver_zeroes = self.settings[
                                   'name_version_zeroes']['value']
         if self.settings['name_version_use_letters']['value'] is not None:
-            _ver_letters = self.settings[
-                'name_version_use_letters']['value']
+            _ver_letters = bool(self.settings[
+                'name_version_use_letters']['value'])
         if self.settings['name_version_letters_uppercase']['value'] is not None:
-            _ver_upper = self.settings[
-                'name_version_letters_uppercase']['value']
+            _ver_upper = bool(self.settings[
+                'name_version_letters_uppercase']['value'])
 
         # get current date by applying regex to expanded template
         try:
@@ -1176,6 +1178,7 @@ class Sequencer(object):
             self.log.error("Package name template failed")
 
         if _date_compiled:
+
             d = _date_compiled.search(_temp_expanded)
             if d:
                 try:
@@ -1244,7 +1247,10 @@ class Sequencer(object):
                     last_dir = None
             else:
                 # sort by version, take highest
-                last_dir = sorted(dir_list, key=lambda i: i['version'])[-1]
+                try:
+                    last_dir = sorted(dir_list, key=lambda i: i['version'])[-1]
+                except:
+                    last_dir = None
             if last_dir:
                 last_version = last_dir['version']
             else:
@@ -1272,12 +1278,20 @@ class Sequencer(object):
                 next_version = str(int(last_version) + 1).zfill(_ver_zeroes)
 
             # add what we know
-            date_keys.update({
-                'package_version': next_version,
-                'package_date': current_date,
-                'package_name_from_folder': name_from_folder,
-                'package_name_root': one_up
-            })
+            if _per_date:
+                date_keys.update({
+                    'package_version': next_version,
+                    'package_date': current_date,
+                    'package_name_from_folder': name_from_folder,
+                    'package_name_root': one_up
+                })
+            else:
+                date_keys.update({
+                    'package_version': next_version,
+                    'package_date': '',
+                    'package_name_from_folder': name_from_folder,
+                    'package_name_root': one_up
+                })
 
             # use source folder as name
             _pkg_new_name = name_from_folder
@@ -1892,6 +1906,7 @@ class Sequencer(object):
                             if p["full_name"] == self.ftrack['project']:
                                 self.ftrack['project_id'] = p["id"]
                     except ftrack_api.exception.NoResultFoundError:
+                        print('FTRACK failed')
                         pass
 
                 if self.ftrack['label'] != '' and self.ftrack['do_label']:
@@ -1910,10 +1925,13 @@ class Sequencer(object):
         """
 
         if self.ftrack is None:
+            print("Ftrack cancelled")
             return
         if self.ftrack['project_id'] is None or self.ftrack['shot'] == '' or self.ftrack['task'] == '':
+            print("Ftrack cancelled")
             return
         if self.merged_list is None:
+            print("Ftrack cancelled")
             return
 
         do_filter = False
@@ -1944,6 +1962,7 @@ class Sequencer(object):
         current_shot = self.ftrack.get('shot', '').format_map(Default(item))
         current_task = self.ftrack.get('task', '').format_map(Default(item))
         current_version = self.ftrack.get('version', '').format_map(Default(item))
+        #print(current_shot, current_task, current_version)
 
         version_gui = 0
         if self.ftrack['do_version']:

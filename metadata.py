@@ -99,7 +99,10 @@ class MetaData(object):
         }
 
         # add exr header
-        meta_data.update(self.meta_exr)
+        try:
+            meta_data.update(self.meta_exr)
+        except:
+            print("Reading EXR metadata failed")
 
         return meta_data
 
@@ -142,7 +145,10 @@ class MetaData(object):
         if self.ffprobe_path is None:
             self.log.warning('Ffprobe not found')
         else:
-            self.meta.update(self.probe_ffprobe())
+            try:
+                self.meta.update(self.probe_ffprobe())
+            except:
+                print("Reading ffprobe metadata failed.")
             #pprint.pprint(self.meta)
 
             if self.meta['error'] != '':
@@ -157,7 +163,10 @@ class MetaData(object):
 
         # EXR
         if my_extension == 'exr':
-            self.meta_exr = self.read_metadata_from_exr()
+            try:
+                self.meta_exr = self.read_metadata_from_exr()
+            except:
+                print("Reading EXR metadata failed")
 
 
         # Other TCs

@@ -701,12 +701,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             )
             #self.ui.log_table.update()
             self.ui.txt_table.setPlainText(self.data.table_txt)
-            self.display_table(
-                self.data.table_side,
-                self.ui.side_table,
-                self.data.columns_side
-            )
-            #self.ui.side_table.update()
+
+            if self.data.table_side is not None:
+                self.display_table(
+                    self.data.table_side,
+                    self.ui.side_table,
+                    self.data.columns_side
+                )
+                #self.ui.side_table.update()
 
             # display Package name
             _preview = self.data.output.get('package_name', '')
