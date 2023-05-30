@@ -129,7 +129,7 @@ class Sequencer(object):
         self.prepare_tables()
 
         # merge lines with identical user key
-        self.merge_items()
+        #self.merge_items()
 
         self.select_ftrack_note()
 
@@ -1434,12 +1434,12 @@ class Sequencer(object):
             if self.settings['side_log_only']['value'] is not None:
                 side_log_only = bool(self.settings['side_log_only']['value'])
 
-            if self.settings['prefs_merge_chbx']['value']:
+            if self.settings['prefs_merge_chbx']['value'] is not None:
                 _merge_chbx = bool(self.settings['prefs_merge_chbx']['value'])
             if self.settings['prefs_merge_by']['value']:
                 _merge_by = str(
                     self.settings['prefs_merge_by']['value']).strip('{}')
-            if self.settings['prefs_merge_collapse']['value']:
+            if self.settings['prefs_merge_collapse']['value'] is not None:
                 _merge_collapse = bool(
                     self.settings['prefs_merge_collapse']['value'])
             if self.settings['prefs_merge_sep']['value']:
@@ -1448,11 +1448,12 @@ class Sequencer(object):
                 _merge_sort = str(self.settings['prefs_merge_sort']['value'])
             if self.settings['prefs_merge_order']['value']:
                 _merge_order = str(self.settings['prefs_merge_order']['value'])
-            if self.settings['prefs_merge_hide']['value']:
+            if self.settings['prefs_merge_hide']['value'] is not None:
                 _merge_hide = bool(self.settings['prefs_merge_hide']['value'])
         else:
             return
 
+        sub_merges = {}
         if self.merged_list and len(self.merged_list) > 0:
             for one_item in self.merged_list:
                 one_item.update(self.static_keywords)
@@ -1472,6 +1473,21 @@ class Sequencer(object):
                     #  add item to the end of the row, so we can later
                     #  on easily reference all the data for the row
                     one_row_sub.append(one_item)
+
+                    if _merge_chbx:
+                        key = one_item.get(_merge_by, None)
+                        if not key:
+                            # add None as last row item -> flag as non-merge-able
+                            one_row_sub.append(None)
+                        else:
+                            # add key as last row item
+                            one_row_sub.append(key)
+                            cnt = sub_merges.get(key, None)
+                            if cnt:
+                                sub_merges[key] += 1
+                            else:
+                                sub_merges[key] = 1
+
                     # add to table
                     self.table_sub.append(one_row_sub)
                     one_item['_row'] = one_row_sub
@@ -1526,42 +1542,30 @@ class Sequencer(object):
                             self.table_side.append(one_row_side)
 
             # merging
-            for one_item in self.merged_list:
-                if not one_item['hide_sub']:
-
-                    mrg = one_item.get('is_merged', None)
-                    if mrg:
-                        # skip if already merged
-                        continue
-
-                    # get key that merges items
-                    key = one_item.get(_merge_by, None)
-                    if not key:
-                        # flag as non-merge-able and skip
-                        one_item.update({'is_merged': None})
-                        continue
-
-                    print("Merge Key: {} {}".format(_merge_by, key))
-                    _all_merged = []
-                    for itm in self.merged_list:
-                        my_key = itm.get(_merge_by, None)
-                        if key == my_key:
-                            r = itm.get('_row')
-                            if r:
-                                itm.update({'is_merged': key})
-                                _all_merged.append(r)
-                    if len(_all_merged) > 0:
-                        # there is something to merge
-                        one_item.update({'is_merged': _all_merged})
-                        _all_merged.append(one_item['_row'])
-                        merged_row = row_merge(rows=_all_merged,
-                                               collapse=_merge_collapse,
-                                               separator=_merge_sep,
-                                               sort=_merge_sort,
-                                               order=_merge_order)
-                        self.table_sub.append(merged_row)
-                    else:
-                        one_item.update({'is_merged': None})
+            if _merge_chbx:
+                _rows_merged = []
+                for one_merge_key, count in sub_merges.items():
+                    if count > 1:
+                        _all_merged = []
+                        for one_row in self.table_sub:
+                            merge_key = one_row[-1]
+                            if merge_key and merge_key == one_merge_key:
+                                _all_merged.append(one_row[:-1])
+                                if not _merge_hide:
+                                    one_row[-1] = None
+                        if len(_all_merged) > 0:
+                            # there is something to merge
+                            merged_row = row_merge(rows=_all_merged,
+                                                   collapse=_merge_collapse,
+                                                   separator=_merge_sep,
+                                                   sort=_merge_sort,
+                                                   order=_merge_order)
+                            _rows_merged.append(merged_row)
+                for one_row in self.table_sub:
+                    merge_key = one_row[-1]
+                    if not merge_key:
+                        _rows_merged.append(one_row[:-1])
+                self.table_sub = _rows_merged
 
         try:
             _header = txt_header.format(**self.static_keywords)
@@ -1758,58 +1762,6 @@ class Sequencer(object):
                 if include_keep and exclude_keep:
                     sidecars.append(one_sidecar)
         self.sidecars = sidecars
-
-    def merge_items(self):
-        """
-        Itegate table
-        Find lines with matching key
-            - mark as merged []
-            - sort merged by x
-            - make merged item
-                - merge with separator, collapse identical and empty values
-        :return:
-        """
-
-        if not self.merged_list:
-            return
-        if len(self.merged_list) == 0:
-            return
-
-        if self.settings['prefs_merge_chbx']['value']:
-            _merge_chbx = bool(self.settings['prefs_merge_chbx']['value'])
-        if self.settings['prefs_merge_by']['value']:
-            _merge_by = str(self.settings['prefs_merge_by']['value']).strip('{}')
-        if self.settings['prefs_merge_collapse']['value']:
-            _merge_collapse = bool(self.settings['prefs_merge_collapse']['value'])
-        if self.settings['prefs_merge_sep']['value']:
-            _merge_sep = str(self.settings['prefs_merge_sep']['value'])
-        if self.settings['prefs_merge_sort']['value']:
-            _merge_sort = str(self.settings['prefs_merge_sort']['value'])
-        if self.settings['prefs_merge_order']['value']:
-            _merge_order = str(self.settings['prefs_merge_order']['value'])
-        if self.settings['prefs_merge_hide']['value']:
-            _merge_hide = bool(self.settings['prefs_merge_hide']['value'])
-
-        for one_item in self.merged_list:
-            mrg = one_item.get('is_merged', None)
-            if mrg:
-                continue
-            key = one_item.get(_merge_by, None)
-            if not key:
-                one_item.update({'is_merged': key})
-                continue
-            print("Merge Key: {} {}".format(_merge_by, key))
-            _all_merged = []
-            for itm in self.merged_list:
-                my_key = itm.get(_merge_by, None)
-                if key == my_key:
-                    itm.update({'is_merged': key})
-                    _all_merged.append(itm)
-            if len(_all_merged) > 0:
-                _all_merged.append(one_item)
-                one_item.update({'is_merged': _all_merged})
-            else:
-                one_item.update({'is_merged': None})
 
     def sidecar_files_filter(self):
 
