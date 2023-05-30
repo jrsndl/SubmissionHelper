@@ -86,15 +86,26 @@ def frames_to_ffmpeg_tc(frames, fps):
 def frames_to_seconds(frames, fps):
 
     frames = int(frames)
-    fps = float(fps)
+    try:
+        fps = float(fps)
+    except:
+        if '/' in fps:
+            a = float(fps.split('/')[0])
+            b = float(fps.split('/')[1])
+            fps = float(a) / float(b)
+        else:
+            fps = None
 
-    hours = int(frames / 3600 / fps)
-    minutes = int((frames - hours * 3600 * fps) / 60 / fps)
-    seconds = int((frames - (hours * 3600 * fps) - (minutes * 60 * fps)) / fps)
-    frames = int(frames - (hours * 3600 * fps) - (minutes * 60 * fps) - (seconds * fps))
-    ms = int(1000 / fps)
-    miliseconds = frames * ms
-    total_seconds = float(hours * 3600 + minutes * 60 + seconds) + float(0.001 * miliseconds)
+    if fps:
+        hours = int(frames / 3600 / fps)
+        minutes = int((frames - hours * 3600 * fps) / 60 / fps)
+        seconds = int((frames - (hours * 3600 * fps) - (minutes * 60 * fps)) / fps)
+        frames = int(frames - (hours * 3600 * fps) - (minutes * 60 * fps) - (seconds * fps))
+        ms = int(1000 / fps)
+        miliseconds = frames * ms
+        total_seconds = float(hours * 3600 + minutes * 60 + seconds) + float(0.001 * miliseconds)
+    else:
+        total_seconds = 0
 
     return str(total_seconds)
 

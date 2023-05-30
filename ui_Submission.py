@@ -1052,7 +1052,7 @@ class Ui_submission(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 500, 542))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 751, 542))
         sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
@@ -3583,7 +3583,7 @@ class Ui_submission(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 548, 218))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 756, 269))
         sizePolicy5 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         sizePolicy5.setHorizontalStretch(0)
         sizePolicy5.setVerticalStretch(0)
@@ -3872,7 +3872,7 @@ class Ui_submission(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollAreaWidgetContents_4 = QWidget()
         self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
-        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 620, 302))
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 749, 302))
         self.verticalLayout_39 = QVBoxLayout(self.scrollAreaWidgetContents_4)
         self.verticalLayout_39.setObjectName(u"verticalLayout_39")
         self.verticalLayout_36 = QVBoxLayout()
@@ -4175,10 +4175,10 @@ class Ui_submission(object):
         self.TopTab.addTab(self.tab_12, "")
         self.tab_4 = QWidget()
         self.tab_4.setObjectName(u"tab_4")
-        self.horizontalLayout_23 = QHBoxLayout(self.tab_4)
-        self.horizontalLayout_23.setObjectName(u"horizontalLayout_23")
-        self.verticalLayout_28 = QVBoxLayout()
-        self.verticalLayout_28.setObjectName(u"verticalLayout_28")
+        self.verticalLayout_47 = QVBoxLayout(self.tab_4)
+        self.verticalLayout_47.setObjectName(u"verticalLayout_47")
+        self.verticalLayout_40 = QVBoxLayout()
+        self.verticalLayout_40.setObjectName(u"verticalLayout_40")
         self.groupBox_14 = QGroupBox(self.tab_4)
         self.groupBox_14.setObjectName(u"groupBox_14")
         sizePolicy7 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
@@ -4226,7 +4226,7 @@ class Ui_submission(object):
         self.verticalLayout_5.addLayout(self.horizontalLayout_36)
 
 
-        self.verticalLayout_28.addWidget(self.groupBox_14)
+        self.verticalLayout_40.addWidget(self.groupBox_14)
 
         self.groupBox_15 = QGroupBox(self.tab_4)
         self.groupBox_15.setObjectName(u"groupBox_15")
@@ -4290,7 +4290,7 @@ class Ui_submission(object):
         self.verticalLayout_11.addLayout(self.horizontalLayout_38)
 
 
-        self.verticalLayout_28.addWidget(self.groupBox_15)
+        self.verticalLayout_40.addWidget(self.groupBox_15)
 
         self.groupBox_2 = QGroupBox(self.tab_4)
         self.groupBox_2.setObjectName(u"groupBox_2")
@@ -4381,7 +4381,7 @@ class Ui_submission(object):
         self.horizontalLayout_70.addLayout(self.horizontalLayout_28)
 
 
-        self.verticalLayout_28.addWidget(self.groupBox_2)
+        self.verticalLayout_40.addWidget(self.groupBox_2)
 
         self.groupBox_17 = QGroupBox(self.tab_4)
         self.groupBox_17.setObjectName(u"groupBox_17")
@@ -4487,14 +4487,139 @@ class Ui_submission(object):
         self.horizontalLayout_30.addLayout(self.horizontalLayout_22)
 
 
-        self.verticalLayout_28.addWidget(self.groupBox_17)
+        self.verticalLayout_40.addWidget(self.groupBox_17)
 
-        self.verticalSpacer_5 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.groupBox_19 = QGroupBox(self.tab_4)
+        self.groupBox_19.setObjectName(u"groupBox_19")
+        sizePolicy7.setHeightForWidth(self.groupBox_19.sizePolicy().hasHeightForWidth())
+        self.groupBox_19.setSizePolicy(sizePolicy7)
+        self.groupBox_19.setMinimumSize(QSize(650, 60))
+        self.groupBox_19.setMaximumSize(QSize(16777215, 80))
+        self.verticalLayout_28 = QVBoxLayout(self.groupBox_19)
+        self.verticalLayout_28.setObjectName(u"verticalLayout_28")
+        self.horizontalLayout_121 = QHBoxLayout()
+        self.horizontalLayout_121.setObjectName(u"horizontalLayout_121")
+        self.horizontalLayout_118 = QHBoxLayout()
+        self.horizontalLayout_118.setObjectName(u"horizontalLayout_118")
+        self.prefs_merge_chbx = QCheckBox(self.groupBox_19)
+        self.prefs_merge_chbx.setObjectName(u"prefs_merge_chbx")
+        sizePolicy2.setHeightForWidth(self.prefs_merge_chbx.sizePolicy().hasHeightForWidth())
+        self.prefs_merge_chbx.setSizePolicy(sizePolicy2)
+        self.prefs_merge_chbx.setMinimumSize(QSize(80, 25))
+        self.prefs_merge_chbx.setMaximumSize(QSize(80, 25))
+        self.prefs_merge_chbx.setChecked(True)
 
-        self.verticalLayout_28.addItem(self.verticalSpacer_5)
+        self.horizontalLayout_118.addWidget(self.prefs_merge_chbx)
+
+        self.prefs_merge_by = QLineEdit(self.groupBox_19)
+        self.prefs_merge_by.setObjectName(u"prefs_merge_by")
+        self.prefs_merge_by.setMinimumSize(QSize(60, 25))
+        self.prefs_merge_by.setMaximumSize(QSize(60, 25))
+
+        self.horizontalLayout_118.addWidget(self.prefs_merge_by)
 
 
-        self.horizontalLayout_23.addLayout(self.verticalLayout_28)
+        self.horizontalLayout_121.addLayout(self.horizontalLayout_118)
+
+        self.prefs_merge_collapse = QCheckBox(self.groupBox_19)
+        self.prefs_merge_collapse.setObjectName(u"prefs_merge_collapse")
+        sizePolicy2.setHeightForWidth(self.prefs_merge_collapse.sizePolicy().hasHeightForWidth())
+        self.prefs_merge_collapse.setSizePolicy(sizePolicy2)
+        self.prefs_merge_collapse.setMinimumSize(QSize(110, 25))
+        self.prefs_merge_collapse.setMaximumSize(QSize(110, 25))
+        self.prefs_merge_collapse.setChecked(True)
+
+        self.horizontalLayout_121.addWidget(self.prefs_merge_collapse)
+
+        self.horizontalLayout_23 = QHBoxLayout()
+        self.horizontalLayout_23.setObjectName(u"horizontalLayout_23")
+        self.label_88 = QLabel(self.groupBox_19)
+        self.label_88.setObjectName(u"label_88")
+        sizePolicy2.setHeightForWidth(self.label_88.sizePolicy().hasHeightForWidth())
+        self.label_88.setSizePolicy(sizePolicy2)
+        self.label_88.setMinimumSize(QSize(70, 25))
+        self.label_88.setMaximumSize(QSize(70, 25))
+
+        self.horizontalLayout_23.addWidget(self.label_88)
+
+        self.prefs_merge_sep = QLineEdit(self.groupBox_19)
+        self.prefs_merge_sep.setObjectName(u"prefs_merge_sep")
+        self.prefs_merge_sep.setMinimumSize(QSize(40, 25))
+        self.prefs_merge_sep.setMaximumSize(QSize(40, 25))
+
+        self.horizontalLayout_23.addWidget(self.prefs_merge_sep)
+
+
+        self.horizontalLayout_121.addLayout(self.horizontalLayout_23)
+
+        self.horizontalLayout_120 = QHBoxLayout()
+        self.horizontalLayout_120.setObjectName(u"horizontalLayout_120")
+        self.label_89 = QLabel(self.groupBox_19)
+        self.label_89.setObjectName(u"label_89")
+        sizePolicy2.setHeightForWidth(self.label_89.sizePolicy().hasHeightForWidth())
+        self.label_89.setSizePolicy(sizePolicy2)
+        self.label_89.setMinimumSize(QSize(50, 25))
+        self.label_89.setMaximumSize(QSize(50, 25))
+
+        self.horizontalLayout_120.addWidget(self.label_89)
+
+        self.prefs_merge_sort = QLineEdit(self.groupBox_19)
+        self.prefs_merge_sort.setObjectName(u"prefs_merge_sort")
+        self.prefs_merge_sort.setMinimumSize(QSize(80, 25))
+        self.prefs_merge_sort.setMaximumSize(QSize(80, 25))
+
+        self.horizontalLayout_120.addWidget(self.prefs_merge_sort)
+
+
+        self.horizontalLayout_121.addLayout(self.horizontalLayout_120)
+
+        self.horizontalLayout_119 = QHBoxLayout()
+        self.horizontalLayout_119.setObjectName(u"horizontalLayout_119")
+        self.label_162 = QLabel(self.groupBox_19)
+        self.label_162.setObjectName(u"label_162")
+        sizePolicy2.setHeightForWidth(self.label_162.sizePolicy().hasHeightForWidth())
+        self.label_162.setSizePolicy(sizePolicy2)
+        self.label_162.setMinimumSize(QSize(50, 25))
+        self.label_162.setMaximumSize(QSize(50, 25))
+
+        self.horizontalLayout_119.addWidget(self.label_162)
+
+        self.prefs_merge_order = QLineEdit(self.groupBox_19)
+        self.prefs_merge_order.setObjectName(u"prefs_merge_order")
+        self.prefs_merge_order.setMinimumSize(QSize(120, 25))
+        self.prefs_merge_order.setMaximumSize(QSize(120, 25))
+
+        self.horizontalLayout_119.addWidget(self.prefs_merge_order)
+
+
+        self.horizontalLayout_121.addLayout(self.horizontalLayout_119)
+
+        self.prefs_merge_hide = QCheckBox(self.groupBox_19)
+        self.prefs_merge_hide.setObjectName(u"prefs_merge_hide")
+        sizePolicy2.setHeightForWidth(self.prefs_merge_hide.sizePolicy().hasHeightForWidth())
+        self.prefs_merge_hide.setSizePolicy(sizePolicy2)
+        self.prefs_merge_hide.setMinimumSize(QSize(100, 25))
+        self.prefs_merge_hide.setMaximumSize(QSize(100, 25))
+        self.prefs_merge_hide.setChecked(True)
+
+        self.horizontalLayout_121.addWidget(self.prefs_merge_hide)
+
+        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_121.addItem(self.horizontalSpacer_2)
+
+
+        self.verticalLayout_28.addLayout(self.horizontalLayout_121)
+
+
+        self.verticalLayout_40.addWidget(self.groupBox_19)
+
+        self.verticalSpacer_5 = QSpacerItem(1381, 13, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout_40.addItem(self.verticalSpacer_5)
+
+
+        self.verticalLayout_47.addLayout(self.verticalLayout_40)
 
         self.TopTab.addTab(self.tab_4, "")
         self.tab_9 = QWidget()
@@ -5448,6 +5573,17 @@ class Ui_submission(object):
         self.label_51.setText(QCoreApplication.translate("submission", u"Ignore first frames:", None))
         self.label_53.setText(QCoreApplication.translate("submission", u"Neighborhood frames:", None))
         self.label_54.setText(QCoreApplication.translate("submission", u"Warning Treshhold %", None))
+        self.groupBox_19.setTitle(QCoreApplication.translate("submission", u"Merge Lines", None))
+        self.prefs_merge_chbx.setText(QCoreApplication.translate("submission", u"Merge by:", None))
+        self.prefs_merge_by.setText(QCoreApplication.translate("submission", u"{shot}", None))
+        self.prefs_merge_collapse.setText(QCoreApplication.translate("submission", u"Collapse Values", None))
+        self.label_88.setText(QCoreApplication.translate("submission", u"Separator:", None))
+        self.prefs_merge_sep.setText(QCoreApplication.translate("submission", u"/", None))
+        self.label_89.setText(QCoreApplication.translate("submission", u"Soft By:", None))
+        self.prefs_merge_sort.setText(QCoreApplication.translate("submission", u"{extension}", None))
+        self.label_162.setText(QCoreApplication.translate("submission", u"Order:", None))
+        self.prefs_merge_order.setText(QCoreApplication.translate("submission", u"exr,mov,mp4,cube", None))
+        self.prefs_merge_hide.setText(QCoreApplication.translate("submission", u"Hide Merged", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_4), QCoreApplication.translate("submission", u"Preferences", None))
         self.groupBox_4.setTitle(QCoreApplication.translate("submission", u"Export Submission:", None))
         self.export_sub_excel.setText(QCoreApplication.translate("submission", u"Excel", None))
@@ -5492,7 +5628,7 @@ class Ui_submission(object):
         self.label_29.setText(QCoreApplication.translate("submission", u"Preset Name:", None))
         self.save_preset_button.setText(QCoreApplication.translate("submission", u"Save Preset", None))
         self.preset_explore.setText(QCoreApplication.translate("submission", u"Open Preset Folder", None))
-        self.version.setText(QCoreApplication.translate("submission", u"Release 2023-03-06", None))
+        self.version.setText(QCoreApplication.translate("submission", u"Release 2023-06-01", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_3), QCoreApplication.translate("submission", u"Presets", None))
         self.textEdit.setHtml(QCoreApplication.translate("submission", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"

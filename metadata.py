@@ -123,7 +123,7 @@ class MetaData(object):
 
         script_path = os.path.dirname(os.path.abspath(inspect.stack()[-1][1])).replace("\\", "/")
         #TODO remove before packaging
-        #script_path = 'D:/_code/SubmissionHelper'
+        script_path = 'D:/_code/SubmissionHelper'
         probe = script_path + '/ffmpeg/ffprobe' + self.platform_extension
         if not os.path.exists(probe):
             probe = None
@@ -204,13 +204,13 @@ class MetaData(object):
                 self.meta['duration_frames'] = self.item['end_number'] - self.item['start_number'] + 1
                 self.meta['duration_frames_slate'] = self.meta['duration_frames'] - 1
                 self.meta['duration_secs'] = helpers.frames_to_seconds(frames=self.meta['duration_frames'],
-                                                                     fps=float(self.meta['fps_str']))
+                                                                     fps=self.meta['fps_str'])
 
     def _frame_range_from_tc(self):
         if self.meta['file'] and self.meta['file'] != '':
             if self.item['category'] == 'video':
 
-                if self.meta['fps_b'] > 0:
+                if self.meta['fps_b'] > 0 and self.meta['time_code']:
                     start_tc_frames = helpers.tc_to_frames(self.meta['time_code'], self.meta['fps_a'], self.meta['fps_b'])
                 else:
                     start_tc_frames = 0
@@ -327,11 +327,12 @@ class MetaData(object):
             outdata['error'] = "Probing file " + str(filename) + "  failed with error " + str(err)
         else:
             try:
-                tree =et.fromstring(out)
+                tree = et.fromstring(out)
                 StreamFind = tree.find("streams")
                 StreamList = StreamFind.findall("stream")
                 for onestr in StreamList:
                     streamType = onestr.attrib['codec_type']
+                    pprint.pprint(onestr)
 
                     if streamType == 'video':
                         outdata['video_present'] = 1
@@ -360,6 +361,10 @@ class MetaData(object):
                             outdata['duration_frames_slate'] = int(
                                 onestr.attrib['nb_frames']) - 1
                         except:
+                            outdata['duration_frames'] = int(
+                                onestr.attrib['duration_ts'])
+                            outdata['duration_frames_slate'] = int(
+                                onestr.attrib['duration_ts']) - 1
                             pass
 
                         try:
@@ -400,13 +405,13 @@ class MetaData(object):
 
                     if streamType == 'data':
                         outdata['data_present'] = 1
-                        try:
-                            TagFind = onestr.findall("tag")
-                            for onetag in TagFind:
-                                if onetag.attrib['key'] == 'timecode':
-                                    outdata['time_code'] = onetag.attrib['value']
-                        except:
-                            pass
+                    try:
+                        TagFind = onestr.findall("tag")
+                        for onetag in TagFind:
+                            if onetag.attrib['key'] == 'timecode':
+                                outdata['time_code'] = onetag.attrib['value']
+                    except:
+                        pass
 
                     if streamType == 'audio':
                         outdata['audio_present'] = 1
