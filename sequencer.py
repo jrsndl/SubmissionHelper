@@ -131,8 +131,11 @@ class Sequencer(object):
 
         # vendor ingest
         self.vendor_csv_prefs_spreadsheet_read()
+        self.vendor_csv_prefs_repre_read()
         self.vendor_csv_transform()
-        self.vendor_csv_write()
+        #self.vendor_csv_write()
+        self.vendor_csv_add()
+        self.vendor_csv_repre_checks()
         self.vendor_csv_add()
 
         # parse table headers
@@ -188,8 +191,22 @@ class Sequencer(object):
         try:
             vendor_csv_prefs_spreadsheet = json.loads(prefs_spread)
         except Exception:
-            self.log.error('Error opening vendor Vendor spreadsheet Json')
+            self.log.error('Error opening Vendor spreadsheet Json')
         self.vendor_csv_prefs_spreadsheet = vendor_csv_prefs_spreadsheet
+
+    def vendor_csv_prefs_repre_read(self):
+        vendor_csv_prefs_repre = {}
+
+        prefs_repre = ""
+        if self.settings:
+            if self.settings['vendor_csv_prefs_repres']['value']:
+                prefs_repre = self.settings['vendor_csv_prefs_repres']['value']
+
+        try:
+            vendor_csv_prefs_repre = json.loads(prefs_repre)
+        except Exception:
+            self.log.error('Error opening Vendor representation Json')
+        self.vendor_csv_prefs_repre = vendor_csv_prefs_repre
 
     def vendor_csv_transform(self):
 
@@ -236,7 +253,8 @@ class Sequencer(object):
                         # let's copy under vendor_*
                         trans_row['vendor_' + str(k)] = v
 
-                trans_row['vendor_row_errors'] = '; '.join(row_errors)
+                # keep errors as list for now
+                trans_row['vendor_row_errors'] = row_errors
                 vendor_csv_transformed.append(trans_row)
 
         self.vendor_csv_transformed = vendor_csv_transformed
@@ -275,8 +293,8 @@ class Sequencer(object):
         if self.merged_list is not None and len(self.merged_list) > 0:
             if self.vendor_csv_transformed:
                 for one_item in self.merged_list:
-                    #package_key = p_key.format(**one_item)
-                    package_key = p_key.format_map(Default(one_item))
+                    package_key = p_key.format(**one_item)
+                    #package_key = p_key.format_map(Default(one_item))
                     for one_row in self.vendor_csv_transformed:
                         vendor_key = v_key.format_map(Default(one_row))
                         #vendor_key = v_key.format(**one_row)
@@ -285,6 +303,145 @@ class Sequencer(object):
                             for k, v in one_row.items():
                                 # add key from csv to the item
                                 one_item[k] = v
+                            one_row['merged_item'] = one_item
+
+    def vendor_csv_repre_checks(self):
+
+        class Default(dict):
+            def __missing__(self, key):
+                return '{' + key + '}'
+
+        if self.vendor_csv_transformed and self.vendor_csv_prefs_repre:
+            # find line merges
+            merge_key = self.vendor_csv_prefs_repre['merge_repres_by']
+            merge_groups = {}
+            for one_row in self.vendor_csv_transformed:
+
+                # add merge key to the transformed csv
+                # also keep track of grouped rows in merge_groups
+                current = int(self.vendor_csv_transformed.index(one_row))
+                print('current {}'.format(current))
+                one_row['vendor_Merge_by'] = merge_key.format(**one_row)
+                print('merge by {}'.format(one_row['vendor_Merge_by']))
+                if one_row['vendor_Merge_by']:
+                    if one_row['vendor_Merge_by'] in merge_groups:
+                        merge_groups[one_row['vendor_Merge_by']].append(current)
+                        pprint.pprint(merge_groups)
+                    else:
+                        _empty = []
+                        _empty.append(current)
+                        merge_groups[one_row['vendor_Merge_by']] = _empty
+                        pprint.pprint(merge_groups)
+
+                    current_repre_name = one_row['vendor_Output']
+                    current_line = self.vendor_csv_transformed.index(one_row)+2
+
+                    if not any(d['name'] == current_repre_name for d in self.vendor_csv_prefs_repre['repres']):
+                        # repre does not exist in repre json, skip
+                        one_row['vendor_row_errors'].append("Output Type {} not found in preferences for line {}".format(current_repre_name, current_line))
+                    else:
+                        for one_repre in self.vendor_csv_prefs_repre['repres']:
+                            if one_repre['name'] == current_repre_name:
+
+                                # check extension
+                                current_extension = one_row['merged_item']['extension']
+                                if current_extension in one_repre['extensions']:
+
+                                    # check metadata
+                                    for one_meta_key, one_meta_value in one_repre['metadata_check'].items():
+                                        read_meta = one_row['merged_item'].get(
+                                            one_meta_key, '')
+                                        if one_meta_value:
+                                            if read_meta and read_meta == one_meta_value:
+                                                pass
+                                            else:
+                                                one_row['vendor_row_errors'].append(
+                                                    "Metadata {} != {}, = {}".format(
+                                                        one_meta_key, one_meta_value,
+                                                        read_meta))
+
+                                    # fill range
+                                    _filled = {}
+                                    for one_range_key, one_range_value in one_repre['frame_range'].items():
+                                        if type(one_range_value) == str:
+                                            _filled[one_range_key] = one_range_value.format(**one_row['merged_item'])
+                                    one_row['vendor_frame_range'] = _filled
+
+                                    # fill tags, separate by space
+                                    one_row['vendor_Tags'] = ' '.join(
+                                        one_repre['vendor_Tags'])
+                                else:
+                                    one_row['vendor_row_errors'].append(
+                                        "File extension {} doesn't match the representation extensions {}".format(
+                                            current_extension, ', '.join(
+                                                one_repre['extensions'])))
+
+            all_tasks = self.vendor_csv_prefs_repre['task_intent_repres'].keys()
+            for one_merge_key, merge_list in merge_groups.items():
+                task = self.vendor_csv_transformed[merge_list[0]][
+                    'vendor_Task']
+                _always = []
+                _optional = []
+                intent = self.vendor_csv_transformed[merge_list[0]][
+                    'vendor_Intent']
+                _repres = []
+                if task in all_tasks:
+                    for one_task_set in self.vendor_csv_prefs_repre['task_intent_repres'][task]:
+                        if intent in one_task_set['intents']:
+                            _always = one_task_set['always']
+                            _optional = one_task_set['optional']
+                            # now check if all repres fit:
+                            for one_index in merge_list:
+                                _type = self.vendor_csv_transformed[one_index]['vendor_Output']
+                                _repres.append(_type)
+                                self.vendor_csv_transformed[one_index]['vendor_One_task_set'] = one_task_set
+                                if not(_type in _always or _type in _optional):
+                                    self.vendor_csv_transformed[one_index][
+                                        'vendor_row_errors'].append("Output type {}, is not found in Json (task_intent_repres section).".format(_type))
+
+                            duplicates = [number for number in _repres if _repres.count(number) > 1]
+                            unique_duplicates = list(set(duplicates))
+                            if len(unique_duplicates) > 0:
+                                for one_index in merge_list:
+                                    self.vendor_csv_transformed[one_index][
+                                        'vendor_row_errors'].append(
+                                        "Output type {} is present more than once in merged group {}".format(
+                                            _type, self.vendor_csv_transformed[one_index]['vendor_Merge_by']))
+                            break
+                    if not _always:
+                        # assuming all grouped have to match some intent
+                        for one_index in merge_list:
+                            self.vendor_csv_transformed[one_index]['vendor_row_errors'].append("For task {}, Intent {} was not found in Json (task_intent_repres section).".format(task, intent))
+                else:
+                    # assuming all grouped have the same task
+                    for one_index in merge_list:
+                        self.vendor_csv_transformed[one_index]['vendor_row_errors'].append("Task {} was not found in Json task_intent_repres section: {}.".format(task, all_tasks))
+
+
+            # TODO:             "validate_repre_length_match": true,
+            #             "validate_repre_range_match": true,
+            #             "validate_repre_tc_match": true
+
+
+
+            # add errors to all rows in merged group if one or more outpur are required but have error(s)
+            for mrg_key in merge_groups.keys():
+                _failed_required_outputs = []
+                for one_index in merge_groups[mrg_key]:
+                    if self.vendor_csv_transformed[one_index]['vendor_row_errors']:
+                        if self.vendor_csv_transformed[one_index]['vendor_Output'] in self.vendor_csv_transformed[one_index]['vendor_One_task_set']['always']:
+                            _failed_required_outputs.append(self.vendor_csv_transformed[one_index]['vendor_Output'])
+
+                if len(_failed_required_outputs) > 0:
+                    _err = "Required outputs: {} ;have error(s)".format(", ".join(_failed_required_outputs))
+                    for one_index in merge_groups[mrg_key]:
+                        self.vendor_csv_transformed[one_index]['vendor_row_errors'].append(_err)
+
+            # convert errors to string
+            for one_row in self.vendor_csv_transformed:
+                _e = ', '.join(one_row['vendor_row_errors'])
+                one_row['vendor_row_errors'] = _e
+
 
     def get_relative_paths(self, parsed_in_path):
 
@@ -1154,7 +1311,7 @@ class Sequencer(object):
 
         self.regexes = {}
         if self.settings:
-            indexes = [str(x).zfill(2) for x in range(1, 16)]
+            indexes = [str(x).zfill(2) for x in range(1, 17)]
             for one in indexes:
                 name_key = "parse_name_" + one
                 key = self.settings[name_key]["value"]
@@ -1598,8 +1755,8 @@ class Sequencer(object):
                     one_row_sub = []
                     for one_expression in self.column_expressions_sub:
                         try:
-                            #formatted = one_expression.format(**one_item)
-                            formatted = one_expression.format_map(Default(one_item))
+                            formatted = one_expression.format(**one_item)
+                            #formatted = one_expression.format_map(Default(one_item))
                             one_row_sub.append(formatted)
                         except KeyError:
                             # can't parse expression, put it in original form
@@ -1730,6 +1887,7 @@ class Sequencer(object):
             s_pth_above = bool(self.settings['export_sub_above']['value'])
             s_pth_custom = bool(self.settings['export_sub_custom']['value'])
             s_custom = str(self.settings['export_sub_custom_path']['value'])
+            s_suffix = str(self.settings['export_sub_custom_suffix']['value'])
             s_do_excel = bool(self.settings['export_sub_excel']['value'])
             s_do_csv = bool(self.settings['export_sub_csv']['value'])
             s_export_root = export_root
@@ -1738,6 +1896,8 @@ class Sequencer(object):
             elif s_pth_above:
                 s_export_root = one_above
             s_export_root += self.static_keywords['package_name']
+            if s_suffix:
+                s_export_root += s_suffix
 
             self.export_spreadsheet(s_export_root, s_do_excel, s_do_csv,
                                     self.table_sub, self.column_titles_sub,
@@ -1747,6 +1907,7 @@ class Sequencer(object):
             d_pth_above = bool(self.settings['export_log_above']['value'])
             d_pth_custom = bool(self.settings['export_log_custom']['value'])
             d_custom = str(self.settings['export_log_custom_path']['value'])
+            d_suffix = str(self.settings['export_log_custom_suffix']['value'])
             d_do_excel = bool(self.settings['export_log_excel']['value'])
             d_do_csv = bool(self.settings['export_log_csv']['value'])
             d_export_root = export_root
@@ -1755,7 +1916,10 @@ class Sequencer(object):
             elif d_pth_above:
                 d_export_root = one_above
             d_export_root += self.static_keywords['package_name']
-            d_export_root += '_log'
+            if d_suffix:
+                d_export_root += d_suffix
+            else:
+                d_export_root += '_log'
 
             self.export_spreadsheet(d_export_root, d_do_excel, d_do_csv,
                                     self.table_log, self.column_titles_log,

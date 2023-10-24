@@ -4806,17 +4806,17 @@ class Ui_submission(object):
         self.TopTab.addTab(self.tab_4, "")
         self.tab_9 = QWidget()
         self.tab_9.setObjectName(u"tab_9")
-        self.horizontalLayout_45 = QHBoxLayout(self.tab_9)
-        self.horizontalLayout_45.setObjectName(u"horizontalLayout_45")
-        self.verticalLayout_18 = QVBoxLayout()
-        self.verticalLayout_18.setObjectName(u"verticalLayout_18")
+        self.horizontalLayout_134 = QHBoxLayout(self.tab_9)
+        self.horizontalLayout_134.setObjectName(u"horizontalLayout_134")
+        self.verticalLayout_17 = QVBoxLayout()
+        self.verticalLayout_17.setObjectName(u"verticalLayout_17")
         self.groupBox_4 = QGroupBox(self.tab_9)
         self.groupBox_4.setObjectName(u"groupBox_4")
         sizePolicy1.setHeightForWidth(self.groupBox_4.sizePolicy().hasHeightForWidth())
         self.groupBox_4.setSizePolicy(sizePolicy1)
         self.groupBox_4.setMinimumSize(QSize(180, 50))
-        self.verticalLayout_14 = QVBoxLayout(self.groupBox_4)
-        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
+        self.horizontalLayout_131 = QHBoxLayout(self.groupBox_4)
+        self.horizontalLayout_131.setObjectName(u"horizontalLayout_131")
         self.verticalLayout_13 = QVBoxLayout()
         self.verticalLayout_13.setObjectName(u"verticalLayout_13")
         self.horizontalLayout_29 = QHBoxLayout()
@@ -4870,41 +4870,79 @@ class Ui_submission(object):
 
         self.verticalLayout_13.addLayout(self.horizontalLayout_34)
 
-        self.horizontalLayout_39 = QHBoxLayout()
-        self.horizontalLayout_39.setObjectName(u"horizontalLayout_39")
+        self.horizontalLayout_130 = QHBoxLayout()
+        self.horizontalLayout_130.setObjectName(u"horizontalLayout_130")
+        self.horizontalLayout_45 = QHBoxLayout()
+        self.horizontalLayout_45.setObjectName(u"horizontalLayout_45")
         self.label_15 = QLabel(self.groupBox_4)
         self.label_15.setObjectName(u"label_15")
         sizePolicy2.setHeightForWidth(self.label_15.sizePolicy().hasHeightForWidth())
         self.label_15.setSizePolicy(sizePolicy2)
+        self.label_15.setMinimumSize(QSize(100, 16))
+        self.label_15.setMaximumSize(QSize(100, 16))
 
-        self.horizontalLayout_39.addWidget(self.label_15)
+        self.horizontalLayout_45.addWidget(self.label_15)
 
         self.export_sub_custom_path = QLineEdit(self.groupBox_4)
         self.export_sub_custom_path.setObjectName(u"export_sub_custom_path")
-        sizePolicy1.setHeightForWidth(self.export_sub_custom_path.sizePolicy().hasHeightForWidth())
-        self.export_sub_custom_path.setSizePolicy(sizePolicy1)
-        self.export_sub_custom_path.setMinimumSize(QSize(300, 25))
+        sizePolicy9 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        sizePolicy9.setHorizontalStretch(0)
+        sizePolicy9.setVerticalStretch(0)
+        sizePolicy9.setHeightForWidth(self.export_sub_custom_path.sizePolicy().hasHeightForWidth())
+        self.export_sub_custom_path.setSizePolicy(sizePolicy9)
+        self.export_sub_custom_path.setMinimumSize(QSize(400, 25))
+        self.export_sub_custom_path.setMaximumSize(QSize(1500, 25))
 
-        self.horizontalLayout_39.addWidget(self.export_sub_custom_path)
+        self.horizontalLayout_45.addWidget(self.export_sub_custom_path)
+
+        self.horizontalSpacer_13 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_45.addItem(self.horizontalSpacer_13)
 
 
-        self.verticalLayout_13.addLayout(self.horizontalLayout_39)
+        self.horizontalLayout_130.addLayout(self.horizontalLayout_45)
+
+        self.horizontalLayout_39 = QHBoxLayout()
+        self.horizontalLayout_39.setObjectName(u"horizontalLayout_39")
+        self.label_32 = QLabel(self.groupBox_4)
+        self.label_32.setObjectName(u"label_32")
+        sizePolicy2.setHeightForWidth(self.label_32.sizePolicy().hasHeightForWidth())
+        self.label_32.setSizePolicy(sizePolicy2)
+        self.label_32.setMinimumSize(QSize(50, 16))
+        self.label_32.setMaximumSize(QSize(50, 16))
+
+        self.horizontalLayout_39.addWidget(self.label_32)
+
+        self.export_sub_custom_suffix = QLineEdit(self.groupBox_4)
+        self.export_sub_custom_suffix.setObjectName(u"export_sub_custom_suffix")
+        sizePolicy2.setHeightForWidth(self.export_sub_custom_suffix.sizePolicy().hasHeightForWidth())
+        self.export_sub_custom_suffix.setSizePolicy(sizePolicy2)
+        self.export_sub_custom_suffix.setMinimumSize(QSize(150, 25))
+        self.export_sub_custom_suffix.setMaximumSize(QSize(150, 25))
+
+        self.horizontalLayout_39.addWidget(self.export_sub_custom_suffix)
 
 
-        self.verticalLayout_14.addLayout(self.verticalLayout_13)
+        self.horizontalLayout_130.addLayout(self.horizontalLayout_39)
 
 
-        self.verticalLayout_18.addWidget(self.groupBox_4)
+        self.verticalLayout_13.addLayout(self.horizontalLayout_130)
+
+
+        self.horizontalLayout_131.addLayout(self.verticalLayout_13)
+
+
+        self.verticalLayout_17.addWidget(self.groupBox_4)
 
         self.groupBox_10 = QGroupBox(self.tab_9)
         self.groupBox_10.setObjectName(u"groupBox_10")
         sizePolicy1.setHeightForWidth(self.groupBox_10.sizePolicy().hasHeightForWidth())
         self.groupBox_10.setSizePolicy(sizePolicy1)
         self.groupBox_10.setMinimumSize(QSize(180, 50))
-        self.horizontalLayout_44 = QHBoxLayout(self.groupBox_10)
-        self.horizontalLayout_44.setObjectName(u"horizontalLayout_44")
-        self.verticalLayout_17 = QVBoxLayout()
-        self.verticalLayout_17.setObjectName(u"verticalLayout_17")
+        self.horizontalLayout_133 = QHBoxLayout(self.groupBox_10)
+        self.horizontalLayout_133.setObjectName(u"horizontalLayout_133")
+        self.verticalLayout_14 = QVBoxLayout()
+        self.verticalLayout_14.setObjectName(u"verticalLayout_14")
         self.horizontalLayout_43 = QHBoxLayout()
         self.horizontalLayout_43.setObjectName(u"horizontalLayout_43")
         self.export_log_excel = QCheckBox(self.groupBox_10)
@@ -4926,7 +4964,7 @@ class Ui_submission(object):
         self.horizontalLayout_43.addItem(self.horizontalSpacer_11)
 
 
-        self.verticalLayout_17.addLayout(self.horizontalLayout_43)
+        self.verticalLayout_14.addLayout(self.horizontalLayout_43)
 
         self.horizontalLayout_41 = QHBoxLayout()
         self.horizontalLayout_41.setObjectName(u"horizontalLayout_41")
@@ -4954,40 +4992,75 @@ class Ui_submission(object):
         self.horizontalLayout_41.addItem(self.horizontalSpacer_15)
 
 
-        self.verticalLayout_17.addLayout(self.horizontalLayout_41)
+        self.verticalLayout_14.addLayout(self.horizontalLayout_41)
 
-        self.horizontalLayout_42 = QHBoxLayout()
-        self.horizontalLayout_42.setObjectName(u"horizontalLayout_42")
+        self.horizontalLayout_132 = QHBoxLayout()
+        self.horizontalLayout_132.setObjectName(u"horizontalLayout_132")
+        self.horizontalLayout_44 = QHBoxLayout()
+        self.horizontalLayout_44.setObjectName(u"horizontalLayout_44")
         self.label_16 = QLabel(self.groupBox_10)
         self.label_16.setObjectName(u"label_16")
         sizePolicy2.setHeightForWidth(self.label_16.sizePolicy().hasHeightForWidth())
         self.label_16.setSizePolicy(sizePolicy2)
+        self.label_16.setMinimumSize(QSize(100, 16))
+        self.label_16.setMaximumSize(QSize(100, 16))
 
-        self.horizontalLayout_42.addWidget(self.label_16)
+        self.horizontalLayout_44.addWidget(self.label_16)
 
         self.export_log_custom_path = QLineEdit(self.groupBox_10)
         self.export_log_custom_path.setObjectName(u"export_log_custom_path")
-        sizePolicy1.setHeightForWidth(self.export_log_custom_path.sizePolicy().hasHeightForWidth())
-        self.export_log_custom_path.setSizePolicy(sizePolicy1)
-        self.export_log_custom_path.setMinimumSize(QSize(300, 25))
+        sizePolicy9.setHeightForWidth(self.export_log_custom_path.sizePolicy().hasHeightForWidth())
+        self.export_log_custom_path.setSizePolicy(sizePolicy9)
+        self.export_log_custom_path.setMinimumSize(QSize(400, 25))
+        self.export_log_custom_path.setMaximumSize(QSize(1500, 25))
 
-        self.horizontalLayout_42.addWidget(self.export_log_custom_path)
-
-
-        self.verticalLayout_17.addLayout(self.horizontalLayout_42)
+        self.horizontalLayout_44.addWidget(self.export_log_custom_path)
 
 
-        self.horizontalLayout_44.addLayout(self.verticalLayout_17)
+        self.horizontalLayout_132.addLayout(self.horizontalLayout_44)
+
+        self.horizontalSpacer_14 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_132.addItem(self.horizontalSpacer_14)
+
+        self.horizontalLayout_42 = QHBoxLayout()
+        self.horizontalLayout_42.setObjectName(u"horizontalLayout_42")
+        self.label_33 = QLabel(self.groupBox_10)
+        self.label_33.setObjectName(u"label_33")
+        sizePolicy2.setHeightForWidth(self.label_33.sizePolicy().hasHeightForWidth())
+        self.label_33.setSizePolicy(sizePolicy2)
+        self.label_33.setMinimumSize(QSize(50, 16))
+        self.label_33.setMaximumSize(QSize(50, 16))
+
+        self.horizontalLayout_42.addWidget(self.label_33)
+
+        self.export_log_custom_suffix = QLineEdit(self.groupBox_10)
+        self.export_log_custom_suffix.setObjectName(u"export_log_custom_suffix")
+        sizePolicy2.setHeightForWidth(self.export_log_custom_suffix.sizePolicy().hasHeightForWidth())
+        self.export_log_custom_suffix.setSizePolicy(sizePolicy2)
+        self.export_log_custom_suffix.setMinimumSize(QSize(150, 25))
+        self.export_log_custom_suffix.setMaximumSize(QSize(150, 25))
+
+        self.horizontalLayout_42.addWidget(self.export_log_custom_suffix)
 
 
-        self.verticalLayout_18.addWidget(self.groupBox_10)
+        self.horizontalLayout_132.addLayout(self.horizontalLayout_42)
+
+
+        self.verticalLayout_14.addLayout(self.horizontalLayout_132)
+
+
+        self.horizontalLayout_133.addLayout(self.verticalLayout_14)
+
+
+        self.verticalLayout_17.addWidget(self.groupBox_10)
 
         self.verticalSpacer_3 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
-        self.verticalLayout_18.addItem(self.verticalSpacer_3)
+        self.verticalLayout_17.addItem(self.verticalSpacer_3)
 
 
-        self.horizontalLayout_45.addLayout(self.verticalLayout_18)
+        self.horizontalLayout_134.addLayout(self.verticalLayout_17)
 
         self.TopTab.addTab(self.tab_9, "")
         self.tab_5 = QWidget()
@@ -5261,11 +5334,11 @@ class Ui_submission(object):
 
         self.verticalLayout_12.addWidget(self.preset_explore)
 
-        self.version_231023 = QLineEdit(self.tab_3)
-        self.version_231023.setObjectName(u"version_231023")
-        self.version_231023.setReadOnly(True)
+        self.version_231024 = QLineEdit(self.tab_3)
+        self.version_231024.setObjectName(u"version_231024")
+        self.version_231024.setReadOnly(True)
 
-        self.verticalLayout_12.addWidget(self.version_231023)
+        self.verticalLayout_12.addWidget(self.version_231024)
 
         self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
@@ -5391,16 +5464,16 @@ class Ui_submission(object):
         submission.setCentralWidget(self.centralwidget)
         self.statusBar = QStatusBar(submission)
         self.statusBar.setObjectName(u"statusBar")
-        sizePolicy9 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
-        sizePolicy9.setHorizontalStretch(0)
-        sizePolicy9.setVerticalStretch(0)
-        sizePolicy9.setHeightForWidth(self.statusBar.sizePolicy().hasHeightForWidth())
-        self.statusBar.setSizePolicy(sizePolicy9)
+        sizePolicy10 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        sizePolicy10.setHorizontalStretch(0)
+        sizePolicy10.setVerticalStretch(0)
+        sizePolicy10.setHeightForWidth(self.statusBar.sizePolicy().hasHeightForWidth())
+        self.statusBar.setSizePolicy(sizePolicy10)
         submission.setStatusBar(self.statusBar)
 
         self.retranslateUi(submission)
 
-        self.TopTab.setCurrentIndex(0)
+        self.TopTab.setCurrentIndex(10)
         self.package_explore.setDefault(True)
         self.package_browse.setDefault(True)
         self.package_explore_2.setDefault(True)
@@ -5828,6 +5901,7 @@ class Ui_submission(object):
 #if QT_CONFIG(tooltip)
         self.export_sub_custom_path.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Expects path to folder</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
+        self.label_32.setText(QCoreApplication.translate("submission", u"Suffix: ", None))
         self.groupBox_10.setTitle(QCoreApplication.translate("submission", u"Export Drive Log:", None))
         self.export_log_excel.setText(QCoreApplication.translate("submission", u"Excel", None))
         self.export_log_csv.setText(QCoreApplication.translate("submission", u"CSV", None))
@@ -5838,6 +5912,7 @@ class Ui_submission(object):
 #if QT_CONFIG(tooltip)
         self.export_log_custom_path.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Expects path to folder</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
+        self.label_33.setText(QCoreApplication.translate("submission", u"Suffix: ", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_9), QCoreApplication.translate("submission", u"Exports", None))
         self.groupBox_5.setTitle(QCoreApplication.translate("submission", u"Export Submission:", None))
         self.text_txt.setText(QCoreApplication.translate("submission", u"TXT", None))
@@ -5861,7 +5936,7 @@ class Ui_submission(object):
         self.label_29.setText(QCoreApplication.translate("submission", u"Preset Name:", None))
         self.save_preset_button.setText(QCoreApplication.translate("submission", u"Save Preset", None))
         self.preset_explore.setText(QCoreApplication.translate("submission", u"Open Preset Folder", None))
-        self.version_231023.setText(QCoreApplication.translate("submission", u"Release 2023-10-23", None))
+        self.version_231024.setText(QCoreApplication.translate("submission", u"Release 2023-10-24", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_3), QCoreApplication.translate("submission", u"Presets", None))
         self.textEdit.setHtml(QCoreApplication.translate("submission", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"

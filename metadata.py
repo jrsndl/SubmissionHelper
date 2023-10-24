@@ -123,7 +123,7 @@ class MetaData(object):
 
         script_path = os.path.dirname(os.path.abspath(inspect.stack()[-1][1])).replace("\\", "/")
         #TODO remove before packaging
-        #script_path = 'D:/_code/SubmissionHelper'
+        script_path = 'D:/_code/SubmissionHelper'
         probe = script_path + '/ffmpeg/ffprobe' + self.platform_extension
         if not os.path.exists(probe):
             probe = None
@@ -629,21 +629,25 @@ class MetaData(object):
         try:
             # this updates tc and framerate from ffprobe
             # to be taken from EX instead
-            fps_a = int(exr_metadata['metaExr_framesPerSecond']['first_num'])
-            fps_b = int(exr_metadata['metaExr_framesPerSecond']['second_num'])
-            tc = int(exr_metadata['metaExr_timeCode']['timeAndFlags'])
-            tc_ud = int(exr_metadata['metaExr_timeCode']['userData'])
-            t4, t3, t2, t1 = struct.unpack("BBBB", tc.to_bytes(4, 'little'))
-            timecode = "{}:{}:{}:{}".format(str(t1).zfill(2), str(t2).zfill(2), str(t3).zfill(2), str(t4).zfill(2))
-            #print("TC: {} {} {}".format(tc, tc_ud, timecode))
+            fps_a = int(exr_metadata['framesPerSecond']['first_num'])
+            fps_b = int(exr_metadata['framesPerSecond']['second_num'])
             exr_metadata['fps_a'] = fps_a
             exr_metadata['fps_b'] = fps_b
-            exr_metadata['fps_raw'] = '{}/{}'.format(str(exr_metadata['fps_a']), str(exr_metadata['fps_b'])) # "24/1"
+            exr_metadata['fps_raw'] = '{}/{}'.format(
+                str(exr_metadata['fps_a']),
+                str(exr_metadata['fps_b']))  # "24/1"
             exr_metadata['fps'] = float(fps_a) / float(fps_b)
-            exr_metadata['fps_str'] = helpers.get_fps_for_PyTimeCode(exr_metadata['fps'])
+            exr_metadata['fps_str'] = helpers.get_fps_for_PyTimeCode(
+                exr_metadata['fps'])
+
+            tc = int(exr_metadata['timeCode']['timeAndFlags'])
+            tc_ud = int(exr_metadata['timeCode']['userData'])
+            t4, t3, t2, t1 = struct.unpack("BBBB", tc.to_bytes(4, 'little'))
+            timecode = "{}:{}:{}:{}".format(str(t1).zfill(2), str(t2).zfill(2), str(t3).zfill(2), str(t4).zfill(2))
+
             exr_metadata['time_code'] = timecode
-        except:
-            pass
+        except Exception:
+            print(Exception)
 
         exr_renamed = {}
         for k,v in exr_metadata.items():

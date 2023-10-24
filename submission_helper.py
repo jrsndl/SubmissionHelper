@@ -644,8 +644,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             if self.data:
                 self.data.vendor_csv_read()
                 self.data.vendor_csv_prefs_spreadsheet_read()
+                self.data.vendor_csv_prefs_repre_read()
                 self.data.vendor_csv_transform()
-                self.data.vendor_csv_write()
+                #self.data.vendor_csv_write()
+                self.data.vendor_csv_add()
+                self.data.vendor_csv_repre_checks()
                 self.data.vendor_csv_add()
 
                 # parse table headers
