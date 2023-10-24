@@ -351,6 +351,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.ftrack_note_repl.textChanged.connect(
             partial(self.handler, 'ftrack_note_repl', 'select_ftrack'))
 
+        # vendor
+        self.ui.vendor_csv_path.textChanged.connect(
+            partial(self.handler, 'vendor_csv_path', 'refresh_vendor'))
+        self.ui.vendor_csv_explore.clicked.connect(
+            partial(self.handler, 'vendor_csv_explore', 'refresh_vendor'))
+        self.ui.vendor_csv_browse.clicked.connect(
+            partial(self.handler, 'vendor_csv_browse', 'refresh_vendor'))
+
+        self.ui.vendor_csv_package_key.textChanged.connect(
+            partial(self.handler, 'vendor_csv_package_key', 'refresh_vendor'))
+        self.ui.vendor_csv_vendor_key.textChanged.connect(
+            partial(self.handler, 'vendor_csv_vendor_key', 'refresh_vendor'))
+
+        self.ui.vendor_csv_prefs_spreadsheet.textChanged.connect(
+            partial(self.handler, 'vendor_csv_prefs_spreadsheet',
+                    'refresh_vendor'))
+        self.ui.vendor_csv_prefs_repres.textChanged.connect(
+            partial(self.handler, 'vendor_csv_prefs_repres',
+                    'refresh_vendor'))
+
+
         # Spreadsheet
         self.ui.sub_columns.textChanged.connect(
             partial(self.handler, 'sub_columns', 'refresh_spreadsheets'))
@@ -385,9 +406,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.check_check_1.textChanged.connect(
             partial(self.handler, 'check_check_1', 'refresh_checks'))
         self.ui.check_warning_1.clicked.connect(
-            partial(self.handler, 'check_warning_1', 'refresh_shots'))
+            partial(self.handler, 'check_warning_1', 'refresh_checks'))
         self.ui.check_error_1.clicked.connect(
-            partial(self.handler, 'check_error_1', 'refresh_shots'))
+            partial(self.handler, 'check_error_1', 'refresh_checks'))
         self.ui.check_message_1.textChanged.connect(
             partial(self.handler, 'check_message_1', 'refresh_checks'))
 
@@ -396,9 +417,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.check_check_2.textChanged.connect(
             partial(self.handler, 'check_check_2', 'refresh_checks'))
         self.ui.check_warning_2.clicked.connect(
-            partial(self.handler, 'check_warning_2', 'refresh_shots'))
+            partial(self.handler, 'check_warning_2', 'refresh_checks'))
         self.ui.check_error_2.clicked.connect(
-            partial(self.handler, 'check_error_2', 'refresh_shots'))
+            partial(self.handler, 'check_error_2', 'refresh_checks'))
         self.ui.check_message_2.textChanged.connect(
             partial(self.handler, 'check_message_2', 'refresh_checks'))
 
@@ -616,6 +637,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             if self.data:
                 self.data.select_ftrack_note()
                 self.data.prepare_all_columns()
+                self.data.prepare_tables()
+                self.show_all()
+
+        if group == 'refresh_vendor':
+            if self.data:
+                self.data.vendor_csv_read()
+                self.data.vendor_csv_prefs_spreadsheet_read()
+                self.data.vendor_csv_transform()
+                self.data.vendor_csv_write()
+                self.data.vendor_csv_add()
+
+                # parse table headers
+                self.data.prepare_all_columns()
+                # fill tables for export and display
                 self.data.prepare_tables()
                 self.show_all()
 

@@ -18,7 +18,7 @@ class Ui_submission(object):
     def setupUi(self, submission):
         if not submission.objectName():
             submission.setObjectName(u"submission")
-        submission.resize(800, 600)
+        submission.resize(863, 600)
         sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1052,7 +1052,7 @@ class Ui_submission(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 751, 542))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 814, 542))
         sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
@@ -3569,6 +3569,191 @@ class Ui_submission(object):
         self.horizontalLayout_81.addLayout(self.verticalLayout_38)
 
         self.TopTab.addTab(self.tab_11, "")
+        self.tab_16 = QWidget()
+        self.tab_16.setObjectName(u"tab_16")
+        self.horizontalLayout_129 = QHBoxLayout(self.tab_16)
+        self.horizontalLayout_129.setObjectName(u"horizontalLayout_129")
+        self.verticalLayout_55 = QVBoxLayout()
+        self.verticalLayout_55.setObjectName(u"verticalLayout_55")
+        self.groupBox_11 = QGroupBox(self.tab_16)
+        self.groupBox_11.setObjectName(u"groupBox_11")
+        sizePolicy1.setHeightForWidth(self.groupBox_11.sizePolicy().hasHeightForWidth())
+        self.groupBox_11.setSizePolicy(sizePolicy1)
+        self.groupBox_11.setMinimumSize(QSize(600, 60))
+        self.groupBox_11.setMaximumSize(QSize(16777215, 60))
+        self.groupBox_11.setBaseSize(QSize(631, 70))
+        self.groupBox_11.setFlat(False)
+        self.verticalLayout_54 = QVBoxLayout(self.groupBox_11)
+        self.verticalLayout_54.setObjectName(u"verticalLayout_54")
+        self.horizontalLayout_122 = QHBoxLayout()
+        self.horizontalLayout_122.setObjectName(u"horizontalLayout_122")
+        self.vendor_csv_path = QLineEdit(self.groupBox_11)
+        self.vendor_csv_path.setObjectName(u"vendor_csv_path")
+        sizePolicy1.setHeightForWidth(self.vendor_csv_path.sizePolicy().hasHeightForWidth())
+        self.vendor_csv_path.setSizePolicy(sizePolicy1)
+        self.vendor_csv_path.setMinimumSize(QSize(250, 25))
+        self.vendor_csv_path.setMaximumSize(QSize(16000, 16777215))
+        self.vendor_csv_path.setDragEnabled(True)
+
+        self.horizontalLayout_122.addWidget(self.vendor_csv_path)
+
+        self.horizontalLayout_123 = QHBoxLayout()
+        self.horizontalLayout_123.setObjectName(u"horizontalLayout_123")
+        self.vendor_csv_explore = QPushButton(self.groupBox_11)
+        self.vendor_csv_explore.setObjectName(u"vendor_csv_explore")
+        sizePolicy2.setHeightForWidth(self.vendor_csv_explore.sizePolicy().hasHeightForWidth())
+        self.vendor_csv_explore.setSizePolicy(sizePolicy2)
+        self.vendor_csv_explore.setMinimumSize(QSize(20, 25))
+        self.vendor_csv_explore.setAutoFillBackground(False)
+        self.vendor_csv_explore.setIcon(icon1)
+        self.vendor_csv_explore.setFlat(True)
+
+        self.horizontalLayout_123.addWidget(self.vendor_csv_explore)
+
+        self.vendor_csv_browse = QPushButton(self.groupBox_11)
+        self.vendor_csv_browse.setObjectName(u"vendor_csv_browse")
+        sizePolicy2.setHeightForWidth(self.vendor_csv_browse.sizePolicy().hasHeightForWidth())
+        self.vendor_csv_browse.setSizePolicy(sizePolicy2)
+        self.vendor_csv_browse.setMinimumSize(QSize(60, 25))
+        self.vendor_csv_browse.setMaximumSize(QSize(60, 24))
+        self.vendor_csv_browse.setAutoFillBackground(False)
+        self.vendor_csv_browse.setIcon(icon)
+        self.vendor_csv_browse.setFlat(True)
+
+        self.horizontalLayout_123.addWidget(self.vendor_csv_browse)
+
+
+        self.horizontalLayout_122.addLayout(self.horizontalLayout_123)
+
+
+        self.verticalLayout_54.addLayout(self.horizontalLayout_122)
+
+
+        self.verticalLayout_55.addWidget(self.groupBox_11)
+
+        self.groupBox_12 = QGroupBox(self.tab_16)
+        self.groupBox_12.setObjectName(u"groupBox_12")
+        sizePolicy5 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.groupBox_12.sizePolicy().hasHeightForWidth())
+        self.groupBox_12.setSizePolicy(sizePolicy5)
+        self.horizontalLayout_127 = QHBoxLayout(self.groupBox_12)
+        self.horizontalLayout_127.setObjectName(u"horizontalLayout_127")
+        self.horizontalLayout_126 = QHBoxLayout()
+        self.horizontalLayout_126.setObjectName(u"horizontalLayout_126")
+        self.horizontalLayout_124 = QHBoxLayout()
+        self.horizontalLayout_124.setObjectName(u"horizontalLayout_124")
+        self.label_163 = QLabel(self.groupBox_12)
+        self.label_163.setObjectName(u"label_163")
+        sizePolicy2.setHeightForWidth(self.label_163.sizePolicy().hasHeightForWidth())
+        self.label_163.setSizePolicy(sizePolicy2)
+        self.label_163.setMinimumSize(QSize(90, 25))
+        self.label_163.setMaximumSize(QSize(90, 16777215))
+
+        self.horizontalLayout_124.addWidget(self.label_163)
+
+        self.vendor_csv_package_key = QLineEdit(self.groupBox_12)
+        self.vendor_csv_package_key.setObjectName(u"vendor_csv_package_key")
+        sizePolicy1.setHeightForWidth(self.vendor_csv_package_key.sizePolicy().hasHeightForWidth())
+        self.vendor_csv_package_key.setSizePolicy(sizePolicy1)
+        self.vendor_csv_package_key.setMinimumSize(QSize(300, 25))
+        self.vendor_csv_package_key.setMaximumSize(QSize(150, 16777215))
+        self.vendor_csv_package_key.setReadOnly(False)
+
+        self.horizontalLayout_124.addWidget(self.vendor_csv_package_key)
+
+
+        self.horizontalLayout_126.addLayout(self.horizontalLayout_124)
+
+        self.horizontalLayout_125 = QHBoxLayout()
+        self.horizontalLayout_125.setObjectName(u"horizontalLayout_125")
+        self.label_164 = QLabel(self.groupBox_12)
+        self.label_164.setObjectName(u"label_164")
+        sizePolicy2.setHeightForWidth(self.label_164.sizePolicy().hasHeightForWidth())
+        self.label_164.setSizePolicy(sizePolicy2)
+        self.label_164.setMinimumSize(QSize(90, 25))
+        self.label_164.setMaximumSize(QSize(90, 16777215))
+
+        self.horizontalLayout_125.addWidget(self.label_164)
+
+        self.vendor_csv_vendor_key = QLineEdit(self.groupBox_12)
+        self.vendor_csv_vendor_key.setObjectName(u"vendor_csv_vendor_key")
+        sizePolicy1.setHeightForWidth(self.vendor_csv_vendor_key.sizePolicy().hasHeightForWidth())
+        self.vendor_csv_vendor_key.setSizePolicy(sizePolicy1)
+        self.vendor_csv_vendor_key.setMinimumSize(QSize(300, 25))
+        self.vendor_csv_vendor_key.setMaximumSize(QSize(150, 16777215))
+        self.vendor_csv_vendor_key.setReadOnly(False)
+
+        self.horizontalLayout_125.addWidget(self.vendor_csv_vendor_key)
+
+
+        self.horizontalLayout_126.addLayout(self.horizontalLayout_125)
+
+
+        self.horizontalLayout_127.addLayout(self.horizontalLayout_126)
+
+
+        self.verticalLayout_55.addWidget(self.groupBox_12)
+
+        self.horizontalLayout_128 = QHBoxLayout()
+        self.horizontalLayout_128.setObjectName(u"horizontalLayout_128")
+        self.verticalLayout_56 = QVBoxLayout()
+        self.verticalLayout_56.setObjectName(u"verticalLayout_56")
+        self.label_30 = QLabel(self.tab_16)
+        self.label_30.setObjectName(u"label_30")
+        sizePolicy2.setHeightForWidth(self.label_30.sizePolicy().hasHeightForWidth())
+        self.label_30.setSizePolicy(sizePolicy2)
+        self.label_30.setMinimumSize(QSize(150, 20))
+        self.label_30.setMaximumSize(QSize(16777215, 20))
+
+        self.verticalLayout_56.addWidget(self.label_30)
+
+        self.vendor_csv_prefs_spreadsheet = QPlainTextEdit(self.tab_16)
+        self.vendor_csv_prefs_spreadsheet.setObjectName(u"vendor_csv_prefs_spreadsheet")
+        sizePolicy6 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Expanding)
+        sizePolicy6.setHorizontalStretch(0)
+        sizePolicy6.setVerticalStretch(0)
+        sizePolicy6.setHeightForWidth(self.vendor_csv_prefs_spreadsheet.sizePolicy().hasHeightForWidth())
+        self.vendor_csv_prefs_spreadsheet.setSizePolicy(sizePolicy6)
+        self.vendor_csv_prefs_spreadsheet.setMinimumSize(QSize(150, 100))
+        self.vendor_csv_prefs_spreadsheet.setMaximumSize(QSize(16777215, 400))
+
+        self.verticalLayout_56.addWidget(self.vendor_csv_prefs_spreadsheet)
+
+
+        self.horizontalLayout_128.addLayout(self.verticalLayout_56)
+
+        self.verticalLayout_57 = QVBoxLayout()
+        self.verticalLayout_57.setObjectName(u"verticalLayout_57")
+        self.label_31 = QLabel(self.tab_16)
+        self.label_31.setObjectName(u"label_31")
+        sizePolicy2.setHeightForWidth(self.label_31.sizePolicy().hasHeightForWidth())
+        self.label_31.setSizePolicy(sizePolicy2)
+        self.label_31.setMinimumSize(QSize(150, 20))
+        self.label_31.setMaximumSize(QSize(16777215, 20))
+
+        self.verticalLayout_57.addWidget(self.label_31)
+
+        self.vendor_csv_prefs_repres = QPlainTextEdit(self.tab_16)
+        self.vendor_csv_prefs_repres.setObjectName(u"vendor_csv_prefs_repres")
+        sizePolicy6.setHeightForWidth(self.vendor_csv_prefs_repres.sizePolicy().hasHeightForWidth())
+        self.vendor_csv_prefs_repres.setSizePolicy(sizePolicy6)
+        self.vendor_csv_prefs_repres.setMinimumSize(QSize(150, 100))
+        self.vendor_csv_prefs_repres.setMaximumSize(QSize(16777215, 400))
+
+        self.verticalLayout_57.addWidget(self.vendor_csv_prefs_repres)
+
+
+        self.horizontalLayout_128.addLayout(self.verticalLayout_57)
+
+
+        self.verticalLayout_55.addLayout(self.horizontalLayout_128)
+
+
+        self.horizontalLayout_129.addLayout(self.verticalLayout_55)
+
+        self.TopTab.addTab(self.tab_16, "")
         self.tab_2 = QWidget()
         self.tab_2.setObjectName(u"tab_2")
         self.horizontalLayout_63 = QHBoxLayout(self.tab_2)
@@ -3583,12 +3768,12 @@ class Ui_submission(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 756, 269))
-        sizePolicy5 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
-        sizePolicy5.setHorizontalStretch(0)
-        sizePolicy5.setVerticalStretch(0)
-        sizePolicy5.setHeightForWidth(self.scrollAreaWidgetContents_3.sizePolicy().hasHeightForWidth())
-        self.scrollAreaWidgetContents_3.setSizePolicy(sizePolicy5)
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 819, 269))
+        sizePolicy7 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
+        sizePolicy7.setHorizontalStretch(0)
+        sizePolicy7.setVerticalStretch(0)
+        sizePolicy7.setHeightForWidth(self.scrollAreaWidgetContents_3.sizePolicy().hasHeightForWidth())
+        self.scrollAreaWidgetContents_3.setSizePolicy(sizePolicy7)
         self.horizontalLayout_69 = QHBoxLayout(self.scrollAreaWidgetContents_3)
         self.horizontalLayout_69.setObjectName(u"horizontalLayout_69")
         self.horizontalLayout_15 = QHBoxLayout()
@@ -3608,9 +3793,6 @@ class Ui_submission(object):
 
         self.sub_columns = QPlainTextEdit(self.scrollAreaWidgetContents_3)
         self.sub_columns.setObjectName(u"sub_columns")
-        sizePolicy6 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Expanding)
-        sizePolicy6.setHorizontalStretch(0)
-        sizePolicy6.setVerticalStretch(0)
         sizePolicy6.setHeightForWidth(self.sub_columns.sizePolicy().hasHeightForWidth())
         self.sub_columns.setSizePolicy(sizePolicy6)
         self.sub_columns.setMinimumSize(QSize(150, 100))
@@ -3872,7 +4054,7 @@ class Ui_submission(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollAreaWidgetContents_4 = QWidget()
         self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
-        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 749, 302))
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 812, 302))
         self.verticalLayout_39 = QVBoxLayout(self.scrollAreaWidgetContents_4)
         self.verticalLayout_39.setObjectName(u"verticalLayout_39")
         self.verticalLayout_36 = QVBoxLayout()
@@ -4181,11 +4363,11 @@ class Ui_submission(object):
         self.verticalLayout_40.setObjectName(u"verticalLayout_40")
         self.groupBox_14 = QGroupBox(self.tab_4)
         self.groupBox_14.setObjectName(u"groupBox_14")
-        sizePolicy7 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
-        sizePolicy7.setHorizontalStretch(0)
-        sizePolicy7.setVerticalStretch(0)
-        sizePolicy7.setHeightForWidth(self.groupBox_14.sizePolicy().hasHeightForWidth())
-        self.groupBox_14.setSizePolicy(sizePolicy7)
+        sizePolicy8 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
+        sizePolicy8.setHorizontalStretch(0)
+        sizePolicy8.setVerticalStretch(0)
+        sizePolicy8.setHeightForWidth(self.groupBox_14.sizePolicy().hasHeightForWidth())
+        self.groupBox_14.setSizePolicy(sizePolicy8)
         self.groupBox_14.setMinimumSize(QSize(0, 50))
         self.groupBox_14.setMaximumSize(QSize(16777215, 50))
         self.verticalLayout_5 = QVBoxLayout(self.groupBox_14)
@@ -4230,8 +4412,8 @@ class Ui_submission(object):
 
         self.groupBox_15 = QGroupBox(self.tab_4)
         self.groupBox_15.setObjectName(u"groupBox_15")
-        sizePolicy7.setHeightForWidth(self.groupBox_15.sizePolicy().hasHeightForWidth())
-        self.groupBox_15.setSizePolicy(sizePolicy7)
+        sizePolicy8.setHeightForWidth(self.groupBox_15.sizePolicy().hasHeightForWidth())
+        self.groupBox_15.setSizePolicy(sizePolicy8)
         self.groupBox_15.setMinimumSize(QSize(0, 50))
         self.groupBox_15.setMaximumSize(QSize(16777215, 50))
         self.verticalLayout_11 = QVBoxLayout(self.groupBox_15)
@@ -4385,8 +4567,8 @@ class Ui_submission(object):
 
         self.groupBox_17 = QGroupBox(self.tab_4)
         self.groupBox_17.setObjectName(u"groupBox_17")
-        sizePolicy7.setHeightForWidth(self.groupBox_17.sizePolicy().hasHeightForWidth())
-        self.groupBox_17.setSizePolicy(sizePolicy7)
+        sizePolicy8.setHeightForWidth(self.groupBox_17.sizePolicy().hasHeightForWidth())
+        self.groupBox_17.setSizePolicy(sizePolicy8)
         self.groupBox_17.setMinimumSize(QSize(650, 60))
         self.groupBox_17.setMaximumSize(QSize(16777215, 80))
         self.horizontalLayout_30 = QHBoxLayout(self.groupBox_17)
@@ -4491,8 +4673,8 @@ class Ui_submission(object):
 
         self.groupBox_19 = QGroupBox(self.tab_4)
         self.groupBox_19.setObjectName(u"groupBox_19")
-        sizePolicy7.setHeightForWidth(self.groupBox_19.sizePolicy().hasHeightForWidth())
-        self.groupBox_19.setSizePolicy(sizePolicy7)
+        sizePolicy8.setHeightForWidth(self.groupBox_19.sizePolicy().hasHeightForWidth())
+        self.groupBox_19.setSizePolicy(sizePolicy8)
         self.groupBox_19.setMinimumSize(QSize(650, 60))
         self.groupBox_19.setMaximumSize(QSize(16777215, 80))
         self.verticalLayout_28 = QVBoxLayout(self.groupBox_19)
@@ -4991,11 +5173,8 @@ class Ui_submission(object):
         self.verticalLayout_12.setObjectName(u"verticalLayout_12")
         self.groupBox_3 = QGroupBox(self.tab_3)
         self.groupBox_3.setObjectName(u"groupBox_3")
-        sizePolicy8 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
-        sizePolicy8.setHorizontalStretch(0)
-        sizePolicy8.setVerticalStretch(0)
-        sizePolicy8.setHeightForWidth(self.groupBox_3.sizePolicy().hasHeightForWidth())
-        self.groupBox_3.setSizePolicy(sizePolicy8)
+        sizePolicy5.setHeightForWidth(self.groupBox_3.sizePolicy().hasHeightForWidth())
+        self.groupBox_3.setSizePolicy(sizePolicy5)
         self.groupBox_3.setMinimumSize(QSize(0, 60))
         self.verticalLayout_9 = QVBoxLayout(self.groupBox_3)
         self.verticalLayout_9.setObjectName(u"verticalLayout_9")
@@ -5035,8 +5214,8 @@ class Ui_submission(object):
 
         self.groupBox_7 = QGroupBox(self.tab_3)
         self.groupBox_7.setObjectName(u"groupBox_7")
-        sizePolicy8.setHeightForWidth(self.groupBox_7.sizePolicy().hasHeightForWidth())
-        self.groupBox_7.setSizePolicy(sizePolicy8)
+        sizePolicy5.setHeightForWidth(self.groupBox_7.sizePolicy().hasHeightForWidth())
+        self.groupBox_7.setSizePolicy(sizePolicy5)
         self.groupBox_7.setMinimumSize(QSize(0, 60))
         self.verticalLayout_8 = QVBoxLayout(self.groupBox_7)
         self.verticalLayout_8.setObjectName(u"verticalLayout_8")
@@ -5082,11 +5261,11 @@ class Ui_submission(object):
 
         self.verticalLayout_12.addWidget(self.preset_explore)
 
-        self.version = QLineEdit(self.tab_3)
-        self.version.setObjectName(u"version")
-        self.version.setReadOnly(True)
+        self.version_231023 = QLineEdit(self.tab_3)
+        self.version_231023.setObjectName(u"version_231023")
+        self.version_231023.setReadOnly(True)
 
-        self.verticalLayout_12.addWidget(self.version)
+        self.verticalLayout_12.addWidget(self.version_231023)
 
         self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
@@ -5226,6 +5405,8 @@ class Ui_submission(object):
         self.package_browse.setDefault(True)
         self.package_explore_2.setDefault(True)
         self.package_browse_2.setDefault(True)
+        self.vendor_csv_explore.setDefault(True)
+        self.vendor_csv_browse.setDefault(True)
         self.BottomTab.setCurrentIndex(0)
         self.write_button.setDefault(True)
         self.reload.setDefault(True)
@@ -5493,6 +5674,58 @@ class Ui_submission(object):
         self.ftrack_note_repl.setText(QCoreApplication.translate("submission", u"\\2", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_11), QCoreApplication.translate("submission", u"Ftrack Note", None))
 #if QT_CONFIG(tooltip)
+        self.groupBox_11.setToolTip(QCoreApplication.translate("submission", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:600; font-style:normal;\">\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.groupBox_11.setTitle(QCoreApplication.translate("submission", u"Vendor CSV:", None))
+#if QT_CONFIG(tooltip)
+        self.vendor_csv_path.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Expects path to folder containing media files.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.vendor_csv_path.setText("")
+#if QT_CONFIG(tooltip)
+        self.vendor_csv_explore.setToolTip(QCoreApplication.translate("submission", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Opens video directory with system file manager (Explorer, Finder...).</span></p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.vendor_csv_explore.setText("")
+#if QT_CONFIG(tooltip)
+        self.vendor_csv_browse.setToolTip(QCoreApplication.translate("submission", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:11px; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Browse for video file.</span></p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.vendor_csv_browse.setText("")
+        self.groupBox_12.setTitle(QCoreApplication.translate("submission", u"Match Package to Vendor", None))
+        self.label_163.setText(QCoreApplication.translate("submission", u"Package Key:", None))
+#if QT_CONFIG(tooltip)
+        self.vendor_csv_package_key.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.vendor_csv_package_key.setText(QCoreApplication.translate("submission", u"_(\\d{3})$", None))
+        self.vendor_csv_package_key.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.label_164.setText(QCoreApplication.translate("submission", u"Vendor Key:", None))
+#if QT_CONFIG(tooltip)
+        self.vendor_csv_vendor_key.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.vendor_csv_vendor_key.setText(QCoreApplication.translate("submission", u"_(\\d{3})$", None))
+        self.vendor_csv_vendor_key.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.label_30.setText(QCoreApplication.translate("submission", u"Spreadsheet Preferences:", None))
+#if QT_CONFIG(tooltip)
+        self.vendor_csv_prefs_spreadsheet.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>The columns are defines as <br/>column name = value,</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.vendor_csv_prefs_spreadsheet.setPlainText("")
+        self.label_31.setText(QCoreApplication.translate("submission", u"Representation Preferences:", None))
+#if QT_CONFIG(tooltip)
+        self.vendor_csv_prefs_repres.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>The columns are defines as <br/>column name = value,</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.vendor_csv_prefs_repres.setPlainText("")
+        self.TopTab.setTabText(self.TopTab.indexOf(self.tab_16), QCoreApplication.translate("submission", u"Vendor", None))
+#if QT_CONFIG(tooltip)
         self.scrollArea_2.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Defines output columns for submission, drive log and text outputs.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.label_3.setText(QCoreApplication.translate("submission", u"Submission:", None))
@@ -5628,7 +5861,7 @@ class Ui_submission(object):
         self.label_29.setText(QCoreApplication.translate("submission", u"Preset Name:", None))
         self.save_preset_button.setText(QCoreApplication.translate("submission", u"Save Preset", None))
         self.preset_explore.setText(QCoreApplication.translate("submission", u"Open Preset Folder", None))
-        self.version.setText(QCoreApplication.translate("submission", u"Release 2023-06-01", None))
+        self.version_231023.setText(QCoreApplication.translate("submission", u"Release 2023-10-23", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_3), QCoreApplication.translate("submission", u"Presets", None))
         self.textEdit.setHtml(QCoreApplication.translate("submission", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"

@@ -8,6 +8,7 @@ import logging
 
 import xlsxwriter
 import csv
+import json
 
 import parse_file_name
 from metadata import MetaData
@@ -38,6 +39,11 @@ class Sequencer(object):
         self.table_txt = ""
 
         self.output = {}
+
+        self.vendor_csv = []
+        self.vendor_csv_transformed = []
+        self.vendor_csv_prefs_spreadsheet = {}
+        self.vendor_csv_prefs_repres = {}
 
         self.in_path = in_path
         self._prepare_in_path()
@@ -83,7 +89,6 @@ class Sequencer(object):
         # other (audio, office, graphics, other)
         self.merged_list.extend(self.other_files_from_file_list(file_list))
 
-        self.clear_errors()
         # get file sizes for merged list
         self.get_file_sizes()
 
@@ -93,6 +98,8 @@ class Sequencer(object):
         # metadata
         self.get_metadata()
 
+        # vendor ingest
+        self.vendor_csv_read()
 
     def transform_data(self):
         """
@@ -122,14 +129,17 @@ class Sequencer(object):
         # sidecar files filter
         self.sidecar_files_filter()
 
+        # vendor ingest
+        self.vendor_csv_prefs_spreadsheet_read()
+        self.vendor_csv_transform()
+        self.vendor_csv_write()
+        self.vendor_csv_add()
+
         # parse table headers
         self.prepare_all_columns()
 
         # fill tables for export and display
         self.prepare_tables()
-
-        # merge lines with identical user key
-        #self.merge_items()
 
         self.select_ftrack_note()
 
@@ -148,6 +158,134 @@ class Sequencer(object):
                     one_item.update(
                         MetaData(one_item, self.settings).meta_data)
 
+    def vendor_csv_read(self):
+
+        vendor_csv = []
+
+        pth = ""
+        if self.settings:
+            if self.settings['vendor_csv_path']['value']:
+                pth = self.settings['vendor_csv_path']['value']
+
+        if pth and pth != '' and os.path.exists(pth):
+            try:
+                with open(pth) as csvfile:
+                    reader = csv.DictReader(csvfile)
+                    for row in reader:
+                        vendor_csv.append(dict(row))
+            except IOError:
+                self.log.error('Error opening vendor csv file ' + pth)
+        self.vendor_csv = vendor_csv
+
+    def vendor_csv_prefs_spreadsheet_read(self):
+        vendor_csv_prefs_spreadsheet = {}
+
+        prefs_spread = ""
+        if self.settings:
+            if self.settings['vendor_csv_prefs_spreadsheet']['value']:
+                prefs_spread = self.settings['vendor_csv_prefs_spreadsheet']['value']
+
+        try:
+            vendor_csv_prefs_spreadsheet = json.loads(prefs_spread)
+        except Exception:
+            self.log.error('Error opening vendor Vendor spreadsheet Json')
+        self.vendor_csv_prefs_spreadsheet = vendor_csv_prefs_spreadsheet
+
+    def vendor_csv_transform(self):
+
+        vendor_csv_transformed = []
+        if self.vendor_csv and self.vendor_csv_prefs_spreadsheet:
+
+            for one_row in self.vendor_csv:
+
+                row_keys = one_row.keys()
+                trans_row = {}
+                row_errors = []
+                for k, v in self.vendor_csv_prefs_spreadsheet.items():
+                    if k in row_keys:
+                        # prefs column present in csv
+
+                        if bool(re.match(v['validate'], one_row[k])):
+                            # store valid value to renamed column
+                            if one_row[k]:
+                                # store if not empty
+                                trans_row[v['column']] = one_row[k]
+                            else:
+                                # set to default if empty
+                                trans_row[v['column']] = v['default']
+                        else:
+                            row_errors.append(
+                                "Row {} has invalid column {} = {}".format(
+                                    self.vendor_csv.index(one_row)+2, k, one_row[k]))
+                    else:
+                        # prefs column NOT present in csv
+                        if bool(v['required']):
+                            row_errors.append(
+                                "Row {} has missing column {}".format(
+                                    self.vendor_csv.index(one_row)+2, k))
+                        else:
+                            # not required, let's fill with default
+                            trans_row[v['column']] = v['default']
+
+                json_keys = self.vendor_csv_prefs_spreadsheet.keys()
+                for k, v in one_row.items():
+                    if k in json_keys:
+                        pass
+                    else:
+                        # some columns in vendor csv are not in json,
+                        # let's copy under vendor_*
+                        trans_row['vendor_' + str(k)] = v
+
+                trans_row['vendor_row_errors'] = '; '.join(row_errors)
+                vendor_csv_transformed.append(trans_row)
+
+        self.vendor_csv_transformed = vendor_csv_transformed
+
+    def vendor_csv_write(self):
+
+        pth = ""
+        if self.settings:
+            if self.settings['vendor_csv_path']['value']:
+                pth = self.settings['vendor_csv_path']['value']
+        pth = pth + '_transformed.csv'
+
+        if self.vendor_csv_transformed:
+            with open(pth, 'w', encoding='utf8',
+                      newline='') as output_file:
+                fc = csv.DictWriter(output_file,
+                                    fieldnames=self.vendor_csv_transformed[
+                                        0].keys(), )
+                fc.writeheader()
+                fc.writerows(self.vendor_csv_transformed)
+
+    def vendor_csv_add(self):
+
+        class Default(dict):
+            def __missing__(self, key):
+                return '{' + key + '}'
+
+        p_key = ""
+        v_key = ""
+        if self.settings:
+            if self.settings['vendor_csv_package_key']['value']:
+                p_key = self.settings['vendor_csv_package_key']['value']
+            if self.settings['vendor_csv_vendor_key']['value']:
+                v_key = self.settings['vendor_csv_vendor_key']['value']
+
+        if self.merged_list is not None and len(self.merged_list) > 0:
+            if self.vendor_csv_transformed:
+                for one_item in self.merged_list:
+                    #package_key = p_key.format(**one_item)
+                    package_key = p_key.format_map(Default(one_item))
+                    for one_row in self.vendor_csv_transformed:
+                        vendor_key = v_key.format_map(Default(one_row))
+                        #vendor_key = v_key.format(**one_row)
+                        if vendor_key == package_key:
+                            # vendor csv row identification matches the package scan row identification
+                            for k, v in one_row.items():
+                                # add key from csv to the item
+                                one_item[k] = v
+
     def get_relative_paths(self, parsed_in_path):
 
         self.output['status'] = "Getting relative paths" \
@@ -158,12 +296,6 @@ class Sequencer(object):
         if self.merged_list and len(self.merged_list) > 0:
             for one_item in self.merged_list:
                 one_item['relative_path'] = one_item['path'][root_dir_length:]
-
-    def clear_errors(self):
-        if self.merged_list is not None and len(self.merged_list) > 0:
-            for one_item in self.merged_list:
-                one_item['warning'] = ''
-                one_item['error'] = ''
 
     def get_file_sizes(self):
 
@@ -221,6 +353,7 @@ class Sequencer(object):
             for one_item in self.merged_list:
                 one_item['size_bytes'] = 0
                 one_item['size_human'] = '0'
+                one_item['size_warning'] = ''
 
                 # file sequence
                 if one_item['category'] == 'sequence':
@@ -257,28 +390,28 @@ class Sequencer(object):
                         # warn if files are missing
                         empty = len(zero_size)
                         if empty > 0:
-                            warn = one_item.get('warning', '')
+                            warn = one_item.get('size_warning', '')
                             new_warn = "{} files have zero size: {}".format(
                                 str(len(zero_size)),
                                 zero_size
                             )
                             if warn == '':
-                                one_item['warning'] = new_warn
+                                one_item['size_warning'] = new_warn
                             else:
-                                one_item['warning'] += ", " + new_warn
+                                one_item['size_warning'] += ", " + new_warn
 
                         missing = len(one_item['missing_numbers'])
                         if missing > 0:
-                            warn = one_item.get('warning', '')
+                            warn = one_item.get('size_warning', '')
                             new_warn = "{} missing files: {}".format(
                                 str(missing),
                                 one_item['missing_numbers']
                             )
                             if warn == "":
-                                one_item['warning'] = new_warn
+                                one_item['size_warning'] = new_warn
                             else:
                                 one_item[
-                                    'warning'] += ", " + new_warn
+                                    'size_warning'] += ", " + new_warn
 
                         # analyze sizes
                         if _consistency:
@@ -312,14 +445,14 @@ class Sequencer(object):
                                     if _diff > _tresh:
                                         inconsistent.append(_frame)
                                 if len(inconsistent) > 0:
-                                    warn = one_item.get('warning', '')
+                                    warn = one_item.get('size_warning', '')
                                     new_warn = "{} file sizes greatly differ: {}"\
                                         .format(str(len(inconsistent)),
                                                 str(inconsistent))
                                     if warn == '':
-                                        one_item['warning'] = new_warn
+                                        one_item['size_warning'] = new_warn
                                     else:
-                                        one_item['warning'] += ', ' + new_warn
+                                        one_item['size_warning'] += ', ' + new_warn
                             except:
                                 # TODO fix for very short sequences (ln=2, ifnofe frst 1 = fail)
                                 pass
@@ -332,7 +465,7 @@ class Sequencer(object):
                         one_item['size_bytes'] = my_size
                         one_item['size_human'] = helpers.humanize_file_size(my_size)
                         if my_size == 0:
-                            one_item['warning'] = 'file has zero size'
+                            one_item['size_warning'] = 'file has zero size'
                     except:
                         pass
 
@@ -1212,6 +1345,7 @@ class Sequencer(object):
                 'package_version': '',
                 'package_date': '',
                 'package_name_from_folder': name_from_folder,
+                'package_name': name_from_folder,
                 'package_name_root': one_up
             })
         else:
@@ -1245,7 +1379,8 @@ class Sequencer(object):
                 _today_subs = []
                 for one_dir in dir_list:
                     if one_dir['date'] == current_date:
-                        _today_subs.append(one_dir)
+                        if one_dir['version'] and one_dir['version'] != '':
+                            _today_subs.append(one_dir)
                 if _today_subs:
                     last_dir = sorted(_today_subs, key=lambda i: i['version'])[-1]
                 else:
@@ -1463,8 +1598,8 @@ class Sequencer(object):
                     one_row_sub = []
                     for one_expression in self.column_expressions_sub:
                         try:
-                            formatted = one_expression.format(**one_item)
-                            #formatted = one_expression.format_map(Default(one_item))
+                            #formatted = one_expression.format(**one_item)
+                            formatted = one_expression.format_map(Default(one_item))
                             one_row_sub.append(formatted)
                         except KeyError:
                             # can't parse expression, put it in original form
@@ -1888,6 +2023,7 @@ class Sequencer(object):
                             expanded = expanded.format_map(
                                 Default(self.static_keywords))
                             dest = None
+                            dest = None
                             try:
                                 dest = str(one_regex['destination'])
                                 try:
@@ -2212,6 +2348,10 @@ class Sequencer(object):
             return
 
         for item in self.merged_list:
+            item['warning'] = ''
+            item['error'] = ''
+
+        for item in self.merged_list:
             for one_check in self.checks:
                 # filter out first
                 _if_eval = False
@@ -2235,17 +2375,23 @@ class Sequencer(object):
                         pass
                     if _check_eval:
                         # it is warning or error
-                        m = one_check['message'].format_map(Default(item))
+                        m = one_check['message']
                         if one_check['is_error']:
                             try:
                                 item['error'] = item['error'] + '\n' + m
                             except:
                                 item['error'] = m
                         else:
-                            try:
+                            if item['warning'] and item['warning'] != '':
                                 item['warning'] = item['warning'] + '\n' + m
-                            except:
+                            else:
                                 item['warning'] = m
+            sw = item.get('size_warning', '')
+            if sw and sw != '':
+                if item['warning'] and item['warning'] != '':
+                    item['warning'] = item['warning'] + '\n' + sw
+                else:
+                    item['warning'] = sw
 
 
     def checks_init(self):

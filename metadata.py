@@ -64,7 +64,7 @@ class MetaData(object):
             'meta_fps': self.meta['fps_str'],
             'meta_fps_a': str(self.meta['fps_a']),
             'meta_fps_b': str(self.meta['fps_b']),
-            'meta_fps_raw': self.meta['fps_raw'],
+            'meta_fps_raw': self.meta.get('fps_raw', '0/0'),
             'meta_duration_frames': str(self.meta['duration_frames']),
             'meta_duration_frames_slate': str(self.meta.get('duration_frames_slate', '')),
             'meta_duration_secs': str(self.meta['duration_secs']),
@@ -123,7 +123,7 @@ class MetaData(object):
 
         script_path = os.path.dirname(os.path.abspath(inspect.stack()[-1][1])).replace("\\", "/")
         #TODO remove before packaging
-        script_path = 'D:/_code/SubmissionHelper'
+        #script_path = 'D:/_code/SubmissionHelper'
         probe = script_path + '/ffmpeg/ffprobe' + self.platform_extension
         if not os.path.exists(probe):
             probe = None
