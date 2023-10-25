@@ -293,17 +293,20 @@ class Sequencer(object):
         if self.merged_list is not None and len(self.merged_list) > 0:
             if self.vendor_csv_transformed:
                 for one_item in self.merged_list:
-                    package_key = p_key.format(**one_item)
-                    #package_key = p_key.format_map(Default(one_item))
-                    for one_row in self.vendor_csv_transformed:
-                        vendor_key = v_key.format_map(Default(one_row))
-                        #vendor_key = v_key.format(**one_row)
-                        if vendor_key == package_key:
-                            # vendor csv row identification matches the package scan row identification
-                            for k, v in one_row.items():
-                                # add key from csv to the item
-                                one_item[k] = v
-                            one_row['merged_item'] = one_item
+                    try:
+                        package_key = p_key.format(**one_item)
+                        #package_key = p_key.format_map(Default(one_item))
+                        for one_row in self.vendor_csv_transformed:
+                            vendor_key = v_key.format_map(Default(one_row))
+                            #vendor_key = v_key.format(**one_row)
+                            if vendor_key == package_key:
+                                # vendor csv row identification matches the package scan row identification
+                                for k, v in one_row.items():
+                                    # add key from csv to the item
+                                    one_item[k] = v
+                                one_row['merged_item'] = one_item
+                    except Exception:
+                        pass
 
     def vendor_csv_repre_checks(self):
 
@@ -342,39 +345,39 @@ class Sequencer(object):
                     else:
                         for one_repre in self.vendor_csv_prefs_repre['repres']:
                             if one_repre['name'] == current_repre_name:
+                                try:
+                                    # check extension
+                                    current_extension = one_row['merged_item']['extension']
+                                    if current_extension in one_repre['extensions']:
+                                        # check metadata
+                                        for one_meta_key, one_meta_value in one_repre['metadata_check'].items():
+                                            read_meta = one_row['merged_item'].get(
+                                                one_meta_key, '')
+                                            if one_meta_value:
+                                                if read_meta and read_meta == one_meta_value:
+                                                    pass
+                                                else:
+                                                    one_row['vendor_row_errors'].append(
+                                                        "Metadata {} != {}, = {}".format(
+                                                            one_meta_key, one_meta_value,
+                                                            read_meta))
+                                        # fill range
+                                        _filled = {}
+                                        for one_range_key, one_range_value in one_repre['frame_range'].items():
+                                            if type(one_range_value) == str:
+                                                _filled[one_range_key] = one_range_value.format(**one_row['merged_item'])
+                                        one_row['vendor_frame_range'] = _filled
 
-                                # check extension
-                                current_extension = one_row['merged_item']['extension']
-                                if current_extension in one_repre['extensions']:
-
-                                    # check metadata
-                                    for one_meta_key, one_meta_value in one_repre['metadata_check'].items():
-                                        read_meta = one_row['merged_item'].get(
-                                            one_meta_key, '')
-                                        if one_meta_value:
-                                            if read_meta and read_meta == one_meta_value:
-                                                pass
-                                            else:
-                                                one_row['vendor_row_errors'].append(
-                                                    "Metadata {} != {}, = {}".format(
-                                                        one_meta_key, one_meta_value,
-                                                        read_meta))
-
-                                    # fill range
-                                    _filled = {}
-                                    for one_range_key, one_range_value in one_repre['frame_range'].items():
-                                        if type(one_range_value) == str:
-                                            _filled[one_range_key] = one_range_value.format(**one_row['merged_item'])
-                                    one_row['vendor_frame_range'] = _filled
-
-                                    # fill tags, separate by space
-                                    one_row['vendor_Tags'] = ' '.join(
-                                        one_repre['vendor_Tags'])
-                                else:
-                                    one_row['vendor_row_errors'].append(
-                                        "File extension {} doesn't match the representation extensions {}".format(
-                                            current_extension, ', '.join(
-                                                one_repre['extensions'])))
+                                        # fill tags, separate by space
+                                        one_row['vendor_Tags'] = ' '.join(
+                                            one_repre['vendor_Tags'])
+                                    else:
+                                        one_row['vendor_row_errors'].append(
+                                            "File extension {} doesn't match the representation extensions {}".format(
+                                                current_extension, ', '.join(
+                                                    one_repre['extensions'])))
+                                except Exception:
+                                    pass
 
             all_tasks = self.vendor_csv_prefs_repre['task_intent_repres'].keys()
             for one_merge_key, merge_list in merge_groups.items():
@@ -418,30 +421,72 @@ class Sequencer(object):
                         self.vendor_csv_transformed[one_index]['vendor_row_errors'].append("Task {} was not found in Json task_intent_repres section: {}.".format(task, all_tasks))
 
 
-            # TODO:             "validate_repre_length_match": true,
-            #             "validate_repre_range_match": true,
-            #             "validate_repre_tc_match": true
+            try:
+                for mrg_key in merge_groups.keys():
 
 
+                    # make dicts where each length / tc / range serves as key,
+                    # with value being a list of indexes for self.vendor_csv_transformed
+                    # _ranges_no_slate = {'1001-1010': [1, 2, 3], '1001-1001': [4]}
 
-            # add errors to all rows in merged group if one or more outpur are required but have error(s)
-            for mrg_key in merge_groups.keys():
-                _failed_required_outputs = []
-                for one_index in merge_groups[mrg_key]:
-                    if self.vendor_csv_transformed[one_index]['vendor_row_errors']:
-                        if self.vendor_csv_transformed[one_index]['vendor_Output'] in self.vendor_csv_transformed[one_index]['vendor_One_task_set']['always']:
-                            _failed_required_outputs.append(self.vendor_csv_transformed[one_index]['vendor_Output'])
-
-                if len(_failed_required_outputs) > 0:
-                    _err = "Required outputs: {} ;have error(s)".format(", ".join(_failed_required_outputs))
+                    _lengths = {}
+                    _ranges_no_slate = {}
+                    _tcs_no_slate = {}
                     for one_index in merge_groups[mrg_key]:
-                        self.vendor_csv_transformed[one_index]['vendor_row_errors'].append(_err)
+                        ln = self.vendor_csv_transformed[one_index]['vendor_frame_range']['length']
 
-            # convert errors to string
-            for one_row in self.vendor_csv_transformed:
-                _e = ', '.join(one_row['vendor_row_errors'])
-                one_row['vendor_row_errors'] = _e
+                        fs = int(self.vendor_csv_transformed[one_index]['vendor_frame_range']['frame_start'])
+                        fe = int(self.vendor_csv_transformed[one_index]['vendor_frame_range']['frame_end'])
+                        tc = str(self.vendor_csv_transformed[one_index]['vendor_frame_range']['timecode'])
+                        fps = str(self.vendor_csv_transformed[one_index]['vendor_frame_range']['frame_rate'])
+                        slate = bool(self.vendor_csv_transformed[one_index]['vendor_frame_range']['slate_present'])
+                        if tc and fps:
+                            tc_to_num = helpers.tc_to_frames(tc, fps, '1')
+                            tc_to_num += 1
+                            tc_no_slate = helpers.frames_to_tc(tc_to_num, int(fps), 1)
+                            if slate:
 
+                                tc = tc_no_slate
+                        if slate:
+                            fs += 1
+                        frame_range = '{}-{}'.format(fs, fe)
+
+                        if ln in _lengths.keys():
+                            _lengths[ln].append(one_index)
+                        else:
+                            _lengths[ln] = [one_index]
+
+                        if frame_range in _ranges_no_slate.keys():
+                            _ranges_no_slate[frame_range].append(one_index)
+                        else:
+                            _ranges_no_slate[frame_range] = [one_index]
+
+                        if tc in _tcs_no_slate.keys():
+                            _tcs_no_slate[tc].append(one_index)
+                        else:
+                            _tcs_no_slate[tc] = [one_index]
+
+
+                # add errors to all rows in merged group if one or more output is required but have error(s)
+                for mrg_key in merge_groups.keys():
+                    _failed_required_outputs = []
+                    indexes = merge_groups[mrg_key]
+                    for one_index in indexes:
+                        if self.vendor_csv_transformed[one_index]['vendor_row_errors']:
+                            if self.vendor_csv_transformed[one_index]['vendor_Output'] in self.vendor_csv_transformed[one_index]['vendor_One_task_set']['always']:
+                                _failed_required_outputs.append(self.vendor_csv_transformed[one_index]['vendor_Output'])
+
+                    if len(_failed_required_outputs) > 0:
+                        _err = "Required outputs: {} ;have error(s)".format(", ".join(_failed_required_outputs))
+                        for one_index in merge_groups[mrg_key]:
+                            self.vendor_csv_transformed[one_index]['vendor_row_errors'].append(_err)
+
+                # convert errors to string
+                for one_row in self.vendor_csv_transformed:
+                    _e = ', '.join(one_row['vendor_row_errors'])
+                    one_row['vendor_row_errors'] = _e
+            except Exception:
+                pass
 
     def get_relative_paths(self, parsed_in_path):
 

@@ -11,7 +11,8 @@ class EXR_ATTRIBUTES:
     COMPRESSION_VALUES = ('NO_COMPRESSION', 'RLE_COMPRESSION',
                           'ZIPS_COMPRESSION', 'ZIP_COMPRESSION',
                           'PIZ_COMPRESSION', 'PXR24_COMPRESSION',
-                          'B44_COMPRESSION', 'B44A_COMPRESSION')
+                          'B44_COMPRESSION', 'B44A_COMPRESSION',
+                          'DWAA_COMPRESSION', 'DWAB_COMPRESSION')
 
     LINE_ORDER = ('INCREASING_Y', 'DECREASING_Y', 'RANDOM_Y')
 

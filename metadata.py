@@ -165,6 +165,28 @@ class MetaData(object):
         if my_extension == 'exr':
             try:
                 self.meta_exr = self.read_metadata_from_exr()
+
+                # overwrite key meta_ from EXR values
+                self.meta['time_code'] = self.meta_exr.get(
+                    'metaExr_time_code', self.meta['time_code'])
+
+                self.meta['fps'] = str(self.meta_exr.get(
+                    'metaExr_fps', self.meta['fps']))
+                self.meta['fps_a'] = str(self.meta_exr.get(
+                    'metaExr_fps_a', self.meta['fps_a']))
+                self.meta['fps_b'] = str(self.meta_exr.get(
+                    'metaExr_fps_b', self.meta['fps_b']))
+                self.meta['fps_raw'] = self.meta_exr.get(
+                    'metaExr_fps_raw', self.meta['fps_raw'])
+
+                self.meta['codec_name_video'] = self.meta_exr.get(
+                    'metaExr_compression', self.meta['codec_name_video'])
+                self.meta['codec_long_name_video'] = self.meta_exr.get(
+                    'metaExr_compression',
+                    self.meta['codec_long_name_video'])
+
+                self.meta['aspect'] = str(self.meta_exr.get(
+                    'metaExr_pixelAspectRatio', self.meta['aspect']))
             except:
                 print("Reading EXR metadata failed")
 
@@ -620,6 +642,28 @@ class MetaData(object):
 
     def read_metadata_from_exr(self):
         """ Read some metadata from exr header."""
+        """
+            from include/OpenEXR/ImfTimeCode.h:
+            
+              bits    packing for      packing for        packing for
+                        24-frame       60-field         50-field
+                        film          television        television
+             0 -  3    frame units      frame units        frame units
+             4 -  5    frame tens      frame tens        frame tens
+             6        unused, set to 0  drop frame flag   unused, set to 0
+             7        unused, set to 0  color frame flag  color frame flag
+             8 - 11    seconds units      seconds units        seconds units
+            12 - 14    seconds tens      seconds tens        seconds tens
+            15        phase flag      field/phase flag  bgf0
+            16 - 19    minutes units      minutes units        minutes units
+            20 - 22    minutes tens      minutes tens        minutes tens
+            23        bgf0          bgf0            bgf2
+            24 - 27    hours units      hours units        hours units
+            28 - 29    hours tens      hours tens        hours tens
+            30        bgf1          bgf1            bgf1
+            31        bgf2          bgf2            field/phase flag
+        """
+
         import parse_metadata
 
         exr_metadata = {}
@@ -641,16 +685,16 @@ class MetaData(object):
                 exr_metadata['fps'])
 
             tc = int(exr_metadata['timeCode']['timeAndFlags'])
-            tc_ud = int(exr_metadata['timeCode']['userData'])
-            t4, t3, t2, t1 = struct.unpack("BBBB", tc.to_bytes(4, 'little'))
-            timecode = "{}:{}:{}:{}".format(str(t1).zfill(2), str(t2).zfill(2), str(t3).zfill(2), str(t4).zfill(2))
-
-            exr_metadata['time_code'] = timecode
+            _f = str((tc >> 4) & 3) + str(tc & 15)
+            _s = str((tc >> 12) & 7) + str((tc >> 8) & 15)
+            _m = str((tc >> 20) & 7) + str((tc >> 16) & 15)
+            _h = str((tc >> 28) & 3) + str((tc >> 24) & 15)
+            _drop = ';' if bool((tc >> 6) & 1) else ':'
+            exr_metadata['time_code'] = "{}:{}:{}{}{}".format(_h, _m, _s, _drop, _f)
         except Exception:
-            print(Exception)
-
+            pass
         exr_renamed = {}
-        for k,v in exr_metadata.items():
+        for k, v in exr_metadata.items():
             exr_renamed['metaExr_'+str(k)] = v
         return exr_renamed
 

@@ -129,7 +129,7 @@ def frames_to_tc(frames, fps_a, fps_b):
     m = int(frames / (60 * fps)) % 60
     s = int((frames % (60 * fps)) / fps)
     f = frames % (60 * fps) % fps
-    return "%02d:%02d:%02d:%02d".format(h, m, s, f)
+    return "{:02d}:{:02d}:{:02d}:{:02d}".format(h, m, s, f)
 
 def get_pixel_aspect_ratio(in_pa):
     # pal fha 1.4222222
