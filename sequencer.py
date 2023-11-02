@@ -324,8 +324,13 @@ class Sequencer(object):
                 # also keep track of grouped rows in merge_groups
                 current = int(self.vendor_csv_transformed.index(one_row))
                 print('current {}'.format(current))
-                one_row['vendor_Merge_by'] = merge_key.format(**one_row)
-                print('merge by {}'.format(one_row['vendor_Merge_by']))
+                try:
+                    one_row['vendor_Merge_by'] = merge_key.format(**one_row)
+                    print('merge by {}'.format(one_row['vendor_Merge_by']))
+                except Exception:
+                    print('Vendor CSV failed to expand, line {}'.format(current+2))
+                    continue
+
                 if one_row['vendor_Merge_by']:
                     if one_row['vendor_Merge_by'] in merge_groups:
                         merge_groups[one_row['vendor_Merge_by']].append(current)
@@ -365,7 +370,10 @@ class Sequencer(object):
                                         _filled = {}
                                         for one_range_key, one_range_value in one_repre['frame_range'].items():
                                             if type(one_range_value) == str:
-                                                _filled[one_range_key] = one_range_value.format(**one_row['merged_item'])
+                                                try:
+                                                    _filled[one_range_key] = one_range_value.format(**one_row['merged_item'])
+                                                except Exception:
+                                                    pass
                                         one_row['vendor_frame_range'] = _filled
 
                                         # fill tags, separate by space

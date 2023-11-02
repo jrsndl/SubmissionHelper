@@ -3587,6 +3587,14 @@ class Ui_submission(object):
         self.verticalLayout_54.setObjectName(u"verticalLayout_54")
         self.horizontalLayout_122 = QHBoxLayout()
         self.horizontalLayout_122.setObjectName(u"horizontalLayout_122")
+        self.vendor_csv_path_detect = QCheckBox(self.groupBox_11)
+        self.vendor_csv_path_detect.setObjectName(u"vendor_csv_path_detect")
+        self.vendor_csv_path_detect.setMinimumSize(QSize(100, 25))
+        self.vendor_csv_path_detect.setMaximumSize(QSize(100, 25))
+        self.vendor_csv_path_detect.setChecked(False)
+
+        self.horizontalLayout_122.addWidget(self.vendor_csv_path_detect)
+
         self.vendor_csv_path = QLineEdit(self.groupBox_11)
         self.vendor_csv_path.setObjectName(u"vendor_csv_path")
         sizePolicy1.setHeightForWidth(self.vendor_csv_path.sizePolicy().hasHeightForWidth())
@@ -5754,6 +5762,7 @@ class Ui_submission(object):
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.groupBox_11.setTitle(QCoreApplication.translate("submission", u"Vendor CSV:", None))
+        self.vendor_csv_path_detect.setText(QCoreApplication.translate("submission", u"Auto Detect", None))
 #if QT_CONFIG(tooltip)
         self.vendor_csv_path.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Expects path to folder containing media files.</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
