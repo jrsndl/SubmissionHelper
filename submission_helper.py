@@ -364,6 +364,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.vendor_csv_vendor_key.textChanged.connect(
             partial(self.handler, 'vendor_csv_vendor_key', 'refresh_vendor'))
 
+        self.ui.vendor_csv_ignore.clicked.connect(
+            partial(self.handler, 'vendor_csv_ignore', 'refresh_vendor'))
+        self.ui.vendor_csv_ftrack.clicked.connect(
+            partial(self.handler, 'vendor_csv_ftrack', 'refresh_vendor'))
+        self.ui.vendor_csv_skip.clicked.connect(
+            partial(self.handler, 'vendor_csv_skip', 'refresh_vendor'))
+        self.ui.vendor_csv_skip_by.textChanged.connect(
+            partial(self.handler, 'vendor_csv_skip_by', 'refresh_vendor'))
+        self.ui.vendor_csv_skip_what.textChanged.connect(
+            partial(self.handler, 'vendor_csv_skip_what', 'refresh_vendor'))
+
         self.ui.vendor_csv_prefs_spreadsheet.textChanged.connect(
             partial(self.handler, 'vendor_csv_prefs_spreadsheet',
                     'refresh_vendor'))
@@ -459,6 +470,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.prefs_counter_zeroes.valueChanged.connect(
             partial(self.handler, 'prefs_counter_zeroes', 'refresh_parsing'))
 
+        self.ui.prefs_merge_chbx.clicked.connect(
+            partial(self.handler, 'prefs_merge_chbx', 'refresh_merge'))
+        self.ui.prefs_merge_collapse.clicked.connect(
+            partial(self.handler, 'prefs_merge_collapse', 'refresh_merge'))
+        self.ui.prefs_merge_sep.textChanged.connect(
+            partial(self.handler, 'prefs_merge_sep', 'refresh_merge'))
+        self.ui.prefs_merge_sort.textChanged.connect(
+            partial(self.handler, 'prefs_merge_sort', 'refresh_merge'))
+        self.ui.prefs_merge_order.textChanged.connect(
+            partial(self.handler, 'prefs_merge_order', 'refresh_merge'))
+        self.ui.prefs_merge_hide.clicked.connect(
+            partial(self.handler, 'prefs_merge_hide', 'refresh_merge'))
+
+
         # Exports Tab
         self.ui.export_sub_excel.clicked.connect(
             partial(self.handler, 'export_sub_excel', 'refresh_export_prep'))
@@ -553,7 +578,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                     group = 'source_change'
 
         if group == 'source_change':
+            #self.ui.setUpdatesEnabled(False)
             pth = str(self.settings['package_folder']['value']).replace('\\', '/')
+            if os.path.isfile(pth):
+                self.settings_update("package_folder", self.ui.package_folder,
+                                     value=os.path.dirname(pth).replace('\\', '/'))
+                if pth.endswith('.csv'):
+                    if bool(self.settings['vendor_csv_path_detect']['value']):
+                        self.settings_update("vendor_csv_path",
+                                             self.ui.vendor_csv_path,
+                                             value=pth)
+            #self.ui.setUpdatesEnabled(True)
             self.data = Sequencer(pth, sequence_mode='holes_allowed', gui=self.settings, more_settings=self.settings_inst)
             self.show_all()
 
@@ -640,16 +675,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.data.prepare_tables()
                 self.show_all()
 
+        if group == 'refresh_merge':
+            if self.data:
+                self.data.prepare_all_columns()
+                self.data.prepare_tables()
+                self.show_all()
+
         if group == 'refresh_vendor':
             if self.data:
-                self.data.vendor_csv_read()
-                self.data.vendor_csv_prefs_spreadsheet_read()
-                self.data.vendor_csv_prefs_repre_read()
-                self.data.vendor_csv_transform()
-                #self.data.vendor_csv_write()
-                self.data.vendor_csv_add()
-                self.data.vendor_csv_repre_checks()
-                self.data.vendor_csv_add()
+                self.data.vendor_csv_all()
+
+                self.data.transform_data()
 
                 # parse table headers
                 self.data.prepare_all_columns()
@@ -751,6 +787,26 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             # display Package name
             _preview = self.data.output.get('package_name', '')
             self.ui.name_preview.setText(_preview)
+
+            # Display merged items as a data tree
+
+            self.ui.data_tree.setColumnCount(3)
+            self.ui.data_tree.setHeaderLabels(["#", "key", "value"])
+            for one_itm in self.data.merged_list:
+                _ti = QtWidgets.QTreeWidgetItem(self.ui.data_tree)
+                _fn = one_itm.get('part1', '')
+                _fp = one_itm.get('part2', '')
+                if _fp:
+                    _l = _fp + '/' + _fn
+                else:
+                    _l = _fn
+                _n = "{}: {}".format(str(self.data.merged_list.index(one_itm)), _l)
+                _ti.setText(0, _n)
+                for k, v in one_itm.items():
+                    _tii = QtWidgets.QTreeWidgetItem(self.ui.data_tree)
+                    _tii.setText(1, str(k))
+                    _tii.setText(2, str(v))
+                    _ti.addChild(_tii)
 
     def explore(self, path):
 

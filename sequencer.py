@@ -53,7 +53,7 @@ class Sequencer(object):
             self.read_files()
             self.transform_data()
 
-        pprint.pprint(self.merged_list)
+        #pprint.pprint(self.merged_list)
         # logging.debug('-> Sequencer Init')
 
     def _prepare_in_path(self):
@@ -99,7 +99,7 @@ class Sequencer(object):
         self.get_metadata()
 
         # vendor ingest
-        self.vendor_csv_read()
+        #self.vendor_csv_read()
 
     def transform_data(self):
         """
@@ -130,13 +130,7 @@ class Sequencer(object):
         self.sidecar_files_filter()
 
         # vendor ingest
-        self.vendor_csv_prefs_spreadsheet_read()
-        self.vendor_csv_prefs_repre_read()
-        self.vendor_csv_transform()
-        #self.vendor_csv_write()
-        self.vendor_csv_add()
-        self.vendor_csv_repre_checks()
-        self.vendor_csv_add()
+        self.vendor_csv_all()
 
         # parse table headers
         self.prepare_all_columns()
@@ -161,7 +155,23 @@ class Sequencer(object):
                     one_item.update(
                         MetaData(one_item, self.settings).meta_data)
 
+    def vendor_csv_all(self):
+
+        self.vendor_csv_read()
+        self.vendor_csv_prefs_spreadsheet_read()
+        self.vendor_csv_prefs_repre_read()
+        self.vendor_csv_transform()
+        # self.vendor_csv_write()
+        self.vendor_csv_add()
+        self.vendor_csv_repre_checks()
+        self.vendor_csv_add()
+
     def vendor_csv_read(self):
+        """
+        Read the csv from Vendor
+
+        :return: self.vendor_csv dict
+        """
 
         vendor_csv = []
 
@@ -181,6 +191,11 @@ class Sequencer(object):
         self.vendor_csv = vendor_csv
 
     def vendor_csv_prefs_spreadsheet_read(self):
+        """
+        Reads Json for spreadsheet configuration
+
+        :return: self.vendor_csv_prefs_spreadsheet
+        """
         vendor_csv_prefs_spreadsheet = {}
 
         prefs_spread = ""
@@ -195,6 +210,11 @@ class Sequencer(object):
         self.vendor_csv_prefs_spreadsheet = vendor_csv_prefs_spreadsheet
 
     def vendor_csv_prefs_repre_read(self):
+        """
+        Reads Json for preflight / validations
+
+        :return: self.vendor_csv_prefs_repre
+        """
         vendor_csv_prefs_repre = {}
 
         prefs_repre = ""
@@ -209,6 +229,15 @@ class Sequencer(object):
         self.vendor_csv_prefs_repre = vendor_csv_prefs_repre
 
     def vendor_csv_transform(self):
+        """
+        Uses Vendor CSV and Json config to make a new CSV (list of dicts)
+        Validates if columns exist (json required)
+        Renames Columns (json column)
+        Can make new columns with defaults (json default)
+        Validates if existing column matches the regex (json validate)
+
+        :return:self.vendor_csv_transformed
+        """
 
         vendor_csv_transformed = []
         if self.vendor_csv and self.vendor_csv_prefs_spreadsheet:
@@ -260,6 +289,12 @@ class Sequencer(object):
         self.vendor_csv_transformed = vendor_csv_transformed
 
     def vendor_csv_write(self):
+        """
+        Writes self.vendor_csv_transformed to csv od hdd
+        For debug, not used
+
+        :return:
+        """
 
         pth = ""
         if self.settings:
@@ -284,29 +319,69 @@ class Sequencer(object):
 
         p_key = ""
         v_key = ""
+        _ignore = True
+        _skip_by = ""
+        _skip_what = ""
+        _skip = False
         if self.settings:
             if self.settings['vendor_csv_package_key']['value']:
                 p_key = self.settings['vendor_csv_package_key']['value']
             if self.settings['vendor_csv_vendor_key']['value']:
                 v_key = self.settings['vendor_csv_vendor_key']['value']
+            if self.settings['vendor_csv_ignore']['value'] is not None:
+                _ignore = bool(self.settings['vendor_csv_ignore']['value'])
+            if self.settings['vendor_csv_skip_by']['value']:
+                _skip_by = self.settings['vendor_csv_skip_by']['value']
+            if self.settings['vendor_csv_skip_what']['value']:
+                _skip_what = str(self.settings['vendor_csv_skip_what']['value']).split(" ")
+            if self.settings['vendor_csv_skip']['value'] is not None:
+                _skip = bool(self.settings['vendor_csv_skip']['value'])
+                if (not _skip_what) or (not _skip_by):
+                    _skip = False
 
-        if self.merged_list is not None and len(self.merged_list) > 0:
-            if self.vendor_csv_transformed:
+            if self.merged_list is not None and len(
+                    self.merged_list) > 0 and self.vendor_csv_transformed:
+
                 for one_item in self.merged_list:
-                    try:
-                        package_key = p_key.format(**one_item)
-                        #package_key = p_key.format_map(Default(one_item))
-                        for one_row in self.vendor_csv_transformed:
-                            vendor_key = v_key.format_map(Default(one_row))
-                            #vendor_key = v_key.format(**one_row)
-                            if vendor_key == package_key:
-                                # vendor csv row identification matches the package scan row identification
-                                for k, v in one_row.items():
-                                    # add key from csv to the item
-                                    one_item[k] = v
-                                one_row['merged_item'] = one_item
-                    except Exception:
-                        pass
+                    #package_key = p_key.format(**one_item)
+                    package_key = p_key.format_map(Default(one_item))
+                    for one_row in self.vendor_csv_transformed:
+                        vendor_key = v_key.format_map(Default(one_row))
+                        #vendor_key = v_key.format(**one_row)
+                        if vendor_key == package_key:
+                            # vendor csv row identification matches
+                            # the package scan row identification
+                            for k, v in one_row.items():
+                                # add key from csv to the item
+                                one_item[k] = v
+                            one_row['merged_item'] = one_item
+
+                # now ignore unassigned items
+                if _ignore:
+                    all_vendor_keys = self.vendor_csv_transformed[0].keys()
+                    one_vendor_key = list(all_vendor_keys)[0]
+                    for one_item in self.merged_list:
+                        if one_item['hide_sub']:
+                            one_item['vendor_ignore_sub'] = True
+                        _tst = one_item.get(one_vendor_key, None)
+                        if not _tst:
+                            one_item['vendor_ignore_sub'] = True
+                        else:
+                            one_item['vendor_ignore_sub'] = False
+
+                        if _skip:
+                            try:
+                                _skip_by = _skip_by.format(**one_item)
+                                if _skip_by in _skip_what:
+                                    one_item['vendor_ignore_sub'] = True
+                            except Exception:
+                                pass
+
+
+                else:
+                    for one_item in self.merged_list:
+                        one_item['vendor_ignore_sub'] = False
+
 
     def vendor_csv_repre_checks(self):
 
@@ -1262,6 +1337,7 @@ class Sequencer(object):
                 one_item.update({"hide_sub": False})
                 one_item.update({"hide_log": False})
                 one_item.update({"hide_txt": False})
+                one_item.update({"vendor_ignore_sub": False})
 
                 # include ONLY
                 if sub_include_list:
@@ -1364,7 +1440,7 @@ class Sequencer(object):
 
         self.regexes = {}
         if self.settings:
-            indexes = [str(x).zfill(2) for x in range(1, 17)]
+            indexes = [str(x).zfill(2) for x in range(1, 33)]
             for one in indexes:
                 name_key = "parse_name_" + one
                 key = self.settings[name_key]["value"]
@@ -1805,6 +1881,10 @@ class Sequencer(object):
                 # build one row, if not hidden
 
                 if not one_item['hide_sub']:
+
+                    if one_item['vendor_ignore_sub']:
+                        continue
+
                     one_row_sub = []
                     for one_expression in self.column_expressions_sub:
                         try:
@@ -1871,7 +1951,7 @@ class Sequencer(object):
                 sides = one_item.get('sidecars', None)
                 if sides:
                     do_side = False
-                    if side_sub_only and not one_item['hide_sub']:
+                    if side_sub_only and (not one_item['hide_sub']) and (not one_item['vendor_ignore_sub']):
                         do_side = True
                     elif side_log_only and not one_item['hide_log']:
                         do_side = True
