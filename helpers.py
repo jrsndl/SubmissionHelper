@@ -109,6 +109,25 @@ def frames_to_seconds(frames, fps):
 
     return str(total_seconds)
 
+def seconds_to_frames(seconds, fps):
+
+    seconds = float(seconds)
+    try:
+        fps = float(fps)
+    except:
+        if '/' in fps:
+            a = float(fps.split('/')[0])
+            b = float(fps.split('/')[1])
+            fps = float(a) / float(b)
+        else:
+            fps = None
+
+    if fps:
+        total_frames = fps * seconds
+    else:
+        total_frames = 0
+
+    return str(total_frames)
 
 def tc_to_frames(tc, fps_a, fps_b):
 

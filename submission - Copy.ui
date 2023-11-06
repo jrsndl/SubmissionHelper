@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>989</width>
-    <height>600</height>
+    <width>800</width>
+    <height>602</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,6 +20,12 @@
    <size>
     <width>800</width>
     <height>600</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>602</height>
    </size>
   </property>
   <property name="acceptDrops">
@@ -1498,7 +1504,7 @@ p, li { white-space: pre-wrap; }
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>940</width>
+               <width>1533</width>
                <height>1070</height>
               </rect>
              </property>
@@ -11754,7 +11760,7 @@ p, li { white-space: pre-wrap; }
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>940</width>
+               <width>1533</width>
                <height>469</height>
               </rect>
              </property>
@@ -12442,13 +12448,13 @@ p, li { white-space: pre-wrap; }
          <attribute name="title">
           <string>Convert</string>
          </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_35">
+         <layout class="QVBoxLayout" name="verticalLayout_68">
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_34">
+           <layout class="QVBoxLayout" name="verticalLayout_67">
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <layout class="QHBoxLayout" name="horizontalLayout_163">
               <item>
-               <widget class="QCheckBox" name="thumbs_make_on_go">
+               <widget class="QCheckBox" name="thumbs_make">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -12468,7 +12474,7 @@ p, li { white-space: pre-wrap; }
                  </size>
                 </property>
                 <property name="text">
-                 <string>Convert on Go</string>
+                 <string>Convert</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -12476,7 +12482,178 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item>
-               <widget class="QPushButton" name="thumbs_convert_now">
+               <layout class="QHBoxLayout" name="horizontalLayout_162">
+                <item>
+                 <widget class="QLabel" name="label_279">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>60</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>Location:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="thumbs_loc_absolute">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>75</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>100</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>Absolute</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="thumbs_loc_relative_root">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>100</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>100</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>Root Relative</string>
+                  </property>
+                  <property name="checked">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QRadioButton" name="thumbs_loc_relative_file">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>100</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>100</width>
+                    <height>25</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string>File Relative</string>
+                  </property>
+                  <property name="checked">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_location">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>400</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>1500</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_8">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>1159</width>
+                <height>13</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_161">
+              <item>
+               <widget class="QLabel" name="label_34">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>25</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>25</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>If:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_if_01">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -12485,1491 +12662,1430 @@ p, li { white-space: pre-wrap; }
                 </property>
                 <property name="minimumSize">
                  <size>
-                  <width>200</width>
+                  <width>75</width>
                   <height>25</height>
                  </size>
                 </property>
                 <property name="maximumSize">
                  <size>
-                  <width>16777215</width>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>shot</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_276">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
                   <height>25</height>
                  </size>
                 </property>
                 <property name="text">
-                 <string>Convert Now</string>
+                 <string>Executable:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_exe_01">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>ffmpeg</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_277">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Arguments:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_args_01">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>4096</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_278">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>File Name:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_name_01">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
                 </property>
                </widget>
               </item>
              </layout>
             </item>
             <item>
-             <layout class="QVBoxLayout" name="verticalLayout_3">
+             <layout class="QHBoxLayout" name="horizontalLayout_164">
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_161">
-                <item>
-                 <widget class="QLabel" name="label_34">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>25</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>25</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>If:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_if_01">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>'{extension}' == 'mov'</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_276">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Executable:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_exe_01">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>ffmpeg</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_277">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Arguments:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_args_01">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>150</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>4096</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>-i {path} -ss {meta_thumbnail_time} -vframes 1 {package_name_root}/{package_name}/_thumbs/{vendor_Merge_by}.png</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_278">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>File Name:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_name_01">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
+               <widget class="QLabel" name="label_280">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>25</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>25</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>If:</string>
+                </property>
+               </widget>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_164">
-                <item>
-                 <widget class="QLabel" name="label_280">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>25</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>25</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>If:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_if_02">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_281">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Executable:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_exe_02">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>ffmpeg</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_282">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Arguments:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_args_02">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>150</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>4096</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_283">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>File Name:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_name_02">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
+               <widget class="QLineEdit" name="thumbs_if_02">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>shot</string>
+                </property>
+               </widget>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_165">
-                <item>
-                 <widget class="QLabel" name="label_284">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>25</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>25</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>If:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_if_03">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_285">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Executable:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_exe_03">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>ffmpeg</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_286">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Arguments:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_args_03">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>150</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>4096</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_287">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>File Name:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_name_03">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
+               <widget class="QLabel" name="label_281">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Executable:</string>
+                </property>
+               </widget>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_166">
-                <item>
-                 <widget class="QLabel" name="label_288">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>25</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>25</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>If:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_if_04">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_289">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Executable:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_exe_04">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>ffmpeg</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_290">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Arguments:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_args_04">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>150</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>4096</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_291">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>File Name:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_name_04">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
+               <widget class="QLineEdit" name="thumbs_exe_02">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>ffmpeg</string>
+                </property>
+               </widget>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_167">
-                <item>
-                 <widget class="QLabel" name="label_292">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>25</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>25</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>If:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_if_05">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_293">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Executable:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_exe_05">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>ffmpeg</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_294">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Arguments:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_args_05">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>150</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>4096</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_295">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>File Name:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_name_05">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
+               <widget class="QLabel" name="label_282">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Arguments:</string>
+                </property>
+               </widget>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_168">
-                <item>
-                 <widget class="QLabel" name="label_296">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>25</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>25</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>If:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_if_06">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_297">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Executable:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_exe_06">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>ffmpeg</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_298">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Arguments:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_args_06">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>150</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>4096</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_299">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>File Name:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_name_06">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
+               <widget class="QLineEdit" name="thumbs_args_2">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>4096</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_169">
-                <item>
-                 <widget class="QLabel" name="label_300">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>25</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>25</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>If:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_if_07">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_301">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Executable:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_exe_07">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>ffmpeg</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_302">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Arguments:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_args_07">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>150</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>4096</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_303">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>File Name:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_name_07">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
+               <widget class="QLabel" name="label_283">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>File Name:</string>
+                </property>
+               </widget>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_170">
-                <item>
-                 <widget class="QLabel" name="label_304">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>25</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>25</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>If:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_if_08">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_305">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Executable:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_exe_08">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>ffmpeg</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_306">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>Arguments:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_args_08">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>150</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>4096</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLabel" name="label_307">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>75</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string>File Name:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QLineEdit" name="thumbs_name_08">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>100</width>
-                    <height>25</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>150</width>
-                    <height>16777215</height>
-                   </size>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
+               <widget class="QLineEdit" name="thumbs_name_02">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_165">
+              <item>
+               <widget class="QLabel" name="label_284">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>25</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>25</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>If:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_if_03">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>shot</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_285">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Executable:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_exe_03">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>ffmpeg</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_286">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Arguments:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_args_03">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>4096</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_287">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>File Name:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_name_03">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_166">
+              <item>
+               <widget class="QLabel" name="label_288">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>25</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>25</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>If:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_if_04">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>shot</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_289">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Executable:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_exe_04">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>ffmpeg</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_290">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Arguments:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_args_04">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>4096</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_291">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>File Name:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_name_4">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_167">
+              <item>
+               <widget class="QLabel" name="label_292">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>25</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>25</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>If:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_if_05">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>shot</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_293">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Executable:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_exe_05">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>ffmpeg</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_294">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Arguments:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_args_05">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>4096</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_295">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>File Name:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_name_5">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_168">
+              <item>
+               <widget class="QLabel" name="label_296">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>25</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>25</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>If:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_if_06">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>shot</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_297">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Executable:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_exe_06">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>ffmpeg</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_298">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Arguments:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_args_06">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>4096</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_299">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>File Name:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_name_06">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_169">
+              <item>
+               <widget class="QLabel" name="label_300">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>25</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>25</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>If:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_if_07">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>shot</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_301">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Executable:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_exe_07">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>ffmpeg</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_302">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Arguments:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_args_07">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>4096</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_303">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>File Name:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_name_7">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_170">
+              <item>
+               <widget class="QLabel" name="label_304">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>25</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>25</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>If:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_if_08">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>shot</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_305">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Executable:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_exe_08">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>ffmpeg</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_306">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Arguments:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_args_08">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>150</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>4096</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="label_307">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>75</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>File Name:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="thumbs_name_08">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>100</width>
+                  <height>25</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>150</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -14009,8 +14125,8 @@ p, li { white-space: pre-wrap; }
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>945</width>
-                 <height>269</height>
+                 <width>1538</width>
+                 <height>299</height>
                 </rect>
                </property>
                <property name="sizePolicy">
@@ -14521,9 +14637,9 @@ Vendor = AmazingVFX</string>
          <attribute name="title">
           <string>Checks</string>
          </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_93">
+         <layout class="QHBoxLayout" name="horizontalLayout_68">
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_92">
+           <layout class="QVBoxLayout" name="verticalLayout_48">
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_64">
               <item>
@@ -14589,15 +14705,15 @@ Vendor = AmazingVFX</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>938</width>
+                 <width>749</width>
                  <height>878</height>
                 </rect>
                </property>
-               <layout class="QVBoxLayout" name="verticalLayout_91">
+               <layout class="QVBoxLayout" name="verticalLayout_74">
                 <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_81">
+                 <layout class="QVBoxLayout" name="verticalLayout_3">
                   <item>
-                   <widget class="QGroupBox" name="groupBox_ch01">
+                   <widget class="QGroupBox" name="groupBox_13">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -14619,15 +14735,15 @@ Vendor = AmazingVFX</string>
                     <property name="title">
                      <string/>
                     </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_263">
+                    <layout class="QHBoxLayout" name="horizontalLayout_115">
                      <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_82">
+                      <layout class="QVBoxLayout" name="verticalLayout_34">
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_264">
+                        <layout class="QHBoxLayout" name="horizontalLayout_56">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_265">
+                          <layout class="QHBoxLayout" name="horizontalLayout_2">
                            <item>
-                            <widget class="QLabel" name="label_357">
+                            <widget class="QLabel" name="label_24">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -14646,7 +14762,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_1">
+                            <widget class="QLineEdit" name="check_if_01">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -14664,9 +14780,9 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_266">
+                          <layout class="QHBoxLayout" name="horizontalLayout_53">
                            <item>
-                            <widget class="QLabel" name="label_358">
+                            <widget class="QLabel" name="label_23">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -14685,7 +14801,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_1">
+                            <widget class="QLineEdit" name="check_check_01">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -14705,11 +14821,11 @@ Vendor = AmazingVFX</string>
                         </layout>
                        </item>
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_267">
+                        <layout class="QHBoxLayout" name="horizontalLayout_55">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_268">
+                          <layout class="QHBoxLayout" name="horizontalLayout_54">
                            <item>
-                            <widget class="QLabel" name="label_359">
+                            <widget class="QLabel" name="label_309">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -14734,7 +14850,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_warning_1">
+                            <widget class="QRadioButton" name="check_warning_01">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -14747,7 +14863,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_1">
+                            <widget class="QRadioButton" name="check_error_01">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -14765,7 +14881,7 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_1">
+                          <widget class="QLineEdit" name="check_message_01">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -14788,7 +14904,7 @@ Vendor = AmazingVFX</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox__ch02">
+                   <widget class="QGroupBox" name="groupBox_16">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -14810,15 +14926,15 @@ Vendor = AmazingVFX</string>
                     <property name="title">
                      <string/>
                     </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_269">
+                    <layout class="QHBoxLayout" name="horizontalLayout_116">
                      <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_83">
+                      <layout class="QVBoxLayout" name="verticalLayout_35">
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_270">
+                        <layout class="QHBoxLayout" name="horizontalLayout_57">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_271">
+                          <layout class="QHBoxLayout" name="horizontalLayout_58">
                            <item>
-                            <widget class="QLabel" name="label_360">
+                            <widget class="QLabel" name="label_25">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -14837,7 +14953,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_2">
+                            <widget class="QLineEdit" name="check_if_02">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -14855,9 +14971,9 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_272">
+                          <layout class="QHBoxLayout" name="horizontalLayout_59">
                            <item>
-                            <widget class="QLabel" name="label_361">
+                            <widget class="QLabel" name="label_26">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -14876,7 +14992,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_2">
+                            <widget class="QLineEdit" name="check_check_02">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -14896,11 +15012,11 @@ Vendor = AmazingVFX</string>
                         </layout>
                        </item>
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_273">
+                        <layout class="QHBoxLayout" name="horizontalLayout_60">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_274">
+                          <layout class="QHBoxLayout" name="horizontalLayout_65">
                            <item>
-                            <widget class="QLabel" name="label_362">
+                            <widget class="QLabel" name="label_310">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -14925,7 +15041,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_warning_2">
+                            <widget class="QRadioButton" name="check_warning_02">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -14938,7 +15054,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_2">
+                            <widget class="QRadioButton" name="check_error_02">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -14953,7 +15069,7 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_2">
+                          <widget class="QLineEdit" name="check_message_02">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -14976,7 +15092,7 @@ Vendor = AmazingVFX</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox__ch03">
+                   <widget class="QGroupBox" name="groupBox_18">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -14998,15 +15114,15 @@ Vendor = AmazingVFX</string>
                     <property name="title">
                      <string/>
                     </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_275">
+                    <layout class="QHBoxLayout" name="horizontalLayout_117">
                      <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_84">
+                      <layout class="QVBoxLayout" name="verticalLayout_36">
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_276">
+                        <layout class="QHBoxLayout" name="horizontalLayout_66">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_277">
+                          <layout class="QHBoxLayout" name="horizontalLayout_67">
                            <item>
-                            <widget class="QLabel" name="label_363">
+                            <widget class="QLabel" name="label_27">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15025,7 +15141,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_3">
+                            <widget class="QLineEdit" name="check_if_03">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15043,9 +15159,9 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_278">
+                          <layout class="QHBoxLayout" name="horizontalLayout_112">
                            <item>
-                            <widget class="QLabel" name="label_364">
+                            <widget class="QLabel" name="label_28">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15064,7 +15180,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_3">
+                            <widget class="QLineEdit" name="check_check_03">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15084,11 +15200,11 @@ Vendor = AmazingVFX</string>
                         </layout>
                        </item>
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_279">
+                        <layout class="QHBoxLayout" name="horizontalLayout_113">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_280">
+                          <layout class="QHBoxLayout" name="horizontalLayout_114">
                            <item>
-                            <widget class="QLabel" name="label_365">
+                            <widget class="QLabel" name="label_311">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15113,7 +15229,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_warning_3">
+                            <widget class="QRadioButton" name="check_warning_03">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15126,7 +15242,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_3">
+                            <widget class="QRadioButton" name="check_error_03">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15144,7 +15260,7 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_3">
+                          <widget class="QLineEdit" name="check_message_03">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -15167,7 +15283,7 @@ Vendor = AmazingVFX</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox__ch04">
+                   <widget class="QGroupBox" name="groupBox_25">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -15189,15 +15305,15 @@ Vendor = AmazingVFX</string>
                     <property name="title">
                      <string/>
                     </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_281">
+                    <layout class="QHBoxLayout" name="horizontalLayout_174">
                      <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_85">
+                      <layout class="QVBoxLayout" name="verticalLayout_39">
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_282">
+                        <layout class="QHBoxLayout" name="horizontalLayout_175">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_283">
+                          <layout class="QHBoxLayout" name="horizontalLayout_176">
                            <item>
-                            <widget class="QLabel" name="label_366">
+                            <widget class="QLabel" name="label_312">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15216,7 +15332,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_4">
+                            <widget class="QLineEdit" name="check_if_04">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15234,9 +15350,9 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_284">
+                          <layout class="QHBoxLayout" name="horizontalLayout_177">
                            <item>
-                            <widget class="QLabel" name="label_367">
+                            <widget class="QLabel" name="label_313">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15255,7 +15371,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_4">
+                            <widget class="QLineEdit" name="check_check_04">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15275,11 +15391,11 @@ Vendor = AmazingVFX</string>
                         </layout>
                        </item>
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_285">
+                        <layout class="QHBoxLayout" name="horizontalLayout_178">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_286">
+                          <layout class="QHBoxLayout" name="horizontalLayout_179">
                            <item>
-                            <widget class="QLabel" name="label_368">
+                            <widget class="QLabel" name="label_314">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15304,7 +15420,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_warning_4">
+                            <widget class="QRadioButton" name="check_warning_04">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15317,7 +15433,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_4">
+                            <widget class="QRadioButton" name="check_error_04">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15335,7 +15451,7 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_4">
+                          <widget class="QLineEdit" name="check_message_04">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -15358,7 +15474,7 @@ Vendor = AmazingVFX</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox__ch05">
+                   <widget class="QGroupBox" name="groupBox_26">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -15380,15 +15496,15 @@ Vendor = AmazingVFX</string>
                     <property name="title">
                      <string/>
                     </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_287">
+                    <layout class="QHBoxLayout" name="horizontalLayout_180">
                      <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_86">
+                      <layout class="QVBoxLayout" name="verticalLayout_69">
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_288">
+                        <layout class="QHBoxLayout" name="horizontalLayout_181">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_289">
+                          <layout class="QHBoxLayout" name="horizontalLayout_182">
                            <item>
-                            <widget class="QLabel" name="label_369">
+                            <widget class="QLabel" name="label_315">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15407,7 +15523,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_5">
+                            <widget class="QLineEdit" name="check_if_05">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15425,9 +15541,9 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_290">
+                          <layout class="QHBoxLayout" name="horizontalLayout_183">
                            <item>
-                            <widget class="QLabel" name="label_370">
+                            <widget class="QLabel" name="label_316">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15446,7 +15562,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_5">
+                            <widget class="QLineEdit" name="check_check_05">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15466,11 +15582,11 @@ Vendor = AmazingVFX</string>
                         </layout>
                        </item>
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_291">
+                        <layout class="QHBoxLayout" name="horizontalLayout_184">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_292">
+                          <layout class="QHBoxLayout" name="horizontalLayout_185">
                            <item>
-                            <widget class="QLabel" name="label_371">
+                            <widget class="QLabel" name="label_317">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15495,7 +15611,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_warning_5">
+                            <widget class="QRadioButton" name="check_warning_05">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15508,7 +15624,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_5">
+                            <widget class="QRadioButton" name="check_error_05">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15526,7 +15642,7 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_5">
+                          <widget class="QLineEdit" name="check_message_05">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -15549,7 +15665,7 @@ Vendor = AmazingVFX</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox__ch06">
+                   <widget class="QGroupBox" name="groupBox_27">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -15571,15 +15687,15 @@ Vendor = AmazingVFX</string>
                     <property name="title">
                      <string/>
                     </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_293">
+                    <layout class="QHBoxLayout" name="horizontalLayout_186">
                      <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_87">
+                      <layout class="QVBoxLayout" name="verticalLayout_70">
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_294">
+                        <layout class="QHBoxLayout" name="horizontalLayout_187">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_295">
+                          <layout class="QHBoxLayout" name="horizontalLayout_188">
                            <item>
-                            <widget class="QLabel" name="label_372">
+                            <widget class="QLabel" name="label_318">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15598,7 +15714,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_6">
+                            <widget class="QLineEdit" name="check_if_06">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15616,9 +15732,9 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_296">
+                          <layout class="QHBoxLayout" name="horizontalLayout_189">
                            <item>
-                            <widget class="QLabel" name="label_373">
+                            <widget class="QLabel" name="label_319">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15637,7 +15753,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_6">
+                            <widget class="QLineEdit" name="check_check_06">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15657,11 +15773,11 @@ Vendor = AmazingVFX</string>
                         </layout>
                        </item>
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_297">
+                        <layout class="QHBoxLayout" name="horizontalLayout_190">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_298">
+                          <layout class="QHBoxLayout" name="horizontalLayout_191">
                            <item>
-                            <widget class="QLabel" name="label_374">
+                            <widget class="QLabel" name="label_320">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15686,7 +15802,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_warning_6">
+                            <widget class="QRadioButton" name="check_warning_06">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15699,7 +15815,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_6">
+                            <widget class="QRadioButton" name="check_error_06">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15717,7 +15833,7 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_6">
+                          <widget class="QLineEdit" name="check_message_06">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -15740,7 +15856,7 @@ Vendor = AmazingVFX</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox__ch07">
+                   <widget class="QGroupBox" name="groupBox_28">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -15762,15 +15878,15 @@ Vendor = AmazingVFX</string>
                     <property name="title">
                      <string/>
                     </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_299">
+                    <layout class="QHBoxLayout" name="horizontalLayout_192">
                      <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_88">
+                      <layout class="QVBoxLayout" name="verticalLayout_71">
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_300">
+                        <layout class="QHBoxLayout" name="horizontalLayout_193">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_301">
+                          <layout class="QHBoxLayout" name="horizontalLayout_194">
                            <item>
-                            <widget class="QLabel" name="label_375">
+                            <widget class="QLabel" name="label_321">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15789,7 +15905,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_7">
+                            <widget class="QLineEdit" name="check_if_07">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15807,9 +15923,9 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_302">
+                          <layout class="QHBoxLayout" name="horizontalLayout_195">
                            <item>
-                            <widget class="QLabel" name="label_376">
+                            <widget class="QLabel" name="label_322">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15828,7 +15944,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_7">
+                            <widget class="QLineEdit" name="check_check_07">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15848,11 +15964,11 @@ Vendor = AmazingVFX</string>
                         </layout>
                        </item>
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_303">
+                        <layout class="QHBoxLayout" name="horizontalLayout_196">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_304">
+                          <layout class="QHBoxLayout" name="horizontalLayout_197">
                            <item>
-                            <widget class="QLabel" name="label_377">
+                            <widget class="QLabel" name="label_323">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15877,7 +15993,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_warning_7">
+                            <widget class="QRadioButton" name="check_warning_07">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15890,7 +16006,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_7">
+                            <widget class="QRadioButton" name="check_error_07">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15908,7 +16024,7 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_7">
+                          <widget class="QLineEdit" name="check_message_07">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -15931,7 +16047,7 @@ Vendor = AmazingVFX</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox__ch08">
+                   <widget class="QGroupBox" name="groupBox_29">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -15953,15 +16069,15 @@ Vendor = AmazingVFX</string>
                     <property name="title">
                      <string/>
                     </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_305">
+                    <layout class="QHBoxLayout" name="horizontalLayout_198">
                      <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_89">
+                      <layout class="QVBoxLayout" name="verticalLayout_72">
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_306">
+                        <layout class="QHBoxLayout" name="horizontalLayout_199">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_307">
+                          <layout class="QHBoxLayout" name="horizontalLayout_200">
                            <item>
-                            <widget class="QLabel" name="label_378">
+                            <widget class="QLabel" name="label_324">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15980,7 +16096,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_8">
+                            <widget class="QLineEdit" name="check_if_08">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15998,9 +16114,9 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_308">
+                          <layout class="QHBoxLayout" name="horizontalLayout_201">
                            <item>
-                            <widget class="QLabel" name="label_379">
+                            <widget class="QLabel" name="label_325">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -16019,7 +16135,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_8">
+                            <widget class="QLineEdit" name="check_check_08">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -16039,9 +16155,9 @@ Vendor = AmazingVFX</string>
                         </layout>
                        </item>
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_309">
+                        <layout class="QHBoxLayout" name="horizontalLayout_202">
                          <item>
-                          <widget class="QLabel" name="label_380">
+                          <widget class="QLabel" name="label_326">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -16066,9 +16182,9 @@ Vendor = AmazingVFX</string>
                           </widget>
                          </item>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_310">
+                          <layout class="QHBoxLayout" name="horizontalLayout_203">
                            <item>
-                            <widget class="QRadioButton" name="check_warning_8">
+                            <widget class="QRadioButton" name="check_warning_08">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -16081,7 +16197,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_8">
+                            <widget class="QRadioButton" name="check_error_08">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -16099,7 +16215,7 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_8">
+                          <widget class="QLineEdit" name="check_message_08">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -16122,7 +16238,7 @@ Vendor = AmazingVFX</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox__ch09">
+                   <widget class="QGroupBox" name="groupBox_30">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -16144,15 +16260,15 @@ Vendor = AmazingVFX</string>
                     <property name="title">
                      <string/>
                     </property>
-                    <layout class="QHBoxLayout" name="horizontalLayout_311">
+                    <layout class="QHBoxLayout" name="horizontalLayout_204">
                      <item>
-                      <layout class="QVBoxLayout" name="verticalLayout_90">
+                      <layout class="QVBoxLayout" name="verticalLayout_73">
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_312">
+                        <layout class="QHBoxLayout" name="horizontalLayout_205">
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_313">
+                          <layout class="QHBoxLayout" name="horizontalLayout_206">
                            <item>
-                            <widget class="QLabel" name="label_381">
+                            <widget class="QLabel" name="label_327">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -16171,7 +16287,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_9">
+                            <widget class="QLineEdit" name="check_if_09">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -16189,9 +16305,9 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_314">
+                          <layout class="QHBoxLayout" name="horizontalLayout_207">
                            <item>
-                            <widget class="QLabel" name="label_382">
+                            <widget class="QLabel" name="label_328">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -16210,7 +16326,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_9">
+                            <widget class="QLineEdit" name="check_check_09">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -16230,9 +16346,9 @@ Vendor = AmazingVFX</string>
                         </layout>
                        </item>
                        <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout_315">
+                        <layout class="QHBoxLayout" name="horizontalLayout_208">
                          <item>
-                          <widget class="QLabel" name="label_383">
+                          <widget class="QLabel" name="label_329">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -16257,9 +16373,9 @@ Vendor = AmazingVFX</string>
                           </widget>
                          </item>
                          <item>
-                          <layout class="QHBoxLayout" name="horizontalLayout_316">
+                          <layout class="QHBoxLayout" name="horizontalLayout_209">
                            <item>
-                            <widget class="QRadioButton" name="check_warning_9">
+                            <widget class="QRadioButton" name="check_warning_09">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -16272,7 +16388,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_9">
+                            <widget class="QRadioButton" name="check_error_09">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -16290,7 +16406,7 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_9">
+                          <widget class="QLineEdit" name="check_message_09">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -16317,6 +16433,19 @@ Vendor = AmazingVFX</string>
                </layout>
               </widget>
              </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_7">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
             </item>
            </layout>
           </item>

@@ -1,5 +1,6 @@
 import os
 import re
+import sys
 import shutil
 from operator import itemgetter
 import pprint
@@ -16,6 +17,8 @@ import helpers
 
 import ftrack_api
 import arrow
+import inspect
+import subprocess
 
 class Sequencer(object):
     def __init__(self, in_path, sequence_mode='to_subsequences', gui=None, more_settings=None):
@@ -131,6 +134,9 @@ class Sequencer(object):
 
         # vendor ingest
         self.vendor_csv_all()
+
+        # prepare conversions
+        self.prepare_converts()
 
         # parse table headers
         self.prepare_all_columns()
@@ -2013,6 +2019,10 @@ class Sequencer(object):
         if self.settings and bool(self.settings['side_copywithgo']['value']):
             self.sidecar_files_copy()
 
+        if self.settings and bool(self.settings['thumbs_make_on_go']['value']):
+            self.prepare_converts()
+            self.run_converts()
+
         if self.settings and self.static_keywords:
             one_above = str(self.static_keywords['package_name_root']).replace('\\', '/') + '/'
             export_root = one_above + self.static_keywords['package_name_from_folder'] + '/'
@@ -2458,13 +2468,13 @@ class Sequencer(object):
         """
 
         if self.ftrack is None:
-            print("Ftrack cancelled")
+            print("Ftrack cancelled (1)")
             return
         if self.ftrack['project_id'] is None or self.ftrack['shot'] == '' or self.ftrack['task'] == '':
-            print("Ftrack cancelled")
+            print("Ftrack cancelled (2)")
             return
         if self.merged_list is None:
-            print("Ftrack cancelled")
+            print("Ftrack cancelled (3)")
             return
 
         do_filter = False
@@ -2477,6 +2487,78 @@ class Sequencer(object):
                     self.assign_ftrack_notes(item)
             else:
                 self.assign_ftrack_notes(item)
+
+    def ftrack_get_hierarchical_attribute( self,
+            session,
+            entity,
+            attribute_name
+    ):
+        '''Return hierarchical attribute *attribute_name* or default.'''
+        entities = []
+        if isinstance(entity, session.types['Project']):
+            entities = [entity]
+        else:
+            if isinstance(entity, session.types['AssetVersion']):
+                asset_version = session.query(
+                    'select asset.parent.ancestors.id, asset.parent.project ' +
+                    'from AssetVersion where id is "{}"'.format(entity['id'])
+                ).one()
+                parent = asset_version['asset']['parent']
+                if isinstance(parent, session.types['Project']):
+                    entities = (
+                            [asset_version] +
+                            [parent]
+                    )
+                else:
+                    entities = (
+                            [asset_version] +
+                            [parent] +
+                            list(reversed(parent['ancestors'])) +
+                            [parent['project']]
+                    )
+            else:
+                typed_context = session.query(
+                    'select ancestors.id, project ' +
+                    'from TypedContext where id is "{}"'.format(entity['id'])
+                ).one()
+                entities = (
+                        [typed_context] +
+                        list(reversed(typed_context['ancestors'])) +
+                        [typed_context['project']]
+                )
+
+        entity_ids = [item['id'] for item in entities]
+
+        [values, default_value] = session.call([{
+            'action': 'query',
+            'expression': (
+                'select value, entity_id from CustomAttributeValue '
+                'where entity_id in ({0}) and configuration.key is "{1}"'
+                .format(
+                    ', '.join(
+                        ['"{0}"'.format(entity_id) for entity_id in entity_ids]
+                    ),
+                    attribute_name
+                )
+            )
+        }, {
+            'action': 'query',
+            'expression': (
+                'select default from CustomAttributeConfiguration '
+                'where key is "{0}"'.format(
+                    attribute_name
+                )
+            )
+        }])
+
+        attribute_value = default_value['data'][0]['default']
+        if values['data']:
+            attribute_value = sorted(
+                values['data'],
+                key=lambda value: entity_ids.index(value['entity_id'])
+            )[0]['value']
+
+        return attribute_value
 
     def assign_ftrack_notes(self, item):
         """
@@ -2495,7 +2577,6 @@ class Sequencer(object):
         current_shot = self.ftrack.get('shot', '').format_map(Default(item))
         current_task = self.ftrack.get('task', '').format_map(Default(item))
         current_version = self.ftrack.get('version', '').format_map(Default(item))
-        #print(current_shot, current_task, current_version)
 
         version_gui = 0
         if self.ftrack['do_version']:
@@ -2504,7 +2585,7 @@ class Sequencer(object):
             except:
                 return ''
 
-        if current_shot =='' or current_task =='' or self.ftrack['project'] =='':
+        if current_shot == '' or current_task == '' or self.ftrack['project'] == '':
             return ''
 
         # get task from Ftrack
@@ -2516,6 +2597,25 @@ class Sequencer(object):
         except:
             return ''
         if f_task is None:
+            return ''
+
+        try:
+            f_shot = self.ftrack['session'].query(
+                'Shot where name is {}'
+                ' and project.full_name is {}'.format(
+                    current_shot, self.ftrack['project'])).first()
+
+            _fs = int(float(self.ftrack_get_hierarchical_attribute(self.ftrack['session'], f_shot, "framestart")))
+            _fe = int(float(self.ftrack_get_hierarchical_attribute(self.ftrack['session'], f_shot, "frameend")))
+            _hs = int(float(self.ftrack_get_hierarchical_attribute(self.ftrack['session'], f_shot, "handleStart")))
+            _he = int(float(self.ftrack_get_hierarchical_attribute(self.ftrack['session'], f_shot, "handleEnd")))
+            item['ftrack_op_frame_start'] = str(_fs)
+            item['ftrack_op_frame_end'] = str(_fe)
+            item['ftrack_op_handle_start'] = str(_hs)
+            item['ftrack_op_handle_end'] = str(_he)
+            item['ftrack_op_range'] = "{}-{}".format(_fs - _hs - 1, _fe + _he)
+            item['ftrack_op_range_slate'] = "{}-{}".format(_fs - _hs, _fe + _he)
+        except:
             return ''
 
         # get sorted versions on the task
@@ -2690,12 +2790,126 @@ class Sequencer(object):
                 else:
                     item['warning'] = sw
 
+    def prepare_converts(self):
+        """
+        Execute command lines for every media file
+        :return: add vendor_Thumbs to media files
+        """
+
+        class Default(dict):
+            def __missing__(self, key):
+                return '{' + key + '}'
+
+        def _get_exes():
+            if sys.platform.startswith('win'):
+                exe_extension = '.exe'
+            else:
+                exe_extension = ''
+            script_path = os.path.dirname(
+                os.path.abspath(inspect.stack()[-1][1])).replace("\\", "/")
+            probe = script_path + '/ffmpeg/ffprobe' + exe_extension
+            if not os.path.exists(probe):
+                probe = ''
+            mpg = script_path + '/ffmpeg/ffmpeg' + exe_extension
+            if not os.path.exists(mpg):
+                mpg = ''
+            oiio = script_path + '/oiio/win/oiiotool.exe'
+            if not os.path.exists(oiio):
+                oiio = ''
+            return {'ffmpeg': mpg, 'ffprobe': probe, 'oiiotool': oiio}
+
+
+        self.converts = []
+        if self.settings:
+            # read checks from gui, save to self.checks
+            indexes = [str(x).zfill(2) for x in range(1, 9)]
+            for one in indexes:
+                if_filter = str(self.settings["thumbs_if_" + one]["value"])
+                exe = str(self.settings["thumbs_exe_" + one]["value"])
+                args = str(self.settings["thumbs_args_" + one]["value"])
+                fn = str(self.settings["thumbs_name_" + one]["value"])
+                if args != '' and fn != '':
+                    one_conv = {
+                        "filter": if_filter,
+                        "exe": exe,
+                        "args": args,
+                        "fn": fn,
+                        "cmd": ""
+                    }
+                    self.converts.append(one_conv)
+
+        if self.converts is None:
+            return
+
+        _exes = _get_exes()
+        for item in self.merged_list:
+            for one_conv in self.converts:
+                # filter out first
+                _if_eval = False
+                if one_conv['filter'] != '':
+                    try:
+                        _if = one_conv['filter'].format_map(Default(item))
+                        _if_eval = bool(eval(_if))
+                    except:
+                        pass
+                else:
+                    # no filtering, so true for all
+                    _if_eval = True
+
+                if _if_eval:
+                    # not filtered out
+                    _check_eval = False
+                    try:
+                        _e = one_conv['exe'].format_map(Default(self.static_keywords))
+                        _e = _e.format_map(Default(_exes))
+                        _a = one_conv['args'].format_map(Default(self.static_keywords))
+                        _a = _a.format_map(Default(item))
+                        _cmd = "{} {}".format(_e, _a)
+                        _fn = one_conv['fn'].format_map(Default(self.static_keywords))
+                        _fn = _fn.format_map(Default(item))
+
+                        item['convert_path'] = _fn
+                        item['convert_cmd'] = _cmd
+
+                    except:
+                        pass
+
+    def run_converts(self):
+        """
+        Execute command lines for every media file
+        :return: add vendor_Thumbs to media files
+        """
+
+        for item in self.merged_list:
+            _fn = item.get('convert_path')
+            _cmd = item.get('convert_cmd')
+
+            if _fn and _cmd:
+                if not os.path.exists(_fn):
+                    _d = os.path.dirname(os.path.abspath(_fn))
+                    if not os.path.exists(_d):
+                        os.makedirs(_d)
+
+                    print("exe: {}".format(_cmd))
+                    process = subprocess.Popen(_cmd, shell=True,
+                                               stdout=subprocess.PIPE,
+                                               stderr=subprocess.PIPE,
+                                               bufsize=-1)
+                    out, err = process.communicate()
+
+                    if process.returncode != 0:
+                        print("bad convert")
+                    else:
+                        print("good convert")
+
+                if not os.path.exists(_fn):
+                    item['convert_path'] = ''
 
     def checks_init(self):
         self.checks = []
         if self.settings:
             # read checks from gui, save to self.checks
-            indexes = [str(x) for x in range(1, 3)]
+            indexes = [str(x) for x in range(1, 10)]
             for one in indexes:
                 if_filter = str(self.settings["check_if_" + one]["value"])
                 check = str(self.settings["check_check_" + one]["value"])

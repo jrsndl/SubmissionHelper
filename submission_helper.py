@@ -149,6 +149,38 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'parse_name_15', 'refresh_parsing'))
         self.ui.parse_name_16.textChanged.connect(
             partial(self.handler, 'parse_name_16', 'refresh_parsing'))
+        self.ui.parse_name_17.textChanged.connect(
+            partial(self.handler, 'parse_name_01', 'refresh_parsing'))
+        self.ui.parse_name_18.textChanged.connect(
+            partial(self.handler, 'parse_name_02', 'refresh_parsing'))
+        self.ui.parse_name_19.textChanged.connect(
+            partial(self.handler, 'parse_name_03', 'refresh_parsing'))
+        self.ui.parse_name_20.textChanged.connect(
+            partial(self.handler, 'parse_name_04', 'refresh_parsing'))
+        self.ui.parse_name_21.textChanged.connect(
+            partial(self.handler, 'parse_name_05', 'refresh_parsing'))
+        self.ui.parse_name_22.textChanged.connect(
+            partial(self.handler, 'parse_name_06', 'refresh_parsing'))
+        self.ui.parse_name_23.textChanged.connect(
+            partial(self.handler, 'parse_name_07', 'refresh_parsing'))
+        self.ui.parse_name_24.textChanged.connect(
+            partial(self.handler, 'parse_name_08', 'refresh_parsing'))
+        self.ui.parse_name_25.textChanged.connect(
+            partial(self.handler, 'parse_name_09', 'refresh_parsing'))
+        self.ui.parse_name_26.textChanged.connect(
+            partial(self.handler, 'parse_name_10', 'refresh_parsing'))
+        self.ui.parse_name_27.textChanged.connect(
+            partial(self.handler, 'parse_name_11', 'refresh_parsing'))
+        self.ui.parse_name_28.textChanged.connect(
+            partial(self.handler, 'parse_name_12', 'refresh_parsing'))
+        self.ui.parse_name_29.textChanged.connect(
+            partial(self.handler, 'parse_name_13', 'refresh_parsing'))
+        self.ui.parse_name_30.textChanged.connect(
+            partial(self.handler, 'parse_name_14', 'refresh_parsing'))
+        self.ui.parse_name_31.textChanged.connect(
+            partial(self.handler, 'parse_name_15', 'refresh_parsing'))
+        self.ui.parse_name_32.textChanged.connect(
+            partial(self.handler, 'parse_name_16', 'refresh_parsing'))
 
         self.ui.parse_pattern_01.textChanged.connect(
             partial(self.handler, 'parse_pattern_01', 'refresh_parsing'))
@@ -181,6 +213,38 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.parse_pattern_15.textChanged.connect(
             partial(self.handler, 'parse_pattern_15', 'refresh_parsing'))
         self.ui.parse_pattern_16.textChanged.connect(
+            partial(self.handler, 'parse_pattern_16', 'refresh_parsing'))
+        self.ui.parse_pattern_17.textChanged.connect(
+            partial(self.handler, 'parse_pattern_01', 'refresh_parsing'))
+        self.ui.parse_pattern_18.textChanged.connect(
+            partial(self.handler, 'parse_pattern_02', 'refresh_parsing'))
+        self.ui.parse_pattern_19.textChanged.connect(
+            partial(self.handler, 'parse_pattern_03', 'refresh_parsing'))
+        self.ui.parse_pattern_20.textChanged.connect(
+            partial(self.handler, 'parse_pattern_04', 'refresh_parsing'))
+        self.ui.parse_pattern_21.textChanged.connect(
+            partial(self.handler, 'parse_pattern_05', 'refresh_parsing'))
+        self.ui.parse_pattern_22.textChanged.connect(
+            partial(self.handler, 'parse_pattern_06', 'refresh_parsing'))
+        self.ui.parse_pattern_23.textChanged.connect(
+            partial(self.handler, 'parse_pattern_07', 'refresh_parsing'))
+        self.ui.parse_pattern_24.textChanged.connect(
+            partial(self.handler, 'parse_pattern_08', 'refresh_parsing'))
+        self.ui.parse_pattern_25.textChanged.connect(
+            partial(self.handler, 'parse_pattern_09', 'refresh_parsing'))
+        self.ui.parse_pattern_26.textChanged.connect(
+            partial(self.handler, 'parse_pattern_10', 'refresh_parsing'))
+        self.ui.parse_pattern_27.textChanged.connect(
+            partial(self.handler, 'parse_pattern_11', 'refresh_parsing'))
+        self.ui.parse_pattern_28.textChanged.connect(
+            partial(self.handler, 'parse_pattern_12', 'refresh_parsing'))
+        self.ui.parse_pattern_29.textChanged.connect(
+            partial(self.handler, 'parse_pattern_13', 'refresh_parsing'))
+        self.ui.parse_pattern_30.textChanged.connect(
+            partial(self.handler, 'parse_pattern_14', 'refresh_parsing'))
+        self.ui.parse_pattern_32.textChanged.connect(
+            partial(self.handler, 'parse_pattern_15', 'refresh_parsing'))
+        self.ui.parse_pattern_32.textChanged.connect(
             partial(self.handler, 'parse_pattern_16', 'refresh_parsing'))
 
         self.ui.parse_repl_01.textChanged.connect(
@@ -215,6 +279,38 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'parse_repl_15', 'refresh_parsing'))
         self.ui.parse_repl_16.textChanged.connect(
             partial(self.handler, 'parse_repl_16', 'refresh_parsing'))
+        self.ui.parse_repl_17.textChanged.connect(
+            partial(self.handler, 'parse_repl_01', 'refresh_parsing'))
+        self.ui.parse_repl_18.textChanged.connect(
+            partial(self.handler, 'parse_repl_02', 'refresh_parsing'))
+        self.ui.parse_repl_19.textChanged.connect(
+            partial(self.handler, 'parse_repl_03', 'refresh_parsing'))
+        self.ui.parse_repl_20.textChanged.connect(
+            partial(self.handler, 'parse_repl_04', 'refresh_parsing'))
+        self.ui.parse_repl_21.textChanged.connect(
+            partial(self.handler, 'parse_repl_05', 'refresh_parsing'))
+        self.ui.parse_repl_22.textChanged.connect(
+            partial(self.handler, 'parse_repl_06', 'refresh_parsing'))
+        self.ui.parse_repl_23.textChanged.connect(
+            partial(self.handler, 'parse_repl_07', 'refresh_parsing'))
+        self.ui.parse_repl_24.textChanged.connect(
+            partial(self.handler, 'parse_repl_08', 'refresh_parsing'))
+        self.ui.parse_repl_25.textChanged.connect(
+            partial(self.handler, 'parse_repl_09', 'refresh_parsing'))
+        self.ui.parse_repl_26.textChanged.connect(
+            partial(self.handler, 'parse_repl_10', 'refresh_parsing'))
+        self.ui.parse_repl_27.textChanged.connect(
+            partial(self.handler, 'parse_repl_11', 'refresh_parsing'))
+        self.ui.parse_repl_28.textChanged.connect(
+            partial(self.handler, 'parse_repl_12', 'refresh_parsing'))
+        self.ui.parse_repl_29.textChanged.connect(
+            partial(self.handler, 'parse_repl_13', 'refresh_parsing'))
+        self.ui.parse_repl_30.textChanged.connect(
+            partial(self.handler, 'parse_repl_14', 'refresh_parsing'))
+        self.ui.parse_repl_31.textChanged.connect(
+            partial(self.handler, 'parse_repl_15', 'refresh_parsing'))
+        self.ui.parse_repl_32.textChanged.connect(
+            partial(self.handler, 'parse_repl_16', 'refresh_parsing'))
 
         self.ui.parse_source_01.textChanged.connect(
             partial(self.handler, 'parse_source_01', 'refresh_parsing'))
@@ -247,6 +343,38 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.parse_source_15.textChanged.connect(
             partial(self.handler, 'parse_source_15', 'refresh_parsing'))
         self.ui.parse_source_16.textChanged.connect(
+            partial(self.handler, 'parse_source_16', 'refresh_parsing'))
+        self.ui.parse_source_17.textChanged.connect(
+            partial(self.handler, 'parse_source_01', 'refresh_parsing'))
+        self.ui.parse_source_18.textChanged.connect(
+            partial(self.handler, 'parse_source_02', 'refresh_parsing'))
+        self.ui.parse_source_19.textChanged.connect(
+            partial(self.handler, 'parse_source_03', 'refresh_parsing'))
+        self.ui.parse_source_20.textChanged.connect(
+            partial(self.handler, 'parse_source_04', 'refresh_parsing'))
+        self.ui.parse_source_21.textChanged.connect(
+            partial(self.handler, 'parse_source_05', 'refresh_parsing'))
+        self.ui.parse_source_22.textChanged.connect(
+            partial(self.handler, 'parse_source_06', 'refresh_parsing'))
+        self.ui.parse_source_23.textChanged.connect(
+            partial(self.handler, 'parse_source_07', 'refresh_parsing'))
+        self.ui.parse_source_24.textChanged.connect(
+            partial(self.handler, 'parse_source_08', 'refresh_parsing'))
+        self.ui.parse_source_25.textChanged.connect(
+            partial(self.handler, 'parse_source_09', 'refresh_parsing'))
+        self.ui.parse_source_26.textChanged.connect(
+            partial(self.handler, 'parse_source_10', 'refresh_parsing'))
+        self.ui.parse_source_27.textChanged.connect(
+            partial(self.handler, 'parse_source_11', 'refresh_parsing'))
+        self.ui.parse_source_28.textChanged.connect(
+            partial(self.handler, 'parse_source_12', 'refresh_parsing'))
+        self.ui.parse_source_29.textChanged.connect(
+            partial(self.handler, 'parse_source_13', 'refresh_parsing'))
+        self.ui.parse_source_30.textChanged.connect(
+            partial(self.handler, 'parse_source_14', 'refresh_parsing'))
+        self.ui.parse_source_31.textChanged.connect(
+            partial(self.handler, 'parse_source_15', 'refresh_parsing'))
+        self.ui.parse_source_32.textChanged.connect(
             partial(self.handler, 'parse_source_16', 'refresh_parsing'))
 
         # Sidecar Tab
@@ -350,6 +478,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'ftrack_note_pattern', 'select_ftrack'))
         self.ui.ftrack_note_repl.textChanged.connect(
             partial(self.handler, 'ftrack_note_repl', 'select_ftrack'))
+        self.ui.ftrack_do_op.clicked.connect(
+            partial(self.handler, 'ftrack_do_op', 'refresh_ftrack'))
 
         # vendor
         self.ui.vendor_csv_path.textChanged.connect(
@@ -382,6 +512,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'vendor_csv_prefs_repres',
                     'refresh_vendor'))
 
+        # Convert
+        # copy files button
+        self.ui.thumbs_convert_now.clicked.connect(
+            partial(self.handler, 'thumbs_convert_now', 'thumbs_convert_now'))
 
         # Spreadsheet
         self.ui.sub_columns.textChanged.connect(
@@ -444,6 +578,72 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'check_error_3', 'refresh_checks'))
         self.ui.check_message_3.textChanged.connect(
             partial(self.handler, 'check_message_3', 'refresh_checks'))
+
+        self.ui.check_if_4.textChanged.connect(
+            partial(self.handler, 'check_if_4', 'refresh_checks'))
+        self.ui.check_check_4.textChanged.connect(
+            partial(self.handler, 'check_check_4', 'refresh_checks'))
+        self.ui.check_warning_4.clicked.connect(
+            partial(self.handler, 'check_warning_4', 'refresh_checks'))
+        self.ui.check_error_4.clicked.connect(
+            partial(self.handler, 'check_error_4', 'refresh_checks'))
+        self.ui.check_message_4.textChanged.connect(
+            partial(self.handler, 'check_message_4', 'refresh_checks'))
+
+        self.ui.check_if_5.textChanged.connect(
+            partial(self.handler, 'check_if_5', 'refresh_checks'))
+        self.ui.check_check_5.textChanged.connect(
+            partial(self.handler, 'check_check_5', 'refresh_checks'))
+        self.ui.check_warning_5.clicked.connect(
+            partial(self.handler, 'check_warning_5', 'refresh_checks'))
+        self.ui.check_error_5.clicked.connect(
+            partial(self.handler, 'check_error_5', 'refresh_checks'))
+        self.ui.check_message_5.textChanged.connect(
+            partial(self.handler, 'check_message_5', 'refresh_checks'))
+
+        self.ui.check_if_6.textChanged.connect(
+            partial(self.handler, 'check_if_6', 'refresh_checks'))
+        self.ui.check_check_6.textChanged.connect(
+            partial(self.handler, 'check_check_6', 'refresh_checks'))
+        self.ui.check_warning_6.clicked.connect(
+            partial(self.handler, 'check_warning_6', 'refresh_checks'))
+        self.ui.check_error_6.clicked.connect(
+            partial(self.handler, 'check_error_6', 'refresh_checks'))
+        self.ui.check_message_6.textChanged.connect(
+            partial(self.handler, 'check_message_6', 'refresh_checks'))
+
+        self.ui.check_if_7.textChanged.connect(
+            partial(self.handler, 'check_if_7', 'refresh_checks'))
+        self.ui.check_check_7.textChanged.connect(
+            partial(self.handler, 'check_check_7', 'refresh_checks'))
+        self.ui.check_warning_7.clicked.connect(
+            partial(self.handler, 'check_warning_7', 'refresh_checks'))
+        self.ui.check_error_7.clicked.connect(
+            partial(self.handler, 'check_error_7', 'refresh_checks'))
+        self.ui.check_message_7.textChanged.connect(
+            partial(self.handler, 'check_message_7', 'refresh_checks'))
+
+        self.ui.check_if_8.textChanged.connect(
+            partial(self.handler, 'check_if_8', 'refresh_checks'))
+        self.ui.check_check_8.textChanged.connect(
+            partial(self.handler, 'check_check_8', 'refresh_checks'))
+        self.ui.check_warning_8.clicked.connect(
+            partial(self.handler, 'check_warning_8', 'refresh_checks'))
+        self.ui.check_error_8.clicked.connect(
+            partial(self.handler, 'check_error_8', 'refresh_checks'))
+        self.ui.check_message_8.textChanged.connect(
+            partial(self.handler, 'check_message_8', 'refresh_checks'))
+
+        self.ui.check_if_9.textChanged.connect(
+            partial(self.handler, 'check_if_9', 'refresh_checks'))
+        self.ui.check_check_9.textChanged.connect(
+            partial(self.handler, 'check_check_9', 'refresh_checks'))
+        self.ui.check_warning_9.clicked.connect(
+            partial(self.handler, 'check_warning_9', 'refresh_checks'))
+        self.ui.check_error_9.clicked.connect(
+            partial(self.handler, 'check_error_9', 'refresh_checks'))
+        self.ui.check_message_9.textChanged.connect(
+            partial(self.handler, 'check_message_9', 'refresh_checks'))
 
         # Preferences Tab
 
@@ -683,8 +883,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         if group == 'refresh_vendor':
             if self.data:
-                self.data.vendor_csv_all()
 
+                self.data.vendor_csv_all()
+                self.data.vendor_csv_all()
                 self.data.transform_data()
 
                 # parse table headers
@@ -754,6 +955,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 log.error('Error reading preset {}'.format(preset_to_load))
             """
 
+        if group == "thumbs_convert_now":
+            self.data.run_converts()
+
     def show_all(self):
         """
         Fill Submission table, drive log table and text with data
@@ -789,7 +993,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             self.ui.name_preview.setText(_preview)
 
             # Display merged items as a data tree
-
+            self.ui.data_tree.clear()
             self.ui.data_tree.setColumnCount(3)
             self.ui.data_tree.setHeaderLabels(["#", "key", "value"])
             for one_itm in self.data.merged_list:

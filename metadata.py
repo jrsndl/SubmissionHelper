@@ -96,6 +96,8 @@ class MetaData(object):
             'meta_frame_start_from_tc_slate': str(self.meta.get('frame_start_from_tc_slate', '')),
             'meta_frame_end_from_tc': str(self.meta.get('frame_end_from_tc', '')),
             'meta_frame_end_from_tc_slate': str(self.meta.get('frame_end_from_tc_slate', '')),
+            'meta_thumbnail_time': self.meta.get('thumbnail_time', "0"),
+            'meta_thumbnail_frame': self.meta.get('thumbnail_frame', "0")
         }
 
         # add exr header
@@ -227,6 +229,14 @@ class MetaData(object):
                 self.meta['duration_frames_slate'] = self.meta['duration_frames'] - 1
                 self.meta['duration_secs'] = helpers.frames_to_seconds(frames=self.meta['duration_frames'],
                                                                      fps=self.meta['fps_str'])
+                self.meta['thumbnail_frame'] = int(self.meta['duration_frames'] / 2) + self.item['start_number']
+                self.meta['thumbnail_time'] = helpers.frames_to_seconds(frames=int(self.meta['duration_frames'] / 2),
+                                                                     fps=self.meta['fps_str'])
+            elif category == 'video':
+                self.meta['thumbnail_time'] = (float(self.meta['duration_secs']) / 2.0)
+                self.meta['thumbnail_frame'] = helpers.seconds_to_frames(seconds=float(self.meta['duration_secs']) / 2.0,
+                                                                     fps=self.meta['fps_str'])
+
 
     def _frame_range_from_tc(self):
         if self.meta['file'] and self.meta['file'] != '':
