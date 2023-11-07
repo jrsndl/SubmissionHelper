@@ -128,6 +128,7 @@ class Sequencer(object):
         self.ftrack = {}
         self.ftrack_query()
         self.select_ftrack_note()
+        self.ftrack_op_attrs()
 
         # sidecar files filter
         self.sidecar_files_filter()
@@ -146,7 +147,7 @@ class Sequencer(object):
 
         self.select_ftrack_note()
 
-        self.checks = []
+        #self.checks = []
         self.run_checks()
 
     def get_metadata(self):
@@ -2372,7 +2373,7 @@ class Sequencer(object):
         self.ftrack_clean_notes()
         do_ftrack = False
         if self.settings:
-            if self.settings['ftrack_use']['value']:
+            if self.settings['ftrack_use']['value'] is not None:
                 do_ftrack = bool(self.settings['ftrack_use']['value'])
         if do_ftrack:
             self.get_ftrack_session()
@@ -2467,6 +2468,15 @@ class Sequencer(object):
         item['ftrack_notes']
         """
 
+        if not self.settings:
+            return
+
+        _do_notes = False
+        if self.settings['ftrack_do_notes']['value'] is not None:
+            _do_notes = bool(self.settings['ftrack_do_notes']['value'])
+        if not _do_notes:
+            return
+
         if self.ftrack is None:
             print("Ftrack cancelled (1)")
             return
@@ -2560,6 +2570,81 @@ class Sequencer(object):
 
         return attribute_value
 
+    def ftrack_op_attrs(self):
+        """
+
+        :return:
+        add to item['ftrack_notes'] all notes on task or version
+        """
+        class Default(dict):
+            def __missing__(self, key):
+                return '{' + key + '}'
+
+        if not self.settings:
+            return
+        _do_op = False
+        if self.settings['ftrack_do_op']['value'] is not None:
+            _do_op = bool(self.settings['ftrack_do_op']['value'])
+        if not _do_op:
+            return
+
+        if self.ftrack is None:
+            print("Ftrack cancelled (1)")
+            return
+        if self.ftrack['project_id'] is None or self.ftrack['shot'] == '' or self.ftrack['task'] == '':
+            print("Ftrack cancelled (2)")
+            return
+        if self.merged_list is None:
+            print("Ftrack cancelled (3)")
+            return
+
+        for item in self.merged_list:
+            self.assign_ftrack_notes(item)
+
+            current_shot = self.ftrack.get('shot', '').format_map(Default(item))
+            current_task = self.ftrack.get('task', '').format_map(Default(item))
+
+            f_shot = self.ftrack['session'].query(
+                'Shot where name is {}'
+                ' and project.full_name is {}'.format(
+                    current_shot, self.ftrack['project'])).first()
+
+            f_task = self.ftrack['session'].query(
+                'Task where name is {} and parent.name is {}'
+                ' and project.full_name is {}'.format(
+                    current_task, current_shot, self.ftrack['project'])).first()
+
+            item['ftrack_task_exists'] = "0"
+            if f_task:
+                item['ftrack_task_exists'] = "1"
+            item['ftrack_shot_exists'] = "0"
+            if f_shot:
+                item['ftrack_shot_exists'] = "1"
+                _fs = int(float(self.ftrack_get_hierarchical_attribute(self.ftrack['session'], f_shot, "framestart")))
+                _fe = int(float(self.ftrack_get_hierarchical_attribute(self.ftrack['session'], f_shot, "frameend")))
+                _hs = int(float(self.ftrack_get_hierarchical_attribute(self.ftrack['session'], f_shot, "handleStart")))
+                _he = int(float(self.ftrack_get_hierarchical_attribute(self.ftrack['session'], f_shot, "handleEnd")))
+                item['ftrack_op_frame_start'] = str(_fs)
+                item['ftrack_op_handle_start'] = str(_hs)
+                item['ftrack_op_start'] = str(_fs - _hs)
+                item['ftrack_op_start_slate'] = str(_fs - _hs - 1)
+                item['ftrack_op_frame_end'] = str(_fe)
+                item['ftrack_op_handle_end'] = str(_he)
+                item['ftrack_op_end'] = str(_fe + _he)
+                item['ftrack_op_range'] = "{}-{}".format(_fs - _hs - 1, _fe + _he)
+                item['ftrack_op_range_slate'] = "{}-{}".format(_fs - _hs, _fe + _he)
+            else:
+                item['ftrack_op_frame_start'] = ""
+                item['ftrack_op_frame_end'] = ""
+                item['ftrack_op_handle_start'] = ""
+                item['ftrack_op_handle_end'] = ""
+                item['ftrack_op_range'] = ""
+                item['ftrack_op_range_slate'] = ""
+                item['ftrack_op_start'] = ""
+                item['ftrack_op_start_slate'] = ""
+                item['ftrack_op_end'] = ""
+
+
     def assign_ftrack_notes(self, item):
         """
         for item in merged_list, query all ftrack notes
@@ -2597,25 +2682,6 @@ class Sequencer(object):
         except:
             return ''
         if f_task is None:
-            return ''
-
-        try:
-            f_shot = self.ftrack['session'].query(
-                'Shot where name is {}'
-                ' and project.full_name is {}'.format(
-                    current_shot, self.ftrack['project'])).first()
-
-            _fs = int(float(self.ftrack_get_hierarchical_attribute(self.ftrack['session'], f_shot, "framestart")))
-            _fe = int(float(self.ftrack_get_hierarchical_attribute(self.ftrack['session'], f_shot, "frameend")))
-            _hs = int(float(self.ftrack_get_hierarchical_attribute(self.ftrack['session'], f_shot, "handleStart")))
-            _he = int(float(self.ftrack_get_hierarchical_attribute(self.ftrack['session'], f_shot, "handleEnd")))
-            item['ftrack_op_frame_start'] = str(_fs)
-            item['ftrack_op_frame_end'] = str(_fe)
-            item['ftrack_op_handle_start'] = str(_hs)
-            item['ftrack_op_handle_end'] = str(_he)
-            item['ftrack_op_range'] = "{}-{}".format(_fs - _hs - 1, _fe + _he)
-            item['ftrack_op_range_slate'] = "{}-{}".format(_fs - _hs, _fe + _he)
-        except:
             return ''
 
         # get sorted versions on the task
@@ -2772,7 +2838,7 @@ class Sequencer(object):
                         pass
                     if _check_eval:
                         # it is warning or error
-                        m = one_check['message']
+                        m = one_check['message'].format_map(Default(item))
                         if one_check['is_error']:
                             try:
                                 item['error'] = item['error'] + '\n' + m
@@ -2816,11 +2882,15 @@ class Sequencer(object):
             oiio = script_path + '/oiio/win/oiiotool.exe'
             if not os.path.exists(oiio):
                 oiio = ''
-            return {'ffmpeg': mpg, 'ffprobe': probe, 'oiiotool': oiio}
-
+            ocio = script_path + '/ocio/config.ocio'
+            if not os.path.exists(ocio):
+                ocio = ''
+            return {'ffmpeg': mpg, 'ffprobe': probe, 'oiio': oiio, 'ocio': ocio}
 
         self.converts = []
         if self.settings:
+
+            _root = str(self.settings['package_folder']['value'])
             # read checks from gui, save to self.checks
             indexes = [str(x).zfill(2) for x in range(1, 9)]
             for one in indexes:
@@ -2864,11 +2934,16 @@ class Sequencer(object):
                         _e = _e.format_map(Default(_exes))
                         _a = one_conv['args'].format_map(Default(self.static_keywords))
                         _a = _a.format_map(Default(item))
+                        _a = _a.format_map(Default(_exes))
                         _cmd = "{} {}".format(_e, _a)
                         _fn = one_conv['fn'].format_map(Default(self.static_keywords))
                         _fn = _fn.format_map(Default(item))
 
+                        _fnr = _fn
+                        if _fn.startswith(_root):
+                            _fnr = _fn[len(_root)+1:]
                         item['convert_path'] = _fn
+                        item['convert_path_relative'] = _fnr
                         item['convert_cmd'] = _cmd
 
                     except:

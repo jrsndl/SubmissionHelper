@@ -18,7 +18,7 @@ class Ui_submission(object):
     def setupUi(self, submission):
         if not submission.objectName():
             submission.setObjectName(u"submission")
-        submission.resize(989, 600)
+        submission.resize(965, 600)
         sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1052,7 +1052,7 @@ class Ui_submission(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 940, 1070))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 916, 1070))
         sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
@@ -5676,7 +5676,7 @@ class Ui_submission(object):
         self.scrollArea_4.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 940, 469))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 916, 469))
         self.verticalLayout_62 = QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_62.setObjectName(u"verticalLayout_62")
         self.verticalLayout_61 = QVBoxLayout()
@@ -6613,7 +6613,7 @@ class Ui_submission(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 945, 269))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 921, 269))
         sizePolicy8 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         sizePolicy8.setHorizontalStretch(0)
         sizePolicy8.setVerticalStretch(0)
@@ -6865,6 +6865,181 @@ class Ui_submission(object):
         self.horizontalLayout_63.addLayout(self.verticalLayout_27)
 
         self.TopTab.addTab(self.tab_2, "")
+        self.tab_5 = QWidget()
+        self.tab_5.setObjectName(u"tab_5")
+        self.horizontalLayout_32 = QHBoxLayout(self.tab_5)
+        self.horizontalLayout_32.setObjectName(u"horizontalLayout_32")
+        self.verticalLayout_49 = QVBoxLayout()
+        self.verticalLayout_49.setObjectName(u"verticalLayout_49")
+        self.groupBox_5 = QGroupBox(self.tab_5)
+        self.groupBox_5.setObjectName(u"groupBox_5")
+        sizePolicy1.setHeightForWidth(self.groupBox_5.sizePolicy().hasHeightForWidth())
+        self.groupBox_5.setSizePolicy(sizePolicy1)
+        self.groupBox_5.setMinimumSize(QSize(180, 100))
+        self.verticalLayout_16 = QVBoxLayout(self.groupBox_5)
+        self.verticalLayout_16.setObjectName(u"verticalLayout_16")
+        self.verticalLayout_19 = QVBoxLayout()
+        self.verticalLayout_19.setObjectName(u"verticalLayout_19")
+        self.horizontalLayout_31 = QHBoxLayout()
+        self.horizontalLayout_31.setObjectName(u"horizontalLayout_31")
+        self.text_txt = QCheckBox(self.groupBox_5)
+        self.text_txt.setObjectName(u"text_txt")
+        self.text_txt.setChecked(True)
+
+        self.horizontalLayout_31.addWidget(self.text_txt)
+
+        self.horizontalSpacer_9 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_31.addItem(self.horizontalSpacer_9)
+
+
+        self.verticalLayout_19.addLayout(self.horizontalLayout_31)
+
+        self.horizontalLayout_51 = QHBoxLayout()
+        self.horizontalLayout_51.setObjectName(u"horizontalLayout_51")
+        self.text_root = QRadioButton(self.groupBox_5)
+        self.text_root.setObjectName(u"text_root")
+        self.text_root.setMinimumSize(QSize(61, 0))
+        self.text_root.setChecked(True)
+
+        self.horizontalLayout_51.addWidget(self.text_root)
+
+        self.text_above = QRadioButton(self.groupBox_5)
+        self.text_above.setObjectName(u"text_above")
+        self.text_above.setMinimumSize(QSize(161, 0))
+
+        self.horizontalLayout_51.addWidget(self.text_above)
+
+        self.text_custom = QRadioButton(self.groupBox_5)
+        self.text_custom.setObjectName(u"text_custom")
+        self.text_custom.setMinimumSize(QSize(120, 0))
+
+        self.horizontalLayout_51.addWidget(self.text_custom)
+
+        self.horizontalSpacer_22 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_51.addItem(self.horizontalSpacer_22)
+
+
+        self.verticalLayout_19.addLayout(self.horizontalLayout_51)
+
+        self.horizontalLayout_52 = QHBoxLayout()
+        self.horizontalLayout_52.setObjectName(u"horizontalLayout_52")
+        self.label_17 = QLabel(self.groupBox_5)
+        self.label_17.setObjectName(u"label_17")
+        sizePolicy2.setHeightForWidth(self.label_17.sizePolicy().hasHeightForWidth())
+        self.label_17.setSizePolicy(sizePolicy2)
+
+        self.horizontalLayout_52.addWidget(self.label_17)
+
+        self.text_custom_path = QLineEdit(self.groupBox_5)
+        self.text_custom_path.setObjectName(u"text_custom_path")
+        sizePolicy1.setHeightForWidth(self.text_custom_path.sizePolicy().hasHeightForWidth())
+        self.text_custom_path.setSizePolicy(sizePolicy1)
+        self.text_custom_path.setMinimumSize(QSize(300, 25))
+
+        self.horizontalLayout_52.addWidget(self.text_custom_path)
+
+
+        self.verticalLayout_19.addLayout(self.horizontalLayout_52)
+
+
+        self.verticalLayout_16.addLayout(self.verticalLayout_19)
+
+
+        self.verticalLayout_49.addWidget(self.groupBox_5)
+
+        self.groupBox_6 = QGroupBox(self.tab_5)
+        self.groupBox_6.setObjectName(u"groupBox_6")
+        self.verticalLayout_20 = QVBoxLayout(self.groupBox_6)
+        self.verticalLayout_20.setObjectName(u"verticalLayout_20")
+        self.horizontalLayout_21 = QHBoxLayout()
+        self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
+        self.text_add_titles = QCheckBox(self.groupBox_6)
+        self.text_add_titles.setObjectName(u"text_add_titles")
+        self.text_add_titles.setChecked(False)
+
+        self.horizontalLayout_21.addWidget(self.text_add_titles)
+
+        self.horizontalSpacer_3 = QSpacerItem(100, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
+
+        self.horizontalLayout_21.addItem(self.horizontalSpacer_3)
+
+        self.horizontalLayout_20 = QHBoxLayout()
+        self.horizontalLayout_20.setObjectName(u"horizontalLayout_20")
+        self.text_sep_tab = QRadioButton(self.groupBox_6)
+        self.text_sep_tab.setObjectName(u"text_sep_tab")
+        self.text_sep_tab.setChecked(True)
+
+        self.horizontalLayout_20.addWidget(self.text_sep_tab)
+
+        self.text_sep_fixed = QRadioButton(self.groupBox_6)
+        self.text_sep_fixed.setObjectName(u"text_sep_fixed")
+
+        self.horizontalLayout_20.addWidget(self.text_sep_fixed)
+
+
+        self.horizontalLayout_21.addLayout(self.horizontalLayout_20)
+
+        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_21.addItem(self.horizontalSpacer_4)
+
+
+        self.verticalLayout_20.addLayout(self.horizontalLayout_21)
+
+
+        self.verticalLayout_49.addWidget(self.groupBox_6)
+
+        self.horizontalLayout_8 = QHBoxLayout()
+        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
+        self.verticalLayout_29 = QVBoxLayout()
+        self.verticalLayout_29.setObjectName(u"verticalLayout_29")
+        self.label_52 = QLabel(self.tab_5)
+        self.label_52.setObjectName(u"label_52")
+        sizePolicy2.setHeightForWidth(self.label_52.sizePolicy().hasHeightForWidth())
+        self.label_52.setSizePolicy(sizePolicy2)
+
+        self.verticalLayout_29.addWidget(self.label_52)
+
+        self.text_header = QPlainTextEdit(self.tab_5)
+        self.text_header.setObjectName(u"text_header")
+        sizePolicy7.setHeightForWidth(self.text_header.sizePolicy().hasHeightForWidth())
+        self.text_header.setSizePolicy(sizePolicy7)
+        self.text_header.setMinimumSize(QSize(200, 50))
+
+        self.verticalLayout_29.addWidget(self.text_header)
+
+
+        self.horizontalLayout_8.addLayout(self.verticalLayout_29)
+
+        self.verticalLayout_45 = QVBoxLayout()
+        self.verticalLayout_45.setObjectName(u"verticalLayout_45")
+        self.label_75 = QLabel(self.tab_5)
+        self.label_75.setObjectName(u"label_75")
+        sizePolicy2.setHeightForWidth(self.label_75.sizePolicy().hasHeightForWidth())
+        self.label_75.setSizePolicy(sizePolicy2)
+
+        self.verticalLayout_45.addWidget(self.label_75)
+
+        self.text_footer = QPlainTextEdit(self.tab_5)
+        self.text_footer.setObjectName(u"text_footer")
+        sizePolicy7.setHeightForWidth(self.text_footer.sizePolicy().hasHeightForWidth())
+        self.text_footer.setSizePolicy(sizePolicy7)
+        self.text_footer.setMinimumSize(QSize(200, 50))
+
+        self.verticalLayout_45.addWidget(self.text_footer)
+
+
+        self.horizontalLayout_8.addLayout(self.verticalLayout_45)
+
+
+        self.verticalLayout_49.addLayout(self.horizontalLayout_8)
+
+
+        self.horizontalLayout_32.addLayout(self.verticalLayout_49)
+
+        self.TopTab.addTab(self.tab_5, "")
         self.tab_12 = QWidget()
         self.tab_12.setObjectName(u"tab_12")
         self.verticalLayout_93 = QVBoxLayout(self.tab_12)
@@ -6899,7 +7074,7 @@ class Ui_submission(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollAreaWidgetContents_4 = QWidget()
         self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
-        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 938, 878))
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 914, 878))
         self.verticalLayout_91 = QVBoxLayout(self.scrollAreaWidgetContents_4)
         self.verticalLayout_91.setObjectName(u"verticalLayout_91")
         self.verticalLayout_81 = QVBoxLayout()
@@ -7847,6 +8022,8 @@ class Ui_submission(object):
         self.verticalLayout_47.setObjectName(u"verticalLayout_47")
         self.verticalLayout_40 = QVBoxLayout()
         self.verticalLayout_40.setObjectName(u"verticalLayout_40")
+        self.horizontalLayout_57 = QHBoxLayout()
+        self.horizontalLayout_57.setObjectName(u"horizontalLayout_57")
         self.groupBox_14 = QGroupBox(self.tab_4)
         self.groupBox_14.setObjectName(u"groupBox_14")
         sizePolicy9 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Minimum)
@@ -7886,15 +8063,11 @@ class Ui_submission(object):
 
         self.horizontalLayout_36.addWidget(self.prefs_frame_rate_use_meta)
 
-        self.horizontalSpacer_23 = QSpacerItem(20, 25, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_36.addItem(self.horizontalSpacer_23)
-
 
         self.verticalLayout_5.addLayout(self.horizontalLayout_36)
 
 
-        self.verticalLayout_40.addWidget(self.groupBox_14)
+        self.horizontalLayout_57.addWidget(self.groupBox_14)
 
         self.groupBox_15 = QGroupBox(self.tab_4)
         self.groupBox_15.setObjectName(u"groupBox_15")
@@ -7947,10 +8120,6 @@ class Ui_submission(object):
 
         self.horizontalLayout_9.addWidget(self.prefs_tc_default)
 
-        self.horizontalSpacer_12 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_9.addItem(self.horizontalSpacer_12)
-
 
         self.horizontalLayout_38.addLayout(self.horizontalLayout_9)
 
@@ -7958,99 +8127,17 @@ class Ui_submission(object):
         self.verticalLayout_11.addLayout(self.horizontalLayout_38)
 
 
-        self.verticalLayout_40.addWidget(self.groupBox_15)
+        self.horizontalLayout_57.addWidget(self.groupBox_15)
 
-        self.groupBox_2 = QGroupBox(self.tab_4)
-        self.groupBox_2.setObjectName(u"groupBox_2")
-        sizePolicy1.setHeightForWidth(self.groupBox_2.sizePolicy().hasHeightForWidth())
-        self.groupBox_2.setSizePolicy(sizePolicy1)
-        self.groupBox_2.setMinimumSize(QSize(0, 50))
-        self.horizontalLayout_70 = QHBoxLayout(self.groupBox_2)
-        self.horizontalLayout_70.setSpacing(3)
-        self.horizontalLayout_70.setObjectName(u"horizontalLayout_70")
-        self.horizontalLayout_28 = QHBoxLayout()
-        self.horizontalLayout_28.setSpacing(3)
-        self.horizontalLayout_28.setObjectName(u"horizontalLayout_28")
-        self.horizontalLayout_25 = QHBoxLayout()
-        self.horizontalLayout_25.setObjectName(u"horizontalLayout_25")
-        self.label = QLabel(self.groupBox_2)
-        self.label.setObjectName(u"label")
-        sizePolicy2.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
-        self.label.setSizePolicy(sizePolicy2)
-        self.label.setMinimumSize(QSize(70, 25))
-        self.label.setMaximumSize(QSize(70, 25))
+        self.horizontalSpacer_5 = QSpacerItem(13, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        self.horizontalLayout_25.addWidget(self.label)
-
-        self.prefs_counter_start = QSpinBox(self.groupBox_2)
-        self.prefs_counter_start.setObjectName(u"prefs_counter_start")
-        sizePolicy2.setHeightForWidth(self.prefs_counter_start.sizePolicy().hasHeightForWidth())
-        self.prefs_counter_start.setSizePolicy(sizePolicy2)
-        self.prefs_counter_start.setMinimumSize(QSize(40, 25))
-        self.prefs_counter_start.setMaximumSize(QSize(40, 25))
-        self.prefs_counter_start.setValue(1)
-
-        self.horizontalLayout_25.addWidget(self.prefs_counter_start)
+        self.horizontalLayout_57.addItem(self.horizontalSpacer_5)
 
 
-        self.horizontalLayout_28.addLayout(self.horizontalLayout_25)
+        self.verticalLayout_40.addLayout(self.horizontalLayout_57)
 
-        self.horizontalLayout_26 = QHBoxLayout()
-        self.horizontalLayout_26.setObjectName(u"horizontalLayout_26")
-        self.label_2 = QLabel(self.groupBox_2)
-        self.label_2.setObjectName(u"label_2")
-        sizePolicy2.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
-        self.label_2.setSizePolicy(sizePolicy2)
-        self.label_2.setMinimumSize(QSize(50, 25))
-        self.label_2.setMaximumSize(QSize(50, 25))
-
-        self.horizontalLayout_26.addWidget(self.label_2)
-
-        self.prefs_counter_step = QSpinBox(self.groupBox_2)
-        self.prefs_counter_step.setObjectName(u"prefs_counter_step")
-        sizePolicy2.setHeightForWidth(self.prefs_counter_step.sizePolicy().hasHeightForWidth())
-        self.prefs_counter_step.setSizePolicy(sizePolicy2)
-        self.prefs_counter_step.setMinimumSize(QSize(40, 25))
-        self.prefs_counter_step.setMaximumSize(QSize(40, 25))
-        self.prefs_counter_step.setValue(1)
-
-        self.horizontalLayout_26.addWidget(self.prefs_counter_step)
-
-
-        self.horizontalLayout_28.addLayout(self.horizontalLayout_26)
-
-        self.horizontalLayout_27 = QHBoxLayout()
-        self.horizontalLayout_27.setObjectName(u"horizontalLayout_27")
-        self.label_14 = QLabel(self.groupBox_2)
-        self.label_14.setObjectName(u"label_14")
-        self.label_14.setMinimumSize(QSize(100, 25))
-        self.label_14.setMaximumSize(QSize(100, 25))
-
-        self.horizontalLayout_27.addWidget(self.label_14)
-
-        self.prefs_counter_zeroes = QSpinBox(self.groupBox_2)
-        self.prefs_counter_zeroes.setObjectName(u"prefs_counter_zeroes")
-        sizePolicy2.setHeightForWidth(self.prefs_counter_zeroes.sizePolicy().hasHeightForWidth())
-        self.prefs_counter_zeroes.setSizePolicy(sizePolicy2)
-        self.prefs_counter_zeroes.setMinimumSize(QSize(40, 25))
-        self.prefs_counter_zeroes.setMaximumSize(QSize(40, 25))
-        self.prefs_counter_zeroes.setValue(3)
-
-        self.horizontalLayout_27.addWidget(self.prefs_counter_zeroes)
-
-        self.horizontalSpacer_5 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_27.addItem(self.horizontalSpacer_5)
-
-
-        self.horizontalLayout_28.addLayout(self.horizontalLayout_27)
-
-
-        self.horizontalLayout_70.addLayout(self.horizontalLayout_28)
-
-
-        self.verticalLayout_40.addWidget(self.groupBox_2)
-
+        self.horizontalLayout_56 = QHBoxLayout()
+        self.horizontalLayout_56.setObjectName(u"horizontalLayout_56")
         self.groupBox_17 = QGroupBox(self.tab_4)
         self.groupBox_17.setObjectName(u"groupBox_17")
         sizePolicy9.setHeightForWidth(self.groupBox_17.sizePolicy().hasHeightForWidth())
@@ -8127,8 +8214,8 @@ class Ui_submission(object):
         self.label_54.setObjectName(u"label_54")
         sizePolicy2.setHeightForWidth(self.label_54.sizePolicy().hasHeightForWidth())
         self.label_54.setSizePolicy(sizePolicy2)
-        self.label_54.setMinimumSize(QSize(125, 25))
-        self.label_54.setMaximumSize(QSize(125, 25))
+        self.label_54.setMinimumSize(QSize(75, 25))
+        self.label_54.setMaximumSize(QSize(75, 25))
 
         self.horizontalLayout_48.addWidget(self.label_54)
 
@@ -8147,16 +8234,151 @@ class Ui_submission(object):
 
         self.horizontalLayout_22.addLayout(self.horizontalLayout_48)
 
-        self.horizontalSpacer_19 = QSpacerItem(18, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_22.addItem(self.horizontalSpacer_19)
-
 
         self.horizontalLayout_30.addLayout(self.horizontalLayout_22)
 
 
-        self.verticalLayout_40.addWidget(self.groupBox_17)
+        self.horizontalLayout_56.addWidget(self.groupBox_17)
 
+        self.horizontalSpacer_12 = QSpacerItem(13, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_56.addItem(self.horizontalSpacer_12)
+
+
+        self.verticalLayout_40.addLayout(self.horizontalLayout_56)
+
+        self.horizontalLayout_58 = QHBoxLayout()
+        self.horizontalLayout_58.setObjectName(u"horizontalLayout_58")
+        self.groupBox_13 = QGroupBox(self.tab_4)
+        self.groupBox_13.setObjectName(u"groupBox_13")
+        sizePolicy1.setHeightForWidth(self.groupBox_13.sizePolicy().hasHeightForWidth())
+        self.groupBox_13.setSizePolicy(sizePolicy1)
+        self.groupBox_13.setMinimumSize(QSize(0, 50))
+        self.groupBox_13.setMaximumSize(QSize(16777215, 50))
+        self.horizontalLayout_54 = QHBoxLayout(self.groupBox_13)
+        self.horizontalLayout_54.setObjectName(u"horizontalLayout_54")
+        self.prefs_oiio_custom_ocio = QCheckBox(self.groupBox_13)
+        self.prefs_oiio_custom_ocio.setObjectName(u"prefs_oiio_custom_ocio")
+        sizePolicy2.setHeightForWidth(self.prefs_oiio_custom_ocio.sizePolicy().hasHeightForWidth())
+        self.prefs_oiio_custom_ocio.setSizePolicy(sizePolicy2)
+        self.prefs_oiio_custom_ocio.setMinimumSize(QSize(100, 25))
+        self.prefs_oiio_custom_ocio.setMaximumSize(QSize(100, 25))
+        self.prefs_oiio_custom_ocio.setChecked(True)
+
+        self.horizontalLayout_54.addWidget(self.prefs_oiio_custom_ocio)
+
+        self.prefs_oiio_custom_ocio_path = QLineEdit(self.groupBox_13)
+        self.prefs_oiio_custom_ocio_path.setObjectName(u"prefs_oiio_custom_ocio_path")
+        sizePolicy1.setHeightForWidth(self.prefs_oiio_custom_ocio_path.sizePolicy().hasHeightForWidth())
+        self.prefs_oiio_custom_ocio_path.setSizePolicy(sizePolicy1)
+        self.prefs_oiio_custom_ocio_path.setMinimumSize(QSize(200, 25))
+        self.prefs_oiio_custom_ocio_path.setMaximumSize(QSize(500, 25))
+
+        self.horizontalLayout_54.addWidget(self.prefs_oiio_custom_ocio_path)
+
+
+        self.horizontalLayout_58.addWidget(self.groupBox_13)
+
+        self.groupBox_2 = QGroupBox(self.tab_4)
+        self.groupBox_2.setObjectName(u"groupBox_2")
+        sizePolicy1.setHeightForWidth(self.groupBox_2.sizePolicy().hasHeightForWidth())
+        self.groupBox_2.setSizePolicy(sizePolicy1)
+        self.groupBox_2.setMinimumSize(QSize(0, 50))
+        self.horizontalLayout_70 = QHBoxLayout(self.groupBox_2)
+        self.horizontalLayout_70.setSpacing(3)
+        self.horizontalLayout_70.setObjectName(u"horizontalLayout_70")
+        self.horizontalLayout_28 = QHBoxLayout()
+        self.horizontalLayout_28.setSpacing(3)
+        self.horizontalLayout_28.setObjectName(u"horizontalLayout_28")
+        self.horizontalLayout_25 = QHBoxLayout()
+        self.horizontalLayout_25.setObjectName(u"horizontalLayout_25")
+        self.label = QLabel(self.groupBox_2)
+        self.label.setObjectName(u"label")
+        sizePolicy2.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy2)
+        self.label.setMinimumSize(QSize(33, 25))
+        self.label.setMaximumSize(QSize(33, 25))
+
+        self.horizontalLayout_25.addWidget(self.label)
+
+        self.prefs_counter_start = QSpinBox(self.groupBox_2)
+        self.prefs_counter_start.setObjectName(u"prefs_counter_start")
+        sizePolicy2.setHeightForWidth(self.prefs_counter_start.sizePolicy().hasHeightForWidth())
+        self.prefs_counter_start.setSizePolicy(sizePolicy2)
+        self.prefs_counter_start.setMinimumSize(QSize(40, 25))
+        self.prefs_counter_start.setMaximumSize(QSize(40, 25))
+        self.prefs_counter_start.setValue(1)
+
+        self.horizontalLayout_25.addWidget(self.prefs_counter_start)
+
+
+        self.horizontalLayout_28.addLayout(self.horizontalLayout_25)
+
+        self.horizontalLayout_26 = QHBoxLayout()
+        self.horizontalLayout_26.setObjectName(u"horizontalLayout_26")
+        self.label_2 = QLabel(self.groupBox_2)
+        self.label_2.setObjectName(u"label_2")
+        sizePolicy2.setHeightForWidth(self.label_2.sizePolicy().hasHeightForWidth())
+        self.label_2.setSizePolicy(sizePolicy2)
+        self.label_2.setMinimumSize(QSize(33, 25))
+        self.label_2.setMaximumSize(QSize(33, 25))
+
+        self.horizontalLayout_26.addWidget(self.label_2)
+
+        self.prefs_counter_step = QSpinBox(self.groupBox_2)
+        self.prefs_counter_step.setObjectName(u"prefs_counter_step")
+        sizePolicy2.setHeightForWidth(self.prefs_counter_step.sizePolicy().hasHeightForWidth())
+        self.prefs_counter_step.setSizePolicy(sizePolicy2)
+        self.prefs_counter_step.setMinimumSize(QSize(40, 25))
+        self.prefs_counter_step.setMaximumSize(QSize(40, 25))
+        self.prefs_counter_step.setValue(1)
+
+        self.horizontalLayout_26.addWidget(self.prefs_counter_step)
+
+
+        self.horizontalLayout_28.addLayout(self.horizontalLayout_26)
+
+        self.horizontalLayout_27 = QHBoxLayout()
+        self.horizontalLayout_27.setObjectName(u"horizontalLayout_27")
+        self.label_14 = QLabel(self.groupBox_2)
+        self.label_14.setObjectName(u"label_14")
+        self.label_14.setMinimumSize(QSize(100, 25))
+        self.label_14.setMaximumSize(QSize(100, 25))
+
+        self.horizontalLayout_27.addWidget(self.label_14)
+
+        self.prefs_counter_zeroes = QSpinBox(self.groupBox_2)
+        self.prefs_counter_zeroes.setObjectName(u"prefs_counter_zeroes")
+        sizePolicy2.setHeightForWidth(self.prefs_counter_zeroes.sizePolicy().hasHeightForWidth())
+        self.prefs_counter_zeroes.setSizePolicy(sizePolicy2)
+        self.prefs_counter_zeroes.setMinimumSize(QSize(40, 25))
+        self.prefs_counter_zeroes.setMaximumSize(QSize(40, 25))
+        self.prefs_counter_zeroes.setValue(3)
+
+        self.horizontalLayout_27.addWidget(self.prefs_counter_zeroes)
+
+        self.horizontalSpacer_21 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_27.addItem(self.horizontalSpacer_21)
+
+
+        self.horizontalLayout_28.addLayout(self.horizontalLayout_27)
+
+
+        self.horizontalLayout_70.addLayout(self.horizontalLayout_28)
+
+
+        self.horizontalLayout_58.addWidget(self.groupBox_2)
+
+        self.horizontalSpacer_19 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_58.addItem(self.horizontalSpacer_19)
+
+
+        self.verticalLayout_40.addLayout(self.horizontalLayout_58)
+
+        self.horizontalLayout_55 = QHBoxLayout()
+        self.horizontalLayout_55.setObjectName(u"horizontalLayout_55")
         self.groupBox_19 = QGroupBox(self.tab_4)
         self.groupBox_19.setObjectName(u"groupBox_19")
         sizePolicy9.setHeightForWidth(self.groupBox_19.sizePolicy().hasHeightForWidth())
@@ -8181,8 +8403,8 @@ class Ui_submission(object):
 
         self.prefs_merge_by = QLineEdit(self.groupBox_19)
         self.prefs_merge_by.setObjectName(u"prefs_merge_by")
-        self.prefs_merge_by.setMinimumSize(QSize(60, 25))
-        self.prefs_merge_by.setMaximumSize(QSize(60, 25))
+        self.prefs_merge_by.setMinimumSize(QSize(120, 25))
+        self.prefs_merge_by.setMaximumSize(QSize(120, 25))
 
         self.horizontalLayout_118.addWidget(self.prefs_merge_by)
 
@@ -8233,8 +8455,8 @@ class Ui_submission(object):
 
         self.prefs_merge_sort = QLineEdit(self.groupBox_19)
         self.prefs_merge_sort.setObjectName(u"prefs_merge_sort")
-        self.prefs_merge_sort.setMinimumSize(QSize(80, 25))
-        self.prefs_merge_sort.setMaximumSize(QSize(80, 25))
+        self.prefs_merge_sort.setMinimumSize(QSize(100, 25))
+        self.prefs_merge_sort.setMaximumSize(QSize(100, 25))
 
         self.horizontalLayout_120.addWidget(self.prefs_merge_sort)
 
@@ -8272,17 +8494,20 @@ class Ui_submission(object):
 
         self.horizontalLayout_121.addWidget(self.prefs_merge_hide)
 
-        self.horizontalSpacer_2 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_121.addItem(self.horizontalSpacer_2)
-
 
         self.verticalLayout_28.addLayout(self.horizontalLayout_121)
 
 
-        self.verticalLayout_40.addWidget(self.groupBox_19)
+        self.horizontalLayout_55.addWidget(self.groupBox_19)
 
-        self.verticalSpacer_5 = QSpacerItem(1381, 13, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.horizontalSpacer_2 = QSpacerItem(13, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_55.addItem(self.horizontalSpacer_2)
+
+
+        self.verticalLayout_40.addLayout(self.horizontalLayout_55)
+
+        self.verticalSpacer_5 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
         self.verticalLayout_40.addItem(self.verticalSpacer_5)
 
@@ -8546,181 +8771,6 @@ class Ui_submission(object):
         self.horizontalLayout_134.addLayout(self.verticalLayout_17)
 
         self.TopTab.addTab(self.tab_9, "")
-        self.tab_5 = QWidget()
-        self.tab_5.setObjectName(u"tab_5")
-        self.horizontalLayout_32 = QHBoxLayout(self.tab_5)
-        self.horizontalLayout_32.setObjectName(u"horizontalLayout_32")
-        self.verticalLayout_49 = QVBoxLayout()
-        self.verticalLayout_49.setObjectName(u"verticalLayout_49")
-        self.groupBox_5 = QGroupBox(self.tab_5)
-        self.groupBox_5.setObjectName(u"groupBox_5")
-        sizePolicy1.setHeightForWidth(self.groupBox_5.sizePolicy().hasHeightForWidth())
-        self.groupBox_5.setSizePolicy(sizePolicy1)
-        self.groupBox_5.setMinimumSize(QSize(180, 100))
-        self.verticalLayout_16 = QVBoxLayout(self.groupBox_5)
-        self.verticalLayout_16.setObjectName(u"verticalLayout_16")
-        self.verticalLayout_19 = QVBoxLayout()
-        self.verticalLayout_19.setObjectName(u"verticalLayout_19")
-        self.horizontalLayout_31 = QHBoxLayout()
-        self.horizontalLayout_31.setObjectName(u"horizontalLayout_31")
-        self.text_txt = QCheckBox(self.groupBox_5)
-        self.text_txt.setObjectName(u"text_txt")
-        self.text_txt.setChecked(True)
-
-        self.horizontalLayout_31.addWidget(self.text_txt)
-
-        self.horizontalSpacer_9 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_31.addItem(self.horizontalSpacer_9)
-
-
-        self.verticalLayout_19.addLayout(self.horizontalLayout_31)
-
-        self.horizontalLayout_51 = QHBoxLayout()
-        self.horizontalLayout_51.setObjectName(u"horizontalLayout_51")
-        self.text_root = QRadioButton(self.groupBox_5)
-        self.text_root.setObjectName(u"text_root")
-        self.text_root.setMinimumSize(QSize(61, 0))
-        self.text_root.setChecked(True)
-
-        self.horizontalLayout_51.addWidget(self.text_root)
-
-        self.text_above = QRadioButton(self.groupBox_5)
-        self.text_above.setObjectName(u"text_above")
-        self.text_above.setMinimumSize(QSize(161, 0))
-
-        self.horizontalLayout_51.addWidget(self.text_above)
-
-        self.text_custom = QRadioButton(self.groupBox_5)
-        self.text_custom.setObjectName(u"text_custom")
-        self.text_custom.setMinimumSize(QSize(120, 0))
-
-        self.horizontalLayout_51.addWidget(self.text_custom)
-
-        self.horizontalSpacer_22 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_51.addItem(self.horizontalSpacer_22)
-
-
-        self.verticalLayout_19.addLayout(self.horizontalLayout_51)
-
-        self.horizontalLayout_52 = QHBoxLayout()
-        self.horizontalLayout_52.setObjectName(u"horizontalLayout_52")
-        self.label_17 = QLabel(self.groupBox_5)
-        self.label_17.setObjectName(u"label_17")
-        sizePolicy2.setHeightForWidth(self.label_17.sizePolicy().hasHeightForWidth())
-        self.label_17.setSizePolicy(sizePolicy2)
-
-        self.horizontalLayout_52.addWidget(self.label_17)
-
-        self.text_custom_path = QLineEdit(self.groupBox_5)
-        self.text_custom_path.setObjectName(u"text_custom_path")
-        sizePolicy1.setHeightForWidth(self.text_custom_path.sizePolicy().hasHeightForWidth())
-        self.text_custom_path.setSizePolicy(sizePolicy1)
-        self.text_custom_path.setMinimumSize(QSize(300, 25))
-
-        self.horizontalLayout_52.addWidget(self.text_custom_path)
-
-
-        self.verticalLayout_19.addLayout(self.horizontalLayout_52)
-
-
-        self.verticalLayout_16.addLayout(self.verticalLayout_19)
-
-
-        self.verticalLayout_49.addWidget(self.groupBox_5)
-
-        self.groupBox_6 = QGroupBox(self.tab_5)
-        self.groupBox_6.setObjectName(u"groupBox_6")
-        self.verticalLayout_20 = QVBoxLayout(self.groupBox_6)
-        self.verticalLayout_20.setObjectName(u"verticalLayout_20")
-        self.horizontalLayout_21 = QHBoxLayout()
-        self.horizontalLayout_21.setObjectName(u"horizontalLayout_21")
-        self.text_add_titles = QCheckBox(self.groupBox_6)
-        self.text_add_titles.setObjectName(u"text_add_titles")
-        self.text_add_titles.setChecked(False)
-
-        self.horizontalLayout_21.addWidget(self.text_add_titles)
-
-        self.horizontalSpacer_3 = QSpacerItem(100, 20, QSizePolicy.Fixed, QSizePolicy.Minimum)
-
-        self.horizontalLayout_21.addItem(self.horizontalSpacer_3)
-
-        self.horizontalLayout_20 = QHBoxLayout()
-        self.horizontalLayout_20.setObjectName(u"horizontalLayout_20")
-        self.text_sep_tab = QRadioButton(self.groupBox_6)
-        self.text_sep_tab.setObjectName(u"text_sep_tab")
-        self.text_sep_tab.setChecked(True)
-
-        self.horizontalLayout_20.addWidget(self.text_sep_tab)
-
-        self.text_sep_fixed = QRadioButton(self.groupBox_6)
-        self.text_sep_fixed.setObjectName(u"text_sep_fixed")
-
-        self.horizontalLayout_20.addWidget(self.text_sep_fixed)
-
-
-        self.horizontalLayout_21.addLayout(self.horizontalLayout_20)
-
-        self.horizontalSpacer_4 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
-
-        self.horizontalLayout_21.addItem(self.horizontalSpacer_4)
-
-
-        self.verticalLayout_20.addLayout(self.horizontalLayout_21)
-
-
-        self.verticalLayout_49.addWidget(self.groupBox_6)
-
-        self.horizontalLayout_8 = QHBoxLayout()
-        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
-        self.verticalLayout_29 = QVBoxLayout()
-        self.verticalLayout_29.setObjectName(u"verticalLayout_29")
-        self.label_52 = QLabel(self.tab_5)
-        self.label_52.setObjectName(u"label_52")
-        sizePolicy2.setHeightForWidth(self.label_52.sizePolicy().hasHeightForWidth())
-        self.label_52.setSizePolicy(sizePolicy2)
-
-        self.verticalLayout_29.addWidget(self.label_52)
-
-        self.text_header = QPlainTextEdit(self.tab_5)
-        self.text_header.setObjectName(u"text_header")
-        sizePolicy7.setHeightForWidth(self.text_header.sizePolicy().hasHeightForWidth())
-        self.text_header.setSizePolicy(sizePolicy7)
-        self.text_header.setMinimumSize(QSize(200, 50))
-
-        self.verticalLayout_29.addWidget(self.text_header)
-
-
-        self.horizontalLayout_8.addLayout(self.verticalLayout_29)
-
-        self.verticalLayout_45 = QVBoxLayout()
-        self.verticalLayout_45.setObjectName(u"verticalLayout_45")
-        self.label_75 = QLabel(self.tab_5)
-        self.label_75.setObjectName(u"label_75")
-        sizePolicy2.setHeightForWidth(self.label_75.sizePolicy().hasHeightForWidth())
-        self.label_75.setSizePolicy(sizePolicy2)
-
-        self.verticalLayout_45.addWidget(self.label_75)
-
-        self.text_footer = QPlainTextEdit(self.tab_5)
-        self.text_footer.setObjectName(u"text_footer")
-        sizePolicy7.setHeightForWidth(self.text_footer.sizePolicy().hasHeightForWidth())
-        self.text_footer.setSizePolicy(sizePolicy7)
-        self.text_footer.setMinimumSize(QSize(200, 50))
-
-        self.verticalLayout_45.addWidget(self.text_footer)
-
-
-        self.horizontalLayout_8.addLayout(self.verticalLayout_45)
-
-
-        self.verticalLayout_49.addLayout(self.horizontalLayout_8)
-
-
-        self.horizontalLayout_32.addLayout(self.verticalLayout_49)
-
-        self.TopTab.addTab(self.tab_5, "")
         self.tab_3 = QWidget()
         self.tab_3.setObjectName(u"tab_3")
         self.verticalLayout_37 = QVBoxLayout(self.tab_3)
@@ -8908,8 +8958,69 @@ class Ui_submission(object):
         self.BottomTab.addTab(self.tab_15, "")
         self.tab_19 = QWidget()
         self.tab_19.setObjectName(u"tab_19")
-        self.verticalLayout_63 = QVBoxLayout(self.tab_19)
-        self.verticalLayout_63.setObjectName(u"verticalLayout_63")
+        self.verticalLayout_39 = QVBoxLayout(self.tab_19)
+        self.verticalLayout_39.setObjectName(u"verticalLayout_39")
+        self.verticalLayout_36 = QVBoxLayout()
+        self.verticalLayout_36.setObjectName(u"verticalLayout_36")
+        self.horizontalLayout_53 = QHBoxLayout()
+        self.horizontalLayout_53.setObjectName(u"horizontalLayout_53")
+        self.label_23 = QLabel(self.tab_19)
+        self.label_23.setObjectName(u"label_23")
+        sizePolicy2.setHeightForWidth(self.label_23.sizePolicy().hasHeightForWidth())
+        self.label_23.setSizePolicy(sizePolicy2)
+        self.label_23.setMinimumSize(QSize(50, 25))
+        self.label_23.setMaximumSize(QSize(50, 25))
+
+        self.horizontalLayout_53.addWidget(self.label_23)
+
+        self.tree_filter_file = QLineEdit(self.tab_19)
+        self.tree_filter_file.setObjectName(u"tree_filter_file")
+        sizePolicy1.setHeightForWidth(self.tree_filter_file.sizePolicy().hasHeightForWidth())
+        self.tree_filter_file.setSizePolicy(sizePolicy1)
+        self.tree_filter_file.setMinimumSize(QSize(200, 25))
+        self.tree_filter_file.setMaximumSize(QSize(16000, 25))
+
+        self.horizontalLayout_53.addWidget(self.tree_filter_file)
+
+        self.label_24 = QLabel(self.tab_19)
+        self.label_24.setObjectName(u"label_24")
+        sizePolicy2.setHeightForWidth(self.label_24.sizePolicy().hasHeightForWidth())
+        self.label_24.setSizePolicy(sizePolicy2)
+        self.label_24.setMinimumSize(QSize(50, 25))
+        self.label_24.setMaximumSize(QSize(50, 25))
+
+        self.horizontalLayout_53.addWidget(self.label_24)
+
+        self.tree_filter_key = QLineEdit(self.tab_19)
+        self.tree_filter_key.setObjectName(u"tree_filter_key")
+        sizePolicy1.setHeightForWidth(self.tree_filter_key.sizePolicy().hasHeightForWidth())
+        self.tree_filter_key.setSizePolicy(sizePolicy1)
+        self.tree_filter_key.setMinimumSize(QSize(200, 25))
+        self.tree_filter_key.setMaximumSize(QSize(16000, 25))
+
+        self.horizontalLayout_53.addWidget(self.tree_filter_key)
+
+        self.label_25 = QLabel(self.tab_19)
+        self.label_25.setObjectName(u"label_25")
+        sizePolicy2.setHeightForWidth(self.label_25.sizePolicy().hasHeightForWidth())
+        self.label_25.setSizePolicy(sizePolicy2)
+        self.label_25.setMinimumSize(QSize(50, 25))
+        self.label_25.setMaximumSize(QSize(50, 25))
+
+        self.horizontalLayout_53.addWidget(self.label_25)
+
+        self.tree_filter_value = QLineEdit(self.tab_19)
+        self.tree_filter_value.setObjectName(u"tree_filter_value")
+        sizePolicy1.setHeightForWidth(self.tree_filter_value.sizePolicy().hasHeightForWidth())
+        self.tree_filter_value.setSizePolicy(sizePolicy1)
+        self.tree_filter_value.setMinimumSize(QSize(200, 25))
+        self.tree_filter_value.setMaximumSize(QSize(16000, 25))
+
+        self.horizontalLayout_53.addWidget(self.tree_filter_value)
+
+
+        self.verticalLayout_36.addLayout(self.horizontalLayout_53)
+
         self.data_tree = QTreeWidget(self.tab_19)
         __qtreewidgetitem = QTreeWidgetItem()
         __qtreewidgetitem.setText(2, u"3");
@@ -8919,7 +9030,10 @@ class Ui_submission(object):
         self.data_tree.setObjectName(u"data_tree")
         self.data_tree.setColumnCount(3)
 
-        self.verticalLayout_63.addWidget(self.data_tree)
+        self.verticalLayout_36.addWidget(self.data_tree)
+
+
+        self.verticalLayout_39.addLayout(self.verticalLayout_36)
 
         self.BottomTab.addTab(self.tab_19, "")
 
@@ -9553,6 +9667,21 @@ class Ui_submission(object):
         self.txt_include.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Only use files that contain this string in path or name.<br/>Can use more than one string, separated by space</p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_2), QCoreApplication.translate("submission", u"Spreadsheet", None))
+        self.groupBox_5.setTitle(QCoreApplication.translate("submission", u"Export Submission:", None))
+        self.text_txt.setText(QCoreApplication.translate("submission", u"TXT", None))
+        self.text_root.setText(QCoreApplication.translate("submission", u"Root", None))
+        self.text_above.setText(QCoreApplication.translate("submission", u"One folder above Root", None))
+        self.text_custom.setText(QCoreApplication.translate("submission", u"Custom Location", None))
+        self.label_17.setText(QCoreApplication.translate("submission", u"Custom Location", None))
+        self.groupBox_6.setTitle(QCoreApplication.translate("submission", u"Body:", None))
+        self.text_add_titles.setText(QCoreApplication.translate("submission", u"Add Column Titles", None))
+        self.text_sep_tab.setText(QCoreApplication.translate("submission", u"Tab Separator", None))
+        self.text_sep_fixed.setText(QCoreApplication.translate("submission", u"Space Separator", None))
+        self.label_52.setText(QCoreApplication.translate("submission", u"Header:", None))
+        self.text_header.setPlainText(QCoreApplication.translate("submission", u"My Header", None))
+        self.label_75.setText(QCoreApplication.translate("submission", u"Footer", None))
+        self.text_footer.setPlainText(QCoreApplication.translate("submission", u"My Footer", None))
+        self.TopTab.setTabText(self.TopTab.indexOf(self.tab_5), QCoreApplication.translate("submission", u"Text", None))
         self.check_sequence_size_consistency.setText(QCoreApplication.translate("submission", u"File Sequence Size consistency", None))
         self.check_sequence_holes.setText(QCoreApplication.translate("submission", u"Check for File Sequence Holes", None))
         self.groupBox_ch01.setTitle("")
@@ -9619,15 +9748,18 @@ class Ui_submission(object):
         self.prefs_tc_from_counter.setText(QCoreApplication.translate("submission", u"From Frame Counter", None))
         self.label_46.setText(QCoreApplication.translate("submission", u"Default TC:", None))
         self.prefs_tc_default.setText(QCoreApplication.translate("submission", u"01:00:00:00", None))
-        self.groupBox_2.setTitle(QCoreApplication.translate("submission", u"Counter:", None))
-        self.label.setText(QCoreApplication.translate("submission", u"Start from:", None))
-        self.label_2.setText(QCoreApplication.translate("submission", u"Step:", None))
-        self.label_14.setText(QCoreApplication.translate("submission", u"Leading Zeroes:", None))
         self.groupBox_17.setTitle(QCoreApplication.translate("submission", u"File Sequence File Size Check:", None))
         self.prefs_size_scan.setText(QCoreApplication.translate("submission", u"Scan Sizes", None))
         self.label_51.setText(QCoreApplication.translate("submission", u"Ignore first frames:", None))
         self.label_53.setText(QCoreApplication.translate("submission", u"Neighborhood frames:", None))
-        self.label_54.setText(QCoreApplication.translate("submission", u"Warning Treshhold %", None))
+        self.label_54.setText(QCoreApplication.translate("submission", u"Warning %", None))
+        self.groupBox_13.setTitle(QCoreApplication.translate("submission", u"OIIO Tool", None))
+        self.prefs_oiio_custom_ocio.setText(QCoreApplication.translate("submission", u"Custom OCIO:", None))
+        self.prefs_oiio_custom_ocio_path.setText(QCoreApplication.translate("submission", u"{shot}", None))
+        self.groupBox_2.setTitle(QCoreApplication.translate("submission", u"Counter:", None))
+        self.label.setText(QCoreApplication.translate("submission", u"From:", None))
+        self.label_2.setText(QCoreApplication.translate("submission", u"Step:", None))
+        self.label_14.setText(QCoreApplication.translate("submission", u"Leading Zeroes:", None))
         self.groupBox_19.setTitle(QCoreApplication.translate("submission", u"Merge Lines", None))
         self.prefs_merge_chbx.setText(QCoreApplication.translate("submission", u"Merge by:", None))
         self.prefs_merge_by.setText(QCoreApplication.translate("submission", u"{shot}", None))
@@ -9663,21 +9795,6 @@ class Ui_submission(object):
 #endif // QT_CONFIG(tooltip)
         self.label_33.setText(QCoreApplication.translate("submission", u"Suffix: ", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_9), QCoreApplication.translate("submission", u"Exports", None))
-        self.groupBox_5.setTitle(QCoreApplication.translate("submission", u"Export Submission:", None))
-        self.text_txt.setText(QCoreApplication.translate("submission", u"TXT", None))
-        self.text_root.setText(QCoreApplication.translate("submission", u"Root", None))
-        self.text_above.setText(QCoreApplication.translate("submission", u"One folder above Root", None))
-        self.text_custom.setText(QCoreApplication.translate("submission", u"Custom Location", None))
-        self.label_17.setText(QCoreApplication.translate("submission", u"Custom Location", None))
-        self.groupBox_6.setTitle(QCoreApplication.translate("submission", u"Body:", None))
-        self.text_add_titles.setText(QCoreApplication.translate("submission", u"Add Column Titles", None))
-        self.text_sep_tab.setText(QCoreApplication.translate("submission", u"Tab Separator", None))
-        self.text_sep_fixed.setText(QCoreApplication.translate("submission", u"Space Separator", None))
-        self.label_52.setText(QCoreApplication.translate("submission", u"Header:", None))
-        self.text_header.setPlainText(QCoreApplication.translate("submission", u"My Header", None))
-        self.label_75.setText(QCoreApplication.translate("submission", u"Footer", None))
-        self.text_footer.setPlainText(QCoreApplication.translate("submission", u"My Footer", None))
-        self.TopTab.setTabText(self.TopTab.indexOf(self.tab_5), QCoreApplication.translate("submission", u"Text", None))
         self.groupBox_3.setTitle(QCoreApplication.translate("submission", u"Load Preset:", None))
         self.label_5.setText(QCoreApplication.translate("submission", u"Preset:", None))
         self.load_preset_button.setText(QCoreApplication.translate("submission", u"Load Preset", None))
@@ -9828,6 +9945,21 @@ class Ui_submission(object):
         self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_7), QCoreApplication.translate("submission", u"Drive Log", None))
         self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_8), QCoreApplication.translate("submission", u"Text", None))
         self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_15), QCoreApplication.translate("submission", u"Sidecar Files", None))
+        self.label_23.setText(QCoreApplication.translate("submission", u"File:", None))
+#if QT_CONFIG(tooltip)
+        self.tree_filter_file.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Template for naming the package. <br/><br/>Keywords:<br/>{package_version} : detects consecutive versions one folder up from package folder<br/>{yy}: year<br/>{mm}: month<br/>{dd}: day</p><p><br/></p><p><br/></p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.tree_filter_file.setText("")
+        self.label_24.setText(QCoreApplication.translate("submission", u"Key:", None))
+#if QT_CONFIG(tooltip)
+        self.tree_filter_key.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Template for naming the package. <br/><br/>Keywords:<br/>{package_version} : detects consecutive versions one folder up from package folder<br/>{yy}: year<br/>{mm}: month<br/>{dd}: day</p><p><br/></p><p><br/></p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.tree_filter_key.setText("")
+        self.label_25.setText(QCoreApplication.translate("submission", u"Value:", None))
+#if QT_CONFIG(tooltip)
+        self.tree_filter_value.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Template for naming the package. <br/><br/>Keywords:<br/>{package_version} : detects consecutive versions one folder up from package folder<br/>{yy}: year<br/>{mm}: month<br/>{dd}: day</p><p><br/></p><p><br/></p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.tree_filter_value.setText("")
         self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_19), QCoreApplication.translate("submission", u"Data", None))
         self.write_button.setText(QCoreApplication.translate("submission", u"Go", None))
         self.reload.setText(QCoreApplication.translate("submission", u"Reload", None))

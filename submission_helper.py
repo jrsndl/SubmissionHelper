@@ -828,7 +828,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         if group == 'refresh_checks':
             if self.data:
-                self.data.run_checks()
+                self.data.transform_data()
                 self.show_all()
 
         if group == 'refresh_size_checks':
@@ -1006,7 +1006,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                     _l = _fn
                 _n = "{}: {}".format(str(self.data.merged_list.index(one_itm)), _l)
                 _ti.setText(0, _n)
-                for k, v in one_itm.items():
+                for k, v in sorted(one_itm.items()):
                     _tii = QtWidgets.QTreeWidgetItem(self.ui.data_tree)
                     _tii.setText(1, str(k))
                     _tii.setText(2, str(v))
@@ -1268,7 +1268,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             'save_preset_name',
             'global_prefs_path',
             'global_prefs_enabled',
-            'ffprobe_path'
+            'ffprobe_path',
+            'vendor_csv_path'
         ]
         # indicate to user that reload or browse for package folder is needed
         self.clear_all_tables()

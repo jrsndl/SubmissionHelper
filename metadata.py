@@ -37,7 +37,8 @@ class MetaData(object):
         self.item = item
 
         self.meta = {'file': item['path'], 'error': '', 'width': 0, 'height': 0,
-                     'fps_str': '', 'fps': 0.0, 'fps_a': 0, 'fps_b': 0, 'duration_frames': 0, 'duration_secs': 0.0,
+                     'fps_str': '', 'fps': 0.0, 'fps_a': 0, 'fps_b': 0, 'fps_raw': '',
+                     'duration_frames': 0, 'duration_secs': 0.0,
                      'bitrate_video': 0, 'aspect': 0.0, 'aspect_x': 0, 'aspect_y': 0,
                      'codec_name_video': '', 'codec_long_name_video': '', 'time_stamp_video': '', 'fields': 0,
                      'time_code': '', 'reel': '',

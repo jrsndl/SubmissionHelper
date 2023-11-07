@@ -1,0 +1,401 @@
+ocio_profile_version: 1
+
+search_path: luts
+# environment: {}
+strictparsing: true
+luma: [0.2126, 0.7152, 0.0722]
+
+description: An ACES config generated from python
+
+
+roles:
+  color_picking: Output - sRGB
+  color_timing: ACES - ACEScc
+  compositing_linear: ACES - ACEScg
+  compositing_log: ACES - ACEScc
+  data: Utility - Raw
+  default: ACES - ACES2065-1
+  matte_paint: Utility - sRGB - Texture
+  reference: Utility - Raw
+  rendering: ACES - ACEScg
+  scene_linear: ACES - ACEScg
+  texture_paint: ACES - ACEScc
+  default_byte: Output - Rec.709
+  default_float: ACES - ACES2065-1
+  default_sequencer: Output - Rec.709
+
+displays:
+  ACES:
+    - !<View> {name: Rec.709, colorspace: Output - Rec.709}
+    - !<View> {name: sRGB, colorspace: Output - sRGB}
+    - !<View> {name: Raw, colorspace: Utility - Raw}
+    - !<View> {name: Log, colorspace: Input - ADX - ADX10}
+
+active_displays: [ACES]
+active_views: [Rec.709, sRGB, Raw, Log]
+
+colorspaces:
+  - !<ColorSpace>
+    name: ACES - ACES2065-1
+    family: ACES
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      The Academy Color Encoding System reference color space
+    isdata: false
+    allocation: lg2
+    allocationvars: [-8, 5, 0.00390625]
+
+  - !<ColorSpace>
+    name: ACES - ACEScc
+    family: ACES
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      The ACEScc color space
+      ( Can go bellow 0.0 )
+      
+    # ACES Transform ID : ACEScsc.Academy.ACEScc_to_ACES
+    isdata: false
+    allocation: uniform
+    allocationvars: [-0.3584, 1.468]
+    to_reference: !<GroupTransform>
+      children:
+        - !<FileTransform> {src: ACEScc_to_linear.spi1d, interpolation: linear}
+        - !<MatrixTransform> {matrix: [0.695452, 0.140679, 0.163869, 0, 0.0447946, 0.859671, 0.0955343, 0, -0.00552588, 0.00402521, 1.0015, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: ACES - ACEScct
+    family: ACES
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      The ACEScct color space
+      ( Cannot go bellow 0.0 as it adds "toe" starting at 0.0078125 )
+      
+    # ACES Transform ID : ACEScsc.Academy.ACEScct_to_ACES
+    isdata: false
+    allocation: uniform
+    allocationvars: [-0.249136, 1.468]
+    to_reference: !<GroupTransform>
+      children:
+        - !<FileTransform> {src: ACEScct_to_linear.spi1d, interpolation: linear}
+        - !<MatrixTransform> {matrix: [0.695452, 0.140679, 0.163869, 0, 0.0447946, 0.859671, 0.0955343, 0, -0.00552588, 0.00402521, 1.0015, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: ACES - ACEScg
+    family: ACES
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      The ACEScg color space
+      ( for cg renders )
+      
+    # ACES Transform ID : ACEScsc.Academy.ACEScg_to_ACES
+    isdata: false
+    allocation: lg2
+    allocationvars: [-8, 5, 0.00390625]
+    to_reference: !<MatrixTransform> {matrix: [0.695452, 0.140679, 0.163869, 0, 0.0447946, 0.859671, 0.0955343, 0, -0.00552588, 0.00402521, 1.0015, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: Input - ADX - ADX10
+    family: Input/ADX
+    equalitygroup: ""
+    bitdepth: 10ui
+    description: |
+      ADX10 color space - used for film scans
+      
+    # ACES Transform ID : ACEScsc.Academy.ADX10_to_ACES
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    to_reference: !<GroupTransform>
+      children:
+        - !<MatrixTransform> {matrix: [2.046, 0, 0, 0, 0, 2.046, 0, 0, 0, 0, 2.046, 0, 0, 0, 0, 1], offset: [-0.19, -0.19, -0.19, 0]}
+        - !<MatrixTransform> {matrix: [0.75573, 0.22197, 0.0223, 0, 0.05901, 0.96928, -0.02829, 0, 0.16134, 0.07406, 0.7646, 0, 0, 0, 0, 1]}
+        - !<FileTransform> {src: ADX_CID_to_RLE.spi1d, interpolation: linear}
+        - !<LogTransform> {base: 10, direction: inverse}
+        - !<MatrixTransform> {matrix: [0.72286, 0.1263, 0.15084, 0, 0.11923, 0.76418, 0.11659, 0, 0.01427, 0.08213, 0.90359, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: Output - Rec.709
+    family: Output
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      ACES 1.0 Output - Rec.709 Output Transform
+      ( When your output device will be TV )
+      ( E.g. when you need to "invert" Rec709 output, 
+      beware your values can easily go a lot above 1.0 == emmisive )
+      
+    # ACES Transform ID : urn:ampas:aces:transformId:v1.5:ODT.Academy.Rec709_100nits_dim.a1.0.3
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    to_reference: !<GroupTransform>
+      children:
+        - !<FileTransform> {src: InvRRT.Rec.709.Log2_48_nits_Shaper.spi3d, interpolation: tetrahedral}
+        - !<FileTransform> {src: Log2_48_nits_Shaper_to_linear.spi1d, interpolation: linear}
+    from_reference: !<GroupTransform>
+      children:
+        - !<FileTransform> {src: Log2_48_nits_Shaper_to_linear.spi1d, interpolation: linear, direction: inverse}
+        - !<FileTransform> {src: Log2_48_nits_Shaper.RRT.Rec.709.spi3d, interpolation: tetrahedral}
+
+  - !<ColorSpace>
+    name: Output - sRGB
+    family: Output
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      ACES 1.0 Output - sRGB Output Transform
+      ( When your output device is web browser. )
+      ( E.g. when you need to "invert" sRGB output,
+      beware your values can easily go above 1.0 == emmisive )
+      
+    # ACES Transform ID : urn:ampas:aces:transformId:v1.5:ODT.Academy.RGBmonitor_100nits_dim.a1.0.3
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    to_reference: !<GroupTransform>
+      children:
+        - !<FileTransform> {src: InvRRT.sRGB.Log2_48_nits_Shaper.spi3d, interpolation: tetrahedral}
+        - !<FileTransform> {src: Log2_48_nits_Shaper_to_linear.spi1d, interpolation: linear}
+    from_reference: !<GroupTransform>
+      children:
+        - !<FileTransform> {src: Log2_48_nits_Shaper_to_linear.spi1d, interpolation: linear, direction: inverse}
+        - !<FileTransform> {src: Log2_48_nits_Shaper.RRT.sRGB.spi3d, interpolation: tetrahedral}
+
+  - !<ColorSpace>
+    name: Utility - Linear - sRGB
+    family: Utility
+    equalitygroup: Linear - sRGB
+    bitdepth: 32f
+    description: |
+      The Linear - sRGB color space
+      ( For "HDR" probes downloaded from web. )
+
+    isdata: false
+    allocation: lg2
+    allocationvars: [-8, 5, 0.00390625]
+    from_reference: !<GroupTransform>
+      children:
+        - !<MatrixTransform> {matrix: [0.952552, 0, 9.36786e-05, 0, 0.343966, 0.728166, -0.0721325, 0, 0, 0, 1.00883, 0, 0, 0, 0, 1]}
+        - !<MatrixTransform> {matrix: [3.2096, -1.55743, -0.495805, 0, -0.970989, 1.88517, 0.0394894, 0, 0.0597193, -0.210104, 1.14312, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: Utility - sRGB - Texture
+    family: Utility
+    equalitygroup: sRGB - Texture
+    bitdepth: 32f
+    description: |
+      The sRGB - Texture color space
+      ( For textures downloaded from web.
+      It "roll-offs" highlights, watch maximum (and mininum) diffuse values. )
+
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    from_reference: !<GroupTransform>
+      children:
+        - !<MatrixTransform> {matrix: [0.952552, 0, 9.36786e-05, 0, 0.343966, 0.728166, -0.0721325, 0, 0, 0, 1.00883, 0, 0, 0, 0, 1]}
+        - !<MatrixTransform> {matrix: [3.2096, -1.55743, -0.495805, 0, -0.970989, 1.88517, 0.0394894, 0, 0.0597193, -0.210104, 1.14312, 0, 0, 0, 0, 1]}
+        - !<FileTransform> {src: linear_to_sRGB.spi1d, interpolation: linear}
+
+  - !<ColorSpace>
+    name: Utility - Raw
+    family: Utility
+    equalitygroup: Raw
+    bitdepth: 32f
+    description: |
+      The Raw color space
+      ( Technical textures like masks, normals, etc... )
+
+    isdata: true
+    allocation: uniform
+    allocationvars: [0, 1]
+
+  - !<ColorSpace>
+    name: Utility - Look - Blue Light Artifact Fix
+    family: Utility/Look
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      The ACES Look Transform: Blue Light Artifact Fix
+      
+    # ACES Transform ID : urn:ampas:aces:transformId:v1.5:LMT.Academy.BlueLightArtifactFix.a1.1.0
+    isdata: false
+    allocation: lg2
+    allocationvars: [-8, 5, 0.00390625]
+    to_reference: !<MatrixTransform> {matrix: [0.940437, -0.0183069, 0.0778696, 0, 0.0083787, 0.82866, 0.162961, 0, 0.000547126, -0.000883375, 1.00034, 0, 0, 0, 0, 1], direction: inverse}
+
+# Aliases - used in strict parsing (fron file name):
+
+  - !<ColorSpace>
+    name: acescc
+    family: Utility/Aliases
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      Alias: The ACEScc color space
+      
+    # ACES Transform ID : ACEScsc.Academy.ACEScc_to_ACES
+    isdata: false
+    allocation: uniform
+    allocationvars: [-0.3584, 1.468]
+    to_reference: !<ColorSpaceTransform> {src: ACES - ACEScc, dst: ACES - ACES2065-1}
+
+  - !<ColorSpace>
+    name: acescct
+    family: Utility/Aliases
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      Alias: The ACEScct color space
+      
+    # ACES Transform ID : ACEScsc.Academy.ACEScct_to_ACES
+    isdata: false
+    allocation: uniform
+    allocationvars: [-0.249136, 1.468]
+    to_reference: !<ColorSpaceTransform> {src: ACES - ACEScct, dst: ACES - ACES2065-1}
+
+  - !<ColorSpace>
+    name: acescg
+    family: Utility/Aliases
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      Alias: The ACEScg color space
+      
+    # ACES Transform ID : ACEScsc.Academy.ACEScg_to_ACES
+    isdata: false
+    allocation: lg2
+    allocationvars: [-8, 5, 0.00390625]
+    to_reference: !<ColorSpaceTransform> {src: ACES - ACEScg, dst: ACES - ACES2065-1}
+
+  - !<ColorSpace>
+    name: out_rec709
+    family: Utility/Aliases
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      ACES 1.0 Output - Rec.709 Output Transform
+
+      ( When you need to "invert" Rec709 output, 
+      beware your values can easily go a lot above 1.0 == emmisive )
+      
+    # ACES Transform ID : urn:ampas:aces:transformId:v1.5:ODT.Academy.Rec709_100nits_dim.a1.0.3
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    to_reference: !<ColorSpaceTransform> {src: Output - Rec.709, dst: ACES - ACES2065-1}
+    from_reference: !<ColorSpaceTransform> {src: ACES - ACES2065-1, dst: Output - Rec.709}
+
+  - !<ColorSpace>
+    name: out_srgb
+    family: Utility/Aliases
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      Alias: ACES 1.0 Output - sRGB Output Transform
+      ( When you need to "invert" sRGB output, 
+      beware your values can easily go above 1.0 == emmisive )
+      
+    # ACES Transform ID : urn:ampas:aces:transformId:v1.5:ODT.Academy.RGBmonitor_100nits_dim.a1.0.3
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    to_reference: !<ColorSpaceTransform> {src: Output - sRGB, dst: ACES - ACES2065-1}
+    from_reference: !<ColorSpaceTransform> {src: ACES - ACES2065-1, dst: Output - sRGB}
+
+  - !<ColorSpace>
+    name: lin_srgb
+    family: Utility/Aliases
+    equalitygroup: Linear - sRGB
+    bitdepth: 32f
+    description: |
+      Alias: The Linear - sRGB color space
+    isdata: false
+    allocation: lg2
+    allocationvars: [-8, 5, 0.00390625]
+    from_reference: !<ColorSpaceTransform> {src: ACES - ACES2065-1, dst: Utility - Linear - sRGB}
+
+  - !<ColorSpace>
+    name: srgb_texture
+    family: Utility/Aliases
+    equalitygroup: sRGB - Texture
+    bitdepth: 32f
+    description: |
+      Alias: The sRGB - Texture color space
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    from_reference: !<ColorSpaceTransform> {src: ACES - ACES2065-1, dst: Utility - sRGB - Texture}
+
+  - !<ColorSpace>
+    name: raw
+    family: Utility/Aliases
+    equalitygroup: Raw
+    bitdepth: 32f
+    description: |
+      Alias: The Raw color space
+    isdata: true
+    allocation: uniform
+    allocationvars: [0, 1]
+
+# Extra alliases for Blender:
+
+  - !<ColorSpace>
+    name: Non-Color
+    family: Utility/Aliases
+    equalitygroup: Raw
+    bitdepth: 32f
+    description: |
+      Alias: The Raw color space
+    isdata: true
+    allocation: uniform
+    allocationvars: [0, 1]
+
+  # - !<ColorSpace>
+  #   name: XYZ
+  #   family: Utility/Aliases
+  #   equalitygroup: XYZ - D60
+  #   bitdepth: 32f
+  #   description: |
+  #     The XYZ - D60 color space
+  #   isdata: false
+  #   allocation: lg2
+  #   allocationvars: [-8, 5, 0.00390625]
+  #   to_reference: !<ColorSpaceTransform> {src: Utility - XYZ - D60, dst: ACES - ACES2065-1}
+  #   from_reference: !<ColorSpaceTransform> {src: ACES - ACES2065-1, dst: Utility - XYZ - D60}
+
+
+  - !<ColorSpace>
+    name: Input - ARRI - V3 LogC (EI800) - Wide Gamut
+    family: Input/ARRI
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      V3 LogC (EI800) - Wide Gamut
+      
+      ACES Transform ID : IDT.ARRI.Alexa-v3-logC-EI800.a1.v1
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    to_reference: !<GroupTransform>
+      children:
+        - !<FileTransform> {src: V3_LogC_800_to_linear.spi1d, interpolation: linear}
+        - !<MatrixTransform> {matrix: [0.680206, 0.236137, 0.083658, 0, 0.085415, 1.01747, -0.102886, 0, 0.002057, -0.062563, 1.06051, 0, 0, 0, 0, 1]}
+
+  - !<ColorSpace>
+    name: logc3ei800_alexawide
+    family: Utility/Aliases
+    equalitygroup: ""
+    bitdepth: 32f
+    description: |
+      V3 LogC (EI800) - Wide Gamut
+      
+      ACES Transform ID : IDT.ARRI.Alexa-v3-logC-EI800.a1.v1
+    isdata: false
+    allocation: uniform
+    allocationvars: [0, 1]
+    to_reference: !<ColorSpaceTransform> {src: Input - ARRI - V3 LogC (EI800) - Wide Gamut, dst: ACES - ACES2065-1}
