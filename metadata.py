@@ -40,7 +40,8 @@ class MetaData(object):
                      'fps_str': '', 'fps': 0.0, 'fps_a': 0, 'fps_b': 0, 'fps_raw': '',
                      'duration_frames': 0, 'duration_secs': 0.0,
                      'bitrate_video': 0, 'aspect': 0.0, 'aspect_x': 0, 'aspect_y': 0,
-                     'codec_name_video': '', 'codec_long_name_video': '', 'time_stamp_video': '', 'fields': 0,
+                     'codec_name_video': '', 'codec_long_name_video': '', 'codec_profile_video': '',
+                     'time_stamp_video': '', 'fields': 0,
                      'time_code': '', 'reel': '',
                      'sample_rate_audio': 0, 'channels_audio': 0, 'bits_per_sample_audio': 0,
                      'duration_audio': 0.0, 'bitrate_audio': 0, 'codec_name_audio': '',
@@ -76,6 +77,7 @@ class MetaData(object):
             'meta_codec_name_video': self.meta['codec_name_video'],
             'meta_codec_long_name_video': self.meta['codec_long_name_video'],
             'meta_time_stamp_video': self.meta['time_stamp_video'],
+            'meta_codec_profile_video': self.meta['codec_profile_video'],
             'meta_fields': str(self.meta['fields']),
             'meta_time_code': self.meta['time_code'],
             'time_code_from_metadata': self.meta['time_code_from_metadata'],
@@ -425,6 +427,11 @@ class MetaData(object):
 
                         try:
                             outdata['codec_long_name_video'] = str(onestr.attrib['codec_long_name'])
+                        except:
+                            pass
+
+                        try:
+                            outdata['codec_profile_video'] = str(onestr.attrib['profile'])
                         except:
                             pass
 

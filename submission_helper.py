@@ -751,6 +751,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.write_button.clicked.connect(
             partial(self.handler, 'write_button', 'write'))
 
+        # Data Tab
+        self.ui.tree_filter_file.textChanged.connect(
+            partial(self.handler, 'tree_filter_file', 'data_filter'))
+        self.ui.tree_filter_key.textChanged.connect(
+            partial(self.handler, 'tree_filter_key', 'data_filter'))
+        self.ui.tree_filter_value.textChanged.connect(
+            partial(self.handler, 'tree_filter_value', 'data_filter'))
+
+
         # preset name is empty, disable save button
         self.ui.save_preset_button.setEnabled(False)
 
@@ -958,6 +967,41 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         if group == "thumbs_convert_now":
             self.data.run_converts()
 
+        if group == "data_filter":
+            self.show_data()
+
+    def show_data(self):
+
+        if self.data and self.settings:
+            _1 = str(self.settings['tree_filter_file']['value'])
+            _2 = str(self.settings['tree_filter_key']['value'])
+            _3 = str(self.settings['tree_filter_value']['value'])
+
+            # Display merged items as a data tree
+            self.ui.data_tree.clear()
+            self.ui.data_tree.setColumnCount(3)
+            self.ui.data_tree.setHeaderLabels(["#", "key", "value"])
+            for one_itm in self.data.merged_list:
+                _ti = QtWidgets.QTreeWidgetItem(self.ui.data_tree)
+                _fn = one_itm.get('part1', '')
+                _fp = one_itm.get('part2', '')
+                if _fp:
+                    _l = _fp + '/' + _fn
+                else:
+                    _l = _fn
+                _n = "{}: {}".format(str(self.data.merged_list.index(one_itm)), _l)
+
+                if (not _1) or _1 == "" or (str(_1) in _n):
+                    _ti.setText(0, _n)
+                    for k, v in sorted(one_itm.items()):
+                        _tii = None
+                        if (not _2) or _2 == "" or (str(_2) in str(k)):
+                            if (not _3) or _3 == "" or (str(_3) in str(v)):
+                                _tii = QtWidgets.QTreeWidgetItem(self.ui.data_tree)
+                                _tii.setText(1, str(k))
+                                _tii.setText(2, str(v))
+                                _ti.addChild(_tii)
+
     def show_all(self):
         """
         Fill Submission table, drive log table and text with data
@@ -992,25 +1036,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             _preview = self.data.output.get('package_name', '')
             self.ui.name_preview.setText(_preview)
 
-            # Display merged items as a data tree
-            self.ui.data_tree.clear()
-            self.ui.data_tree.setColumnCount(3)
-            self.ui.data_tree.setHeaderLabels(["#", "key", "value"])
-            for one_itm in self.data.merged_list:
-                _ti = QtWidgets.QTreeWidgetItem(self.ui.data_tree)
-                _fn = one_itm.get('part1', '')
-                _fp = one_itm.get('part2', '')
-                if _fp:
-                    _l = _fp + '/' + _fn
-                else:
-                    _l = _fn
-                _n = "{}: {}".format(str(self.data.merged_list.index(one_itm)), _l)
-                _ti.setText(0, _n)
-                for k, v in sorted(one_itm.items()):
-                    _tii = QtWidgets.QTreeWidgetItem(self.ui.data_tree)
-                    _tii.setText(1, str(k))
-                    _tii.setText(2, str(v))
-                    _ti.addChild(_tii)
+            # Present data for each item
+            self.show_data()
+
 
     def explore(self, path):
 

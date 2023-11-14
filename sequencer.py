@@ -139,6 +139,9 @@ class Sequencer(object):
         # prepare conversions
         self.prepare_converts()
 
+        #self.checks = []
+        self.run_checks()
+
         # parse table headers
         self.prepare_all_columns()
 
@@ -147,8 +150,6 @@ class Sequencer(object):
 
         self.select_ftrack_note()
 
-        #self.checks = []
-        self.run_checks()
 
     def get_metadata(self):
 
@@ -2591,8 +2592,14 @@ class Sequencer(object):
         if self.ftrack is None:
             print("Ftrack cancelled (1)")
             return
-        if self.ftrack['project_id'] is None or self.ftrack['shot'] == '' or self.ftrack['task'] == '':
+        if self.ftrack['project_id'] is None:
             print("Ftrack cancelled (2)")
+            return
+        if self.ftrack['shot'] == '':
+            print("Ftrack cancelled (2b)")
+            return
+        if self.ftrack['task'] == '':
+            print("Ftrack cancelled (2c)")
             return
         if self.merged_list is None:
             print("Ftrack cancelled (3)")
@@ -2633,6 +2640,8 @@ class Sequencer(object):
                 item['ftrack_op_end'] = str(_fe + _he)
                 item['ftrack_op_range'] = "{}-{}".format(_fs - _hs - 1, _fe + _he)
                 item['ftrack_op_range_slate'] = "{}-{}".format(_fs - _hs, _fe + _he)
+                item['ftrack_op_length'] = str(1 + (_fe + _he) -  (_fs - _hs) + 1)
+                item['ftrack_op_length_slate'] = str((_fe + _he) - (_fs - _hs) + 1)
             else:
                 item['ftrack_op_frame_start'] = ""
                 item['ftrack_op_frame_end'] = ""
@@ -2643,6 +2652,8 @@ class Sequencer(object):
                 item['ftrack_op_start'] = ""
                 item['ftrack_op_start_slate'] = ""
                 item['ftrack_op_end'] = ""
+                item['ftrack_op_length'] = ""
+                item['ftrack_op_length_slate'] = ""
 
 
     def assign_ftrack_notes(self, item):
