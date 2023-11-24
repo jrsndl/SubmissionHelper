@@ -20,6 +20,11 @@ import arrow
 import inspect
 import subprocess
 
+import concurrent.futures
+from functools import partial
+
+
+
 class Sequencer(object):
     def __init__(self, in_path, sequence_mode='to_subsequences', gui=None, more_settings=None):
 
@@ -40,6 +45,8 @@ class Sequencer(object):
         self.table_side = []
         self.columns_side = []
         self.table_txt = ""
+
+        self.renames = []
 
         self.output = {}
 
@@ -153,15 +160,36 @@ class Sequencer(object):
 
     def get_metadata(self):
 
+        def _get_one_meta(one):
+            """
+            wrap object to function
+            """
+            one.meta_get()
+            return [one.item, one.meta_data]
+
+
         self.output['status'] = "Getting meta data" \
                                 " (get_metadata)"
 
         if self.merged_list and len(self.merged_list) > 0:
+            _cnt = 0
             for one_item in self.merged_list:
                 if one_item['category'] in\
                         ['still', 'video', 'sequence', 'audio']:
-                    one_item.update(
-                        MetaData(one_item, self.settings).meta_data)
+                    _cnt +=1
+            self.log.debug("Start Reading metadata for {} media files".format(_cnt))
+
+            # prepare meta objects
+            meta_objs = []
+            for one_item in self.merged_list:
+                meta_objs.append(MetaData(one_item, self.settings))
+
+            # run threaded metadata load
+            with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
+                for result in executor.map(_get_one_meta, meta_objs):
+                    itm = result[0]
+                    meta = result[1]
+                    itm.update(meta)
 
     def vendor_csv_all(self):
 
@@ -2370,6 +2398,139 @@ class Sequencer(object):
                         except KeyError:
                             pass
 
+    def rename_prepare(self):
+        """
+
+        """
+
+        self.renames = []
+        if self.settings:
+            _root = str(self.settings['package_folder']['value'])
+            # read checks from gui, save to self.checks
+            indexes = [str(x).zfill(2) for x in range(1, 9)]
+            for one in indexes:
+                _filter = str(self.settings["rename_filter_" + one]["value"])
+                src = int(self.settings["rename_source_" + one]["value"])
+                pat = str(self.settings["rename_pattern_" + one]["value"])
+                repl = str(self.settings["rename_repl_" + one]["value"])
+                if pat != '' and repl != '':
+                    one_ren = {
+                        "filter": _filter,
+                        "src": src,
+                        "pattern": pat,
+                        "repl": repl,
+                    }
+                    self.renames.append(one_ren)
+
+    def rename_preprocess(self):
+
+        class Default(dict):
+            def __missing__(self, key):
+                return '{' + key + '}'
+
+        if self.renames is None:
+            return
+        if self.merged_list is None:
+            return
+
+        for item in self.merged_list:
+
+            # what to rename
+            if item['categoty'] == 'sequence':
+                _src = item['path_prs'] + '/' + item['clean_name']
+            else:
+                _src = item['path_prs'] + '/' + item['name']
+            _target = _src
+            _root = item['package_name_root'] + '/' + item['package_name']
+
+            for one_rename in self.renames:
+                _f = one_rename['filter'].format_map(
+                    Default(self.static_keywords))
+                _f = _f.format_map(Default(item))
+                _p = one_rename['pattern'].format_map(
+                    Default(self.static_keywords))
+                _p = _p.format_map(Default(item))
+                if _p is None:
+                    continue
+                if '{' in _p:
+                    continue
+                if _p == '':
+                    continue
+                pat_valid = False
+                try:
+                    _p_comp = re.compile(_p)
+                    pat_valid = True
+                except re.error:
+                    _p_comp = None
+                if not pat_valid:
+                    continue
+
+                _r = one_rename['repl'].format_map(
+                    Default(self.static_keywords))
+                _r = _r.format_map(Default(item))
+                if _r is None:
+                    continue
+                if '{' in _r:
+                    continue
+                if _r == '':
+                    continue
+
+                # filter out first
+                _if_eval = False
+                if _f != '':
+                    try:
+                        _if_eval = bool(eval(_f))
+                    except Exception:
+                        pass
+                else:
+                    # no filtering, so true for all
+                    _if_eval = True
+                if not _if_eval:
+                    continue
+
+                # find what to rename
+                if one_rename['src'] > 0:
+                    # want to rename just one folder or filename
+                    _s = _target.split('/')
+                    if len(_s) > one_rename['src']:
+                        continue
+                    one_before = '/'.join(_s[: -1 * (one_rename['src'])])
+                    one_src = _s[-1 * (one_rename['src'])] or ''
+                    if one_rename['src']-1 > 0:
+                        one_after = '/'.join(_s[-1 * (one_rename['src']-1):])
+                    else:
+                        one_after = ''
+                else:
+                    # want to rename the whole path
+                    one_src = _target
+                    one_before = ''
+                    one_after = ''
+
+                # do regex replace
+                result = None
+                if _r.startswith("lambda "):
+                    # LAMBDA!
+                    try:
+                        _eval = eval(str(_r))
+                    except:
+                        _eval = _r
+                    try:
+                        result = re.sub(_p_comp, _eval, one_src)
+                    except:
+                        result = None
+                else:
+                    try:
+                        result = re.sub(_p_comp, _r, one_src)
+                    except:
+                        result = None
+                if not result:
+                    continue
+
+                # put back together
+                _target = one_before + result + one_after
+
+
+
     def ftrack_query(self):
         self.ftrack_clean_notes()
         do_ftrack = False
@@ -2479,13 +2640,10 @@ class Sequencer(object):
             return
 
         if self.ftrack is None:
-            print("Ftrack cancelled (1)")
             return
         if self.ftrack['project_id'] is None or self.ftrack['shot'] == '' or self.ftrack['task'] == '':
-            print("Ftrack cancelled (2)")
             return
         if self.merged_list is None:
-            print("Ftrack cancelled (3)")
             return
 
         do_filter = False
@@ -2592,34 +2750,36 @@ class Sequencer(object):
         if self.ftrack is None:
             print("Ftrack cancelled (1)")
             return
-        if self.ftrack['project_id'] is None:
-            print("Ftrack cancelled (2)")
-            return
-        if self.ftrack['shot'] == '':
-            print("Ftrack cancelled (2b)")
-            return
-        if self.ftrack['task'] == '':
-            print("Ftrack cancelled (2c)")
-            return
         if self.merged_list is None:
             print("Ftrack cancelled (3)")
+            return
+        _validate = [self.ftrack.get('project'), self.ftrack.get('project_id'), self.ftrack.get('shot'),
+                     self.ftrack.get('task'), self.ftrack.get('session')]
+        if None in _validate:
+            print("Ftrack cancelled")
             return
 
         for item in self.merged_list:
             self.assign_ftrack_notes(item)
 
             current_shot = self.ftrack.get('shot', '').format_map(Default(item))
+            if '{' in current_shot:
+                continue
+            else:
+                f_shot = self.ftrack['session'].query(
+                    'Shot where name is {}'
+                    ' and project.full_name is {}'.format(
+                        current_shot, self.ftrack['project'])).first()
+
             current_task = self.ftrack.get('task', '').format_map(Default(item))
-
-            f_shot = self.ftrack['session'].query(
-                'Shot where name is {}'
-                ' and project.full_name is {}'.format(
-                    current_shot, self.ftrack['project'])).first()
-
-            f_task = self.ftrack['session'].query(
-                'Task where name is {} and parent.name is {}'
-                ' and project.full_name is {}'.format(
-                    current_task, current_shot, self.ftrack['project'])).first()
+            if '{' in current_task:
+                continue
+            else:
+                f_task = self.ftrack['session'].query(
+                    'Task where name is {} and parent.name is {}'
+                    ' and project.full_name is {}'.format(
+                        current_task, current_shot,
+                        self.ftrack['project'])).first()
 
             item['ftrack_task_exists'] = "0"
             if f_task:
@@ -2644,14 +2804,14 @@ class Sequencer(object):
                 item['ftrack_op_length_slate'] = str((_fe + _he) - (_fs - _hs) + 1)
             else:
                 item['ftrack_op_frame_start'] = ""
-                item['ftrack_op_frame_end'] = ""
                 item['ftrack_op_handle_start'] = ""
-                item['ftrack_op_handle_end'] = ""
-                item['ftrack_op_range'] = ""
-                item['ftrack_op_range_slate'] = ""
                 item['ftrack_op_start'] = ""
                 item['ftrack_op_start_slate'] = ""
+                item['ftrack_op_frame_end'] = ""
+                item['ftrack_op_handle_end'] = ""
                 item['ftrack_op_end'] = ""
+                item['ftrack_op_range'] = ""
+                item['ftrack_op_range_slate'] = ""
                 item['ftrack_op_length'] = ""
                 item['ftrack_op_length_slate'] = ""
 
@@ -2668,6 +2828,14 @@ class Sequencer(object):
         class Default(dict):
             def __missing__(self, key):
                 return '{' + key + '}'
+
+        if not self.settings:
+            return
+        _do_notes = False
+        if self.settings['ftrack_do_notes']['value'] is not None:
+            _do_notes = bool(self.settings['ftrack_do_notes']['value'])
+        if not _do_notes:
+            return
 
         all_notes = []
         current_shot = self.ftrack.get('shot', '').format_map(Default(item))
@@ -2965,28 +3133,41 @@ class Sequencer(object):
         Execute command lines for every media file
         :return: add vendor_Thumbs to media files
         """
-
+        _skip_existing = True
+        if self.settings:
+            _skip_existing = bool(self.settings['thumbs_skip_existing']['value'])
         for item in self.merged_list:
             _fn = item.get('convert_path')
             _cmd = item.get('convert_cmd')
+            _itm_name = item['part2'] + '/' + item['part1']
+            if not _fn:
+                continue
+            if not _cmd:
+                continue
+            _run = True
+            if _skip_existing and os.path.exists(_fn):
+                _run = False
 
-            if _fn and _cmd:
-                if not os.path.exists(_fn):
-                    _d = os.path.dirname(os.path.abspath(_fn))
-                    if not os.path.exists(_d):
-                        os.makedirs(_d)
+            if _fn and _cmd and _run:
+                _d = os.path.dirname(os.path.abspath(_fn))
+                if not os.path.exists(_d):
+                    os.makedirs(_d)
 
-                    print("exe: {}".format(_cmd))
-                    process = subprocess.Popen(_cmd, shell=True,
-                                               stdout=subprocess.PIPE,
-                                               stderr=subprocess.PIPE,
-                                               bufsize=-1)
-                    out, err = process.communicate()
-
-                    if process.returncode != 0:
-                        print("bad convert")
-                    else:
-                        print("good convert")
+                self.log.debug(
+                    "Running Convert of item {}:\n{}".format(_itm_name, _cmd))
+                process = subprocess.Popen(_cmd, shell=True,
+                                           stdout=subprocess.PIPE,
+                                           stderr=subprocess.PIPE,
+                                           bufsize=-1)
+                out, err = process.communicate()
+                if process.returncode != 0:
+                    self.log.debug(
+                        "Convert of item {} OK".format(
+                            _itm_name))
+                else:
+                    self.log.debug(
+                        "Convert of item {} return code is not zero".format(
+                            _itm_name))
 
                 if not os.path.exists(_fn):
                     item['convert_path'] = ''
@@ -2995,7 +3176,7 @@ class Sequencer(object):
         self.checks = []
         if self.settings:
             # read checks from gui, save to self.checks
-            indexes = [str(x) for x in range(1, 10)]
+            indexes = [str(x).zfill(2) for x in range(1, 22)]
             for one in indexes:
                 if_filter = str(self.settings["check_if_" + one]["value"])
                 check = str(self.settings["check_check_" + one]["value"])

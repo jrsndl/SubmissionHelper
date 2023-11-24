@@ -3,6 +3,7 @@ import sys
 import inspect
 import math
 
+
 def get_script_path():
     """
     Get file path for running script

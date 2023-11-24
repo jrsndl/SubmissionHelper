@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>965</width>
-    <height>600</height>
+    <width>1178</width>
+    <height>943</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1498,7 +1498,7 @@ p, li { white-space: pre-wrap; }
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>916</width>
+               <width>1129</width>
                <height>1070</height>
               </rect>
              </property>
@@ -9834,7 +9834,7 @@ p, li { white-space: pre-wrap; }
                  <number>9</number>
                 </property>
                 <property name="value">
-                 <number>1</number>
+                 <number>0</number>
                 </property>
                </widget>
               </item>
@@ -9985,7 +9985,7 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="rename_source_2">
+               <widget class="QSpinBox" name="rename_source_02">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -10002,7 +10002,7 @@ p, li { white-space: pre-wrap; }
                  <number>9</number>
                 </property>
                 <property name="value">
-                 <number>1</number>
+                 <number>0</number>
                 </property>
                </widget>
               </item>
@@ -10153,7 +10153,7 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="rename_source_3">
+               <widget class="QSpinBox" name="rename_source_03">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -10170,7 +10170,7 @@ p, li { white-space: pre-wrap; }
                  <number>9</number>
                 </property>
                 <property name="value">
-                 <number>1</number>
+                 <number>0</number>
                 </property>
                </widget>
               </item>
@@ -10321,7 +10321,7 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="rename_source_4">
+               <widget class="QSpinBox" name="rename_source_04">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -10338,7 +10338,7 @@ p, li { white-space: pre-wrap; }
                  <number>9</number>
                 </property>
                 <property name="value">
-                 <number>1</number>
+                 <number>0</number>
                 </property>
                </widget>
               </item>
@@ -10489,7 +10489,7 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="rename_source_5">
+               <widget class="QSpinBox" name="rename_source_05">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -10506,7 +10506,7 @@ p, li { white-space: pre-wrap; }
                  <number>9</number>
                 </property>
                 <property name="value">
-                 <number>1</number>
+                 <number>0</number>
                 </property>
                </widget>
               </item>
@@ -10657,7 +10657,7 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="rename_source_6">
+               <widget class="QSpinBox" name="rename_source_06">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -10674,7 +10674,7 @@ p, li { white-space: pre-wrap; }
                  <number>9</number>
                 </property>
                 <property name="value">
-                 <number>1</number>
+                 <number>0</number>
                 </property>
                </widget>
               </item>
@@ -10825,7 +10825,7 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="rename_source_7">
+               <widget class="QSpinBox" name="rename_source_07">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -10842,7 +10842,7 @@ p, li { white-space: pre-wrap; }
                  <number>9</number>
                 </property>
                 <property name="value">
-                 <number>1</number>
+                 <number>0</number>
                 </property>
                </widget>
               </item>
@@ -10993,7 +10993,7 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item>
-               <widget class="QSpinBox" name="rename_source_8">
+               <widget class="QSpinBox" name="rename_source_08">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -11010,7 +11010,7 @@ p, li { white-space: pre-wrap; }
                  <number>9</number>
                 </property>
                 <property name="value">
-                 <number>1</number>
+                 <number>0</number>
                 </property>
                </widget>
               </item>
@@ -11138,6 +11138,13 @@ p, li { white-space: pre-wrap; }
                 </property>
                 <property name="text">
                  <string>Go will only Rename</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="rename_reload_after">
+                <property name="text">
+                 <string>Reload after Rename</string>
                 </property>
                </widget>
               </item>
@@ -11754,7 +11761,7 @@ p, li { white-space: pre-wrap; }
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>916</width>
+               <width>1129</width>
                <height>469</height>
               </rect>
              </property>
@@ -12497,6 +12504,16 @@ p, li { white-space: pre-wrap; }
                 </property>
                 <property name="text">
                  <string>Convert Now</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="thumbs_skip_existing">
+                <property name="text">
+                 <string>Skip Existing</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -14009,8 +14026,8 @@ p, li { white-space: pre-wrap; }
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>921</width>
-                 <height>269</height>
+                 <width>1134</width>
+                 <height>299</height>
                 </rect>
                </property>
                <property name="sizePolicy">
@@ -14825,11 +14842,11 @@ Vendor = AmazingVFX</string>
          <attribute name="title">
           <string>Checks</string>
          </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_93">
+         <layout class="QVBoxLayout" name="verticalLayout_68">
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_92">
+           <layout class="QVBoxLayout" name="verticalLayout_67">
             <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_64">
+             <layout class="QHBoxLayout" name="horizontalLayout_59">
               <item>
                <widget class="QCheckBox" name="check_sequence_size_consistency">
                 <property name="minimumSize">
@@ -14882,7 +14899,7 @@ Vendor = AmazingVFX</string>
               <property name="maximumSize">
                <size>
                 <width>16777215</width>
-                <height>500</height>
+                <height>160000</height>
                </size>
               </property>
               <property name="widgetResizable">
@@ -14893,13 +14910,13 @@ Vendor = AmazingVFX</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>914</width>
-                 <height>878</height>
+                 <width>1127</width>
+                 <height>2030</height>
                 </rect>
                </property>
-               <layout class="QVBoxLayout" name="verticalLayout_91">
+               <layout class="QVBoxLayout" name="verticalLayout_48">
                 <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_81">
+                 <layout class="QVBoxLayout" name="verticalLayout_63">
                   <item>
                    <widget class="QGroupBox" name="groupBox_ch01">
                     <property name="sizePolicy">
@@ -14950,7 +14967,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_1">
+                            <widget class="QLineEdit" name="check_if_01">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -14989,7 +15006,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_1">
+                            <widget class="QLineEdit" name="check_check_01">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15038,7 +15055,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_warning_1">
+                            <widget class="QRadioButton" name="check_warning_01">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15051,7 +15068,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_1">
+                            <widget class="QRadioButton" name="check_error_01">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15069,7 +15086,7 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_1">
+                          <widget class="QLineEdit" name="check_message_01">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -15092,7 +15109,7 @@ Vendor = AmazingVFX</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox__ch02">
+                   <widget class="QGroupBox" name="groupBox_ch02">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -15141,7 +15158,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_2">
+                            <widget class="QLineEdit" name="check_if_02">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15180,7 +15197,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_2">
+                            <widget class="QLineEdit" name="check_check_02">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15229,7 +15246,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_warning_2">
+                            <widget class="QRadioButton" name="check_warning_02">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15242,7 +15259,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_2">
+                            <widget class="QRadioButton" name="check_error_02">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15257,7 +15274,7 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_2">
+                          <widget class="QLineEdit" name="check_message_02">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -15280,7 +15297,7 @@ Vendor = AmazingVFX</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox__ch03">
+                   <widget class="QGroupBox" name="groupBox_ch03">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -15329,7 +15346,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_3">
+                            <widget class="QLineEdit" name="check_if_03">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15368,7 +15385,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_3">
+                            <widget class="QLineEdit" name="check_check_03">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15417,7 +15434,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_warning_3">
+                            <widget class="QRadioButton" name="check_warning_03">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15430,7 +15447,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_3">
+                            <widget class="QRadioButton" name="check_error_03">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15448,7 +15465,7 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_3">
+                          <widget class="QLineEdit" name="check_message_03">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -15471,7 +15488,7 @@ Vendor = AmazingVFX</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox__ch04">
+                   <widget class="QGroupBox" name="groupBox_ch04">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -15520,7 +15537,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_4">
+                            <widget class="QLineEdit" name="check_if_04">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15559,7 +15576,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_4">
+                            <widget class="QLineEdit" name="check_check_04">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15608,7 +15625,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_warning_4">
+                            <widget class="QRadioButton" name="check_warning_04">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15621,7 +15638,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_4">
+                            <widget class="QRadioButton" name="check_error_04">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15639,7 +15656,7 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_4">
+                          <widget class="QLineEdit" name="check_message_04">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -15662,7 +15679,7 @@ Vendor = AmazingVFX</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox__ch05">
+                   <widget class="QGroupBox" name="groupBox_ch05">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -15711,7 +15728,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_5">
+                            <widget class="QLineEdit" name="check_if_05">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15750,7 +15767,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_5">
+                            <widget class="QLineEdit" name="check_check_05">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15799,7 +15816,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_warning_5">
+                            <widget class="QRadioButton" name="check_warning_05">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15812,7 +15829,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_5">
+                            <widget class="QRadioButton" name="check_error_05">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -15830,7 +15847,7 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_5">
+                          <widget class="QLineEdit" name="check_message_05">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -15853,7 +15870,7 @@ Vendor = AmazingVFX</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox__ch06">
+                   <widget class="QGroupBox" name="groupBox_ch06">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -15902,7 +15919,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_6">
+                            <widget class="QLineEdit" name="check_if_06">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15941,7 +15958,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_6">
+                            <widget class="QLineEdit" name="check_check_06">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -15990,7 +16007,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_warning_6">
+                            <widget class="QRadioButton" name="check_warning_06">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -16003,7 +16020,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_6">
+                            <widget class="QRadioButton" name="check_error_06">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -16021,7 +16038,7 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_6">
+                          <widget class="QLineEdit" name="check_message_06">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -16044,7 +16061,7 @@ Vendor = AmazingVFX</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox__ch07">
+                   <widget class="QGroupBox" name="groupBox_ch07">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -16093,7 +16110,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_7">
+                            <widget class="QLineEdit" name="check_if_07">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -16132,7 +16149,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_7">
+                            <widget class="QLineEdit" name="check_check_07">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -16181,7 +16198,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_warning_7">
+                            <widget class="QRadioButton" name="check_warning_07">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -16194,7 +16211,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_7">
+                            <widget class="QRadioButton" name="check_error_07">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -16212,7 +16229,7 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_7">
+                          <widget class="QLineEdit" name="check_message_07">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -16235,7 +16252,7 @@ Vendor = AmazingVFX</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox__ch08">
+                   <widget class="QGroupBox" name="groupBox_ch08">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -16284,7 +16301,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_8">
+                            <widget class="QLineEdit" name="check_if_08">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -16323,7 +16340,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_8">
+                            <widget class="QLineEdit" name="check_check_08">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -16372,7 +16389,7 @@ Vendor = AmazingVFX</string>
                          <item>
                           <layout class="QHBoxLayout" name="horizontalLayout_310">
                            <item>
-                            <widget class="QRadioButton" name="check_warning_8">
+                            <widget class="QRadioButton" name="check_warning_08">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -16385,7 +16402,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_8">
+                            <widget class="QRadioButton" name="check_error_08">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -16403,7 +16420,7 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_8">
+                          <widget class="QLineEdit" name="check_message_08">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -16426,7 +16443,7 @@ Vendor = AmazingVFX</string>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QGroupBox" name="groupBox__ch09">
+                   <widget class="QGroupBox" name="groupBox_ch09">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                       <horstretch>0</horstretch>
@@ -16475,7 +16492,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_if_9">
+                            <widget class="QLineEdit" name="check_if_09">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -16514,7 +16531,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QLineEdit" name="check_check_9">
+                            <widget class="QLineEdit" name="check_check_09">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                                <horstretch>0</horstretch>
@@ -16563,7 +16580,7 @@ Vendor = AmazingVFX</string>
                          <item>
                           <layout class="QHBoxLayout" name="horizontalLayout_316">
                            <item>
-                            <widget class="QRadioButton" name="check_warning_9">
+                            <widget class="QRadioButton" name="check_warning_09">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -16576,7 +16593,7 @@ Vendor = AmazingVFX</string>
                             </widget>
                            </item>
                            <item>
-                            <widget class="QRadioButton" name="check_error_9">
+                            <widget class="QRadioButton" name="check_error_09">
                              <property name="minimumSize">
                               <size>
                                <width>100</width>
@@ -16594,7 +16611,2299 @@ Vendor = AmazingVFX</string>
                           </layout>
                          </item>
                          <item>
-                          <widget class="QLineEdit" name="check_message_9">
+                          <widget class="QLineEdit" name="check_message_09">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>170</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_ch10">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>600</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="title">
+                     <string/>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_371">
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_100">
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_372">
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_373">
+                           <item>
+                            <widget class="QLabel" name="label_411">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>15</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>If</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_if_10">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_374">
+                           <item>
+                            <widget class="QLabel" name="label_412">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>50</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Check:</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_check_10">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_375">
+                         <item>
+                          <widget class="QLabel" name="label_413">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="text">
+                            <string>#10</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_376">
+                           <item>
+                            <widget class="QRadioButton" name="check_warning_10">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Warning</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QRadioButton" name="check_error_10">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Error</string>
+                             </property>
+                             <property name="checked">
+                              <bool>true</bool>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="check_message_10">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>170</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_ch14">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>600</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="title">
+                     <string/>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_377">
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_101">
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_378">
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_379">
+                           <item>
+                            <widget class="QLabel" name="label_414">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>15</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>If</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_if_11">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_380">
+                           <item>
+                            <widget class="QLabel" name="label_415">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>50</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Check:</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_check_11">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_381">
+                         <item>
+                          <widget class="QLabel" name="label_416">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="text">
+                            <string>#11</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_382">
+                           <item>
+                            <widget class="QRadioButton" name="check_warning_11">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Warning</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QRadioButton" name="check_error_11">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Error</string>
+                             </property>
+                             <property name="checked">
+                              <bool>true</bool>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="check_message_11">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>170</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_ch15">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>600</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="title">
+                     <string/>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_383">
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_102">
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_384">
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_385">
+                           <item>
+                            <widget class="QLabel" name="label_417">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>15</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>If</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_if_12">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_386">
+                           <item>
+                            <widget class="QLabel" name="label_418">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>50</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Check:</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_check_12">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_387">
+                         <item>
+                          <widget class="QLabel" name="label_419">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="text">
+                            <string>#12</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_388">
+                           <item>
+                            <widget class="QRadioButton" name="check_warning_12">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Warning</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QRadioButton" name="check_error_12">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Error</string>
+                             </property>
+                             <property name="checked">
+                              <bool>true</bool>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="check_message_12">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>170</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_ch16">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>600</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="title">
+                     <string/>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_389">
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_103">
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_390">
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_391">
+                           <item>
+                            <widget class="QLabel" name="label_420">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>15</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>If</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_if_13">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_392">
+                           <item>
+                            <widget class="QLabel" name="label_421">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>50</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Check:</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_check_13">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_393">
+                         <item>
+                          <widget class="QLabel" name="label_422">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="text">
+                            <string>#13</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_394">
+                           <item>
+                            <widget class="QRadioButton" name="check_warning_13">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Warning</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QRadioButton" name="check_error_13">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Error</string>
+                             </property>
+                             <property name="checked">
+                              <bool>true</bool>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="check_message_13">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>170</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_ch17">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>600</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="title">
+                     <string/>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_395">
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_104">
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_396">
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_397">
+                           <item>
+                            <widget class="QLabel" name="label_423">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>15</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>If</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_if_14">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_398">
+                           <item>
+                            <widget class="QLabel" name="label_424">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>50</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Check:</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_check_14">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_399">
+                         <item>
+                          <widget class="QLabel" name="label_425">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="text">
+                            <string>#14</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_400">
+                           <item>
+                            <widget class="QRadioButton" name="check_warning_14">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Warning</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QRadioButton" name="check_error_14">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Error</string>
+                             </property>
+                             <property name="checked">
+                              <bool>true</bool>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="check_message_14">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>170</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_ch18">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>600</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="title">
+                     <string/>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_401">
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_105">
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_402">
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_403">
+                           <item>
+                            <widget class="QLabel" name="label_426">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>15</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>If</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_if_15">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_404">
+                           <item>
+                            <widget class="QLabel" name="label_427">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>50</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Check:</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_check_15">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_405">
+                         <item>
+                          <widget class="QLabel" name="label_428">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="text">
+                            <string>#15</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_406">
+                           <item>
+                            <widget class="QRadioButton" name="check_warning_15">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Warning</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QRadioButton" name="check_error_15">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Error</string>
+                             </property>
+                             <property name="checked">
+                              <bool>true</bool>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="check_message_15">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>170</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_ch19">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>600</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="title">
+                     <string/>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_407">
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_106">
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_408">
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_409">
+                           <item>
+                            <widget class="QLabel" name="label_429">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>15</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>If</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_if_16">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_410">
+                           <item>
+                            <widget class="QLabel" name="label_430">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>50</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Check:</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_check_16">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_411">
+                         <item>
+                          <widget class="QLabel" name="label_431">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="text">
+                            <string>#16</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_412">
+                           <item>
+                            <widget class="QRadioButton" name="check_warning_16">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Warning</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QRadioButton" name="check_error_16">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Error</string>
+                             </property>
+                             <property name="checked">
+                              <bool>true</bool>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="check_message_16">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>170</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_ch20">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>600</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="title">
+                     <string/>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_413">
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_107">
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_414">
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_415">
+                           <item>
+                            <widget class="QLabel" name="label_432">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>15</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>If</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_if_17">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_416">
+                           <item>
+                            <widget class="QLabel" name="label_433">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>50</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Check:</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_check_17">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_417">
+                         <item>
+                          <widget class="QLabel" name="label_434">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="text">
+                            <string>#17</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_418">
+                           <item>
+                            <widget class="QRadioButton" name="check_warning_17">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Warning</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QRadioButton" name="check_error_17">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Error</string>
+                             </property>
+                             <property name="checked">
+                              <bool>true</bool>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="check_message_17">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>170</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_ch21">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>600</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="title">
+                     <string/>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_419">
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_108">
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_420">
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_421">
+                           <item>
+                            <widget class="QLabel" name="label_435">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>15</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>If</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_if_18">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_422">
+                           <item>
+                            <widget class="QLabel" name="label_436">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>50</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Check:</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_check_18">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_423">
+                         <item>
+                          <widget class="QLabel" name="label_437">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="text">
+                            <string>#18</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_424">
+                           <item>
+                            <widget class="QRadioButton" name="check_warning_18">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Warning</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QRadioButton" name="check_error_18">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Error</string>
+                             </property>
+                             <property name="checked">
+                              <bool>true</bool>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="check_message_18">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>170</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_ch11">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>600</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="title">
+                     <string/>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_425">
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_109">
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_426">
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_427">
+                           <item>
+                            <widget class="QLabel" name="label_438">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>15</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>If</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_if_19">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_428">
+                           <item>
+                            <widget class="QLabel" name="label_439">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>50</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Check:</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_check_19">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_429">
+                         <item>
+                          <widget class="QLabel" name="label_440">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="text">
+                            <string>#19</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_430">
+                           <item>
+                            <widget class="QRadioButton" name="check_warning_19">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Warning</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QRadioButton" name="check_error_19">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Error</string>
+                             </property>
+                             <property name="checked">
+                              <bool>true</bool>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="check_message_19">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>170</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_ch12">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>600</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="title">
+                     <string/>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_431">
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_110">
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_432">
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_433">
+                           <item>
+                            <widget class="QLabel" name="label_441">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>15</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>If</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_if_20">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_434">
+                           <item>
+                            <widget class="QLabel" name="label_442">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>50</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Check:</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_check_20">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_435">
+                         <item>
+                          <widget class="QLabel" name="label_443">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="text">
+                            <string>#20</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_436">
+                           <item>
+                            <widget class="QRadioButton" name="check_warning_20">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Warning</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QRadioButton" name="check_error_20">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Error</string>
+                             </property>
+                             <property name="checked">
+                              <bool>true</bool>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="check_message_20">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>170</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                          </widget>
+                         </item>
+                        </layout>
+                       </item>
+                      </layout>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QGroupBox" name="groupBox_ch13">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>600</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>16777215</width>
+                      <height>90</height>
+                     </size>
+                    </property>
+                    <property name="title">
+                     <string/>
+                    </property>
+                    <layout class="QHBoxLayout" name="horizontalLayout_437">
+                     <item>
+                      <layout class="QVBoxLayout" name="verticalLayout_111">
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_438">
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_439">
+                           <item>
+                            <widget class="QLabel" name="label_444">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>15</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>If</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_if_21">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_440">
+                           <item>
+                            <widget class="QLabel" name="label_445">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>50</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Check:</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QLineEdit" name="check_check_21">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
+                             <property name="minimumSize">
+                              <size>
+                               <width>160</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                        </layout>
+                       </item>
+                       <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout_441">
+                         <item>
+                          <widget class="QLabel" name="label_446">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
+                           <property name="minimumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="maximumSize">
+                            <size>
+                             <width>25</width>
+                             <height>25</height>
+                            </size>
+                           </property>
+                           <property name="text">
+                            <string>#21</string>
+                           </property>
+                          </widget>
+                         </item>
+                         <item>
+                          <layout class="QHBoxLayout" name="horizontalLayout_442">
+                           <item>
+                            <widget class="QRadioButton" name="check_warning_21">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Warning</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item>
+                            <widget class="QRadioButton" name="check_error_21">
+                             <property name="minimumSize">
+                              <size>
+                               <width>100</width>
+                               <height>25</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Error</string>
+                             </property>
+                             <property name="checked">
+                              <bool>true</bool>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </item>
+                         <item>
+                          <widget class="QLineEdit" name="check_message_21">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                              <horstretch>0</horstretch>
@@ -18741,6 +21050,162 @@ p, li { white-space: pre-wrap; }
                </size>
               </property>
              </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab_20">
+           <attribute name="title">
+            <string>Rename</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_70">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_69">
+              <item>
+               <widget class="QGroupBox" name="groupBox_16">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>375</width>
+                  <height>55</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16777215</width>
+                  <height>55</height>
+                 </size>
+                </property>
+                <property name="title">
+                 <string/>
+                </property>
+                <layout class="QHBoxLayout" name="horizontalLayout_65">
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_64">
+                   <item>
+                    <layout class="QHBoxLayout" name="horizontalLayout_60">
+                     <item>
+                      <widget class="QRadioButton" name="rename_tab_relative">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>150</width>
+                         <height>25</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>150</width>
+                         <height>25</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>Relative Paths</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QRadioButton" name="rename_tab_absolute">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>150</width>
+                         <height>25</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>150</width>
+                         <height>25</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>Absolute Paths</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item>
+                      <widget class="QRadioButton" name="rename_tab_names_only">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
+                       <property name="minimumSize">
+                        <size>
+                         <width>150</width>
+                         <height>25</height>
+                        </size>
+                       </property>
+                       <property name="maximumSize">
+                        <size>
+                         <width>150</width>
+                         <height>25</height>
+                        </size>
+                       </property>
+                       <property name="text">
+                        <string>File Names Only</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_23">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QTableWidget" name="rename_table">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>600</width>
+                  <height>100</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>16000</width>
+                  <height>16000</height>
+                 </size>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>

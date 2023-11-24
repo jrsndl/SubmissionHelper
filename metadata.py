@@ -53,8 +53,12 @@ class MetaData(object):
 
         self.platform, self.platform_extension = self.__get_platform()
         self.ffmpeg_path, self.ffprobe_path = self.__get_ffmpeg_path()
+        self.meta_data = {}
+
+    def meta_get(self):
         self.__read_from_drive()
         self.meta_data = self.metadata_to_keywords()
+        return self
 
     def metadata_to_keywords(self):
 
@@ -154,7 +158,6 @@ class MetaData(object):
                 self.meta.update(self.probe_ffprobe())
             except:
                 print("Reading ffprobe metadata failed.")
-            #pprint.pprint(self.meta)
 
             if self.meta['error'] != '':
                 if self.item['category'] in ff_categories:
@@ -367,7 +370,6 @@ class MetaData(object):
                 StreamList = StreamFind.findall("stream")
                 for onestr in StreamList:
                     streamType = onestr.attrib['codec_type']
-                    pprint.pprint(onestr)
 
                     if streamType == 'video':
                         outdata['video_present'] = 1

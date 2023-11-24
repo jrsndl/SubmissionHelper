@@ -49,24 +49,29 @@ class Settings(object):
         """
         Reads settings from HDD
         :param name: the file name of the settings on hdd, no ext, no path
+        it is either full path, or just name with no extension and no path
         :return: sets self.settings
         """
 
         self.log.debug('-> settings_read')
-        name_json = name + '.json'
+        is_full_path = False
+        if os.path.exists(name):
+            is_full_path = True
+            prefs_path = name.replace('\\', '/')
+        else:
+            name_json = name + '.json'
+            _gsp = self.get_settings_path()
+            prefs_path = None
+            if _gsp:
+                prefs_path = os.path.join(_gsp, name_json).replace('\\', '/')
+            if not prefs_path:
+                prefs_path = os.path.join(
+                    self._get_script_path(), name_json).replace('\\', '/')
 
-        _gsp = self.get_settings_path()
-        prefs_path = None
-        if _gsp:
-            prefs_path = os.path.join(_gsp, name_json).replace('\\', '/')
-        if not prefs_path:
-            prefs_path = os.path.join(
-                self._get_script_path(), name_json).replace('\\', '/')
-
-        if not os.path.exists(prefs_path):
-            self.log.warning("{} settings file not found, trying default."
-                             .format(str(name_json)))
-            prefs_path = self._get_script_path() + '/default.json'
+            if not os.path.exists(prefs_path):
+                self.log.warning("{} settings file not found, trying default."
+                                 .format(str(name_json)))
+                prefs_path = self._get_script_path() + '/default.json'
 
         if os.path.exists(prefs_path):
             self.log.debug("Reading settings from {}".format(prefs_path))

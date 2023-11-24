@@ -1,4 +1,5 @@
 import pprint
+import argparse
 
 import sys
 import os
@@ -56,9 +57,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             self.ui.package_folder.setText(str(file_name))
             #print("Dropped file: " + file_name)
 
-    def __init__(self, no_gui=False, s=None):
+    def __init__(self, no_gui=False, s=None, package_path=None, args=None):
         super().__init__()
         self.bare_title = "Submission Helper"
+        self.package_path = package_path
 
         self.ui = Ui_submission()
         self.ui.setupUi(self)
@@ -546,104 +548,150 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.check_sequence_holes.clicked.connect(
             partial(self.handler, 'check_sequence_holes', 'refresh_checks'))
 
-        self.ui.check_if_1.textChanged.connect(
-            partial(self.handler, 'check_if_1', 'refresh_checks'))
-        self.ui.check_check_1.textChanged.connect(
-            partial(self.handler, 'check_check_1', 'refresh_checks'))
-        self.ui.check_warning_1.clicked.connect(
-            partial(self.handler, 'check_warning_1', 'refresh_checks'))
-        self.ui.check_error_1.clicked.connect(
-            partial(self.handler, 'check_error_1', 'refresh_checks'))
-        self.ui.check_message_1.textChanged.connect(
-            partial(self.handler, 'check_message_1', 'refresh_checks'))
+        self.ui.check_if_01.textChanged.connect(
+            partial(self.handler, 'check_if_01', 'refresh_checks'))
+        self.ui.check_check_01.textChanged.connect(
+            partial(self.handler, 'check_check_01', 'refresh_checks'))
+        self.ui.check_warning_01.clicked.connect(
+            partial(self.handler, 'check_warning_01', 'refresh_checks'))
+        self.ui.check_error_01.clicked.connect(
+            partial(self.handler, 'check_error_01', 'refresh_checks'))
+        self.ui.check_message_01.textChanged.connect(
+            partial(self.handler, 'check_message_01', 'refresh_checks'))
 
-        self.ui.check_if_2.textChanged.connect(
-            partial(self.handler, 'check_if_2', 'refresh_checks'))
-        self.ui.check_check_2.textChanged.connect(
-            partial(self.handler, 'check_check_2', 'refresh_checks'))
-        self.ui.check_warning_2.clicked.connect(
-            partial(self.handler, 'check_warning_2', 'refresh_checks'))
-        self.ui.check_error_2.clicked.connect(
-            partial(self.handler, 'check_error_2', 'refresh_checks'))
-        self.ui.check_message_2.textChanged.connect(
-            partial(self.handler, 'check_message_2', 'refresh_checks'))
+        self.ui.check_if_02.textChanged.connect(
+            partial(self.handler, 'check_if_02', 'refresh_checks'))
+        self.ui.check_check_02.textChanged.connect(
+            partial(self.handler, 'check_check_02', 'refresh_checks'))
+        self.ui.check_warning_02.clicked.connect(
+            partial(self.handler, 'check_warning_02', 'refresh_checks'))
+        self.ui.check_error_02.clicked.connect(
+            partial(self.handler, 'check_error_02', 'refresh_checks'))
+        self.ui.check_message_02.textChanged.connect(
+            partial(self.handler, 'check_message_02', 'refresh_checks'))
 
-        self.ui.check_if_3.textChanged.connect(
-            partial(self.handler, 'check_if_3', 'refresh_checks'))
-        self.ui.check_check_3.textChanged.connect(
-            partial(self.handler, 'check_check_3', 'refresh_checks'))
-        self.ui.check_warning_3.clicked.connect(
-            partial(self.handler, 'check_warning_3', 'refresh_checks'))
-        self.ui.check_error_3.clicked.connect(
-            partial(self.handler, 'check_error_3', 'refresh_checks'))
-        self.ui.check_message_3.textChanged.connect(
-            partial(self.handler, 'check_message_3', 'refresh_checks'))
+        self.ui.check_if_03.textChanged.connect(
+            partial(self.handler, 'check_if_03', 'refresh_checks'))
+        self.ui.check_check_03.textChanged.connect(
+            partial(self.handler, 'check_check_03', 'refresh_checks'))
+        self.ui.check_warning_03.clicked.connect(
+            partial(self.handler, 'check_warning_03', 'refresh_checks'))
+        self.ui.check_error_03.clicked.connect(
+            partial(self.handler, 'check_error_03', 'refresh_checks'))
+        self.ui.check_message_03.textChanged.connect(
+            partial(self.handler, 'check_message_03', 'refresh_checks'))
 
-        self.ui.check_if_4.textChanged.connect(
-            partial(self.handler, 'check_if_4', 'refresh_checks'))
-        self.ui.check_check_4.textChanged.connect(
-            partial(self.handler, 'check_check_4', 'refresh_checks'))
-        self.ui.check_warning_4.clicked.connect(
-            partial(self.handler, 'check_warning_4', 'refresh_checks'))
-        self.ui.check_error_4.clicked.connect(
-            partial(self.handler, 'check_error_4', 'refresh_checks'))
-        self.ui.check_message_4.textChanged.connect(
-            partial(self.handler, 'check_message_4', 'refresh_checks'))
+        self.ui.check_if_04.textChanged.connect(
+            partial(self.handler, 'check_if_04', 'refresh_checks'))
+        self.ui.check_check_04.textChanged.connect(
+            partial(self.handler, 'check_check_04', 'refresh_checks'))
+        self.ui.check_warning_04.clicked.connect(
+            partial(self.handler, 'check_warning_04', 'refresh_checks'))
+        self.ui.check_error_04.clicked.connect(
+            partial(self.handler, 'check_error_04', 'refresh_checks'))
+        self.ui.check_message_04.textChanged.connect(
+            partial(self.handler, 'check_message_04', 'refresh_checks'))
 
-        self.ui.check_if_5.textChanged.connect(
-            partial(self.handler, 'check_if_5', 'refresh_checks'))
-        self.ui.check_check_5.textChanged.connect(
-            partial(self.handler, 'check_check_5', 'refresh_checks'))
-        self.ui.check_warning_5.clicked.connect(
-            partial(self.handler, 'check_warning_5', 'refresh_checks'))
-        self.ui.check_error_5.clicked.connect(
-            partial(self.handler, 'check_error_5', 'refresh_checks'))
-        self.ui.check_message_5.textChanged.connect(
-            partial(self.handler, 'check_message_5', 'refresh_checks'))
+        self.ui.check_if_05.textChanged.connect(
+            partial(self.handler, 'check_if_05', 'refresh_checks'))
+        self.ui.check_check_05.textChanged.connect(
+            partial(self.handler, 'check_check_05', 'refresh_checks'))
+        self.ui.check_warning_05.clicked.connect(
+            partial(self.handler, 'check_warning_05', 'refresh_checks'))
+        self.ui.check_error_05.clicked.connect(
+            partial(self.handler, 'check_error_05', 'refresh_checks'))
+        self.ui.check_message_05.textChanged.connect(
+            partial(self.handler, 'check_message_05', 'refresh_checks'))
 
-        self.ui.check_if_6.textChanged.connect(
-            partial(self.handler, 'check_if_6', 'refresh_checks'))
-        self.ui.check_check_6.textChanged.connect(
-            partial(self.handler, 'check_check_6', 'refresh_checks'))
-        self.ui.check_warning_6.clicked.connect(
-            partial(self.handler, 'check_warning_6', 'refresh_checks'))
-        self.ui.check_error_6.clicked.connect(
-            partial(self.handler, 'check_error_6', 'refresh_checks'))
-        self.ui.check_message_6.textChanged.connect(
-            partial(self.handler, 'check_message_6', 'refresh_checks'))
+        self.ui.check_if_06.textChanged.connect(
+            partial(self.handler, 'check_if_06', 'refresh_checks'))
+        self.ui.check_check_06.textChanged.connect(
+            partial(self.handler, 'check_check_06', 'refresh_checks'))
+        self.ui.check_warning_06.clicked.connect(
+            partial(self.handler, 'check_warning_06', 'refresh_checks'))
+        self.ui.check_error_06.clicked.connect(
+            partial(self.handler, 'check_error_06', 'refresh_checks'))
+        self.ui.check_message_06.textChanged.connect(
+            partial(self.handler, 'check_message_06', 'refresh_checks'))
 
-        self.ui.check_if_7.textChanged.connect(
-            partial(self.handler, 'check_if_7', 'refresh_checks'))
-        self.ui.check_check_7.textChanged.connect(
-            partial(self.handler, 'check_check_7', 'refresh_checks'))
-        self.ui.check_warning_7.clicked.connect(
-            partial(self.handler, 'check_warning_7', 'refresh_checks'))
-        self.ui.check_error_7.clicked.connect(
-            partial(self.handler, 'check_error_7', 'refresh_checks'))
-        self.ui.check_message_7.textChanged.connect(
-            partial(self.handler, 'check_message_7', 'refresh_checks'))
+        self.ui.check_if_07.textChanged.connect(
+            partial(self.handler, 'check_if_07', 'refresh_checks'))
+        self.ui.check_check_07.textChanged.connect(
+            partial(self.handler, 'check_check_07', 'refresh_checks'))
+        self.ui.check_warning_07.clicked.connect(
+            partial(self.handler, 'check_warning_07', 'refresh_checks'))
+        self.ui.check_error_07.clicked.connect(
+            partial(self.handler, 'check_error_07', 'refresh_checks'))
+        self.ui.check_message_07.textChanged.connect(
+            partial(self.handler, 'check_message_07', 'refresh_checks'))
 
-        self.ui.check_if_8.textChanged.connect(
-            partial(self.handler, 'check_if_8', 'refresh_checks'))
-        self.ui.check_check_8.textChanged.connect(
-            partial(self.handler, 'check_check_8', 'refresh_checks'))
-        self.ui.check_warning_8.clicked.connect(
-            partial(self.handler, 'check_warning_8', 'refresh_checks'))
-        self.ui.check_error_8.clicked.connect(
-            partial(self.handler, 'check_error_8', 'refresh_checks'))
-        self.ui.check_message_8.textChanged.connect(
-            partial(self.handler, 'check_message_8', 'refresh_checks'))
+        self.ui.check_if_08.textChanged.connect(
+            partial(self.handler, 'check_if_08', 'refresh_checks'))
+        self.ui.check_check_08.textChanged.connect(
+            partial(self.handler, 'check_check_08', 'refresh_checks'))
+        self.ui.check_warning_08.clicked.connect(
+            partial(self.handler, 'check_warning_08', 'refresh_checks'))
+        self.ui.check_error_08.clicked.connect(
+            partial(self.handler, 'check_error_08', 'refresh_checks'))
+        self.ui.check_message_08.textChanged.connect(
+            partial(self.handler, 'check_message_08', 'refresh_checks'))
 
-        self.ui.check_if_9.textChanged.connect(
-            partial(self.handler, 'check_if_9', 'refresh_checks'))
-        self.ui.check_check_9.textChanged.connect(
-            partial(self.handler, 'check_check_9', 'refresh_checks'))
-        self.ui.check_warning_9.clicked.connect(
-            partial(self.handler, 'check_warning_9', 'refresh_checks'))
-        self.ui.check_error_9.clicked.connect(
-            partial(self.handler, 'check_error_9', 'refresh_checks'))
-        self.ui.check_message_9.textChanged.connect(
-            partial(self.handler, 'check_message_9', 'refresh_checks'))
+        self.ui.check_if_09.textChanged.connect(
+            partial(self.handler, 'check_if_09', 'refresh_checks'))
+        self.ui.check_check_09.textChanged.connect(
+            partial(self.handler, 'check_check_09', 'refresh_checks'))
+        self.ui.check_warning_09.clicked.connect(
+            partial(self.handler, 'check_warning_09', 'refresh_checks'))
+        self.ui.check_error_09.clicked.connect(
+            partial(self.handler, 'check_error_09', 'refresh_checks'))
+        self.ui.check_message_09.textChanged.connect(
+            partial(self.handler, 'check_message_09', 'refresh_checks'))
+
+        self.ui.check_if_10.textChanged.connect(
+            partial(self.handler, 'check_if_10', 'refresh_checks'))
+        self.ui.check_check_10.textChanged.connect(
+            partial(self.handler, 'check_check_10', 'refresh_checks'))
+        self.ui.check_warning_10.clicked.connect(
+            partial(self.handler, 'check_warning_10', 'refresh_checks'))
+        self.ui.check_error_10.clicked.connect(
+            partial(self.handler, 'check_error_10', 'refresh_checks'))
+        self.ui.check_message_10.textChanged.connect(
+            partial(self.handler, 'check_message_10', 'refresh_checks'))
+
+        self.ui.check_if_11.textChanged.connect(
+            partial(self.handler, 'check_if_11', 'refresh_checks'))
+        self.ui.check_check_11.textChanged.connect(
+            partial(self.handler, 'check_check_11', 'refresh_checks'))
+        self.ui.check_warning_11.clicked.connect(
+            partial(self.handler, 'check_warning_11', 'refresh_checks'))
+        self.ui.check_error_11.clicked.connect(
+            partial(self.handler, 'check_error_11', 'refresh_checks'))
+        self.ui.check_message_11.textChanged.connect(
+            partial(self.handler, 'check_message_11', 'refresh_checks'))
+
+        self.ui.check_if_12.textChanged.connect(
+            partial(self.handler, 'check_if_12', 'refresh_checks'))
+        self.ui.check_check_12.textChanged.connect(
+            partial(self.handler, 'check_check_12', 'refresh_checks'))
+        self.ui.check_warning_12.clicked.connect(
+            partial(self.handler, 'check_warning_12', 'refresh_checks'))
+        self.ui.check_error_12.clicked.connect(
+            partial(self.handler, 'check_error_12', 'refresh_checks'))
+        self.ui.check_message_12.textChanged.connect(
+            partial(self.handler, 'check_message_12', 'refresh_checks'))
+
+        self.ui.check_if_13.textChanged.connect(
+            partial(self.handler, 'check_if_13', 'refresh_checks'))
+        self.ui.check_check_13.textChanged.connect(
+            partial(self.handler, 'check_check_13', 'refresh_checks'))
+        self.ui.check_warning_13.clicked.connect(
+            partial(self.handler, 'check_warning_13', 'refresh_checks'))
+        self.ui.check_error_13.clicked.connect(
+            partial(self.handler, 'check_error_13', 'refresh_checks'))
+        self.ui.check_message_13.textChanged.connect(
+            partial(self.handler, 'check_message_13', 'refresh_checks'))
+
+
 
         # Preferences Tab
 
@@ -759,10 +807,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.tree_filter_value.textChanged.connect(
             partial(self.handler, 'tree_filter_value', 'data_filter'))
 
-
         # preset name is empty, disable save button
         self.ui.save_preset_button.setEnabled(False)
 
+        # For Headless operation, just run what is needed in init
+        if self.no_gui and self.package_path is not None:
+            self.settings_update("package_folder", self.ui.package_folder,
+                                 value=os.path.dirname(self.package_path).replace('\\', '/'))
+            if self.package_path.endswith('.csv'):
+                if bool(self.settings['vendor_csv_path_detect']['value']):
+                    self.settings_update("vendor_csv_path",
+                                         self.ui.vendor_csv_path,
+                                         value=self.package_path)
+            self.data = Sequencer(self.package_path, sequence_mode='holes_allowed',
+                                  gui=self.settings,
+                                  more_settings=self.settings_inst)
+
+            self.data.export_all()
 
     def handler(self, sender, group, *more):
         """
@@ -787,7 +848,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                     group = 'source_change'
 
         if group == 'source_change':
-            #self.ui.setUpdatesEnabled(False)
             pth = str(self.settings['package_folder']['value']).replace('\\', '/')
             if os.path.isfile(pth):
                 self.settings_update("package_folder", self.ui.package_folder,
@@ -797,7 +857,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                         self.settings_update("vendor_csv_path",
                                              self.ui.vendor_csv_path,
                                              value=pth)
-            #self.ui.setUpdatesEnabled(True)
             self.data = Sequencer(pth, sequence_mode='holes_allowed', gui=self.settings, more_settings=self.settings_inst)
             self.show_all()
 
@@ -1385,22 +1444,28 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                     str(one_setting['category']), str(obj.objectName())))
             obj.blockSignals(False)
 
-    def settings_update(self, knob_name, ui, value, val2=None, no_gui=False):
+    def settings_update(self, knob_name, ui, value, val2=None):
         one_setting = self.settings.get(knob_name)
         if one_setting:
             if one_setting["category"]:
                 one_setting["value"] = str(value)
                 if one_setting["category"] == "lineedit" or\
                         one_setting["category"] == "plaintextedit":
-                    if not no_gui:
+                    if not self.no_gui:
+                        ui.blockSignals(True)
                         ui.setText(value)
+                        ui.blockSignals(False)
                 elif one_setting["category"] == "checkbox" or\
                         one_setting["category"] == "radiobutton":
-                    if not no_gui:
+                    if not self.no_gui:
+                        ui.blockSignals(True)
                         ui.setChecked(bool(value))
+                        ui.blockSignals(False)
                 elif one_setting["category"] == "spinbox":
-                    if not no_gui:
+                    if not self.no_gui:
+                        ui.blockSignals(True)
                         ui.setValue(int(value))
+                        ui.blockSignals(False)
                 elif one_setting["category"] == "combobox":
                     pass
 
@@ -1417,6 +1482,42 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         # prevents second call
         sys.exit()
 
+def get_args():
+
+    parser = argparse.ArgumentParser(description="Submission Helper lives to help.")
+    parser.add_argument(
+        '-i',
+        help="The input folder or input csv file. Required.",
+        type=str,
+        required=False
+    )
+    parser.add_argument(
+        '-p',
+        help="The preset json to be used. Required.",
+        type=str,
+        required=False
+    )
+    parser.add_argument(
+        '-s',
+        help="Run Copy Sidecar Files",
+        type=bool,
+        default=False
+    )
+    parser.add_argument(
+        '-r',
+        help="Run Rename",
+        type=bool,
+        default=False
+    )
+    parser.add_argument(
+        '-c',
+        help="Run Convert",
+        type=bool,
+        default=False
+    )
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
     # log
     log = logging.getLogger("mylog")
@@ -1427,9 +1528,14 @@ if __name__ == "__main__":
     """
     log.info('Started at: ' + time.strftime("%Y-%m-%d, %H:%M"))
 
+    args = vars(get_args())
+    input_path = args['i']
+    input_preset = args['p']
 
-    # Settings
-    settings_obj = Settings('last_' + getpass.getuser())
+    headless = False
+    if input_path is not None and input_preset is not None:
+        if os.path.exists(input_path) and os.path.exists(input_preset):
+            headless = True
 
     app = QtWidgets.QApplication(sys.argv)
     app.setStyle("Plastique")
@@ -1437,6 +1543,14 @@ if __name__ == "__main__":
     app = app.instance()  # checks if QApplication already exists
     if not app:  # create QApplication if it doesn't exist
         app = QtWidgets.QApplication([])
-    main = MainWindow(no_gui=False, s=settings_obj)
-    main.show()
-    app.exec_()
+
+    if headless:
+        settings_obj = Settings(input_preset)
+        main = MainWindow(no_gui=True, s=settings_obj, package_path=input_path, args=args)
+        #main.show()
+        app.exec_()
+    else:
+        settings_obj = Settings('last_' + getpass.getuser())
+        main = MainWindow(no_gui=False, s=settings_obj)
+        main.show()
+        app.exec_()
