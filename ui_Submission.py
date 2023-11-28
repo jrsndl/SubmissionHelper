@@ -18,7 +18,7 @@ class Ui_submission(object):
     def setupUi(self, submission):
         if not submission.objectName():
             submission.setObjectName(u"submission")
-        submission.resize(1178, 943)
+        submission.resize(800, 600)
         sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1052,7 +1052,7 @@ class Ui_submission(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 1129, 1070))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 751, 1070))
         sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
@@ -5681,7 +5681,7 @@ class Ui_submission(object):
         self.scrollArea_4.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 1129, 469))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 791, 469))
         self.verticalLayout_62 = QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_62.setObjectName(u"verticalLayout_62")
         self.verticalLayout_61 = QVBoxLayout()
@@ -6624,7 +6624,7 @@ class Ui_submission(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 1134, 299))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 756, 269))
         sizePolicy8 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         sizePolicy8.setHorizontalStretch(0)
         sizePolicy8.setVerticalStretch(0)
@@ -7085,7 +7085,7 @@ class Ui_submission(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollAreaWidgetContents_4 = QWidget()
         self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
-        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 1127, 2030))
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 749, 2030))
         self.verticalLayout_48 = QVBoxLayout(self.scrollAreaWidgetContents_4)
         self.verticalLayout_48.setObjectName(u"verticalLayout_48")
         self.verticalLayout_63 = QVBoxLayout()
@@ -10389,6 +10389,17 @@ class Ui_submission(object):
 
         self.verticalLayout_50.addLayout(self.verticalLayout_10)
 
+        self.progressBar = QProgressBar(self.centralwidget)
+        self.progressBar.setObjectName(u"progressBar")
+        self.progressBar.setMinimumSize(QSize(0, 12))
+        self.progressBar.setMaximumSize(QSize(16777215, 12))
+        font = QFont()
+        font.setPointSize(10)
+        self.progressBar.setFont(font)
+        self.progressBar.setValue(0)
+
+        self.verticalLayout_50.addWidget(self.progressBar)
+
 
         self.verticalLayout_60.addLayout(self.verticalLayout_50)
 
@@ -10420,7 +10431,7 @@ class Ui_submission(object):
     # setupUi
 
     def retranslateUi(self, submission):
-        submission.setWindowTitle(QCoreApplication.translate("submission", u"Submission Helper", None))
+        submission.setWindowTitle(QCoreApplication.translate("submission", u"Submission Helper 2.0", None))
 #if QT_CONFIG(tooltip)
         submission.setToolTip("")
 #endif // QT_CONFIG(tooltip)

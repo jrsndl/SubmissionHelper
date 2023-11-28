@@ -26,7 +26,10 @@ from functools import partial
 
 
 class Sequencer(object):
-    def __init__(self, in_path, sequence_mode='to_subsequences', gui=None, more_settings=None):
+    def __init__(self, in_path, sequence_mode='to_subsequences', gui=None, more_settings=None, ui=None, headless=False):
+
+        self.ui = ui
+        self.headless = headless
 
         self.log = logging.getLogger("mylog")
         self.sequence_mode = sequence_mode
@@ -43,6 +46,7 @@ class Sequencer(object):
         self.table_sub = []
         self.table_log = []
         self.table_side = []
+        self.table_rename = []
         self.columns_side = []
         self.table_txt = ""
 
@@ -85,6 +89,9 @@ class Sequencer(object):
         and reading metadata
         :return:
         """
+        if not self.headless:
+            self.ui.statusBar.showMessage("Scanning files", 3000)
+
         # get list of all files
         file_list = self.walk_dirs(self.in_path)
 
@@ -100,12 +107,18 @@ class Sequencer(object):
         self.merged_list.extend(self.other_files_from_file_list(file_list))
 
         # get file sizes for merged list
+        if not self.headless:
+            self.ui.statusBar.showMessage("Calculating file sizes", 3000)
         self.get_file_sizes()
 
         # sidecar files
+        if not self.headless:
+            self.ui.statusBar.showMessage("Processing Sidecar files", 3000)
         self.sidecar_files_find()
 
         # metadata
+        if not self.headless:
+            self.ui.statusBar.showMessage("Gathering Metadata", 3000)
         self.get_metadata()
 
         # vendor ingest
@@ -118,12 +131,16 @@ class Sequencer(object):
         """
 
         # this sets static keywords like date and package name
+        if not self.headless:
+            self.ui.statusBar.showMessage("Preparing Package Name", 3000)
         self.prepare_package_name()
 
         # make paths relative
         self.get_relative_paths(parse_file_name.parse(self.in_path))
 
         # also adds totals to static keywords
+        if not self.headless:
+            self.ui.statusBar.showMessage("Parsing Keywords", 3000)
         self.filter_items_add_counters()
 
         # read from settings and compile
@@ -132,24 +149,39 @@ class Sequencer(object):
         # for every found item prepare regex items
         self.fill_regexes()
 
+        if not self.headless:
+            self.ui.statusBar.showMessage("Reading data from Ftrack", 3000)
         self.ftrack = {}
         self.ftrack_query()
         self.select_ftrack_note()
         self.ftrack_op_attrs()
 
         # sidecar files filter
+        if not self.headless:
+            self.ui.statusBar.showMessage("Filtering Sidecar Files", 3000)
         self.sidecar_files_filter()
 
         # vendor ingest
+        if not self.headless:
+            self.ui.statusBar.showMessage("Processing Vendor CSV", 3000)
         self.vendor_csv_all()
 
         # prepare conversions
+        if not self.headless:
+            self.ui.statusBar.showMessage("Preparing Converts", 3000)
         self.prepare_converts()
 
         #self.checks = []
+        if not self.headless:
+            self.ui.statusBar.showMessage("Running Checks", 3000)
         self.run_checks()
 
+        self.rename_prepare()
+        self.rename_preprocess()
+
         # parse table headers
+        if not self.headless:
+            self.ui.statusBar.showMessage("Preparing Tables", 3000)
         self.prepare_all_columns()
 
         # fill tables for export and display
@@ -157,16 +189,14 @@ class Sequencer(object):
 
         self.select_ftrack_note()
 
-
     def get_metadata(self):
 
         def _get_one_meta(one):
-            """
-            wrap object to function
-            """
             one.meta_get()
+            if not self.headless:
+                _p = self.ui.progressBar.value()
+                self.ui.progressBar.setValue(_p + progress_step)
             return [one.item, one.meta_data]
-
 
         self.output['status'] = "Getting meta data" \
                                 " (get_metadata)"
@@ -178,6 +208,7 @@ class Sequencer(object):
                         ['still', 'video', 'sequence', 'audio']:
                     _cnt +=1
             self.log.debug("Start Reading metadata for {} media files".format(_cnt))
+            progress_step = (1 / _cnt) * 100
 
             # prepare meta objects
             meta_objs = []
@@ -185,11 +216,16 @@ class Sequencer(object):
                 meta_objs.append(MetaData(one_item, self.settings))
 
             # run threaded metadata load
-            with concurrent.futures.ThreadPoolExecutor(max_workers=16) as executor:
+            if not self.headless:
+                self.ui.progressBar.setValue(0)
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                 for result in executor.map(_get_one_meta, meta_objs):
                     itm = result[0]
                     meta = result[1]
                     itm.update(meta)
+
+            if not self.headless:
+                self.ui.progressBar.setValue(100)
 
     def vendor_csv_all(self):
 
@@ -1869,9 +1905,17 @@ class Sequencer(object):
         self.table_log = []
         self.table_txt = ""
         self.table_side = []
+        self.table_rename = []
         self.columns_side = ['match', 'destination', 'source']
         body_txt = ""
         txt_sep = " "
+
+        for one_item in self.merged_list:
+            # RENAMES
+            _r = one_item.get('rename')
+            _s = one_item.get('rename_source')
+            if _r and _s:
+                self.table_rename.append([_s, _r])
 
         if self.settings:
             if self.settings['text_sep_tab']['value'] is not None:
@@ -2436,12 +2480,12 @@ class Sequencer(object):
         for item in self.merged_list:
 
             # what to rename
-            if item['categoty'] == 'sequence':
+            if item['category'] == 'sequence':
                 _src = item['path_prs'] + '/' + item['clean_name']
             else:
                 _src = item['path_prs'] + '/' + item['name']
             _target = _src
-            _root = item['package_name_root'] + '/' + item['package_name']
+            item['rename'] = ''
 
             for one_rename in self.renames:
                 _f = one_rename['filter'].format_map(
@@ -2528,8 +2572,71 @@ class Sequencer(object):
 
                 # put back together
                 _target = one_before + result + one_after
+            if _target != _src:
+                item['rename'] = _target
+                item['rename_source'] = _src
 
+    def rename_execute(self):
+        """
+        Will rename the merged items that have rename and rename_source
+        If item category is a sequence, it will assemble the full filename
+        with sequence counter and extension
 
+        the rename has the clean filename with optional sequence separator, but
+        no sequence number, and no extension
+
+        Therefore, extension can't be renamed
+        :return:
+        """
+
+        def one_rename(pairs):
+
+            if pairs is None:
+                return
+            if len(pairs) == 0:
+                return
+
+            _dst_dir = os.path.dirname(pairs[0][1])
+            if not os.path.exists(_dst_dir):
+                os.makedirs(_dst_dir)
+
+            for one_file in pairs:
+                try:
+                    if not os.path.exists(one_file[0]):
+                        # skip rename if source doesn't exist
+                        continue
+                    if os.path.exists(one_file[1]):
+                        # skip rename if destination exist
+                        continue
+                    os.replace(one_file[0], one_file[1])
+                except Exception:
+                    print("Failed to rename:\n{}\n{}".format(one_file[0], one_file[1]))
+
+        for item in self.merged_list:
+            _r = item.get('rename')
+            _s = item.get('rename_source')
+            _c = item.get('category')
+            _ext = item.get('extension')
+            if (_r is None) or (_s is None) or (_c is None) or (_ext is None):
+                continue
+
+            # what to rename
+            if _c != 'sequence':
+                one_rename([[_s + '.' + _ext, _r + '.' + _ext]])
+            else:
+                _seq = []
+                _pad = item.get('padding')
+                _sub = item.get('sub_ranges')
+                if (not _pad) or (not _sub):
+                    continue
+                for one in _sub:
+                    for cnt in range(one['start'], one['end'] + 1):
+                        counter = str(cnt).zfill(_pad) + '.' + _ext
+                        _seq.append([
+                            _s + counter,
+                            _r + counter,
+                        ])
+                one_rename(_seq)
 
     def ftrack_query(self):
         self.ftrack_clean_notes()

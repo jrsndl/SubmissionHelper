@@ -459,6 +459,86 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.side_copy.clicked.connect(
             partial(self.handler, 'side_copy', 'side_copy'))
 
+        # RENAME
+        self.ui.Rename_go.clicked.connect(
+            partial(self.handler, 'Rename_go', 'Rename_go'))
+        self.ui.rename_go_copy_only.clicked.connect(
+            partial(self.handler, 'rename_go_copy_only', ''))
+        self.ui.rename_reload_after.clicked.connect(
+            partial(self.handler, 'rename_reload_after', ''))
+
+        self.ui.rename_filter_01.textChanged.connect(
+            partial(self.handler, 'rename_filter_01', 'refresh_rename'))
+        self.ui.rename_pattern_01.textChanged.connect(
+            partial(self.handler, 'rename_pattern_01', 'refresh_rename'))
+        self.ui.rename_repl_01.textChanged.connect(
+            partial(self.handler, 'rename_repl_01', 'refresh_rename'))
+        self.ui.rename_source_01.valueChanged.connect(
+            partial(self.handler, 'rename_source_01', 'refresh_rename'))
+
+        self.ui.rename_filter_02.textChanged.connect(
+            partial(self.handler, 'rename_filter_02', 'refresh_rename'))
+        self.ui.rename_pattern_02.textChanged.connect(
+            partial(self.handler, 'rename_pattern_02', 'refresh_rename'))
+        self.ui.rename_repl_02.textChanged.connect(
+            partial(self.handler, 'rename_repl_02', 'refresh_rename'))
+        self.ui.rename_source_02.valueChanged.connect(
+            partial(self.handler, 'rename_source_02', 'refresh_rename'))
+
+        self.ui.rename_filter_03.textChanged.connect(
+            partial(self.handler, 'rename_filter_03', 'refresh_rename'))
+        self.ui.rename_pattern_03.textChanged.connect(
+            partial(self.handler, 'rename_pattern_03', 'refresh_rename'))
+        self.ui.rename_repl_03.textChanged.connect(
+            partial(self.handler, 'rename_repl_03', 'refresh_rename'))
+        self.ui.rename_source_03.valueChanged.connect(
+            partial(self.handler, 'rename_source_03', 'refresh_rename'))
+
+        self.ui.rename_filter_04.textChanged.connect(
+            partial(self.handler, 'rename_filter_04', 'refresh_rename'))
+        self.ui.rename_pattern_04.textChanged.connect(
+            partial(self.handler, 'rename_pattern_04', 'refresh_rename'))
+        self.ui.rename_repl_04.textChanged.connect(
+            partial(self.handler, 'rename_repl_04', 'refresh_rename'))
+        self.ui.rename_source_04.valueChanged.connect(
+            partial(self.handler, 'rename_source_04', 'refresh_rename'))
+
+        self.ui.rename_filter_05.textChanged.connect(
+            partial(self.handler, 'rename_filter_05', 'refresh_rename'))
+        self.ui.rename_pattern_05.textChanged.connect(
+            partial(self.handler, 'rename_pattern_05', 'refresh_rename'))
+        self.ui.rename_repl_05.textChanged.connect(
+            partial(self.handler, 'rename_repl_05', 'refresh_rename'))
+        self.ui.rename_source_05.valueChanged.connect(
+            partial(self.handler, 'rename_source_05', 'refresh_rename'))
+
+        self.ui.rename_filter_06.textChanged.connect(
+            partial(self.handler, 'rename_filter_06', 'refresh_rename'))
+        self.ui.rename_pattern_06.textChanged.connect(
+            partial(self.handler, 'rename_pattern_06', 'refresh_rename'))
+        self.ui.rename_repl_06.textChanged.connect(
+            partial(self.handler, 'rename_repl_06', 'refresh_rename'))
+        self.ui.rename_source_06.valueChanged.connect(
+            partial(self.handler, 'rename_source_06', 'refresh_rename'))
+
+        self.ui.rename_filter_07.textChanged.connect(
+            partial(self.handler, 'rename_filter_07', 'refresh_rename'))
+        self.ui.rename_pattern_07.textChanged.connect(
+            partial(self.handler, 'rename_pattern_07', 'refresh_rename'))
+        self.ui.rename_repl_07.textChanged.connect(
+            partial(self.handler, 'rename_repl_07', 'refresh_rename'))
+        self.ui.rename_source_07.valueChanged.connect(
+            partial(self.handler, 'rename_source_07', 'refresh_rename'))
+
+        self.ui.rename_filter_08.textChanged.connect(
+            partial(self.handler, 'rename_filter_08', 'refresh_rename'))
+        self.ui.rename_pattern_08.textChanged.connect(
+            partial(self.handler, 'rename_pattern_08', 'refresh_rename'))
+        self.ui.rename_repl_08.textChanged.connect(
+            partial(self.handler, 'rename_repl_08', 'refresh_rename'))
+        self.ui.rename_source_08.valueChanged.connect(
+            partial(self.handler, 'rename_source_08', 'refresh_rename'))
+
         # Ftrack Tab
         self.ui.ftrack_use.clicked.connect(
             partial(self.handler, 'ftrack_use', 'refresh_ftrack'))
@@ -821,7 +901,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                                          value=self.package_path)
             self.data = Sequencer(self.package_path, sequence_mode='holes_allowed',
                                   gui=self.settings,
-                                  more_settings=self.settings_inst)
+                                  more_settings=self.settings_inst, ui=self.ui, headless=self.no_gui)
 
             self.data.export_all()
 
@@ -857,7 +937,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                         self.settings_update("vendor_csv_path",
                                              self.ui.vendor_csv_path,
                                              value=pth)
-            self.data = Sequencer(pth, sequence_mode='holes_allowed', gui=self.settings, more_settings=self.settings_inst)
+            self.data = Sequencer(pth, sequence_mode='holes_allowed', gui=self.settings, more_settings=self.settings_inst, ui=self.ui, headless=self.no_gui)
             self.show_all()
 
         if sender == 'name_rename':
@@ -871,7 +951,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                     self.settings_from_gui()
                     self.data = Sequencer(renamed, sequence_mode='holes_allowed',
                                           gui=self.settings,
-                                          more_settings=self.settings_inst)
+                                          more_settings=self.settings_inst, ui=self.ui, headless=self.no_gui)
                     self.show_all()
 
         if group == 'package_rename':
@@ -927,6 +1007,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.data.prepare_tables()
                 self.show_all()
 
+        if group == 'refresh_rename':
+            if self.data:
+                self.data.rename_prepare()
+                self.data.rename_preprocess()
+                # fill tables for export and display
+                self.data.prepare_tables()
+                self.show_all()
+
         if group == 'refresh_ftrack':
             if self.data:
                 self.data.ftrack_query()
@@ -966,6 +1054,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             if self.data:
                 # sidecar files filter
                 self.data.sidecar_files_copy()
+
+        if sender == 'Rename_go':
+            if self.data:
+                # sidecar files filter
+                self.data.rename_execute()
 
         if sender == 'write_button':
             # read column widths from tablewidget for excel column sizes
@@ -1090,6 +1183,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                     self.data.columns_side
                 )
                 #self.ui.side_table.update()
+
+            self.display_table(
+                self.data.table_rename,
+                self.ui.rename_table,
+                ['source', 'destination']
+            )
 
             # display Package name
             _preview = self.data.output.get('package_name', '')
