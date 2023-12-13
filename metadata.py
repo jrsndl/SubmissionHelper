@@ -130,7 +130,16 @@ class MetaData(object):
 
     def __get_ffmpeg_path(self):
 
-        script_path = os.path.dirname(os.path.abspath(inspect.stack()[-1][1])).replace("\\", "/")
+        """
+        script_path = os.path.dirname(
+            os.path.abspath(inspect.stack()[-1][1])).replace("\\", "/")
+        """
+        if getattr(sys, 'frozen', False):
+            script_path = os.path.dirname(sys.executable).replace("\\", "/")
+        else:
+            script_path = os.path.dirname(__file__).replace("\\", "/")
+
+
         #TODO remove before packaging
         #script_path = 'D:/_code/SubmissionHelper'
         probe = script_path + '/ffmpeg/ffprobe' + self.platform_extension
