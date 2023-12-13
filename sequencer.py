@@ -196,6 +196,9 @@ class Sequencer(object):
             if not self.headless:
                 _p = self.ui.progressBar.value()
                 self.ui.progressBar.setValue(_p + progress_step)
+                self.ui.statusBar.showMessage(
+                    "Gathering Metadata: {} done.".format(one.item.get('part1')),
+                    3000)
             return [one.item, one.meta_data]
 
         self.output['status'] = "Getting meta data" \
@@ -208,7 +211,10 @@ class Sequencer(object):
                         ['still', 'video', 'sequence', 'audio']:
                     _cnt +=1
             self.log.debug("Start Reading metadata for {} media files".format(_cnt))
-            progress_step = (1 / _cnt) * 100
+            if _cnt > 0:
+                progress_step = (1 / _cnt) * 100
+            else:
+                progress_step = 0
 
             # prepare meta objects
             meta_objs = []
@@ -472,7 +478,9 @@ class Sequencer(object):
                 current = int(self.vendor_csv_transformed.index(one_row))
                 print('current {}'.format(current))
                 try:
-                    one_row['vendor_Merge_by'] = merge_key.format(**one_row)
+                    #one_row['vendor_Merge_by'] = merge_key.format(**one_row)
+                    one_row['vendor_Merge_by'] = merge_key.format_map(Default(one_row))
+
                     print('merge by {}'.format(one_row['vendor_Merge_by']))
                 except Exception:
                     print('Vendor CSV failed to expand, line {}'.format(current+2))
@@ -536,12 +544,12 @@ class Sequencer(object):
 
             all_tasks = self.vendor_csv_prefs_repre['task_intent_repres'].keys()
             for one_merge_key, merge_list in merge_groups.items():
-                task = self.vendor_csv_transformed[merge_list[0]][
-                    'vendor_Task']
+                task = self.vendor_csv_transformed[merge_list[0]].get('vendor_Task')
                 _always = []
                 _optional = []
-                intent = self.vendor_csv_transformed[merge_list[0]][
-                    'vendor_Intent']
+                intent = self.vendor_csv_transformed[merge_list[0]].get('vendor_Intent')
+                if (task is None) or (intent is None):
+                    continue
                 _repres = []
                 if task in all_tasks:
                     for one_task_set in self.vendor_csv_prefs_repre['task_intent_repres'][task]:
@@ -550,7 +558,9 @@ class Sequencer(object):
                             _optional = one_task_set['optional']
                             # now check if all repres fit:
                             for one_index in merge_list:
-                                _type = self.vendor_csv_transformed[one_index]['vendor_Output']
+                                _type = self.vendor_csv_transformed[one_index].get('vendor_Output')
+                                if _type is None:
+                                    continue
                                 _repres.append(_type)
                                 self.vendor_csv_transformed[one_index]['vendor_One_task_set'] = one_task_set
                                 if not(_type in _always or _type in _optional):
@@ -3157,8 +3167,13 @@ class Sequencer(object):
                 exe_extension = '.exe'
             else:
                 exe_extension = ''
-            script_path = os.path.dirname(
-                os.path.abspath(inspect.stack()[-1][1])).replace("\\", "/")
+
+            if getattr(sys, 'frozen', False):
+                script_path = os.path.dirname(sys.executable).replace("\\", "/")
+            else:
+                script_path = os.path.dirname(__file__).replace("\\", "/")
+
+            #script_path = os.path.dirname(os.path.abspath(inspect.stack()[-1][1])).replace("\\", "/")
             probe = script_path + '/ffmpeg/ffprobe' + exe_extension
             if not os.path.exists(probe):
                 probe = ''

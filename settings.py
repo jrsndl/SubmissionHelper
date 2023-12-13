@@ -79,10 +79,19 @@ class Settings(object):
                 with open(prefs_path, 'r') as json_data:
                     self.settings = json.load(json_data)
                 self.current_settings_name = name
-            except IOError:
+            except Exception:
                 # no prefs found
-                self.log.error("-> Error opening prefs file {}".format(
+                self.log.error("-> Error opening prefs file {}. Trying Default.".format(
                     str(prefs_path)))
+                try:
+                    prefs_path = self._get_script_path() + '/default.json'
+                    with open(prefs_path, 'r') as json_data:
+                        self.settings = json.load(json_data)
+                    self.current_settings_name = 'default'
+                except Exception:
+                    self.log.error(
+                        "-> Error opening default prefs file {}.".format(
+                            str(prefs_path)))
         else:
             self.log.error("-> error opening prefs file {}"
                            .format(str(prefs_path)))
@@ -138,7 +147,11 @@ class Settings(object):
 
     def _get_script_path(self):
 
-        pth = os.path.abspath(os.path.dirname(__file__)).replace("\\", "/")
+        if getattr(sys, 'frozen', False):
+            pth = os.path.dirname(sys.executable).replace("\\", "/")
+        else:
+            pth = os.path.dirname(__file__).replace("\\", "/")
+
         self.log.debug('-> App Location: {}'.format(pth))
         return pth
         """

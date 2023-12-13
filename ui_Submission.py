@@ -18,7 +18,7 @@ class Ui_submission(object):
     def setupUi(self, submission):
         if not submission.objectName():
             submission.setObjectName(u"submission")
-        submission.resize(800, 600)
+        submission.resize(1005, 600)
         sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -1052,7 +1052,7 @@ class Ui_submission(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 751, 1070))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 956, 1070))
         sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
@@ -5379,13 +5379,6 @@ class Ui_submission(object):
 
         self.horizontalLayout_160.addWidget(self.Rename_go)
 
-        self.rename_go_copy_only = QCheckBox(self.tab_17)
-        self.rename_go_copy_only.setObjectName(u"rename_go_copy_only")
-        self.rename_go_copy_only.setMinimumSize(QSize(0, 25))
-        self.rename_go_copy_only.setMaximumSize(QSize(16777215, 25))
-
-        self.horizontalLayout_160.addWidget(self.rename_go_copy_only)
-
         self.rename_reload_after = QCheckBox(self.tab_17)
         self.rename_reload_after.setObjectName(u"rename_reload_after")
 
@@ -5413,7 +5406,7 @@ class Ui_submission(object):
         self.ftrack_use = QCheckBox(self.groupBox_22)
         self.ftrack_use.setObjectName(u"ftrack_use")
         self.ftrack_use.setMinimumSize(QSize(120, 25))
-        self.ftrack_use.setChecked(True)
+        self.ftrack_use.setChecked(False)
 
         self.verticalLayout_38.addWidget(self.ftrack_use)
 
@@ -5527,7 +5520,7 @@ class Ui_submission(object):
         self.ftrack_do_notes = QCheckBox(self.groupBox_21)
         self.ftrack_do_notes.setObjectName(u"ftrack_do_notes")
         self.ftrack_do_notes.setMinimumSize(QSize(120, 25))
-        self.ftrack_do_notes.setChecked(True)
+        self.ftrack_do_notes.setChecked(False)
 
         self.verticalLayout_18.addWidget(self.ftrack_do_notes)
 
@@ -5646,7 +5639,7 @@ class Ui_submission(object):
         sizePolicy2.setHeightForWidth(self.ftrack_do_op.sizePolicy().hasHeightForWidth())
         self.ftrack_do_op.setSizePolicy(sizePolicy2)
         self.ftrack_do_op.setMinimumSize(QSize(120, 25))
-        self.ftrack_do_op.setChecked(True)
+        self.ftrack_do_op.setChecked(False)
 
         self.verticalLayout_58.addWidget(self.ftrack_do_op)
 
@@ -5681,7 +5674,7 @@ class Ui_submission(object):
         self.scrollArea_4.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 791, 469))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 956, 469))
         self.verticalLayout_62 = QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_62.setObjectName(u"verticalLayout_62")
         self.verticalLayout_61 = QVBoxLayout()
@@ -5987,7 +5980,7 @@ class Ui_submission(object):
         self.thumbs_make_on_go.setSizePolicy(sizePolicy2)
         self.thumbs_make_on_go.setMinimumSize(QSize(130, 25))
         self.thumbs_make_on_go.setMaximumSize(QSize(150, 25))
-        self.thumbs_make_on_go.setChecked(True)
+        self.thumbs_make_on_go.setChecked(False)
 
         self.horizontalLayout_2.addWidget(self.thumbs_make_on_go)
 
@@ -6624,7 +6617,7 @@ class Ui_submission(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 756, 269))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 961, 269))
         sizePolicy8 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         sizePolicy8.setHorizontalStretch(0)
         sizePolicy8.setVerticalStretch(0)
@@ -7085,7 +7078,7 @@ class Ui_submission(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollAreaWidgetContents_4 = QWidget()
         self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
-        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 749, 2030))
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 954, 2030))
         self.verticalLayout_48 = QVBoxLayout(self.scrollAreaWidgetContents_4)
         self.verticalLayout_48.setObjectName(u"verticalLayout_48")
         self.verticalLayout_63 = QVBoxLayout()
@@ -10114,11 +10107,10 @@ class Ui_submission(object):
 
         self.verticalLayout_12.addWidget(self.preset_explore)
 
-        self.version_231024 = QLineEdit(self.tab_3)
-        self.version_231024.setObjectName(u"version_231024")
-        self.version_231024.setReadOnly(True)
+        self.label_26 = QLabel(self.tab_3)
+        self.label_26.setObjectName(u"label_26")
 
-        self.verticalLayout_12.addWidget(self.version_231024)
+        self.verticalLayout_12.addWidget(self.label_26)
 
         self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
 
@@ -10128,6 +10120,16 @@ class Ui_submission(object):
         self.verticalLayout_37.addLayout(self.verticalLayout_12)
 
         self.TopTab.addTab(self.tab_3, "")
+        self.tab_21 = QWidget()
+        self.tab_21.setObjectName(u"tab_21")
+        self.verticalLayout_71 = QVBoxLayout(self.tab_21)
+        self.verticalLayout_71.setObjectName(u"verticalLayout_71")
+        self.log = QPlainTextEdit(self.tab_21)
+        self.log.setObjectName(u"log")
+
+        self.verticalLayout_71.addWidget(self.log)
+
+        self.TopTab.addTab(self.tab_21, "")
         self.tab_14 = QWidget()
         self.tab_14.setObjectName(u"tab_14")
         self.horizontalLayout_91 = QHBoxLayout(self.tab_14)
@@ -10265,7 +10267,7 @@ class Ui_submission(object):
         self.rename_table.setObjectName(u"rename_table")
         sizePolicy.setHeightForWidth(self.rename_table.sizePolicy().hasHeightForWidth())
         self.rename_table.setSizePolicy(sizePolicy)
-        self.rename_table.setMinimumSize(QSize(600, 100))
+        self.rename_table.setMinimumSize(QSize(600, 30))
         self.rename_table.setMaximumSize(QSize(16000, 16000))
 
         self.verticalLayout_69.addWidget(self.rename_table)
@@ -10751,7 +10753,7 @@ class Ui_submission(object):
         self.rename_filter_01.setText("")
         self.label_35.setText(QCoreApplication.translate("submission", u"Source:", None))
         self.label_245.setText(QCoreApplication.translate("submission", u"Pattern:", None))
-        self.rename_pattern_01.setText(QCoreApplication.translate("submission", u"([^_*]_[^_*]_)", None))
+        self.rename_pattern_01.setText("")
         self.label_247.setText(QCoreApplication.translate("submission", u"Repl:", None))
         self.label_248.setText(QCoreApplication.translate("submission", u"Filter:", None))
         self.rename_filter_02.setText("")
@@ -10796,7 +10798,6 @@ class Ui_submission(object):
         self.rename_pattern_08.setText("")
         self.label_275.setText(QCoreApplication.translate("submission", u"Repl:", None))
         self.Rename_go.setText(QCoreApplication.translate("submission", u"Rename", None))
-        self.rename_go_copy_only.setText(QCoreApplication.translate("submission", u"Go will only Rename", None))
         self.rename_reload_after.setText(QCoreApplication.translate("submission", u"Reload after Rename", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_17), QCoreApplication.translate("submission", u"Rename", None))
         self.groupBox_22.setTitle(QCoreApplication.translate("submission", u"Ftrack", None))
@@ -11205,8 +11206,9 @@ class Ui_submission(object):
         self.label_29.setText(QCoreApplication.translate("submission", u"Preset Name:", None))
         self.save_preset_button.setText(QCoreApplication.translate("submission", u"Save Preset", None))
         self.preset_explore.setText(QCoreApplication.translate("submission", u"Open Preset Folder", None))
-        self.version_231024.setText(QCoreApplication.translate("submission", u"Release 2023-10-24", None))
+        self.label_26.setText(QCoreApplication.translate("submission", u"Release 2023-12-13", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_3), QCoreApplication.translate("submission", u"Presets", None))
+        self.TopTab.setTabText(self.TopTab.indexOf(self.tab_21), QCoreApplication.translate("submission", u"Log", None))
         self.textEdit.setHtml(QCoreApplication.translate("submission", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"

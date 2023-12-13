@@ -462,8 +462,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         # RENAME
         self.ui.Rename_go.clicked.connect(
             partial(self.handler, 'Rename_go', 'Rename_go'))
-        self.ui.rename_go_copy_only.clicked.connect(
-            partial(self.handler, 'rename_go_copy_only', ''))
         self.ui.rename_reload_after.clicked.connect(
             partial(self.handler, 'rename_reload_after', ''))
 

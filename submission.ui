@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>1005</width>
     <height>600</height>
    </rect>
   </property>
@@ -1498,7 +1498,7 @@ p, li { white-space: pre-wrap; }
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>751</width>
+               <width>956</width>
                <height>1070</height>
               </rect>
              </property>
@@ -9872,7 +9872,7 @@ p, li { white-space: pre-wrap; }
                  </size>
                 </property>
                 <property name="text">
-                 <string>([^_*]_[^_*]_)</string>
+                 <string/>
                 </property>
                </widget>
               </item>
@@ -11123,25 +11123,6 @@ p, li { white-space: pre-wrap; }
                </widget>
               </item>
               <item>
-               <widget class="QCheckBox" name="rename_go_copy_only">
-                <property name="minimumSize">
-                 <size>
-                  <width>0</width>
-                  <height>25</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>16777215</width>
-                  <height>25</height>
-                 </size>
-                </property>
-                <property name="text">
-                 <string>Go will only Rename</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="rename_reload_after">
                 <property name="text">
                  <string>Reload after Rename</string>
@@ -11181,7 +11162,7 @@ p, li { white-space: pre-wrap; }
                     <string>Use Ftrack</string>
                    </property>
                    <property name="checked">
-                    <bool>true</bool>
+                    <bool>false</bool>
                    </property>
                   </widget>
                  </item>
@@ -11426,7 +11407,7 @@ p, li { white-space: pre-wrap; }
                     <string>Query Notes</string>
                    </property>
                    <property name="checked">
-                    <bool>true</bool>
+                    <bool>false</bool>
                    </property>
                   </widget>
                  </item>
@@ -11689,7 +11670,7 @@ p, li { white-space: pre-wrap; }
                     <string>Query OP Attributes</string>
                    </property>
                    <property name="checked">
-                    <bool>true</bool>
+                    <bool>false</bool>
                    </property>
                   </widget>
                  </item>
@@ -11761,7 +11742,7 @@ p, li { white-space: pre-wrap; }
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>791</width>
+               <width>956</width>
                <height>469</height>
               </rect>
              </property>
@@ -12478,7 +12459,7 @@ p, li { white-space: pre-wrap; }
                  <string>Convert on Go</string>
                 </property>
                 <property name="checked">
-                 <bool>true</bool>
+                 <bool>false</bool>
                 </property>
                </widget>
               </item>
@@ -14026,7 +14007,7 @@ p, li { white-space: pre-wrap; }
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>756</width>
+                 <width>961</width>
                  <height>269</height>
                 </rect>
                </property>
@@ -14910,7 +14891,7 @@ Vendor = AmazingVFX</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>749</width>
+                 <width>954</width>
                  <height>2030</height>
                 </rect>
                </property>
@@ -20769,12 +20750,9 @@ Vendor = AmazingVFX</string>
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="version_231024">
+             <widget class="QLabel" name="label_26">
               <property name="text">
-               <string>Release 2023-10-24</string>
-              </property>
-              <property name="readOnly">
-               <bool>true</bool>
+               <string>Release 2023-12-13</string>
               </property>
              </widget>
             </item>
@@ -20792,6 +20770,16 @@ Vendor = AmazingVFX</string>
              </spacer>
             </item>
            </layout>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="tab_21">
+         <attribute name="title">
+          <string>Log</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_71">
+          <item>
+           <widget class="QPlainTextEdit" name="log"/>
           </item>
          </layout>
         </widget>
