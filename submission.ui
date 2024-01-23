@@ -1498,7 +1498,7 @@ p, li { white-space: pre-wrap; }
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>956</width>
+               <width>500</width>
                <height>1070</height>
               </rect>
              </property>
@@ -11742,7 +11742,7 @@ p, li { white-space: pre-wrap; }
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>956</width>
+               <width>791</width>
                <height>469</height>
               </rect>
              </property>
@@ -14007,8 +14007,8 @@ p, li { white-space: pre-wrap; }
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>961</width>
-                 <height>269</height>
+                 <width>548</width>
+                 <height>218</height>
                 </rect>
                </property>
                <property name="sizePolicy">
@@ -14891,7 +14891,7 @@ Vendor = AmazingVFX</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>954</width>
+                 <width>620</width>
                  <height>2030</height>
                 </rect>
                </property>
@@ -20752,7 +20752,7 @@ Vendor = AmazingVFX</string>
             <item>
              <widget class="QLabel" name="label_26">
               <property name="text">
-               <string>Release 2023-12-13</string>
+               <string>Release 2024-01-23</string>
               </property>
              </widget>
             </item>

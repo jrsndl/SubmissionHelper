@@ -248,9 +248,10 @@ class MetaData(object):
                 self.meta['thumbnail_time'] = helpers.frames_to_seconds(frames=int(self.meta['duration_frames'] / 2),
                                                                      fps=self.meta['fps_str'])
             elif category == 'video':
-                self.meta['thumbnail_time'] = (float(self.meta['duration_secs']) / 2.0)
-                self.meta['thumbnail_frame'] = helpers.seconds_to_frames(seconds=float(self.meta['duration_secs']) / 2.0,
-                                                                     fps=self.meta['fps_str'])
+                #self.meta['thumbnail_time'] = (float(self.meta['duration_secs']) / 2.0)
+                #self.meta['thumbnail_frame'] = helpers.seconds_to_frames(seconds=float(self.meta['duration_secs']) / 2.0, fps=self.meta['fps_str'])
+                self.meta['thumbnail_frame'] = int(self.meta['duration_frames'] / 2) + self.item['start_number']
+                self.meta['thumbnail_time'] = helpers.frames_to_seconds(frames=int(self.meta['duration_frames'] / 2), fps=self.meta['fps_str'])
 
 
     def _frame_range_from_tc(self):

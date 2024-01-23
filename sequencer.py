@@ -28,6 +28,7 @@ from functools import partial
 class Sequencer(object):
     def __init__(self, in_path, sequence_mode='to_subsequences', gui=None, more_settings=None, ui=None, headless=False):
 
+        self.converts = None
         self.ui = ui
         self.headless = headless
 
@@ -480,7 +481,8 @@ class Sequencer(object):
                 try:
                     #one_row['vendor_Merge_by'] = merge_key.format(**one_row)
                     one_row['vendor_Merge_by'] = merge_key.format_map(Default(one_row))
-
+                    if '{' in one_row['vendor_Merge_by']:
+                        raise Exception('failed to expand')
                     print('merge by {}'.format(one_row['vendor_Merge_by']))
                 except Exception:
                     print('Vendor CSV failed to expand, line {}'.format(current+2))
@@ -496,7 +498,10 @@ class Sequencer(object):
                         merge_groups[one_row['vendor_Merge_by']] = _empty
                         pprint.pprint(merge_groups)
 
-                    current_repre_name = one_row['vendor_Output']
+                    #current_repre_name = one_row['vendor_Output']
+                    current_repre_name = one_row.get('vendor_Output')
+                    if current_repre_name is None:
+                        continue
                     current_line = self.vendor_csv_transformed.index(one_row)+2
 
                     if not any(d['name'] == current_repre_name for d in self.vendor_csv_prefs_repre['repres']):
@@ -1978,8 +1983,8 @@ class Sequencer(object):
                     one_row_sub = []
                     for one_expression in self.column_expressions_sub:
                         try:
-                            formatted = one_expression.format(**one_item)
-                            #formatted = one_expression.format_map(Default(one_item))
+                            #formatted = one_expression.format(**one_item)
+                            formatted = one_expression.format_map(Default(one_item))
                             one_row_sub.append(formatted)
                         except KeyError:
                             # can't parse expression, put it in original form
@@ -2011,8 +2016,8 @@ class Sequencer(object):
                     one_row_log = []
                     for one_expression in self.column_expressions_log:
                         try:
-                            formatted = one_expression.format(**one_item)
-                            #formatted = one_expression.format_map(Default(one_item))
+                            #formatted = one_expression.format(**one_item)
+                            formatted = one_expression.format_map(Default(one_item))
                             one_row_log.append(formatted)
                         except KeyError:
                             # can't parse expression, put it in original form
@@ -2028,14 +2033,14 @@ class Sequencer(object):
                     one_row_txt = []
                     for one_expression in self.column_expressions_txt:
                         try:
-                            formatted = one_expression.format(**one_item)
-                            #formatted = one_expression.format_map(Default(one_item))
+                            #formatted = one_expression.format(**one_item)
+                            formatted = one_expression.format_map(Default(one_item))
                             one_row_txt.append(formatted)
                         except KeyError:
                             # can't parse expression, put it in original form
                             #one_row_txt.append(str(one_expression))
                             one_row_txt.append("")
-                    whole_row = str(txt_sep.join(one_row_txt)) + "\n"
+                    whole_row = str(txt_sep.join(one_row_txt)) + "; "
                     body_txt += whole_row
 
                 sides = one_item.get('sidecars', None)
@@ -2083,8 +2088,8 @@ class Sequencer(object):
                 self.table_sub = _rows_merged
 
         try:
-            _header = txt_header.format(**self.static_keywords)
-            #_header = txt_header.format_map(Default(self.static_keywords))
+            #_header = txt_header.format(**self.static_keywords)
+            _header = txt_header.format_map(Default(self.static_keywords))
         except KeyError:
             _header = txt_header
         if do_txt_titles:
@@ -2092,8 +2097,8 @@ class Sequencer(object):
         else:
             _titles = ""
         try:
-            _footer = txt_footer.format(**self.static_keywords)
-            #_footer = txt_footer.format_map(Default(self.static_keywords))
+            #_footer = txt_footer.format(**self.static_keywords)
+            _footer = txt_footer.format_map(Default(self.static_keywords))
         except KeyError:
             _footer = txt_footer
         self.table_txt = _header + '\n' + _titles + body_txt + '\n' + _footer
@@ -2883,20 +2888,26 @@ class Sequencer(object):
             if '{' in current_shot:
                 continue
             else:
-                f_shot = self.ftrack['session'].query(
-                    'Shot where name is {}'
-                    ' and project.full_name is {}'.format(
-                        current_shot, self.ftrack['project'])).first()
+                try:
+                    f_shot = self.ftrack['session'].query(
+                        'Shot where name is {}'
+                        ' and project.full_name is {}'.format(
+                            current_shot, self.ftrack['project'])).first()
+                except Exception:
+                    f_shot = None
 
             current_task = self.ftrack.get('task', '').format_map(Default(item))
             if '{' in current_task:
                 continue
             else:
-                f_task = self.ftrack['session'].query(
-                    'Task where name is {} and parent.name is {}'
-                    ' and project.full_name is {}'.format(
-                        current_task, current_shot,
-                        self.ftrack['project'])).first()
+                try:
+                    f_task = self.ftrack['session'].query(
+                        'Task where name is {} and parent.name is {}'
+                        ' and project.full_name is {}'.format(
+                            current_task, current_shot,
+                            self.ftrack['project'])).first()
+                except Exception:
+                    f_task = None
 
             item['ftrack_task_exists'] = "0"
             if f_task:
@@ -3056,7 +3067,7 @@ class Sequencer(object):
             if notes is not None:
                 if len(notes) > 0:
                     #out_note = notes[0]
-                    out_note = "\n---\n".join(notes)
+                    out_note = ";---;".join(notes)
             item['ftrack_note'] = out_note
 
 
@@ -3137,18 +3148,18 @@ class Sequencer(object):
                         m = one_check['message'].format_map(Default(item))
                         if one_check['is_error']:
                             try:
-                                item['error'] = item['error'] + '\n' + m
+                                item['error'] = item['error'] + '; ' + m
                             except:
                                 item['error'] = m
                         else:
                             if item['warning'] and item['warning'] != '':
-                                item['warning'] = item['warning'] + '\n' + m
+                                item['warning'] = item['warning'] + '; ' + m
                             else:
                                 item['warning'] = m
             sw = item.get('size_warning', '')
             if sw and sw != '':
                 if item['warning'] and item['warning'] != '':
-                    item['warning'] = item['warning'] + '\n' + sw
+                    item['warning'] = item['warning'] + '; ' + sw
                 else:
                     item['warning'] = sw
 
@@ -3190,9 +3201,8 @@ class Sequencer(object):
 
         self.converts = []
         if self.settings:
-
+            # read all the settings from ui
             _root = str(self.settings['package_folder']['value'])
-            # read checks from gui, save to self.checks
             indexes = [str(x).zfill(2) for x in range(1, 9)]
             for one in indexes:
                 if_filter = str(self.settings["thumbs_if_" + one]["value"])
@@ -3240,12 +3250,19 @@ class Sequencer(object):
                         _fn = one_conv['fn'].format_map(Default(self.static_keywords))
                         _fn = _fn.format_map(Default(item))
 
-                        _fnr = _fn
-                        if _fn.startswith(_root):
-                            _fnr = _fn[len(_root)+1:]
-                        item['convert_path'] = _fn
-                        item['convert_path_relative'] = _fnr
-                        item['convert_cmd'] = _cmd
+                        # static keywords or item can include "unfilled tokens" in curly brackets
+                        # skip file outputs that have curly brackets
+                        if '{' in _fn:
+                            item['convert_path'] = None
+                            item['convert_path_relative'] = None
+                            item['convert_cmd'] = None
+                        else:
+                            _fnr = _fn
+                            if _fn.startswith(_root):
+                                _fnr = _fn[len(_root)+1:]
+                            item['convert_path'] = _fn
+                            item['convert_path_relative'] = _fnr
+                            item['convert_cmd'] = _cmd
 
                     except:
                         pass

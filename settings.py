@@ -40,7 +40,7 @@ class Settings(object):
                                                            'ffprobe_path'][1:]
                         self.install_settings['ffprobe_path'] = _p
 
-        except IOError:
+        except Exception:
             # no prefs found
             self.log.error("-> Error opening install prefs file {}".format(
                 str(pth)))
