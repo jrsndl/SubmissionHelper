@@ -2040,7 +2040,7 @@ class Sequencer(object):
                             # can't parse expression, put it in original form
                             #one_row_txt.append(str(one_expression))
                             one_row_txt.append("")
-                    whole_row = str(txt_sep.join(one_row_txt)) + "; "
+                    whole_row = str(txt_sep.join(one_row_txt)) + "\n"
                     body_txt += whole_row
 
                 sides = one_item.get('sidecars', None)
@@ -2548,22 +2548,23 @@ class Sequencer(object):
                     continue
 
                 # find what to rename
+                one_src = _target
+                one_before = ''
+                one_after = ''
                 if one_rename['src'] > 0:
                     # want to rename just one folder or filename
                     _s = _target.split('/')
-                    if len(_s) > one_rename['src']:
+                    if len(_s) < one_rename['src']:
                         continue
                     one_before = '/'.join(_s[: -1 * (one_rename['src'])])
                     one_src = _s[-1 * (one_rename['src'])] or ''
+                    one_after = ''
                     if one_rename['src']-1 > 0:
                         one_after = '/'.join(_s[-1 * (one_rename['src']-1):])
-                    else:
-                        one_after = ''
-                else:
-                    # want to rename the whole path
-                    one_src = _target
-                    one_before = ''
-                    one_after = ''
+                    if one_after != '':
+                        one_after = '/' + one_after
+                    if one_before != '':
+                        one_before = one_before + '/'
 
                 # do regex replace
                 result = None
