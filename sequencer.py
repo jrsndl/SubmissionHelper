@@ -468,6 +468,10 @@ class Sequencer(object):
             def __missing__(self, key):
                 return '{' + key + '}'
 
+        def substract_list(required, testing):
+            return [x for x in required if x not in testing]
+
+
         if self.vendor_csv_transformed and self.vendor_csv_prefs_repre:
             # find line merges
             merge_key = self.vendor_csv_prefs_repre['merge_repres_by']
@@ -477,26 +481,26 @@ class Sequencer(object):
                 # add merge key to the transformed csv
                 # also keep track of grouped rows in merge_groups
                 current = int(self.vendor_csv_transformed.index(one_row))
-                print('current {}'.format(current))
+                #print('current {}'.format(current))
                 try:
                     #one_row['vendor_Merge_by'] = merge_key.format(**one_row)
                     one_row['vendor_Merge_by'] = merge_key.format_map(Default(one_row))
                     if '{' in one_row['vendor_Merge_by']:
                         raise Exception('failed to expand')
-                    print('merge by {}'.format(one_row['vendor_Merge_by']))
+                    #print('merge by {}'.format(one_row['vendor_Merge_by']))
                 except Exception:
-                    print('Vendor CSV failed to expand, line {}'.format(current+2))
+                    #print('Vendor CSV failed to expand, line {}'.format(current+2))
                     continue
 
                 if one_row['vendor_Merge_by']:
                     if one_row['vendor_Merge_by'] in merge_groups:
                         merge_groups[one_row['vendor_Merge_by']].append(current)
-                        pprint.pprint(merge_groups)
+                        #pprint.pprint(merge_groups)
                     else:
                         _empty = []
                         _empty.append(current)
                         merge_groups[one_row['vendor_Merge_by']] = _empty
-                        pprint.pprint(merge_groups)
+                        #pprint.pprint(merge_groups)
 
                     #current_repre_name = one_row['vendor_Output']
                     current_repre_name = one_row.get('vendor_Output')
@@ -504,6 +508,10 @@ class Sequencer(object):
                         continue
                     current_line = self.vendor_csv_transformed.index(one_row)+2
 
+                    # REPRES check
+                    # check if output name exists in REPRES
+                    # if repre exists, does the file extension match the allowed ones?
+                    # check if metadata_check matches
                     if not any(d['name'] == current_repre_name for d in self.vendor_csv_prefs_repre['repres']):
                         # repre does not exist in repre json, skip
                         one_row['vendor_row_errors'].append("Output Type {} not found in preferences for line {}".format(current_repre_name, current_line))
@@ -541,59 +549,151 @@ class Sequencer(object):
                                             one_repre['vendor_Tags'])
                                     else:
                                         one_row['vendor_row_errors'].append(
-                                            "File extension {} doesn't match the representation extensions {}".format(
-                                                current_extension, ', '.join(
-                                                    one_repre['extensions'])))
+                                            "File extension {} doesn't match the representation extension(s) {} for output {}".format(
+                                                current_extension,
+                                                ', '.join(one_repre['extensions'])
+                                            ))
                                 except Exception:
                                     pass
 
+            # -------------------------------- CHECK task_intent_repres
+            """
+            task_intent_repres = {
+                "comp": [{
+                    "intents": ["WIP", "wip", "CHECK", "check"],
+                    "always": ["preview", "edit", "review"],
+                    "optional": ["exr"]
+                    },
+                    {
+                    "intents": ["PAF", "paf", "QC", "qc","FINAL", "final"],
+                    "always": ["exr", "preview", "edit", "review"],
+                    "optional": []
+                    }
+                ],
+                "lay": [{
+                    "intents": ["WIP", "wip", "CHECK", "check"],
+                    "always": ["preview", "edit", "review"],
+                    "optional": ["exr"]
+                    }
+                ]
+            }
+            """
+
+            """
+            merge_groups = {
+                'mw_210_11_0270compMain1': [0, 1, 2, 3],
+                'mw_210_12_0300compMain1': [4, 5, 6, 7]
+            }
+            """
+
+            # get all tasks defined in json settings
             all_tasks = self.vendor_csv_prefs_repre['task_intent_repres'].keys()
             for one_merge_key, merge_list in merge_groups.items():
-                task = self.vendor_csv_transformed[merge_list[0]].get('vendor_Task')
+                task = self.vendor_csv_transformed[merge_list[0]].get(
+                    'vendor_Task')
+                intent = self.vendor_csv_transformed[merge_list[0]].get(
+                    'vendor_Intent')
+
+                # find all outputs for merge_group
+                all_merged_outputs = []
+                for one_index in merge_list:
+                    _type = self.vendor_csv_transformed[one_index].get(
+                        'vendor_Output')
+                    if _type is None:
+                        continue
+                    all_merged_outputs.append(_type)
+
+                # find json task + intent definition
+                # this will get us required (always) and optional outputs for task + intent pair
+                task_found = False
+                intent_found = False
+                json_task_defs = None
                 _always = []
                 _optional = []
-                intent = self.vendor_csv_transformed[merge_list[0]].get('vendor_Intent')
-                if (task is None) or (intent is None):
-                    continue
-                _repres = []
+                _always_and_optional = []
                 if task in all_tasks:
-                    for one_task_set in self.vendor_csv_prefs_repre['task_intent_repres'][task]:
-                        if intent in one_task_set['intents']:
-                            _always = one_task_set['always']
-                            _optional = one_task_set['optional']
-                            # now check if all repres fit:
-                            for one_index in merge_list:
-                                _type = self.vendor_csv_transformed[one_index].get('vendor_Output')
-                                if _type is None:
-                                    continue
-                                _repres.append(_type)
-                                self.vendor_csv_transformed[one_index]['vendor_One_task_set'] = one_task_set
-                                if not(_type in _always or _type in _optional):
-                                    self.vendor_csv_transformed[one_index][
-                                        'vendor_row_errors'].append("Output type {}, is not found in Json (task_intent_repres section).".format(_type))
-
-                            duplicates = [number for number in _repres if _repres.count(number) > 1]
-                            unique_duplicates = list(set(duplicates))
-                            if len(unique_duplicates) > 0:
-                                for one_index in merge_list:
-                                    self.vendor_csv_transformed[one_index][
-                                        'vendor_row_errors'].append(
-                                        "Output type {} is present more than once in merged group {}".format(
-                                            _type, self.vendor_csv_transformed[one_index]['vendor_Merge_by']))
-                            break
-                    if not _always:
-                        # assuming all grouped have to match some intent
-                        for one_index in merge_list:
-                            self.vendor_csv_transformed[one_index]['vendor_row_errors'].append("For task {}, Intent {} was not found in Json (task_intent_repres section).".format(task, intent))
+                    json_task_defs = self.vendor_csv_prefs_repre['task_intent_repres'][task]
+                    task_found = True
                 else:
-                    # assuming all grouped have the same task
+                    # error for all group items
                     for one_index in merge_list:
-                        self.vendor_csv_transformed[one_index]['vendor_row_errors'].append("Task {} was not found in Json task_intent_repres section: {}.".format(task, all_tasks))
+                        self.vendor_csv_transformed[one_index][
+                            'vendor_row_errors'].append(
+                            "Task {} was not found in Json task_intent_repres section: {}.".format(
+                                task, all_tasks))
 
+                # find intent
+                if task_found and json_task_defs is not None:
+                    for one_task_def in json_task_defs:
+                        if intent in one_task_def['intents']:
+                            # found the task & intent pair, we have output defs
+                            intent_found = True
+                            break
+                if not intent_found:
+                    # error for all group items
+                    for one_index in merge_list:
+                        self.vendor_csv_transformed[one_index][
+                            'vendor_row_errors'].append(
+                            "Intent {} was not found in Json task_intent_repres section for task: {}.".format(
+                                intent, task))
+                else:
+                    _always = one_task_def['always']
+                    _optional = one_task_def['optional']
 
+                # we have all_merged_outputs (all outputs found in current merge group)
+                # and definition of _always and _optional outputs
+                # do some checks
+
+                # warn for duplicate outputs in all_merged_outputs
+                duplicates = [number for number in all_merged_outputs if
+                              all_merged_outputs.count(number) > 1]
+                unique_duplicates = list(set(duplicates))
+                if len(unique_duplicates) > 0:
+                    for one_index in merge_list:
+                        self.vendor_csv_transformed[one_index][
+                            'vendor_row_errors'].append(
+                            "Output type ({}) is present more than once in merged group {}".format(
+                                ' '.join(unique_duplicates),
+                                self.vendor_csv_transformed[one_index][
+                                    'vendor_Merge_by']))
+
+                # warn if required (always) output is missing
+                if _always is not None:
+                    required_but_missing = substract_list(_always, all_merged_outputs)
+                    if required_but_missing is not None and len(
+                            required_but_missing) > 0:
+                        missing_count = len(required_but_missing)
+                        for one_index in merge_list:
+                            self.vendor_csv_transformed[one_index][
+                                'vendor_row_errors'].append(
+                                "{} required output(s) are missing: {}".format(
+                                    missing_count,
+                                    ' '.join(required_but_missing)))
+                    if _optional is not None:
+                        _always_and_optional = _always + _optional
+                    else:
+                        _always_and_optional = _always
+
+                # warn if output exist in merged group, but is/are NOT defined
+                if _always_and_optional is not None:
+                    duplicates = [number for number in all_merged_outputs if
+                                  all_merged_outputs.count(number) > 1]
+                    _remove_dupes = substract_list(all_merged_outputs, duplicates)
+                    if _remove_dupes is not None and len(_remove_dupes) > 0:
+                        _udefined = substract_list(_always_and_optional, _remove_dupes)
+                        if _udefined is not None and len(
+                                _udefined) > 0:
+                            undefined_count = len(_udefined)
+                            for one_index in merge_list:
+                                self.vendor_csv_transformed[one_index][
+                                    'vendor_row_errors'].append(
+                                    "{} output(s) are present but undefined in task_intent_repres: {}".format(
+                                        undefined_count,
+                                        ' '.join(_udefined)))
+
+            # ------------------------------------------------------------------------------------------------------
             try:
                 for mrg_key in merge_groups.keys():
-
 
                     # make dicts where each length / tc / range serves as key,
                     # with value being a list of indexes for self.vendor_csv_transformed
@@ -615,7 +715,6 @@ class Sequencer(object):
                             tc_to_num += 1
                             tc_no_slate = helpers.frames_to_tc(tc_to_num, int(fps), 1)
                             if slate:
-
                                 tc = tc_no_slate
                         if slate:
                             fs += 1
@@ -635,7 +734,6 @@ class Sequencer(object):
                             _tcs_no_slate[tc].append(one_index)
                         else:
                             _tcs_no_slate[tc] = [one_index]
-
 
                 # add errors to all rows in merged group if one or more output is required but have error(s)
                 for mrg_key in merge_groups.keys():
