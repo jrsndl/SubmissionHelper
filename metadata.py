@@ -2,11 +2,13 @@
 import os
 import pprint
 import sys
+import re
 import subprocess
 import struct
 import logging
 
-from xml.etree import ElementTree as et
+import xml.etree.ElementTree
+
 from PyTimeCode import PyTimeCode
 import helpers
 import inspect
@@ -33,6 +35,7 @@ class MetaData(object):
         if self.settings['prefs_tc_default']['value'] is not None:
             self.default_tc = str(self.settings['prefs_tc_default']['value'])
 
+        # get file path
         # get file path
         self.item = item
 
@@ -247,6 +250,12 @@ class MetaData(object):
                 self.meta['thumbnail_frame'] = int(self.meta['duration_frames'] / 2) + self.item['start_number']
                 self.meta['thumbnail_time'] = helpers.frames_to_seconds(frames=int(self.meta['duration_frames'] / 2),
                                                                      fps=self.meta['fps_str'])
+            elif category == 'still':
+                self.meta['duration_frames'] = 1
+                self.meta['duration_frames_slate'] = 1
+                self.meta['duration_secs'] = 0.0
+                self.meta['thumbnail_frame'] = 0
+                self.meta['thumbnail_time'] = 0
             elif category == 'video':
                 #self.meta['thumbnail_time'] = (float(self.meta['duration_secs']) / 2.0)
                 #self.meta['thumbnail_frame'] = helpers.seconds_to_frames(seconds=float(self.meta['duration_secs']) / 2.0, fps=self.meta['fps_str'])
@@ -375,7 +384,7 @@ class MetaData(object):
             outdata['error'] = "Probing file " + str(filename) + "  failed with error " + str(err)
         else:
             try:
-                tree = et.fromstring(out)
+                tree = xml.etree.ElementTree.fromstring(out)
                 StreamFind = tree.find("streams")
                 StreamList = StreamFind.findall("stream")
                 for onestr in StreamList:
@@ -723,11 +732,397 @@ class MetaData(object):
             exr_metadata['time_code'] = "{}:{}:{}{}{}".format(_h, _m, _s, _drop, _f)
         except Exception:
             pass
+
+        # try to use OIIO tool for reading metadata
+        # currently only used to get layers and channels
+        chans = {}
+        if getattr(sys, 'frozen', False):
+            script_path = os.path.dirname(sys.executable).replace("\\", "/")
+        else:
+            script_path = os.path.dirname(__file__).replace("\\", "/")
+        oiio = script_path + '/oiio/win/oiiotool.exe'
+        if not os.path.exists(oiio):
+            oiio = ''
+        if oiio:
+            oiio_meta = self.get_oiio_info_for_input(self.meta['file'], oiio_path=oiio, subimages=True)
+            chans = self.oiio_chanels_prep(oiio_meta)
+
+            #print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+            #pprint.pprint(oiio_meta)
+            #print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+
         exr_renamed = {}
-        for k, v in exr_metadata.items():
-            exr_renamed['metaExr_'+str(k)] = v
+        exr_metadata_merged = {**exr_metadata, **chans}
+        for k, v in exr_metadata_merged.items():
+            exr_renamed['metaExr_' + str(k)] = v
+
         return exr_renamed
 
+    def oiio_chanels_prep(self, oiio_meta):
+        """
+        make list of layers and list of layers and channels
+        channels['layers_list'] == ['rgba', 'box1', 'circle1']
+        channels['layers_extra_list'] == ['box1', 'circle1']
+        channels['layers_channels_list'] == ['rgba.r', 'rgba.g', 'rgba.b', 'rgba.a', 'box1.matte', 'circle1.matte']
+        channels['layers_channels_extra_list'] == ['box1.matte', 'circle1.matte']
+        """
+
+        # oiio_meta is list of dicts
+        # list has more than one item for multipart exrs
+        channels = {
+            'layers_list': [],
+            'layers_extra_list': [],
+            'layers_channels_list': [],
+            'layers_channels_extra_list': [],
+            'layers_count': 0,
+            'layers_extra_count': 0,
+            'layers_channels_count': 0,
+            'layers_channels_extra_count': 0,
+            'layers': '',
+            'layers_extra': '',
+            'layers_channels': '',
+            'layers_channels_extra': '',
+        }
+
+        if not oiio_meta:
+            return channels
+        subimages = len(oiio_meta)
+        if subimages == 0:
+            return channels
+
+        default_name_1 = 'r'
+        default_name_3 = 'rgb'
+        default_name_4 = 'rgba'
+
+        cnt = 0
+        for one in oiio_meta:
+            channel_names = one.get('channelnames', [])
+            channel_number = one.get('nchannels', 3)
+            if channel_number == 4:
+                default_name = default_name_4
+            elif channel_number == 1:
+                default_name = default_name_1
+            else:
+                default_name = default_name_3
+
+            # get subimage name
+            subimage_name = None
+            subimage_attribs = one.get('attribs')
+            if subimage_attribs is not None:
+                subimage_name_whole = subimage_attribs.get('name')
+                if subimage_name_whole:
+                    subimage_name = subimage_name_whole.split('.')[0]
+            else:
+                if cnt == 0:
+                    # not multipart
+                    subimage_name = default_name
+
+            if (channel_names is not None) and (subimage_name is not None):
+                if cnt == 0:
+                    channels['layers_list'].append(subimage_name)
+                else:
+                    channels['layers_list'].append(subimage_name)
+                    channels['layers_extra_list'].append(subimage_name)
+
+                for one_chan in channel_names:
+                    if one_chan is None:
+                        continue
+                    if cnt == 0:
+                        # do not add first subimage to extra list
+                        channels['layers_channels_list'].append(
+                            subimage_name + '.' + one_chan.lower())
+                    else:
+                        channels['layers_channels_list'].append(
+                            subimage_name + '.' + one_chan)
+                        channels['layers_channels_extra_list'].append(
+                            subimage_name + '.' + one_chan)
+            cnt += 1
+        # join lists and store counts
+        channels = {
+            'layers_count': len(channels['layers_list']),
+            'layers_extra_count': len(channels['layers_extra_list']),
+            'layers_channels_count': len(channels['layers_channels_list']),
+            'layers_channels_extra_count': len(channels['layers_channels_extra_list']),
+            'layers': ' '.join(channels['layers_list']),
+            'layers_extra': ' '.join(channels['layers_extra_list']),
+            'layers_channels': ' '.join(channels['layers_channels_list']),
+            'layers_channels_extra': ' '.join(channels['layers_channels_extra_list']),
+        }
+
+        return channels
+
+    class RationalToInt:
+        """Rational value stored as division of 2 integers using string."""
+
+        def __init__(self, string_value):
+            parts = string_value.split("/")
+            top = float(parts[0])
+            bottom = 1.0
+            if len(parts) != 1:
+                bottom = float(parts[1])
+
+            self._value = float(top) / float(bottom)
+            self._string_value = string_value
+
+        @property
+        def value(self):
+            return self._value
+
+        @property
+        def string_value(self):
+            return self._string_value
+
+        def __format__(self, *args, **kwargs):
+            return self._string_value.__format__(*args, **kwargs)
+
+        def __float__(self):
+            return self._value
+
+        def __str__(self):
+            return self._string_value
+
+        def __repr__(self):
+            return "<{}> {}".format(self.__class__.__name__,
+                                    self._string_value)
+
+    def convert_value_by_type_name(self, value_type, value):
+        """Convert value to proper type based on type name.
+
+        In some cases value types have custom python class.
+        """
+
+        # Regex to parse array attributes
+        ARRAY_TYPE_REGEX = re.compile(r"^(int|float|string)\[\d+\]$")
+
+        # Simple types
+        if value_type == "string":
+            return value
+
+        if value_type == "int":
+            return int(value)
+
+        if value_type in ("float", "double"):
+            return float(value)
+
+        # Vectors will probably have more types
+        if value_type in ("vec2f", "float2", "float2d"):
+            return [float(item) for item in value.split(",")]
+
+        # Matrix should be always have square size of element 3x3, 4x4
+        # - are returned as list of lists
+        if value_type in ("matrix", "matrixd"):
+            output = []
+            current_index = -1
+            parts = value.split(",")
+            parts_len = len(parts)
+            if parts_len == 1:
+                divisor = 1
+            elif parts_len == 4:
+                divisor = 2
+            elif parts_len == 9:
+                divisor = 3
+            elif parts_len == 16:
+                divisor = 4
+            else:
+                for part in parts:
+                    output.append(float(part))
+                return output
+
+            for idx, item in enumerate(parts):
+                list_index = idx % divisor
+                if list_index > current_index:
+                    current_index = list_index
+                    output.append([])
+                output[list_index].append(float(item))
+            return output
+
+        if value_type == "rational2i":
+            return self.RationalToInt(value)
+
+        if value_type in ("vector", "vectord"):
+            parts = [part.strip() for part in value.split(",")]
+            output = []
+            for part in parts:
+                if part == "-nan":
+                    output.append(None)
+                    continue
+                try:
+                    part = float(part)
+                except ValueError:
+                    pass
+                output.append(part)
+            return output
+
+        if value_type == "timecode":
+            return value
+
+        # Array of other types is converted to list
+        re_result = ARRAY_TYPE_REGEX.findall(value_type)
+        if re_result:
+            array_type = re_result[0]
+            output = []
+            for item in value.split(","):
+                output.append(
+                    self.convert_value_by_type_name(array_type, item)
+                )
+            return output
+
+        return value
+
+    def parse_oiio_xml_output(self, xml_string):
+        """Parse xml output from OIIO info command."""
+
+        STRING_TAGS = {
+            "format"
+        }
+        INT_TAGS = {
+            "x", "y", "z",
+            "width", "height", "depth",
+            "full_x", "full_y", "full_z",
+            "full_width", "full_height", "full_depth",
+            "tile_width", "tile_height", "tile_depth",
+            "nchannels",
+            "alpha_channel",
+            "z_channel",
+            "deep",
+            "subimages",
+        }
+        XML_CHAR_REF_REGEX_HEX = re.compile(r"&#x?[0-9a-fA-F]+;")
+
+        PREFERRED_CHANNELS = [
+            ['R', 'G', 'B', 'A'],
+            ['r', 'g', 'b', 'a'],
+            ['R', 'G', 'B'],
+            ['r', 'g', 'b'],
+            ['beauty.R', 'beauty.G', 'beauty.B', 'beauty.A'],
+            ['beauty.R', 'beauty.G', 'beauty.B']
+        ]
+        output = {}
+        if not xml_string:
+            return output
+
+        # Fix values with ampresand (lazy fix)
+        # - oiiotool exports invalid xml which ElementTree can't handle
+        #   e.g. "&#01;"
+        # WARNING: this will affect even valid character entities. If you need
+        #   those values correctly, this must take care of valid character ranges.
+        #   See https://github.com/pypeclub/OpenPype/pull/2729
+        matches = XML_CHAR_REF_REGEX_HEX.findall(xml_string)
+        for match in matches:
+            new_value = match.replace("&", "&amp;")
+            xml_string = xml_string.replace(match, new_value)
+
+        tree = xml.etree.ElementTree.fromstring(xml_string)
+        attribs = {}
+        output["attribs"] = attribs
+        for child in tree:
+            tag_name = child.tag
+            if tag_name == "attrib":
+                attrib_def = child.attrib
+                value = self.convert_value_by_type_name(
+                    attrib_def["type"], child.text
+                )
+
+                attribs[attrib_def["name"]] = value
+                continue
+
+            # Channels are stored as tex on each child
+            if tag_name == "channelnames":
+                value = []
+                for channel in child:
+                    value.append(channel.text)
+
+            # Convert known integer type tags to int
+            elif tag_name in INT_TAGS:
+                value = int(child.text)
+
+            # Keep value of known string tags
+            elif tag_name in STRING_TAGS:
+                value = child.text
+
+            # Keep value as text for unknown tags
+            # - feel free to add more tags
+            else:
+                value = child.text
+
+            output[child.tag] = value
+
+        return output
+
+    def get_oiio_info_for_input(self, my_file, oiio_path, subimages=True):
+        """Call oiiotool to get information about input and return stdout.
+
+        Stdout should contain xml format string.
+        """
+
+        def run_subprocess(*args, **kwargs):
+
+            kwargs["stdout"] = subprocess.PIPE
+            kwargs["stderr"] = subprocess.PIPE
+            kwargs["stdin"] = subprocess.PIPE
+            proc = subprocess.Popen(*args, **kwargs)
+            full_output = ""
+            _stdout, _stderr = proc.communicate()
+            if _stdout:
+                _stdout = _stdout.decode("utf-8", errors="backslashreplace")
+                full_output += _stdout
+            if _stderr:
+                _stderr = _stderr.decode("utf-8", errors="backslashreplace")
+                if full_output:
+                    full_output += "\n"
+                full_output += _stderr
+            if proc.returncode != 0:
+                exc_msg = "Executing arguments was not successful: \"{}\"".format(
+                    args)
+                if _stdout:
+                    exc_msg += "\n\nOutput:\n{}".format(_stdout)
+                if _stderr:
+                    exc_msg += "Error:\n{}".format(_stderr)
+            return full_output
+
+        args = [
+            oiio_path,
+            "--info",
+            "-v"
+        ]
+        if subimages:
+            args.append("-a")
+
+        args.extend(["-i:infoformat=xml", my_file])
+
+        output = run_subprocess(args)
+        output = output.replace("\r\n", "\n")
+
+        xml_started = False
+        subimages_lines = []
+        lines = []
+        for line in output.split("\n"):
+            if not xml_started:
+                if not line.startswith("<"):
+                    continue
+                xml_started = True
+
+            if xml_started:
+                lines.append(line)
+                if line == "</ImageSpec>":
+                    subimages_lines.append(lines)
+                    lines = []
+
+        if not xml_started:
+            raise ValueError(
+                "Failed to read input file \"{}\".\nOutput:\n{}".format(
+                    my_file, output
+                )
+            )
+
+        output = []
+        for subimage_lines in subimages_lines:
+            xml_text = "\n".join(subimage_lines)
+            output.append(self.parse_oiio_xml_output(xml_text))
+
+        if subimages:
+            return output
+        return output[0]
 
 if __name__ == "__main__":
     pass

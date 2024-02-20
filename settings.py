@@ -39,6 +39,11 @@ class Settings(object):
                         _p = self._get_script_path() + self.install_settings[
                                                            'ffprobe_path'][1:]
                         self.install_settings['ffprobe_path'] = _p
+                if self.install_settings['oiio_path']:
+                    if self.install_settings['oiio_path'].startswith('./'):
+                        _p = self._get_script_path() + self.install_settings[
+                                                           'oiio_path'][1:]
+                        self.install_settings['oiio_path'] = _p
 
         except Exception:
             # no prefs found

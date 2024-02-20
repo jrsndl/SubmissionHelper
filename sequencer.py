@@ -1884,6 +1884,12 @@ class Sequencer(object):
                 return '{' + key + '}'
 
         def row_merge(rows, collapse, separator, sort, order):
+
+            # only one row, return as is
+            if rows and len(rows) == 1:
+                print('!!! onerow')
+                return rows[0]
+
             columns = len(rows[0]) - 1
 
             # vertically merge rows
@@ -1994,6 +2000,8 @@ class Sequencer(object):
                     #  on easily reference all the data for the row
                     one_row_sub.append(one_item)
 
+                    # make sub_merges dict, where key is the merged item,
+                    # and value is how many times the key exist
                     if _merge_chbx:
                         key = one_item.get(_merge_by, None)
                         if not key:
@@ -2065,7 +2073,7 @@ class Sequencer(object):
             if _merge_chbx:
                 _rows_merged = []
                 for one_merge_key, count in sub_merges.items():
-                    if count > 1:
+                    if count >= 1:
                         _all_merged = []
                         for one_row in self.table_sub:
                             merge_key = one_row[-1]
@@ -2081,6 +2089,7 @@ class Sequencer(object):
                                                    sort=_merge_sort,
                                                    order=_merge_order)
                             _rows_merged.append(merged_row)
+
                 for one_row in self.table_sub:
                     merge_key = one_row[-1]
                     if not merge_key:
