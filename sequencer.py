@@ -19,6 +19,7 @@ import ftrack_api
 import arrow
 import inspect
 import subprocess
+from unidecode import unidecode
 
 import concurrent.futures
 from functools import partial
@@ -197,8 +198,7 @@ class Sequencer(object):
             if not self.headless:
                 _p = self.ui.progressBar.value()
                 self.ui.progressBar.setValue(_p + progress_step)
-                self.ui.statusBar.showMessage(
-                    "Gathering Metadata: {} done.".format(one.item.get('part1')))
+                self.ui.statusBar.showMessage("Gathering Metadata: {} done.".format(one.item.get('part1')), 3000)
             return [one.item, one.meta_data]
 
         self.output['status'] = "Getting meta data" \
@@ -302,9 +302,9 @@ class Sequencer(object):
 
         try:
             vendor_csv_prefs_repre = json.loads(prefs_repre)
+            self.vendor_csv_prefs_repre = vendor_csv_prefs_repre
         except Exception:
             self.log.error('Error opening Vendor representation Json')
-        self.vendor_csv_prefs_repre = vendor_csv_prefs_repre
 
     def vendor_csv_transform(self):
         """
@@ -3119,6 +3119,10 @@ class Sequencer(object):
                 if version_gui == version_asset:
                     for one_note in one_asset['notes']:
                         content = str(one_note['content'])
+                        try:
+                            content = unidecode(content)
+                        except Exception:
+                            pass
                         _save = False
                         if self.ftrack['do_label']:
                             l = one_note['note_label_links']
