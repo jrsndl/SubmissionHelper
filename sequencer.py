@@ -198,8 +198,7 @@ class Sequencer(object):
                 _p = self.ui.progressBar.value()
                 self.ui.progressBar.setValue(_p + progress_step)
                 self.ui.statusBar.showMessage(
-                    "Gathering Metadata: {} done.".format(one.item.get('part1')),
-                    3000)
+                    "Gathering Metadata: {} done.".format(one.item.get('part1')))
             return [one.item, one.meta_data]
 
         self.output['status'] = "Getting meta data" \
@@ -384,9 +383,7 @@ class Sequencer(object):
         if self.vendor_csv_transformed:
             with open(pth, 'w', encoding='utf8',
                       newline='') as output_file:
-                fc = csv.DictWriter(output_file,
-                                    fieldnames=self.vendor_csv_transformed[
-                                        0].keys(), )
+                fc = csv.DictWriter(output_file, fieldnames=self.vendor_csv_transformed[0].keys())
                 fc.writeheader()
                 fc.writerows(self.vendor_csv_transformed)
 
@@ -2274,11 +2271,14 @@ class Sequencer(object):
                 t_export_root = t_custom.replace('\\', '/') + '/'
             elif t_pth_above:
                 t_export_root = one_above
-            t_export_root += self.static_keywords['package_name'] + '.txt'
+            t_export_name = t_export_root + self.static_keywords['package_name'] + '.txt'
 
             if self.table_txt is not None and t_do_txt:
-                with open(t_export_root, 'w') as f:
-                    f.write(self.table_txt)
+                try:
+                    with open(t_export_name, 'w') as f:
+                        f.write(self.table_txt)
+                except(FileNotFoundError, PermissionError, IOError) as e:
+                    print(f"Error exporting text file: {e}")
 
         # rename if autorename is ON
         if self.settings and\
@@ -2333,7 +2333,7 @@ class Sequencer(object):
                 workbook.close()
             # CSV
             if do_csv:
-                with open(export_root + '.csv', 'w', newline='') as f:
+                with open(export_root + '.csv', 'w', newline='', encoding='utf-8') as f:
                     writer = csv.writer(f)
                     writer.writerow(titles)
                     for row, line in enumerate(table):

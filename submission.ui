@@ -20752,7 +20752,7 @@ Vendor = AmazingVFX</string>
             <item>
              <widget class="QLabel" name="label_26">
               <property name="text">
-               <string>Release 2024-01-24</string>
+               <string>Release 2025-01-26</string>
               </property>
              </widget>
             </item>
