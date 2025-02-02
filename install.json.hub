@@ -1,9 +1,0 @@
-{
-    "global_prefs_path": "e:/_cfg/subHelperPrefs",
-    "global_prefs_enabled": true,
-    "ffprobe_path": "./ffmpeg/ffprobe",
-    "oiio_path": "./oiio/win/oiiotool.exe",
-    "server_url": "https://mwhub.ftrackapp.com",
-    "api_key":"ZGQyYWYxMjMtZDE3Ny00MWQ3LTgwNDMtMDQ0NmQxNzFiM2QyOjowMGU0NjM1Yi0wNzExLTRmM2YtYWU4NC0zMTQ4Yjg3NjRhNzc",
-    "api_user":"jiri.sindelar@dazzle.pictures"
-}
