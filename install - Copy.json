@@ -1,8 +1,0 @@
-{
-    "global_prefs_path": "e:/_cfg/subHelperPrefs",
-    "global_prefs_enabled": true,
-    "ffprobe_path": "./ffmpeg/ffprobe",
-    "server_url": "https://dazzlepictures.ftrackapp.com",
-    "api_key":"ZTcxOWYzNjAtYzFhNy00OWExLWFjZDktYTYyODUwM2U1MmY2OjozMDZhOTQ5NC0xOTc0LTQ0ZmEtYWE4My05ZDg4NDhlNTU1MmU",
-    "api_user":"software@dazzle.pictures"
-}
