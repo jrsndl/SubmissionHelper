@@ -1,29 +1,24 @@
-import os
-import re
-import sys
-import shutil
-from operator import itemgetter
-import pprint
-import time
-import logging
-
-import xlsxwriter
+import concurrent.futures
 import csv
 import json
-
-import parse_file_name
-from metadata import MetaData
-import helpers
+import logging
+import os
+import pprint
+import re
+import shutil
+import subprocess
+import sys
+import time
+from operator import itemgetter
 
 import ftrack_api
-import arrow
-import inspect
-import subprocess
+import xlsxwriter
+from PySide2 import QtGui, QtWidgets
 from unidecode import unidecode
 
-import concurrent.futures
-from functools import partial
-
+import helpers
+import parse_file_name
+from metadata import MetaData
 
 
 class Sequencer(object):
@@ -32,7 +27,6 @@ class Sequencer(object):
         self.converts = None
         self.ui = ui
         self.headless = headless
-
         self.log = logging.getLogger("mylog")
         self.sequence_mode = sequence_mode
         self.merged_list = None
@@ -51,6 +45,8 @@ class Sequencer(object):
         self.table_rename = []
         self.columns_side = []
         self.table_txt = ""
+        self.table_files = []
+        self.columns_files = ['File', 'Size', 'Category', 'Missing', 'Path', 'Meta']
 
         self.renames = []
 
@@ -118,13 +114,15 @@ class Sequencer(object):
             self.ui.statusBar.showMessage("Processing Sidecar files", 3000)
         self.sidecar_files_find()
 
+        # display found files
+        if not self.headless:
+            self.prepare_file_table()
+            self.display_file_table()
+
         # metadata
         if not self.headless:
             self.ui.statusBar.showMessage("Gathering Metadata", 3000)
         self.get_metadata()
-
-        # vendor ingest
-        #self.vendor_csv_read()
 
     def transform_data(self):
         """
@@ -157,6 +155,12 @@ class Sequencer(object):
         self.ftrack_query()
         self.select_ftrack_note()
         self.ftrack_op_attrs()
+
+        if not self.headless:
+            self.ui.statusBar.showMessage("Reading CSV Data", 3000)
+        self.csv_data = []
+        self.csv_data_read()
+        self.csv_data_assign()
 
         # sidecar files filter
         if not self.headless:
@@ -1972,6 +1976,82 @@ class Sequencer(object):
         self.column_titles_txt, self.column_expressions_txt =\
             self.prepare_columns(_txt)
 
+
+    def display_file_table(self):
+        """
+        table data to ui
+        """
+        table = self.table_files
+        table_ui = self.ui.file_table
+        titles = self.columns_files
+
+        # display table
+        table_ui.clear()
+        table_ui.setColumnCount(0)
+        table_ui.setRowCount(0)
+        if table and titles:
+            table_ui.setSortingEnabled(False)
+            table_ui.setColumnCount(len(titles))
+            table_ui.setHorizontalHeaderLabels(titles)
+            table_ui.setRowCount(len(table))
+
+            for row, line in enumerate(table):
+                # set row color by check list
+                color = 'white'
+                one_item = line[-1]
+                if type(one_item) is str:
+                    one_item = None
+                for column_number, one_column in enumerate(titles):
+                    table_ui.setItem(row,
+                                     column_number,
+                                     QtWidgets.QTableWidgetItem(str(line[column_number]))
+                                     )
+
+                    if one_item:
+                    #colorize
+                        itm = table_ui.item(row, column_number)
+                        color = 'white'
+                        _size_warning = one_item.get('size_warning', '')
+                        if _size_warning != '':
+                            color = 'purple'
+                        _warning = one_item.get('warning', '')
+                        if _warning != '':
+                            color = 'orange'
+                        _error = one_item.get('error', '')
+                        if _error != '':
+                            color = 'red'
+                        if itm:
+                            if color == 'green':
+                                itm.setBackground(QtGui.QColor('darkgreen'))
+                            elif color == 'orange':
+                                itm.setBackground(QtGui.QColor('sienna'))
+                            elif color == 'red':
+                                itm.setBackground(QtGui.QColor('maroon'))
+                            elif color == 'purple':
+                                itm.setBackground(QtGui.QColor('purple'))
+                            else:
+                                # white
+                                itm.setBackground(QtGui.QColor("#4d4d4d"))
+
+            table_ui.resizeColumnsToContents()
+            table_ui.resizeRowsToContents()
+            table_ui.setSortingEnabled(True)
+
+    def prepare_file_table(self):
+        if self.merged_list and len(self.merged_list) > 0:
+            for one_item in self.merged_list:
+                has_meta =  one_item.get("got_meta", False)
+                self.table_files.append(
+                    [
+                        one_item['sequence_nuke'] + '.' + one_item['extension'],
+                        one_item['size_human'],
+                        one_item['category'],
+                        str(one_item['missing_numbers']),
+                        str(one_item['path_prs']),
+                        ""
+                    ]
+                )
+
     def prepare_tables(self):
 
         class Default(dict):
@@ -2760,6 +2840,147 @@ class Sequencer(object):
                             _r + counter,
                         ])
                 one_rename(_seq)
+
+    def csv_data_read(self):
+        """
+        Retrieves and processes CSV data based on settings configured in the instance. The function identifies
+        valid CSV files either from a specified directory or directly from the provided file path. It validates
+        the structure of any discovered CSV file and loads its contents into dictionaries. The processed data, in
+        the form of a list of dictionaries, is stored in the instance property for further use.
+
+        :return: None
+        """
+
+        def get_csv_data_file(file_path, get_latest=False):
+            """
+            Checks if path is a folder. If it is a file, converts it to its parent folder.
+            Gets all .csv files in that folder, sorts them and checks if they can be parsed as CSV.
+            
+            :param file_path: Path to file or folder
+            :param get_latest: If True, returns the latest CSV file in the folder. If False, returns the csv file provided in file_path.
+            :return: Path to valid csv file, or None
+            """
+
+            def validate_csv(csv_file):
+                is_valid = False
+                try:
+                    with open(csv_file, "r") as f:
+                        reader = csv.reader(f)
+                        # Read the first row to validate
+                        next(reader, None)
+                        is_valid = True
+                except Exception:
+                    pass
+                return is_valid
+
+            valid_csv_files = []
+            csv_files = []
+
+            # get list of csv files
+            if not get_latest and os.path.isfile(file_path):
+                csv_files = [file_path]
+            else:
+                if os.path.isfile(file_path):
+                    folder_path = os.path.dirname(file_path)
+                else:
+                    folder_path = file_path
+                csv_files = [
+                    os.path.join(folder_path, f) for f in
+                    os.listdir(folder_path)
+                    if f.endswith(".csv")
+                ]
+
+            if csv_files is None or len(csv_files) == 0:
+                return None
+
+            for csv_file in csv_files:
+                if validate_csv(csv_file):
+                    valid_csv_files.append(csv_file)
+
+            if valid_csv_files is None or len(valid_csv_files) == 0:
+                return None
+
+            return sorted(valid_csv_files)[-1]
+
+        def csv_to_list_of_dicts(csv_path, prefix=''):
+            """
+            Reads a CSV file and returns a list of dictionaries.
+            
+            :param csv_path: Path to the CSV file.
+            :param prefix: Prefix to be added to the keys of the dictionaries.
+            :return: List of dictionaries representing the data in the file.
+            """
+            import csv
+
+            result = []
+            try:
+                with open(csv_path, mode='r',
+                          encoding='utf-8-sig') as csv_file:
+                    reader = csv.DictReader(csv_file)
+                    for row in reader:
+                        prefixed_row = {f"{prefix}_{key}": value for key, value
+                                        in row.items()}
+                        # for pairing indication
+                        prefixed_row[f"{prefix}_matched"] = False
+                        result.append(prefixed_row)
+            except Exception as e:
+                print(f"Failed to read CSV file: {e}")
+            return result
+            
+
+        if self.settings is None:
+            return
+
+        do_csv_data = bool(self.settings['csv_data']['value'])
+        if not do_csv_data:
+            return
+
+        valid_csv = get_csv_data_file(self.settings['data_csv_path']['value'], bool(self.settings['data_csv_latest']['value']))
+        if valid_csv is None or valid_csv == '':
+            return
+
+        csv_data = []
+        csv_data = csv_to_list_of_dicts(valid_csv, bool(self.settings['data_csv_latest']['value']))
+        if csv_data is None or len(csv_data) == 0:
+            return
+        self.csv_data = csv_data
+
+    def csv_data_assign(self):
+
+        if self.csv_data is None or len(self.csv_data) == 0:
+            return
+        if self.merged_list is None or len(self.merged_list) == 0:
+            return
+        if self.settings is None:
+            return
+
+        # get filters from gui, exit if filters empty
+        filters = []
+        if bool(self.settings['data_package1_chbx']['value']):
+            filters.append({
+                'pkg' : self.settings['data_package1']['value'],
+                'data': self.settings['data_data1']['value']
+            })
+        if bool(self.settings['data_package2_chbx']['value']):
+            filters.append({
+                'pkg': self.settings['data_package2']['value'],
+                'data': self.settings['data_data2']['value']
+            })
+        if bool(self.settings['data_package3_chbx']['value']):
+            filters.append({
+                'pkg': self.settings['data_package3']['value'],
+                'data': self.settings['data_data3']['value']
+            })
+        if filters is None or len(filters) == 0:
+            return
+
+        # column names from data
+        data_column_names = self.csv_data[0].keys()
+
+        for item in self.merged_list:
+            # keys in current item
+            keys = item.keys()
+
 
     def ftrack_query(self):
         self.ftrack_clean_notes()

@@ -67,6 +67,26 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.no_gui = no_gui
 
         # Settings to gui
+        # Top Tabs show / hide: Presets checkbox name: [tab index, tab name]
+        self.tab_pairs = {
+            "preset_mod_package": [0, "Package"],
+            "preset_mod_parsing": [1, "Parsing"],
+            "preset_mod_sidecar": [2, "Sidecar Files"],
+            "preset_mod_rename": [3, "Rename"],
+            "preset_mod_data": [4, "Data"],
+            "preset_mod_ftrack": [5, "Ftrack"],
+            "preset_mod_vendor": [6, "Vendor"],
+            "preset_mod_convert": [7, "Convert"],
+            "preset_mod_spreadsheet": [8, "Spreadsheet"],
+            "preset_mod_text": [9, "Text"],
+            "preset_mod_checks": [10, "Checks"],
+            "preset_mod_deadline": [11, "Deadline"],
+            "preset_mod_ayon": [12, "Ayon"],
+            "preset_mod_preferences": [13, "Preferences"],
+            "preset_mod_exports": [14, "Exports"],
+            "preset_mod_log": [16, "Log"],
+            "preset_mod_help": [17, "Help"]
+        }
         self.ui_start = True
         self.settings_obj = s
         self.settings = self.settings_obj.settings
@@ -75,6 +95,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.settings_to_gui()
         self.settings_update_app_title()
         self.settings_update_dropbox()
+        self.gui_show_hide_modules()
         self.ui_start = False
 
         # Other inits
@@ -873,6 +894,41 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.preset_explore.clicked.connect(
             partial(self.handler, 'preset_explore', 'preset_explore'))
 
+        self.ui.preset_mod_package.clicked.connect(
+            partial(self.handler, 'preset_mod_package', 'tab_pairs'))
+        self.ui.preset_mod_parsing.clicked.connect(
+            partial(self.handler, 'preset_mod_parsing', 'tab_pairs'))
+        self.ui.preset_mod_sidecar.clicked.connect(
+            partial(self.handler, 'preset_mod_sidecar', 'tab_pairs'))
+        self.ui.preset_mod_rename.clicked.connect(
+            partial(self.handler, 'preset_mod_rename', 'tab_pairs'))
+        self.ui.preset_mod_data.clicked.connect(
+            partial(self.handler, 'preset_mod_data', 'tab_pairs'))
+        self.ui.preset_mod_ftrack.clicked.connect(
+            partial(self.handler, 'preset_mod_ftrack', 'tab_pairs'))
+        self.ui.preset_mod_vendor.clicked.connect(
+            partial(self.handler, 'preset_mod_vendor', 'tab_pairs'))
+        self.ui.preset_mod_convert.clicked.connect(
+            partial(self.handler, 'preset_mod_convert', 'tab_pairs'))
+        self.ui.preset_mod_spreadsheet.clicked.connect(
+            partial(self.handler, 'preset_mod_spreadsheet', 'tab_pairs'))
+        self.ui.preset_mod_text.clicked.connect(
+            partial(self.handler, 'preset_mod_text', 'tab_pairs'))
+        self.ui.preset_mod_checks.clicked.connect(
+            partial(self.handler, 'preset_mod_checks', 'tab_pairs'))
+        self.ui.preset_mod_deadline.clicked.connect(
+            partial(self.handler, 'preset_mod_deadline', 'tab_pairs'))
+        self.ui.preset_mod_ayon.clicked.connect(
+            partial(self.handler, 'preset_mod_ayon', 'tab_pairs'))
+        self.ui.preset_mod_preferences.clicked.connect(
+            partial(self.handler, 'preset_mod_preferences', 'tab_pairs'))
+        self.ui.preset_mod_exports.clicked.connect(
+            partial(self.handler, 'preset_mod_exports', 'tab_pairs'))
+        self.ui.preset_mod_log.clicked.connect(
+            partial(self.handler, 'preset_mod_log', 'tab_pairs'))
+        self.ui.preset_mod_help.clicked.connect(
+            partial(self.handler, 'preset_mod_help', 'tab_pairs'))
+
         # GO button
         self.ui.write_button.clicked.connect(
             partial(self.handler, 'write_button', 'write'))
@@ -1120,6 +1176,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         if group == "data_filter":
             self.show_data()
 
+        if group == "tab_pairs":
+            self.gui_show_hide_modules()
+
     def show_data(self):
 
         if self.data and self.settings:
@@ -1131,26 +1190,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             self.ui.data_tree.clear()
             self.ui.data_tree.setColumnCount(3)
             self.ui.data_tree.setHeaderLabels(["#", "key", "value"])
-            for one_itm in self.data.merged_list:
-                _ti = QtWidgets.QTreeWidgetItem(self.ui.data_tree)
-                _fn = one_itm.get('part1', '')
-                _fp = one_itm.get('part2', '')
-                if _fp:
-                    _l = _fp + '/' + _fn
-                else:
-                    _l = _fn
-                _n = "{}: {}".format(str(self.data.merged_list.index(one_itm)), _l)
+            if self.data.merged_list is not None:
+                for one_itm in self.data.merged_list:
+                    _ti = QtWidgets.QTreeWidgetItem(self.ui.data_tree)
+                    _fn = one_itm.get('part1', '')
+                    _fp = one_itm.get('part2', '')
+                    if _fp:
+                        _l = _fp + '/' + _fn
+                    else:
+                        _l = _fn
+                    _n = "{}: {}".format(str(self.data.merged_list.index(one_itm)), _l)
 
-                if (not _1) or _1 == "" or (str(_1) in _n):
-                    _ti.setText(0, _n)
-                    for k, v in sorted(one_itm.items()):
-                        _tii = None
-                        if (not _2) or _2 == "" or (str(_2) in str(k)):
-                            if (not _3) or _3 == "" or (str(_3) in str(v)):
-                                _tii = QtWidgets.QTreeWidgetItem(self.ui.data_tree)
-                                _tii.setText(1, str(k))
-                                _tii.setText(2, str(v))
-                                _ti.addChild(_tii)
+                    if (not _1) or _1 == "" or (str(_1) in _n):
+                        _ti.setText(0, _n)
+                        for k, v in sorted(one_itm.items()):
+                            _tii = None
+                            if (not _2) or _2 == "" or (str(_2) in str(k)):
+                                if (not _3) or _3 == "" or (str(_3) in str(v)):
+                                    _tii = QtWidgets.QTreeWidgetItem(self.ui.data_tree)
+                                    _tii.setText(1, str(k))
+                                    _tii.setText(2, str(v))
+                                    _ti.addChild(_tii)
 
     def show_all(self):
         """
@@ -1427,6 +1487,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                                             'category': 'slider',
                                             'value': value}})
 
+    def gui_show_hide_modules(self):
+        # show / hide tabs
+        for checkbox, val in self.tab_pairs.items():
+            index = val[0]
+            tab_name = val[1]
+            self.ui.TopTab.setTabVisible(index, self.settings.get(checkbox)['value'])
+
     def settings_to_gui(self):
         """
         Applies values from self.settings to gui
@@ -1651,3 +1718,4 @@ if __name__ == "__main__":
         main = MainWindow(no_gui=False, s=settings_obj)
         main.show()
         app.exec_()
+

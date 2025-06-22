@@ -18,7 +18,7 @@ class Ui_submission(object):
     def setupUi(self, submission):
         if not submission.objectName():
             submission.setObjectName(u"submission")
-        submission.resize(1005, 600)
+        submission.resize(1371, 958)
         sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -706,15 +706,15 @@ class Ui_submission(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.centralwidget.setMinimumSize(QSize(800, 580))
         self.centralwidget.setMaximumSize(QSize(16000, 16777215))
-        self.verticalLayout_60 = QVBoxLayout(self.centralwidget)
-        self.verticalLayout_60.setObjectName(u"verticalLayout_60")
-        self.verticalLayout_50 = QVBoxLayout()
+        self.verticalLayout_50 = QVBoxLayout(self.centralwidget)
         self.verticalLayout_50.setObjectName(u"verticalLayout_50")
+        self.verticalLayout_15 = QVBoxLayout()
+        self.verticalLayout_15.setObjectName(u"verticalLayout_15")
         self.TopTab = QTabWidget(self.centralwidget)
         self.TopTab.setObjectName(u"TopTab")
         sizePolicy.setHeightForWidth(self.TopTab.sizePolicy().hasHeightForWidth())
         self.TopTab.setSizePolicy(sizePolicy)
-        self.TopTab.setMinimumSize(QSize(780, 320))
+        self.TopTab.setMinimumSize(QSize(780, 340))
         self.TopTab.setMaximumSize(QSize(16777215, 350))
         self.tab = QWidget()
         self.tab.setObjectName(u"tab")
@@ -1052,7 +1052,7 @@ class Ui_submission(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 500, 1070))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 1322, 1070))
         sizePolicy4 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.MinimumExpanding)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
@@ -5391,6 +5391,298 @@ class Ui_submission(object):
         self.verticalLayout_66.addLayout(self.verticalLayout_65)
 
         self.TopTab.addTab(self.tab_17, "")
+        self.tab_23 = QWidget()
+        self.tab_23.setObjectName(u"tab_23")
+        self.verticalLayout_76 = QVBoxLayout(self.tab_23)
+        self.verticalLayout_76.setObjectName(u"verticalLayout_76")
+        self.verticalLayout_75 = QVBoxLayout()
+        self.verticalLayout_75.setObjectName(u"verticalLayout_75")
+        self.horizontalLayout_192 = QHBoxLayout()
+        self.horizontalLayout_192.setObjectName(u"horizontalLayout_192")
+        self.groupBox_29 = QGroupBox(self.tab_23)
+        self.groupBox_29.setObjectName(u"groupBox_29")
+        sizePolicy2.setHeightForWidth(self.groupBox_29.sizePolicy().hasHeightForWidth())
+        self.groupBox_29.setSizePolicy(sizePolicy2)
+        self.groupBox_29.setMinimumSize(QSize(320, 55))
+        self.groupBox_29.setMaximumSize(QSize(320, 55))
+        self.groupBox_29.setBaseSize(QSize(350, 70))
+        self.groupBox_29.setFlat(False)
+        self.horizontalLayout_174 = QHBoxLayout(self.groupBox_29)
+        self.horizontalLayout_174.setObjectName(u"horizontalLayout_174")
+        self.horizontalLayout_163 = QHBoxLayout()
+        self.horizontalLayout_163.setObjectName(u"horizontalLayout_163")
+        self.data_enable = QCheckBox(self.groupBox_29)
+        self.data_enable.setObjectName(u"data_enable")
+        sizePolicy2.setHeightForWidth(self.data_enable.sizePolicy().hasHeightForWidth())
+        self.data_enable.setSizePolicy(sizePolicy2)
+        self.data_enable.setMinimumSize(QSize(90, 25))
+        self.data_enable.setMaximumSize(QSize(100, 25))
+
+        self.horizontalLayout_163.addWidget(self.data_enable)
+
+        self.label_321 = QLabel(self.groupBox_29)
+        self.label_321.setObjectName(u"label_321")
+        sizePolicy2.setHeightForWidth(self.label_321.sizePolicy().hasHeightForWidth())
+        self.label_321.setSizePolicy(sizePolicy2)
+        self.label_321.setMinimumSize(QSize(90, 25))
+        self.label_321.setMaximumSize(QSize(90, 16777215))
+
+        self.horizontalLayout_163.addWidget(self.label_321)
+
+        self.name_date_prefix = QLineEdit(self.groupBox_29)
+        self.name_date_prefix.setObjectName(u"name_date_prefix")
+        sizePolicy2.setHeightForWidth(self.name_date_prefix.sizePolicy().hasHeightForWidth())
+        self.name_date_prefix.setSizePolicy(sizePolicy2)
+        self.name_date_prefix.setMinimumSize(QSize(100, 25))
+        self.name_date_prefix.setMaximumSize(QSize(100, 25))
+
+        self.horizontalLayout_163.addWidget(self.name_date_prefix)
+
+
+        self.horizontalLayout_174.addLayout(self.horizontalLayout_163)
+
+
+        self.horizontalLayout_192.addWidget(self.groupBox_29)
+
+        self.groupBox_25 = QGroupBox(self.tab_23)
+        self.groupBox_25.setObjectName(u"groupBox_25")
+        sizePolicy5 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.groupBox_25.sizePolicy().hasHeightForWidth())
+        self.groupBox_25.setSizePolicy(sizePolicy5)
+        self.groupBox_25.setMinimumSize(QSize(400, 55))
+        self.groupBox_25.setMaximumSize(QSize(16777215, 55))
+        self.groupBox_25.setBaseSize(QSize(350, 70))
+        self.groupBox_25.setFlat(False)
+        self.verticalLayout_60 = QVBoxLayout(self.groupBox_25)
+        self.verticalLayout_60.setObjectName(u"verticalLayout_60")
+        self.horizontalLayout_162 = QHBoxLayout()
+        self.horizontalLayout_162.setObjectName(u"horizontalLayout_162")
+        self.data_csv_path = QLineEdit(self.groupBox_25)
+        self.data_csv_path.setObjectName(u"data_csv_path")
+        sizePolicy5.setHeightForWidth(self.data_csv_path.sizePolicy().hasHeightForWidth())
+        self.data_csv_path.setSizePolicy(sizePolicy5)
+        self.data_csv_path.setMinimumSize(QSize(100, 25))
+        self.data_csv_path.setMaximumSize(QSize(16777215, 16777215))
+        self.data_csv_path.setDragEnabled(True)
+
+        self.horizontalLayout_162.addWidget(self.data_csv_path)
+
+        self.data_csv_browse = QPushButton(self.groupBox_25)
+        self.data_csv_browse.setObjectName(u"data_csv_browse")
+        sizePolicy2.setHeightForWidth(self.data_csv_browse.sizePolicy().hasHeightForWidth())
+        self.data_csv_browse.setSizePolicy(sizePolicy2)
+        self.data_csv_browse.setMinimumSize(QSize(30, 25))
+        self.data_csv_browse.setMaximumSize(QSize(60, 25))
+        self.data_csv_browse.setAutoFillBackground(False)
+        self.data_csv_browse.setIcon(icon)
+        self.data_csv_browse.setFlat(True)
+
+        self.horizontalLayout_162.addWidget(self.data_csv_browse)
+
+        self.data_csv_latest = QCheckBox(self.groupBox_25)
+        self.data_csv_latest.setObjectName(u"data_csv_latest")
+        self.data_csv_latest.setMinimumSize(QSize(120, 25))
+        self.data_csv_latest.setMaximumSize(QSize(120, 25))
+
+        self.horizontalLayout_162.addWidget(self.data_csv_latest)
+
+
+        self.verticalLayout_60.addLayout(self.horizontalLayout_162)
+
+
+        self.horizontalLayout_192.addWidget(self.groupBox_25)
+
+
+        self.verticalLayout_75.addLayout(self.horizontalLayout_192)
+
+        self.groupBox_26 = QGroupBox(self.tab_23)
+        self.groupBox_26.setObjectName(u"groupBox_26")
+        sizePolicy6 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+        sizePolicy6.setHorizontalStretch(0)
+        sizePolicy6.setVerticalStretch(0)
+        sizePolicy6.setHeightForWidth(self.groupBox_26.sizePolicy().hasHeightForWidth())
+        self.groupBox_26.setSizePolicy(sizePolicy6)
+        self.groupBox_26.setMinimumSize(QSize(350, 50))
+        self.groupBox_26.setMaximumSize(QSize(16777215, 50))
+        self.verticalLayout_74 = QVBoxLayout(self.groupBox_26)
+        self.verticalLayout_74.setObjectName(u"verticalLayout_74")
+        self.horizontalLayout_180 = QHBoxLayout()
+        self.horizontalLayout_180.setObjectName(u"horizontalLayout_180")
+        self.horizontalLayout_115 = QHBoxLayout()
+        self.horizontalLayout_115.setObjectName(u"horizontalLayout_115")
+        self.horizontalLayout_114 = QHBoxLayout()
+        self.horizontalLayout_114.setObjectName(u"horizontalLayout_114")
+        self.data_package1_chbx = QCheckBox(self.groupBox_26)
+        self.data_package1_chbx.setObjectName(u"data_package1_chbx")
+        self.data_package1_chbx.setMinimumSize(QSize(80, 25))
+        self.data_package1_chbx.setMaximumSize(QSize(80, 16777215))
+        self.data_package1_chbx.setChecked(True)
+
+        self.horizontalLayout_114.addWidget(self.data_package1_chbx)
+
+        self.data_package1 = QLineEdit(self.groupBox_26)
+        self.data_package1.setObjectName(u"data_package1")
+        sizePolicy1.setHeightForWidth(self.data_package1.sizePolicy().hasHeightForWidth())
+        self.data_package1.setSizePolicy(sizePolicy1)
+        self.data_package1.setMinimumSize(QSize(50, 25))
+        self.data_package1.setMaximumSize(QSize(400, 16777215))
+        self.data_package1.setReadOnly(False)
+
+        self.horizontalLayout_114.addWidget(self.data_package1)
+
+
+        self.horizontalLayout_115.addLayout(self.horizontalLayout_114)
+
+        self.horizontalLayout_177 = QHBoxLayout()
+        self.horizontalLayout_177.setObjectName(u"horizontalLayout_177")
+        self.label_309 = QLabel(self.groupBox_26)
+        self.label_309.setObjectName(u"label_309")
+        sizePolicy2.setHeightForWidth(self.label_309.sizePolicy().hasHeightForWidth())
+        self.label_309.setSizePolicy(sizePolicy2)
+        self.label_309.setMinimumSize(QSize(40, 25))
+        self.label_309.setMaximumSize(QSize(40, 16777215))
+
+        self.horizontalLayout_177.addWidget(self.label_309)
+
+        self.data_data1 = QLineEdit(self.groupBox_26)
+        self.data_data1.setObjectName(u"data_data1")
+        sizePolicy1.setHeightForWidth(self.data_data1.sizePolicy().hasHeightForWidth())
+        self.data_data1.setSizePolicy(sizePolicy1)
+        self.data_data1.setMinimumSize(QSize(50, 25))
+        self.data_data1.setMaximumSize(QSize(400, 16777215))
+        self.data_data1.setReadOnly(False)
+
+        self.horizontalLayout_177.addWidget(self.data_data1)
+
+
+        self.horizontalLayout_115.addLayout(self.horizontalLayout_177)
+
+
+        self.horizontalLayout_180.addLayout(self.horizontalLayout_115)
+
+        self.horizontalLayout_116 = QHBoxLayout()
+        self.horizontalLayout_116.setObjectName(u"horizontalLayout_116")
+        self.horizontalLayout_117 = QHBoxLayout()
+        self.horizontalLayout_117.setObjectName(u"horizontalLayout_117")
+        self.data_package2_chbx = QCheckBox(self.groupBox_26)
+        self.data_package2_chbx.setObjectName(u"data_package2_chbx")
+        self.data_package2_chbx.setMinimumSize(QSize(80, 25))
+        self.data_package2_chbx.setMaximumSize(QSize(80, 16777215))
+
+        self.horizontalLayout_117.addWidget(self.data_package2_chbx)
+
+        self.data_package2 = QLineEdit(self.groupBox_26)
+        self.data_package2.setObjectName(u"data_package2")
+        sizePolicy1.setHeightForWidth(self.data_package2.sizePolicy().hasHeightForWidth())
+        self.data_package2.setSizePolicy(sizePolicy1)
+        self.data_package2.setMinimumSize(QSize(50, 25))
+        self.data_package2.setMaximumSize(QSize(400, 16777215))
+        self.data_package2.setReadOnly(False)
+
+        self.horizontalLayout_117.addWidget(self.data_package2)
+
+
+        self.horizontalLayout_116.addLayout(self.horizontalLayout_117)
+
+        self.horizontalLayout_178 = QHBoxLayout()
+        self.horizontalLayout_178.setObjectName(u"horizontalLayout_178")
+        self.label_310 = QLabel(self.groupBox_26)
+        self.label_310.setObjectName(u"label_310")
+        sizePolicy2.setHeightForWidth(self.label_310.sizePolicy().hasHeightForWidth())
+        self.label_310.setSizePolicy(sizePolicy2)
+        self.label_310.setMinimumSize(QSize(40, 25))
+        self.label_310.setMaximumSize(QSize(40, 16777215))
+
+        self.horizontalLayout_178.addWidget(self.label_310)
+
+        self.data_data2 = QLineEdit(self.groupBox_26)
+        self.data_data2.setObjectName(u"data_data2")
+        sizePolicy1.setHeightForWidth(self.data_data2.sizePolicy().hasHeightForWidth())
+        self.data_data2.setSizePolicy(sizePolicy1)
+        self.data_data2.setMinimumSize(QSize(50, 25))
+        self.data_data2.setMaximumSize(QSize(400, 16777215))
+        self.data_data2.setReadOnly(False)
+
+        self.horizontalLayout_178.addWidget(self.data_data2)
+
+
+        self.horizontalLayout_116.addLayout(self.horizontalLayout_178)
+
+
+        self.horizontalLayout_180.addLayout(self.horizontalLayout_116)
+
+        self.horizontalLayout_175 = QHBoxLayout()
+        self.horizontalLayout_175.setObjectName(u"horizontalLayout_175")
+        self.horizontalLayout_176 = QHBoxLayout()
+        self.horizontalLayout_176.setObjectName(u"horizontalLayout_176")
+        self.data_package3_chbx = QCheckBox(self.groupBox_26)
+        self.data_package3_chbx.setObjectName(u"data_package3_chbx")
+        self.data_package3_chbx.setMinimumSize(QSize(80, 25))
+        self.data_package3_chbx.setMaximumSize(QSize(80, 16777215))
+
+        self.horizontalLayout_176.addWidget(self.data_package3_chbx)
+
+        self.data_package3 = QLineEdit(self.groupBox_26)
+        self.data_package3.setObjectName(u"data_package3")
+        sizePolicy1.setHeightForWidth(self.data_package3.sizePolicy().hasHeightForWidth())
+        self.data_package3.setSizePolicy(sizePolicy1)
+        self.data_package3.setMinimumSize(QSize(50, 25))
+        self.data_package3.setMaximumSize(QSize(400, 16777215))
+        self.data_package3.setReadOnly(False)
+
+        self.horizontalLayout_176.addWidget(self.data_package3)
+
+
+        self.horizontalLayout_175.addLayout(self.horizontalLayout_176)
+
+        self.horizontalLayout_179 = QHBoxLayout()
+        self.horizontalLayout_179.setObjectName(u"horizontalLayout_179")
+        self.label_311 = QLabel(self.groupBox_26)
+        self.label_311.setObjectName(u"label_311")
+        sizePolicy2.setHeightForWidth(self.label_311.sizePolicy().hasHeightForWidth())
+        self.label_311.setSizePolicy(sizePolicy2)
+        self.label_311.setMinimumSize(QSize(40, 25))
+        self.label_311.setMaximumSize(QSize(40, 16777215))
+
+        self.horizontalLayout_179.addWidget(self.label_311)
+
+        self.data_data3 = QLineEdit(self.groupBox_26)
+        self.data_data3.setObjectName(u"data_data3")
+        sizePolicy1.setHeightForWidth(self.data_data3.sizePolicy().hasHeightForWidth())
+        self.data_data3.setSizePolicy(sizePolicy1)
+        self.data_data3.setMinimumSize(QSize(50, 25))
+        self.data_data3.setMaximumSize(QSize(400, 16777215))
+        self.data_data3.setReadOnly(False)
+
+        self.horizontalLayout_179.addWidget(self.data_data3)
+
+
+        self.horizontalLayout_175.addLayout(self.horizontalLayout_179)
+
+
+        self.horizontalLayout_180.addLayout(self.horizontalLayout_175)
+
+
+        self.verticalLayout_74.addLayout(self.horizontalLayout_180)
+
+
+        self.verticalLayout_75.addWidget(self.groupBox_26)
+
+        self.data_table = QTableWidget(self.tab_23)
+        self.data_table.setObjectName(u"data_table")
+        sizePolicy.setHeightForWidth(self.data_table.sizePolicy().hasHeightForWidth())
+        self.data_table.setSizePolicy(sizePolicy)
+        self.data_table.setMinimumSize(QSize(600, 100))
+        self.data_table.setMaximumSize(QSize(16000, 16000))
+
+        self.verticalLayout_75.addWidget(self.data_table)
+
+
+        self.verticalLayout_76.addLayout(self.verticalLayout_75)
+
+        self.TopTab.addTab(self.tab_23, "")
         self.tab_11 = QWidget()
         self.tab_11.setObjectName(u"tab_11")
         self.verticalLayout_64 = QVBoxLayout(self.tab_11)
@@ -5674,7 +5966,7 @@ class Ui_submission(object):
         self.scrollArea_4.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 791, 469))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 1322, 469))
         self.verticalLayout_62 = QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_62.setObjectName(u"verticalLayout_62")
         self.verticalLayout_61 = QVBoxLayout()
@@ -5707,9 +5999,6 @@ class Ui_submission(object):
 
         self.vendor_csv_path = QLineEdit(self.groupBox_11)
         self.vendor_csv_path.setObjectName(u"vendor_csv_path")
-        sizePolicy5 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
-        sizePolicy5.setHorizontalStretch(0)
-        sizePolicy5.setVerticalStretch(0)
         sizePolicy5.setHeightForWidth(self.vendor_csv_path.sizePolicy().hasHeightForWidth())
         self.vendor_csv_path.setSizePolicy(sizePolicy5)
         self.vendor_csv_path.setMinimumSize(QSize(100, 25))
@@ -5758,9 +6047,6 @@ class Ui_submission(object):
 
         self.groupBox_12 = QGroupBox(self.scrollAreaWidgetContents_2)
         self.groupBox_12.setObjectName(u"groupBox_12")
-        sizePolicy6 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
-        sizePolicy6.setHorizontalStretch(0)
-        sizePolicy6.setVerticalStretch(0)
         sizePolicy6.setHeightForWidth(self.groupBox_12.sizePolicy().hasHeightForWidth())
         self.groupBox_12.setSizePolicy(sizePolicy6)
         self.groupBox_12.setMinimumSize(QSize(350, 50))
@@ -6617,7 +6903,7 @@ class Ui_submission(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 548, 218))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 1327, 299))
         sizePolicy8 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
         sizePolicy8.setHorizontalStretch(0)
         sizePolicy8.setVerticalStretch(0)
@@ -7078,7 +7364,7 @@ class Ui_submission(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollAreaWidgetContents_4 = QWidget()
         self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
-        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 620, 2030))
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 1320, 2030))
         self.verticalLayout_48 = QVBoxLayout(self.scrollAreaWidgetContents_4)
         self.verticalLayout_48.setObjectName(u"verticalLayout_48")
         self.verticalLayout_63 = QVBoxLayout()
@@ -9256,6 +9542,301 @@ class Ui_submission(object):
         self.verticalLayout_68.addLayout(self.verticalLayout_67)
 
         self.TopTab.addTab(self.tab_12, "")
+        self.tab_24 = QWidget()
+        self.tab_24.setObjectName(u"tab_24")
+        self.verticalLayout_93 = QVBoxLayout(self.tab_24)
+        self.verticalLayout_93.setObjectName(u"verticalLayout_93")
+        self.horizontalLayout_191 = QHBoxLayout()
+        self.horizontalLayout_191.setObjectName(u"horizontalLayout_191")
+        self.verticalLayout_92 = QVBoxLayout()
+        self.verticalLayout_92.setObjectName(u"verticalLayout_92")
+        self.groupBox_27 = QGroupBox(self.tab_24)
+        self.groupBox_27.setObjectName(u"groupBox_27")
+        self.verticalLayout_79 = QVBoxLayout(self.groupBox_27)
+        self.verticalLayout_79.setObjectName(u"verticalLayout_79")
+        self.verticalLayout_78 = QVBoxLayout()
+        self.verticalLayout_78.setObjectName(u"verticalLayout_78")
+        self.horizontalLayout_181 = QHBoxLayout()
+        self.horizontalLayout_181.setObjectName(u"horizontalLayout_181")
+        self.label_279 = QLabel(self.groupBox_27)
+        self.label_279.setObjectName(u"label_279")
+        sizePolicy2.setHeightForWidth(self.label_279.sizePolicy().hasHeightForWidth())
+        self.label_279.setSizePolicy(sizePolicy2)
+        self.label_279.setMinimumSize(QSize(90, 25))
+        self.label_279.setMaximumSize(QSize(90, 16777215))
+
+        self.horizontalLayout_181.addWidget(self.label_279)
+
+        self.dead_primpool = QLineEdit(self.groupBox_27)
+        self.dead_primpool.setObjectName(u"dead_primpool")
+        sizePolicy2.setHeightForWidth(self.dead_primpool.sizePolicy().hasHeightForWidth())
+        self.dead_primpool.setSizePolicy(sizePolicy2)
+        self.dead_primpool.setMinimumSize(QSize(100, 25))
+        self.dead_primpool.setMaximumSize(QSize(150, 16777215))
+        self.dead_primpool.setReadOnly(False)
+
+        self.horizontalLayout_181.addWidget(self.dead_primpool)
+
+
+        self.verticalLayout_78.addLayout(self.horizontalLayout_181)
+
+        self.horizontalLayout_182 = QHBoxLayout()
+        self.horizontalLayout_182.setObjectName(u"horizontalLayout_182")
+        self.label_312 = QLabel(self.groupBox_27)
+        self.label_312.setObjectName(u"label_312")
+        sizePolicy2.setHeightForWidth(self.label_312.sizePolicy().hasHeightForWidth())
+        self.label_312.setSizePolicy(sizePolicy2)
+        self.label_312.setMinimumSize(QSize(90, 25))
+        self.label_312.setMaximumSize(QSize(90, 16777215))
+
+        self.horizontalLayout_182.addWidget(self.label_312)
+
+        self.dead_secpool = QLineEdit(self.groupBox_27)
+        self.dead_secpool.setObjectName(u"dead_secpool")
+        sizePolicy2.setHeightForWidth(self.dead_secpool.sizePolicy().hasHeightForWidth())
+        self.dead_secpool.setSizePolicy(sizePolicy2)
+        self.dead_secpool.setMinimumSize(QSize(100, 25))
+        self.dead_secpool.setMaximumSize(QSize(150, 16777215))
+        self.dead_secpool.setReadOnly(False)
+
+        self.horizontalLayout_182.addWidget(self.dead_secpool)
+
+
+        self.verticalLayout_78.addLayout(self.horizontalLayout_182)
+
+        self.horizontalLayout_183 = QHBoxLayout()
+        self.horizontalLayout_183.setObjectName(u"horizontalLayout_183")
+        self.label_313 = QLabel(self.groupBox_27)
+        self.label_313.setObjectName(u"label_313")
+        sizePolicy2.setHeightForWidth(self.label_313.sizePolicy().hasHeightForWidth())
+        self.label_313.setSizePolicy(sizePolicy2)
+        self.label_313.setMinimumSize(QSize(90, 25))
+        self.label_313.setMaximumSize(QSize(90, 16777215))
+
+        self.horizontalLayout_183.addWidget(self.label_313)
+
+        self.dead_group = QLineEdit(self.groupBox_27)
+        self.dead_group.setObjectName(u"dead_group")
+        sizePolicy2.setHeightForWidth(self.dead_group.sizePolicy().hasHeightForWidth())
+        self.dead_group.setSizePolicy(sizePolicy2)
+        self.dead_group.setMinimumSize(QSize(100, 25))
+        self.dead_group.setMaximumSize(QSize(150, 16777215))
+        self.dead_group.setReadOnly(False)
+
+        self.horizontalLayout_183.addWidget(self.dead_group)
+
+
+        self.verticalLayout_78.addLayout(self.horizontalLayout_183)
+
+        self.horizontalLayout_184 = QHBoxLayout()
+        self.horizontalLayout_184.setObjectName(u"horizontalLayout_184")
+        self.label_314 = QLabel(self.groupBox_27)
+        self.label_314.setObjectName(u"label_314")
+        sizePolicy2.setHeightForWidth(self.label_314.sizePolicy().hasHeightForWidth())
+        self.label_314.setSizePolicy(sizePolicy2)
+        self.label_314.setMinimumSize(QSize(90, 25))
+        self.label_314.setMaximumSize(QSize(90, 16777215))
+
+        self.horizontalLayout_184.addWidget(self.label_314)
+
+        self.dead_priority = QLineEdit(self.groupBox_27)
+        self.dead_priority.setObjectName(u"dead_priority")
+        sizePolicy2.setHeightForWidth(self.dead_priority.sizePolicy().hasHeightForWidth())
+        self.dead_priority.setSizePolicy(sizePolicy2)
+        self.dead_priority.setMinimumSize(QSize(100, 25))
+        self.dead_priority.setMaximumSize(QSize(150, 16777215))
+        self.dead_priority.setReadOnly(False)
+
+        self.horizontalLayout_184.addWidget(self.dead_priority)
+
+
+        self.verticalLayout_78.addLayout(self.horizontalLayout_184)
+
+        self.horizontalLayout_185 = QHBoxLayout()
+        self.horizontalLayout_185.setObjectName(u"horizontalLayout_185")
+        self.label_315 = QLabel(self.groupBox_27)
+        self.label_315.setObjectName(u"label_315")
+        sizePolicy2.setHeightForWidth(self.label_315.sizePolicy().hasHeightForWidth())
+        self.label_315.setSizePolicy(sizePolicy2)
+        self.label_315.setMinimumSize(QSize(90, 25))
+        self.label_315.setMaximumSize(QSize(90, 16777215))
+
+        self.horizontalLayout_185.addWidget(self.label_315)
+
+        self.dead_limits = QLineEdit(self.groupBox_27)
+        self.dead_limits.setObjectName(u"dead_limits")
+        sizePolicy2.setHeightForWidth(self.dead_limits.sizePolicy().hasHeightForWidth())
+        self.dead_limits.setSizePolicy(sizePolicy2)
+        self.dead_limits.setMinimumSize(QSize(100, 25))
+        self.dead_limits.setMaximumSize(QSize(150, 16777215))
+        self.dead_limits.setReadOnly(False)
+
+        self.horizontalLayout_185.addWidget(self.dead_limits)
+
+
+        self.verticalLayout_78.addLayout(self.horizontalLayout_185)
+
+        self.horizontalLayout_186 = QHBoxLayout()
+        self.horizontalLayout_186.setObjectName(u"horizontalLayout_186")
+        self.label_316 = QLabel(self.groupBox_27)
+        self.label_316.setObjectName(u"label_316")
+        sizePolicy2.setHeightForWidth(self.label_316.sizePolicy().hasHeightForWidth())
+        self.label_316.setSizePolicy(sizePolicy2)
+        self.label_316.setMinimumSize(QSize(90, 25))
+        self.label_316.setMaximumSize(QSize(90, 16777215))
+
+        self.horizontalLayout_186.addWidget(self.label_316)
+
+        self.dead_limits_2 = QLineEdit(self.groupBox_27)
+        self.dead_limits_2.setObjectName(u"dead_limits_2")
+        sizePolicy2.setHeightForWidth(self.dead_limits_2.sizePolicy().hasHeightForWidth())
+        self.dead_limits_2.setSizePolicy(sizePolicy2)
+        self.dead_limits_2.setMinimumSize(QSize(100, 25))
+        self.dead_limits_2.setMaximumSize(QSize(150, 16777215))
+        self.dead_limits_2.setReadOnly(False)
+
+        self.horizontalLayout_186.addWidget(self.dead_limits_2)
+
+
+        self.verticalLayout_78.addLayout(self.horizontalLayout_186)
+
+        self.horizontalLayout_187 = QHBoxLayout()
+        self.horizontalLayout_187.setObjectName(u"horizontalLayout_187")
+        self.label_317 = QLabel(self.groupBox_27)
+        self.label_317.setObjectName(u"label_317")
+        sizePolicy2.setHeightForWidth(self.label_317.sizePolicy().hasHeightForWidth())
+        self.label_317.setSizePolicy(sizePolicy2)
+        self.label_317.setMinimumSize(QSize(90, 25))
+        self.label_317.setMaximumSize(QSize(90, 16777215))
+
+        self.horizontalLayout_187.addWidget(self.label_317)
+
+        self.dead_department = QLineEdit(self.groupBox_27)
+        self.dead_department.setObjectName(u"dead_department")
+        sizePolicy2.setHeightForWidth(self.dead_department.sizePolicy().hasHeightForWidth())
+        self.dead_department.setSizePolicy(sizePolicy2)
+        self.dead_department.setMinimumSize(QSize(100, 25))
+        self.dead_department.setMaximumSize(QSize(150, 16777215))
+        self.dead_department.setReadOnly(False)
+
+        self.horizontalLayout_187.addWidget(self.dead_department)
+
+
+        self.verticalLayout_78.addLayout(self.horizontalLayout_187)
+
+
+        self.verticalLayout_79.addLayout(self.verticalLayout_78)
+
+
+        self.verticalLayout_92.addWidget(self.groupBox_27)
+
+        self.verticalSpacer_7 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout_92.addItem(self.verticalSpacer_7)
+
+
+        self.horizontalLayout_191.addLayout(self.verticalLayout_92)
+
+        self.verticalLayout_91 = QVBoxLayout()
+        self.verticalLayout_91.setObjectName(u"verticalLayout_91")
+        self.groupBox_28 = QGroupBox(self.tab_24)
+        self.groupBox_28.setObjectName(u"groupBox_28")
+        self.verticalLayout_81 = QVBoxLayout(self.groupBox_28)
+        self.verticalLayout_81.setObjectName(u"verticalLayout_81")
+        self.verticalLayout_80 = QVBoxLayout()
+        self.verticalLayout_80.setObjectName(u"verticalLayout_80")
+        self.horizontalLayout_188 = QHBoxLayout()
+        self.horizontalLayout_188.setObjectName(u"horizontalLayout_188")
+        self.label_318 = QLabel(self.groupBox_28)
+        self.label_318.setObjectName(u"label_318")
+        sizePolicy2.setHeightForWidth(self.label_318.sizePolicy().hasHeightForWidth())
+        self.label_318.setSizePolicy(sizePolicy2)
+        self.label_318.setMinimumSize(QSize(90, 25))
+        self.label_318.setMaximumSize(QSize(90, 16777215))
+
+        self.horizontalLayout_188.addWidget(self.label_318)
+
+        self.dead_command_windows = QLineEdit(self.groupBox_28)
+        self.dead_command_windows.setObjectName(u"dead_command_windows")
+        sizePolicy1.setHeightForWidth(self.dead_command_windows.sizePolicy().hasHeightForWidth())
+        self.dead_command_windows.setSizePolicy(sizePolicy1)
+        self.dead_command_windows.setMinimumSize(QSize(300, 25))
+        self.dead_command_windows.setMaximumSize(QSize(16777215, 25))
+        self.dead_command_windows.setReadOnly(False)
+
+        self.horizontalLayout_188.addWidget(self.dead_command_windows)
+
+
+        self.verticalLayout_80.addLayout(self.horizontalLayout_188)
+
+        self.horizontalLayout_189 = QHBoxLayout()
+        self.horizontalLayout_189.setObjectName(u"horizontalLayout_189")
+        self.label_319 = QLabel(self.groupBox_28)
+        self.label_319.setObjectName(u"label_319")
+        sizePolicy2.setHeightForWidth(self.label_319.sizePolicy().hasHeightForWidth())
+        self.label_319.setSizePolicy(sizePolicy2)
+        self.label_319.setMinimumSize(QSize(90, 25))
+        self.label_319.setMaximumSize(QSize(90, 16777215))
+
+        self.horizontalLayout_189.addWidget(self.label_319)
+
+        self.dead_primpool_3 = QLineEdit(self.groupBox_28)
+        self.dead_primpool_3.setObjectName(u"dead_primpool_3")
+        sizePolicy1.setHeightForWidth(self.dead_primpool_3.sizePolicy().hasHeightForWidth())
+        self.dead_primpool_3.setSizePolicy(sizePolicy1)
+        self.dead_primpool_3.setMinimumSize(QSize(300, 25))
+        self.dead_primpool_3.setMaximumSize(QSize(16777215, 25))
+        self.dead_primpool_3.setReadOnly(False)
+
+        self.horizontalLayout_189.addWidget(self.dead_primpool_3)
+
+
+        self.verticalLayout_80.addLayout(self.horizontalLayout_189)
+
+        self.horizontalLayout_190 = QHBoxLayout()
+        self.horizontalLayout_190.setObjectName(u"horizontalLayout_190")
+        self.label_320 = QLabel(self.groupBox_28)
+        self.label_320.setObjectName(u"label_320")
+        sizePolicy2.setHeightForWidth(self.label_320.sizePolicy().hasHeightForWidth())
+        self.label_320.setSizePolicy(sizePolicy2)
+        self.label_320.setMinimumSize(QSize(90, 25))
+        self.label_320.setMaximumSize(QSize(90, 16777215))
+
+        self.horizontalLayout_190.addWidget(self.label_320)
+
+        self.dead_primpool_4 = QLineEdit(self.groupBox_28)
+        self.dead_primpool_4.setObjectName(u"dead_primpool_4")
+        sizePolicy1.setHeightForWidth(self.dead_primpool_4.sizePolicy().hasHeightForWidth())
+        self.dead_primpool_4.setSizePolicy(sizePolicy1)
+        self.dead_primpool_4.setMinimumSize(QSize(300, 25))
+        self.dead_primpool_4.setMaximumSize(QSize(16777215, 25))
+        self.dead_primpool_4.setReadOnly(False)
+
+        self.horizontalLayout_190.addWidget(self.dead_primpool_4)
+
+
+        self.verticalLayout_80.addLayout(self.horizontalLayout_190)
+
+
+        self.verticalLayout_81.addLayout(self.verticalLayout_80)
+
+
+        self.verticalLayout_91.addWidget(self.groupBox_28)
+
+        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout_91.addItem(self.verticalSpacer_2)
+
+
+        self.horizontalLayout_191.addLayout(self.verticalLayout_91)
+
+
+        self.verticalLayout_93.addLayout(self.horizontalLayout_191)
+
+        self.TopTab.addTab(self.tab_24, "")
+        self.tab_25 = QWidget()
+        self.tab_25.setObjectName(u"tab_25")
+        self.TopTab.addTab(self.tab_25, "")
         self.tab_4 = QWidget()
         self.tab_4.setObjectName(u"tab_4")
         self.verticalLayout_47 = QVBoxLayout(self.tab_4)
@@ -9503,7 +10084,7 @@ class Ui_submission(object):
         self.prefs_oiio_custom_ocio.setSizePolicy(sizePolicy2)
         self.prefs_oiio_custom_ocio.setMinimumSize(QSize(100, 25))
         self.prefs_oiio_custom_ocio.setMaximumSize(QSize(100, 25))
-        self.prefs_oiio_custom_ocio.setChecked(True)
+        self.prefs_oiio_custom_ocio.setChecked(False)
 
         self.horizontalLayout_54.addWidget(self.prefs_oiio_custom_ocio)
 
@@ -10013,10 +10594,10 @@ class Ui_submission(object):
         self.TopTab.addTab(self.tab_9, "")
         self.tab_3 = QWidget()
         self.tab_3.setObjectName(u"tab_3")
-        self.verticalLayout_37 = QVBoxLayout(self.tab_3)
-        self.verticalLayout_37.setObjectName(u"verticalLayout_37")
-        self.verticalLayout_12 = QVBoxLayout()
-        self.verticalLayout_12.setObjectName(u"verticalLayout_12")
+        self.verticalLayout_73 = QVBoxLayout(self.tab_3)
+        self.verticalLayout_73.setObjectName(u"verticalLayout_73")
+        self.verticalLayout_72 = QVBoxLayout()
+        self.verticalLayout_72.setObjectName(u"verticalLayout_72")
         self.groupBox_3 = QGroupBox(self.tab_3)
         self.groupBox_3.setObjectName(u"groupBox_3")
         sizePolicy6.setHeightForWidth(self.groupBox_3.sizePolicy().hasHeightForWidth())
@@ -10056,7 +10637,7 @@ class Ui_submission(object):
         self.verticalLayout_9.addLayout(self.horizontalLayout_35)
 
 
-        self.verticalLayout_12.addWidget(self.groupBox_3)
+        self.verticalLayout_72.addWidget(self.groupBox_3)
 
         self.groupBox_7 = QGroupBox(self.tab_3)
         self.groupBox_7.setObjectName(u"groupBox_7")
@@ -10096,7 +10677,7 @@ class Ui_submission(object):
         self.verticalLayout_8.addLayout(self.horizontalLayout_33)
 
 
-        self.verticalLayout_12.addWidget(self.groupBox_7)
+        self.verticalLayout_72.addWidget(self.groupBox_7)
 
         self.preset_explore = QPushButton(self.tab_3)
         self.preset_explore.setObjectName(u"preset_explore")
@@ -10105,19 +10686,227 @@ class Ui_submission(object):
         self.preset_explore.setMinimumSize(QSize(250, 25))
         self.preset_explore.setIcon(icon1)
 
-        self.verticalLayout_12.addWidget(self.preset_explore)
+        self.verticalLayout_72.addWidget(self.preset_explore)
 
-        self.label_26 = QLabel(self.tab_3)
-        self.label_26.setObjectName(u"label_26")
+        self.groupBox_18 = QGroupBox(self.tab_3)
+        self.groupBox_18.setObjectName(u"groupBox_18")
+        sizePolicy1.setHeightForWidth(self.groupBox_18.sizePolicy().hasHeightForWidth())
+        self.groupBox_18.setSizePolicy(sizePolicy1)
+        self.groupBox_18.setMinimumSize(QSize(870, 80))
+        self.groupBox_18.setMaximumSize(QSize(16777215, 80))
+        self.verticalLayout_77 = QVBoxLayout(self.groupBox_18)
+        self.verticalLayout_77.setObjectName(u"verticalLayout_77")
+        self.verticalLayout_12 = QVBoxLayout()
+        self.verticalLayout_12.setObjectName(u"verticalLayout_12")
+        self.horizontalLayout_68 = QHBoxLayout()
+        self.horizontalLayout_68.setObjectName(u"horizontalLayout_68")
+        self.horizontalLayout_66 = QHBoxLayout()
+        self.horizontalLayout_66.setObjectName(u"horizontalLayout_66")
+        self.preset_mod_package = QCheckBox(self.groupBox_18)
+        self.preset_mod_package.setObjectName(u"preset_mod_package")
+        sizePolicy2.setHeightForWidth(self.preset_mod_package.sizePolicy().hasHeightForWidth())
+        self.preset_mod_package.setSizePolicy(sizePolicy2)
+        self.preset_mod_package.setMinimumSize(QSize(70, 25))
+        self.preset_mod_package.setMaximumSize(QSize(70, 25))
+        self.preset_mod_package.setChecked(True)
 
-        self.verticalLayout_12.addWidget(self.label_26)
+        self.horizontalLayout_66.addWidget(self.preset_mod_package)
 
-        self.verticalSpacer_2 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.preset_mod_parsing = QCheckBox(self.groupBox_18)
+        self.preset_mod_parsing.setObjectName(u"preset_mod_parsing")
+        sizePolicy2.setHeightForWidth(self.preset_mod_parsing.sizePolicy().hasHeightForWidth())
+        self.preset_mod_parsing.setSizePolicy(sizePolicy2)
+        self.preset_mod_parsing.setMinimumSize(QSize(70, 25))
+        self.preset_mod_parsing.setMaximumSize(QSize(70, 25))
+        self.preset_mod_parsing.setChecked(True)
 
-        self.verticalLayout_12.addItem(self.verticalSpacer_2)
+        self.horizontalLayout_66.addWidget(self.preset_mod_parsing)
+
+        self.preset_mod_sidecar = QCheckBox(self.groupBox_18)
+        self.preset_mod_sidecar.setObjectName(u"preset_mod_sidecar")
+        sizePolicy2.setHeightForWidth(self.preset_mod_sidecar.sizePolicy().hasHeightForWidth())
+        self.preset_mod_sidecar.setSizePolicy(sizePolicy2)
+        self.preset_mod_sidecar.setMinimumSize(QSize(100, 25))
+        self.preset_mod_sidecar.setMaximumSize(QSize(100, 25))
+        self.preset_mod_sidecar.setChecked(True)
+
+        self.horizontalLayout_66.addWidget(self.preset_mod_sidecar)
+
+        self.preset_mod_rename = QCheckBox(self.groupBox_18)
+        self.preset_mod_rename.setObjectName(u"preset_mod_rename")
+        sizePolicy2.setHeightForWidth(self.preset_mod_rename.sizePolicy().hasHeightForWidth())
+        self.preset_mod_rename.setSizePolicy(sizePolicy2)
+        self.preset_mod_rename.setMinimumSize(QSize(70, 25))
+        self.preset_mod_rename.setMaximumSize(QSize(70, 25))
+        self.preset_mod_rename.setChecked(True)
+
+        self.horizontalLayout_66.addWidget(self.preset_mod_rename)
+
+        self.preset_mod_data = QCheckBox(self.groupBox_18)
+        self.preset_mod_data.setObjectName(u"preset_mod_data")
+        sizePolicy10 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        sizePolicy10.setHorizontalStretch(50)
+        sizePolicy10.setVerticalStretch(25)
+        sizePolicy10.setHeightForWidth(self.preset_mod_data.sizePolicy().hasHeightForWidth())
+        self.preset_mod_data.setSizePolicy(sizePolicy10)
+        self.preset_mod_data.setMinimumSize(QSize(50, 25))
+        self.preset_mod_data.setChecked(True)
+
+        self.horizontalLayout_66.addWidget(self.preset_mod_data)
+
+        self.preset_mod_ftrack = QCheckBox(self.groupBox_18)
+        self.preset_mod_ftrack.setObjectName(u"preset_mod_ftrack")
+        sizePolicy2.setHeightForWidth(self.preset_mod_ftrack.sizePolicy().hasHeightForWidth())
+        self.preset_mod_ftrack.setSizePolicy(sizePolicy2)
+        self.preset_mod_ftrack.setMinimumSize(QSize(60, 25))
+        self.preset_mod_ftrack.setMaximumSize(QSize(60, 25))
+        self.preset_mod_ftrack.setChecked(True)
+
+        self.horizontalLayout_66.addWidget(self.preset_mod_ftrack)
+
+        self.preset_mod_vendor = QCheckBox(self.groupBox_18)
+        self.preset_mod_vendor.setObjectName(u"preset_mod_vendor")
+        sizePolicy2.setHeightForWidth(self.preset_mod_vendor.sizePolicy().hasHeightForWidth())
+        self.preset_mod_vendor.setSizePolicy(sizePolicy2)
+        self.preset_mod_vendor.setMinimumSize(QSize(70, 25))
+        self.preset_mod_vendor.setMaximumSize(QSize(70, 25))
+        self.preset_mod_vendor.setChecked(True)
+
+        self.horizontalLayout_66.addWidget(self.preset_mod_vendor)
+
+        self.preset_mod_convert = QCheckBox(self.groupBox_18)
+        self.preset_mod_convert.setObjectName(u"preset_mod_convert")
+        sizePolicy2.setHeightForWidth(self.preset_mod_convert.sizePolicy().hasHeightForWidth())
+        self.preset_mod_convert.setSizePolicy(sizePolicy2)
+        self.preset_mod_convert.setMinimumSize(QSize(70, 25))
+        self.preset_mod_convert.setMaximumSize(QSize(70, 25))
+        self.preset_mod_convert.setChecked(True)
+
+        self.horizontalLayout_66.addWidget(self.preset_mod_convert)
+
+        self.preset_mod_spreadsheet = QCheckBox(self.groupBox_18)
+        self.preset_mod_spreadsheet.setObjectName(u"preset_mod_spreadsheet")
+        sizePolicy2.setHeightForWidth(self.preset_mod_spreadsheet.sizePolicy().hasHeightForWidth())
+        self.preset_mod_spreadsheet.setSizePolicy(sizePolicy2)
+        self.preset_mod_spreadsheet.setMinimumSize(QSize(100, 25))
+        self.preset_mod_spreadsheet.setMaximumSize(QSize(100, 25))
+        self.preset_mod_spreadsheet.setChecked(True)
+
+        self.horizontalLayout_66.addWidget(self.preset_mod_spreadsheet)
+
+        self.preset_mod_text = QCheckBox(self.groupBox_18)
+        self.preset_mod_text.setObjectName(u"preset_mod_text")
+        sizePolicy2.setHeightForWidth(self.preset_mod_text.sizePolicy().hasHeightForWidth())
+        self.preset_mod_text.setSizePolicy(sizePolicy2)
+        self.preset_mod_text.setMinimumSize(QSize(50, 25))
+        self.preset_mod_text.setMaximumSize(QSize(50, 25))
+        self.preset_mod_text.setChecked(True)
+
+        self.horizontalLayout_66.addWidget(self.preset_mod_text)
+
+        self.preset_mod_checks = QCheckBox(self.groupBox_18)
+        self.preset_mod_checks.setObjectName(u"preset_mod_checks")
+        sizePolicy2.setHeightForWidth(self.preset_mod_checks.sizePolicy().hasHeightForWidth())
+        self.preset_mod_checks.setSizePolicy(sizePolicy2)
+        self.preset_mod_checks.setMinimumSize(QSize(70, 25))
+        self.preset_mod_checks.setMaximumSize(QSize(70, 25))
+        self.preset_mod_checks.setChecked(True)
+
+        self.horizontalLayout_66.addWidget(self.preset_mod_checks)
+
+        self.preset_mod_deadline = QCheckBox(self.groupBox_18)
+        self.preset_mod_deadline.setObjectName(u"preset_mod_deadline")
+        self.preset_mod_deadline.setMinimumSize(QSize(70, 25))
+        self.preset_mod_deadline.setChecked(True)
+
+        self.horizontalLayout_66.addWidget(self.preset_mod_deadline)
+
+        self.preset_mod_ayon = QCheckBox(self.groupBox_18)
+        self.preset_mod_ayon.setObjectName(u"preset_mod_ayon")
+        self.preset_mod_ayon.setChecked(True)
+
+        self.horizontalLayout_66.addWidget(self.preset_mod_ayon)
+
+        self.preset_mod_preferences = QCheckBox(self.groupBox_18)
+        self.preset_mod_preferences.setObjectName(u"preset_mod_preferences")
+        self.preset_mod_preferences.setMinimumSize(QSize(90, 0))
+        self.preset_mod_preferences.setChecked(True)
+
+        self.horizontalLayout_66.addWidget(self.preset_mod_preferences)
+
+        self.preset_mod_exports = QCheckBox(self.groupBox_18)
+        self.preset_mod_exports.setObjectName(u"preset_mod_exports")
+        self.preset_mod_exports.setMinimumSize(QSize(60, 0))
+        self.preset_mod_exports.setChecked(True)
+
+        self.horizontalLayout_66.addWidget(self.preset_mod_exports)
 
 
-        self.verticalLayout_37.addLayout(self.verticalLayout_12)
+        self.horizontalLayout_68.addLayout(self.horizontalLayout_66)
+
+        self.preset_mod_log = QCheckBox(self.groupBox_18)
+        self.preset_mod_log.setObjectName(u"preset_mod_log")
+        self.preset_mod_log.setMinimumSize(QSize(40, 0))
+        self.preset_mod_log.setChecked(True)
+
+        self.horizontalLayout_68.addWidget(self.preset_mod_log)
+
+        self.preset_mod_help = QCheckBox(self.groupBox_18)
+        self.preset_mod_help.setObjectName(u"preset_mod_help")
+        self.preset_mod_help.setMinimumSize(QSize(50, 0))
+        self.preset_mod_help.setChecked(True)
+
+        self.horizontalLayout_68.addWidget(self.preset_mod_help)
+
+        self.horizontalSpacer_30 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_68.addItem(self.horizontalSpacer_30)
+
+
+        self.verticalLayout_12.addLayout(self.horizontalLayout_68)
+
+        self.horizontalLayout_112 = QHBoxLayout()
+        self.horizontalLayout_112.setObjectName(u"horizontalLayout_112")
+        self.horizontalLayout_67 = QHBoxLayout()
+        self.horizontalLayout_67.setObjectName(u"horizontalLayout_67")
+        self.preset_mod_ffprobe = QCheckBox(self.groupBox_18)
+        self.preset_mod_ffprobe.setObjectName(u"preset_mod_ffprobe")
+        sizePolicy2.setHeightForWidth(self.preset_mod_ffprobe.sizePolicy().hasHeightForWidth())
+        self.preset_mod_ffprobe.setSizePolicy(sizePolicy2)
+        self.preset_mod_ffprobe.setMinimumSize(QSize(70, 25))
+        self.preset_mod_ffprobe.setMaximumSize(QSize(70, 25))
+        self.preset_mod_ffprobe.setChecked(True)
+
+        self.horizontalLayout_67.addWidget(self.preset_mod_ffprobe)
+
+        self.preset_mod_oiio = QCheckBox(self.groupBox_18)
+        self.preset_mod_oiio.setObjectName(u"preset_mod_oiio")
+        sizePolicy2.setHeightForWidth(self.preset_mod_oiio.sizePolicy().hasHeightForWidth())
+        self.preset_mod_oiio.setSizePolicy(sizePolicy2)
+        self.preset_mod_oiio.setMinimumSize(QSize(70, 25))
+        self.preset_mod_oiio.setMaximumSize(QSize(70, 25))
+        self.preset_mod_oiio.setChecked(True)
+
+        self.horizontalLayout_67.addWidget(self.preset_mod_oiio)
+
+
+        self.horizontalLayout_112.addLayout(self.horizontalLayout_67)
+
+        self.horizontalSpacer_29 = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
+        self.horizontalLayout_112.addItem(self.horizontalSpacer_29)
+
+
+        self.verticalLayout_12.addLayout(self.horizontalLayout_112)
+
+
+        self.verticalLayout_77.addLayout(self.verticalLayout_12)
+
+
+        self.verticalLayout_72.addWidget(self.groupBox_18)
+
+
+        self.verticalLayout_73.addLayout(self.verticalLayout_72)
 
         self.TopTab.addTab(self.tab_3, "")
         self.tab_21 = QWidget()
@@ -10141,7 +10930,7 @@ class Ui_submission(object):
 
         self.TopTab.addTab(self.tab_14, "")
 
-        self.verticalLayout_50.addWidget(self.TopTab)
+        self.verticalLayout_15.addWidget(self.TopTab)
 
         self.verticalLayout_10 = QVBoxLayout()
         self.verticalLayout_10.setObjectName(u"verticalLayout_10")
@@ -10149,11 +10938,12 @@ class Ui_submission(object):
         self.BottomTab.setObjectName(u"BottomTab")
         sizePolicy3.setHeightForWidth(self.BottomTab.sizePolicy().hasHeightForWidth())
         self.BottomTab.setSizePolicy(sizePolicy3)
-        self.BottomTab.setMinimumSize(QSize(670, 150))
+        self.BottomTab.setMinimumSize(QSize(670, 175))
+        self.BottomTab.setMaximumSize(QSize(16777215, 16777215))
         self.tab_6 = QWidget()
         self.tab_6.setObjectName(u"tab_6")
-        self.verticalLayout_15 = QVBoxLayout(self.tab_6)
-        self.verticalLayout_15.setObjectName(u"verticalLayout_15")
+        self.horizontalLayout_113 = QHBoxLayout(self.tab_6)
+        self.horizontalLayout_113.setObjectName(u"horizontalLayout_113")
         self.sub_table = QTableWidget(self.tab_6)
         self.sub_table.setObjectName(u"sub_table")
         sizePolicy.setHeightForWidth(self.sub_table.sizePolicy().hasHeightForWidth())
@@ -10161,7 +10951,7 @@ class Ui_submission(object):
         self.sub_table.setMinimumSize(QSize(600, 100))
         self.sub_table.setMaximumSize(QSize(16000, 16000))
 
-        self.verticalLayout_15.addWidget(self.sub_table)
+        self.horizontalLayout_113.addWidget(self.sub_table)
 
         self.BottomTab.addTab(self.tab_6, "")
         self.tab_7 = QWidget()
@@ -10356,6 +11146,20 @@ class Ui_submission(object):
         self.verticalLayout_39.addLayout(self.verticalLayout_36)
 
         self.BottomTab.addTab(self.tab_19, "")
+        self.tab_22 = QWidget()
+        self.tab_22.setObjectName(u"tab_22")
+        self.verticalLayout_37 = QVBoxLayout(self.tab_22)
+        self.verticalLayout_37.setObjectName(u"verticalLayout_37")
+        self.file_table = QTableWidget(self.tab_22)
+        self.file_table.setObjectName(u"file_table")
+        sizePolicy.setHeightForWidth(self.file_table.sizePolicy().hasHeightForWidth())
+        self.file_table.setSizePolicy(sizePolicy)
+        self.file_table.setMinimumSize(QSize(600, 100))
+        self.file_table.setMaximumSize(QSize(16000, 16000))
+
+        self.verticalLayout_37.addWidget(self.file_table)
+
+        self.BottomTab.addTab(self.tab_22, "")
 
         self.verticalLayout_10.addWidget(self.BottomTab)
 
@@ -10373,6 +11177,13 @@ class Ui_submission(object):
 
         self.horizontalLayout_3.addWidget(self.write_button)
 
+        self.pushButton = QPushButton(self.centralwidget)
+        self.pushButton.setObjectName(u"pushButton")
+        self.pushButton.setMinimumSize(QSize(70, 40))
+        self.pushButton.setMaximumSize(QSize(80, 70))
+
+        self.horizontalLayout_3.addWidget(self.pushButton)
+
         self.reload = QPushButton(self.centralwidget)
         self.reload.setObjectName(u"reload")
         sizePolicy2.setHeightForWidth(self.reload.sizePolicy().hasHeightForWidth())
@@ -10388,9 +11199,6 @@ class Ui_submission(object):
 
         self.verticalLayout_10.addLayout(self.horizontalLayout_3)
 
-
-        self.verticalLayout_50.addLayout(self.verticalLayout_10)
-
         self.progressBar = QProgressBar(self.centralwidget)
         self.progressBar.setObjectName(u"progressBar")
         self.progressBar.setMinimumSize(QSize(0, 12))
@@ -10400,19 +11208,22 @@ class Ui_submission(object):
         self.progressBar.setFont(font)
         self.progressBar.setValue(0)
 
-        self.verticalLayout_50.addWidget(self.progressBar)
+        self.verticalLayout_10.addWidget(self.progressBar)
 
 
-        self.verticalLayout_60.addLayout(self.verticalLayout_50)
+        self.verticalLayout_15.addLayout(self.verticalLayout_10)
+
+
+        self.verticalLayout_50.addLayout(self.verticalLayout_15)
 
         submission.setCentralWidget(self.centralwidget)
         self.statusBar = QStatusBar(submission)
         self.statusBar.setObjectName(u"statusBar")
-        sizePolicy10 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
-        sizePolicy10.setHorizontalStretch(0)
-        sizePolicy10.setVerticalStretch(0)
-        sizePolicy10.setHeightForWidth(self.statusBar.sizePolicy().hasHeightForWidth())
-        self.statusBar.setSizePolicy(sizePolicy10)
+        sizePolicy11 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
+        sizePolicy11.setHorizontalStretch(0)
+        sizePolicy11.setVerticalStretch(0)
+        sizePolicy11.setHeightForWidth(self.statusBar.sizePolicy().hasHeightForWidth())
+        self.statusBar.setSizePolicy(sizePolicy11)
         submission.setStatusBar(self.statusBar)
 
         self.retranslateUi(submission)
@@ -10422,6 +11233,7 @@ class Ui_submission(object):
         self.package_browse.setDefault(True)
         self.package_explore_2.setDefault(True)
         self.package_browse_2.setDefault(True)
+        self.data_csv_browse.setDefault(True)
         self.vendor_csv_explore.setDefault(True)
         self.vendor_csv_browse.setDefault(True)
         self.BottomTab.setCurrentIndex(0)
@@ -10800,6 +11612,79 @@ class Ui_submission(object):
         self.Rename_go.setText(QCoreApplication.translate("submission", u"Rename", None))
         self.rename_reload_after.setText(QCoreApplication.translate("submission", u"Reload after Rename", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_17), QCoreApplication.translate("submission", u"Rename", None))
+#if QT_CONFIG(tooltip)
+        self.groupBox_29.setToolTip(QCoreApplication.translate("submission", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:600; font-style:normal;\">\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.groupBox_29.setTitle(QCoreApplication.translate("submission", u"Data", None))
+        self.data_enable.setText(QCoreApplication.translate("submission", u"Enable Data", None))
+        self.label_321.setText(QCoreApplication.translate("submission", u"Column Prefix:", None))
+#if QT_CONFIG(tooltip)
+        self.name_date_prefix.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects current date stamp in it by using Date Regex</p><p><br/>Keywords:<br/>{yy}: year<br/>{mm}: month<br/>{dd}: day</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.name_date_prefix.setText(QCoreApplication.translate("submission", u"data_", None))
+#if QT_CONFIG(tooltip)
+        self.groupBox_25.setToolTip(QCoreApplication.translate("submission", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:600; font-style:normal;\">\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\"><br /></p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.groupBox_25.setTitle(QCoreApplication.translate("submission", u"Data CSV:", None))
+#if QT_CONFIG(tooltip)
+        self.data_csv_path.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Expects path to folder containing media files.</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.data_csv_path.setText("")
+#if QT_CONFIG(tooltip)
+        self.data_csv_browse.setToolTip(QCoreApplication.translate("submission", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:11px; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Browse for video file.</span></p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.data_csv_browse.setText("")
+        self.data_csv_latest.setText(QCoreApplication.translate("submission", u"Latest in Folder", None))
+        self.groupBox_26.setTitle(QCoreApplication.translate("submission", u"Match Package Keys to Data Keys", None))
+        self.data_package1_chbx.setText(QCoreApplication.translate("submission", u"Package 1", None))
+#if QT_CONFIG(tooltip)
+        self.data_package1.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.data_package1.setText(QCoreApplication.translate("submission", u"{shot}", None))
+        self.data_package1.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.label_309.setText(QCoreApplication.translate("submission", u"Data 1:", None))
+#if QT_CONFIG(tooltip)
+        self.data_data1.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.data_data1.setText(QCoreApplication.translate("submission", u"{data_shot}", None))
+        self.data_data1.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.data_package2_chbx.setText(QCoreApplication.translate("submission", u"Package 2", None))
+#if QT_CONFIG(tooltip)
+        self.data_package2.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.data_package2.setText("")
+        self.data_package2.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.label_310.setText(QCoreApplication.translate("submission", u"Data 2:", None))
+#if QT_CONFIG(tooltip)
+        self.data_data2.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.data_data2.setText("")
+        self.data_data2.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.data_package3_chbx.setText(QCoreApplication.translate("submission", u"Package 3", None))
+#if QT_CONFIG(tooltip)
+        self.data_package3.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.data_package3.setText("")
+        self.data_package3.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.label_311.setText(QCoreApplication.translate("submission", u"Data 3:", None))
+#if QT_CONFIG(tooltip)
+        self.data_data3.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.data_data3.setText("")
+        self.data_data3.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.TopTab.setTabText(self.TopTab.indexOf(self.tab_23), QCoreApplication.translate("submission", u"Data", None))
         self.groupBox_22.setTitle(QCoreApplication.translate("submission", u"Ftrack", None))
         self.ftrack_use.setText(QCoreApplication.translate("submission", u"Use Ftrack", None))
         self.label_161.setText(QCoreApplication.translate("submission", u"Include:", None))
@@ -11143,6 +12028,70 @@ class Ui_submission(object):
         self.check_warning_21.setText(QCoreApplication.translate("submission", u"Warning", None))
         self.check_error_21.setText(QCoreApplication.translate("submission", u"Error", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_12), QCoreApplication.translate("submission", u"Checks", None))
+        self.groupBox_27.setTitle(QCoreApplication.translate("submission", u"Deadline Submission", None))
+        self.label_279.setText(QCoreApplication.translate("submission", u"Primary Pool:", None))
+#if QT_CONFIG(tooltip)
+        self.dead_primpool.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.dead_primpool.setText("")
+        self.dead_primpool.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.label_312.setText(QCoreApplication.translate("submission", u"Secondary Pool:", None))
+#if QT_CONFIG(tooltip)
+        self.dead_secpool.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.dead_secpool.setText("")
+        self.dead_secpool.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.label_313.setText(QCoreApplication.translate("submission", u"Group:", None))
+#if QT_CONFIG(tooltip)
+        self.dead_group.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.dead_group.setText("")
+        self.dead_group.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.label_314.setText(QCoreApplication.translate("submission", u"Priority:", None))
+#if QT_CONFIG(tooltip)
+        self.dead_priority.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.dead_priority.setText("")
+        self.dead_priority.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.label_315.setText(QCoreApplication.translate("submission", u"Limits:", None))
+#if QT_CONFIG(tooltip)
+        self.dead_limits.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.dead_limits.setText("")
+        self.dead_limits.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.label_316.setText(QCoreApplication.translate("submission", u"Comment:", None))
+#if QT_CONFIG(tooltip)
+        self.dead_limits_2.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.dead_limits_2.setText("")
+        self.dead_limits_2.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.label_317.setText(QCoreApplication.translate("submission", u"Department:", None))
+#if QT_CONFIG(tooltip)
+        self.dead_department.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.dead_department.setText("")
+        self.dead_department.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.groupBox_28.setTitle(QCoreApplication.translate("submission", u"GroupBox", None))
+        self.label_318.setText(QCoreApplication.translate("submission", u"Windows:", None))
+#if QT_CONFIG(tooltip)
+        self.dead_command_windows.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.dead_command_windows.setText(QCoreApplication.translate("submission", u"{$DEADLINE_PATH}/deadlinecommand.exe", None))
+        self.dead_command_windows.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.label_319.setText(QCoreApplication.translate("submission", u"Linux:", None))
+#if QT_CONFIG(tooltip)
+        self.dead_primpool_3.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.dead_primpool_3.setText(QCoreApplication.translate("submission", u"{$DEADLINE_PATH}/deadlinecommand", None))
+        self.dead_primpool_3.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.label_320.setText(QCoreApplication.translate("submission", u"Darwin:", None))
+#if QT_CONFIG(tooltip)
+        self.dead_primpool_4.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Renamer checks all folders one folder above the package folder<br/>and detects version in it by using Version Regex</p></body></html>", None))
+#endif // QT_CONFIG(tooltip)
+        self.dead_primpool_4.setText(QCoreApplication.translate("submission", u"{$DEADLINE_PATH}/deadlinecommand", None))
+        self.dead_primpool_4.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
+        self.TopTab.setTabText(self.TopTab.indexOf(self.tab_24), QCoreApplication.translate("submission", u"Deadline", None))
+        self.TopTab.setTabText(self.TopTab.indexOf(self.tab_25), QCoreApplication.translate("submission", u"Ayon", None))
         self.groupBox_14.setTitle(QCoreApplication.translate("submission", u"Frame Rate:", None))
         self.label_45.setText(QCoreApplication.translate("submission", u"Frame Rate:", None))
         self.prefs_frame_rate_txt.setText(QCoreApplication.translate("submission", u"24", None))
@@ -11159,7 +12108,7 @@ class Ui_submission(object):
         self.label_54.setText(QCoreApplication.translate("submission", u"Warning %", None))
         self.groupBox_13.setTitle(QCoreApplication.translate("submission", u"OIIO Tool", None))
         self.prefs_oiio_custom_ocio.setText(QCoreApplication.translate("submission", u"Custom OCIO:", None))
-        self.prefs_oiio_custom_ocio_path.setText(QCoreApplication.translate("submission", u"{shot}", None))
+        self.prefs_oiio_custom_ocio_path.setText("")
         self.groupBox_2.setTitle(QCoreApplication.translate("submission", u"Counter:", None))
         self.label.setText(QCoreApplication.translate("submission", u"From:", None))
         self.label_2.setText(QCoreApplication.translate("submission", u"Step:", None))
@@ -11206,7 +12155,26 @@ class Ui_submission(object):
         self.label_29.setText(QCoreApplication.translate("submission", u"Preset Name:", None))
         self.save_preset_button.setText(QCoreApplication.translate("submission", u"Save Preset", None))
         self.preset_explore.setText(QCoreApplication.translate("submission", u"Open Preset Folder", None))
-        self.label_26.setText(QCoreApplication.translate("submission", u"Release 2025-01-26", None))
+        self.groupBox_18.setTitle(QCoreApplication.translate("submission", u"Modules", None))
+        self.preset_mod_package.setText(QCoreApplication.translate("submission", u"Package", None))
+        self.preset_mod_parsing.setText(QCoreApplication.translate("submission", u"Parsing", None))
+        self.preset_mod_sidecar.setText(QCoreApplication.translate("submission", u"Sidecar Files", None))
+        self.preset_mod_rename.setText(QCoreApplication.translate("submission", u"Rename", None))
+        self.preset_mod_data.setText(QCoreApplication.translate("submission", u"Data", None))
+        self.preset_mod_ftrack.setText(QCoreApplication.translate("submission", u"Ftrack", None))
+        self.preset_mod_vendor.setText(QCoreApplication.translate("submission", u"Vendor", None))
+        self.preset_mod_convert.setText(QCoreApplication.translate("submission", u"Convert", None))
+        self.preset_mod_spreadsheet.setText(QCoreApplication.translate("submission", u"Spreadsheet", None))
+        self.preset_mod_text.setText(QCoreApplication.translate("submission", u"Text", None))
+        self.preset_mod_checks.setText(QCoreApplication.translate("submission", u"Checks", None))
+        self.preset_mod_deadline.setText(QCoreApplication.translate("submission", u"Deadline", None))
+        self.preset_mod_ayon.setText(QCoreApplication.translate("submission", u"Ayon", None))
+        self.preset_mod_preferences.setText(QCoreApplication.translate("submission", u"Preferences", None))
+        self.preset_mod_exports.setText(QCoreApplication.translate("submission", u"Exports", None))
+        self.preset_mod_log.setText(QCoreApplication.translate("submission", u"Log", None))
+        self.preset_mod_help.setText(QCoreApplication.translate("submission", u"Help", None))
+        self.preset_mod_ffprobe.setText(QCoreApplication.translate("submission", u"FFprobe", None))
+        self.preset_mod_oiio.setText(QCoreApplication.translate("submission", u"OIIOtool", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_3), QCoreApplication.translate("submission", u"Presets", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_21), QCoreApplication.translate("submission", u"Log", None))
         self.textEdit.setHtml(QCoreApplication.translate("submission", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
@@ -11214,137 +12182,139 @@ class Ui_submission(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:18pt; color:#e8e8e8;\">Submission Helper</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">[2025-06-13]</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">This tool is helping vfx vendors to send media to productions or other studios.</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-lef"
-                        "t:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">Each sending usually consists of one or more media files, together with spreadsheet that binds the media files with additional info like notes, status, version, task...</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px;"
+                        " margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">Each sending usually consists of one or more media files, together with spreadsheet that binds the media files with additional info like notes, status, version, task...</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">This process doesn't seem to have an industry standard, Submission Helper has numerous options to help interface vendor and production with as little friction as possible.</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin"
-                        "-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"https://knowledge.autodesk.com/support/shotgrid/getting-started/caas/CloudHelp/cloudhelp/ENU/SG-Tutorials/files/SG-Tutorials-tu-submission-overview-html-html.html\"><span style=\" text-decoration: underline; color:#0000ff;\">Here</span></a><span style=\" color:#e8e8e8;\"> is the overview from ShotGrid:</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:"
+                        "0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><a href=\"https://knowledge.autodesk.com/support/shotgrid/getting-started/caas/CloudHelp/cloudhelp/ENU/SG-Tutorials/files/SG-Tutorials-tu-submission-overview-html-html.html\"><span style=\" text-decoration: underline; color:#0000ff;\">Here</span></a><span style=\" color:#e8e8e8;\"> is the overview from ShotGrid:</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; color:#e8e8e8;\">Intended use</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">Package starts with one or more files that you want to package and send. Submission Helper checks all the files and h"
-                        "elps to produce spreadsheet(s) and email that is easily ingested in receiver's system, often automatically.</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-blo"
+                        "ck-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">Package starts with one or more files that you want to package and send. Submission Helper checks all the files and helps to produce spreadsheet(s) and email that is easily ingested in receiver's system, often automatically.</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; color:#e8e8e8;\">Features</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Helps to name the package by the template, including consecutive or per day versions</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Reads metadata from the files by ffprobe and other methods</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; ma"
-                        "rgin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Calculates file sizes</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-inden"
+                        "t:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Reads metadata from the files by ffprobe and other methods</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Calculates file sizes</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Allows to gather and copy sidecar files like CDLs or LUTs to the package.</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Allows to define spreadsheet columns and values in a flexible way</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Generates up to two spreadsheets that are called in gui submission and drive log</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\""
-                        ">* Generates a text file that is often used for email that follows up the sending.</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Generates up to two spreadsheets that are called in gui submission"
+                        " and drive log</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Generates a text file that is often used for email that follows up the sending.</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Can read notes from Ftrack</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Allows for checking for holes in file sequences, files with zero size and other common problems</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Allows saving config to json files</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Can be used head-less </span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom"
-                        ":0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:"
+                        "0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">* Can be used head-less </span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; color:#e8e8e8;\">Quick How-to</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">Submission Helper assumes you put the file(s) in one folder - the Package Folder.</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">1. Drag the package folder path anywhere to the Submission Helper window</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; marg"
-                        "in-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">2. Set the Package Name options, till the preview matches what you need</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-ind"
+                        "ent:0px;\"><span style=\" color:#e8e8e8;\">1. Drag the package folder path anywhere to the Submission Helper window</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">2. Set the Package Name options, till the preview matches what you need</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">3. Use Spreadsheet tab to define columns and their values</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">4. Set the export options in Exports and text tabs</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">5. Press Go to export</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
-"<p style=\" margin-top:0p"
-                        "x; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; color:#e8e8e8;\">Keywords</span></p>\n"
+"<p style=\"-qt-para"
+                        "graph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:14pt; color:#e8e8e8;\">Keywords</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">name: file name, no path, no extension</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">printf_pattern: file name, for file sequence number is replaced with %04d for 0001</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">sequence_nuke: file name, number for file sequence is replaced by [sta"
-                        "rt..end]</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom"
+                        ":0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">sequence_nuke: file name, number for file sequence is replaced by [start..end]</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">sequence_slate</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">sequence_slate_nuke</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">clean_name: file name with no extension and no trailing number</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">clean_name_no_sep: file name with no extension and no trailing number, if there is dot underscore or dash before trailing number, it is removed</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-b"
-                        "lock-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">clean_name_sep_char: the number separation character</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">clean_name_no_sep: file name with no extension and no trailing n"
+                        "umber, if there is dot underscore or dash before trailing number, it is removed</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">clean_name_sep_char: the number separation character</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">number: trailing number</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">start_number: first number in file sequence</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">end_number: last number in file sequence</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; "
-                        "text-indent:0px;\"><span style=\" color:#e8e8e8;\">padding: leading zeroes used for trailing number</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span st"
+                        "yle=\" color:#e8e8e8;\">end_number: last number in file sequence</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">padding: leading zeroes used for trailing number</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">range: start-end frames for file sequence</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">range_slate: same as range, start+1</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">extension: file extension, no dot</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-i"
-                        "ndent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" co"
+                        "lor:#e8e8e8;\">extension: file extension, no dot</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">path_prs: path, with no file, no trailing slash</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">full_path: path to the file or first frame in file sequence</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">relative_path: path to the file, minus the path start to the package. Starts with slash</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">drive: drive letter (windows)</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0p"
-                        "x; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt"
+                        "-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">drive: drive letter (windows)</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">size_bytes: file size in bytes, calculated as total for file sequence</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">size_human: same as size_bytes, rounded to one decimal, with units</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">category: files are categorized by extension. still, sequence, video, audio, multiframe, other</span></p>\n"
-"<p sty"
-                        "le=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-b"
+                        "lock-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">category: files are categorized by extension. still, sequence, video, audio, multiframe, other</span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">cnt_sub, cnt_log, cnt_txt: counter for each export</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">total_sub, total_log, total_txt: total number of files for each export</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">files_sub, files_log, files_txt: total files for each export</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /><"
-                        "/p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">files_sub, files_log, files_txt: total files for each export</"
+                        "span></p>\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">d, dd, y, yy, m, mm: today day, month and year</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">package_date: package renaming date </span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">package_name: package renaming name</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">package_version: package renaming version</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">package_name_from_folder: fold"
-                        "er name initially provided by user</span></p>\n"
+"<"
+                        "p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">package_name_from_folder: folder name initially provided by user</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">package_name_root: path to the package, without end folder</span></p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; color:#e8e8e8;\"><br /></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_aspect: image aspect, float</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_aspect_x: </span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_aspect_y:</span></p>\n"
-"<p s"
-                        "tyle=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_audio_present</span></p>\n"
+"<p st"
+                        "yle=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_aspect_y:</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_audio_present</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_audio_present</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_audio_present</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_bits_per_sample_audio</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_channels_audio</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt"
-                        "-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_codec_long_name_audio</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block"
+                        "-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_channels_audio</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_codec_long_name_audio</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_codec_long_name_video</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_codec_name_audio</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_codec_name_audio</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_data_present</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">m"
-                        "eta_duration_audio</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_"
+                        "data_present</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_duration_audio</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_duration_frames</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_duration_frames_slate</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_duration_secs</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_fields</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_fps</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px;"
-                        " margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_fps_a</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left"
+                        ":0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_fps</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_fps_a</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_fps_a</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_fps_raw</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_frame_end_from_tc</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_frame_end_from_tc_slate</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_fra"
-                        "me_start_from_tc</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_frame_end_from_tc_"
+                        "slate</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_frame_start_from_tc</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_frame_start_from_tc_slate</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_height</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_is_log</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_reel</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_sample_rate_audio</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; m"
-                        "argin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_time_code</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-rig"
+                        "ht:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_sample_rate_audio</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_time_code</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_time_stamp_audio</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_time_stamp_video</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_video_present</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_width</span></p></body></html>", None))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#e8e8e8;\">meta_"
+                        "width</span></p></body></html>", None))
         self.TopTab.setTabText(self.TopTab.indexOf(self.tab_14), QCoreApplication.translate("submission", u"Help", None))
         self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_6), QCoreApplication.translate("submission", u"Submission", None))
         self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_7), QCoreApplication.translate("submission", u"Drive Log", None))
@@ -11370,8 +12340,10 @@ class Ui_submission(object):
         self.tree_filter_value.setToolTip(QCoreApplication.translate("submission", u"<html><head/><body><p>Template for naming the package. <br/><br/>Keywords:<br/>{package_version} : detects consecutive versions one folder up from package folder<br/>{yy}: year<br/>{mm}: month<br/>{dd}: day</p><p><br/></p><p><br/></p></body></html>", None))
 #endif // QT_CONFIG(tooltip)
         self.tree_filter_value.setText("")
-        self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_19), QCoreApplication.translate("submission", u"Data", None))
+        self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_19), QCoreApplication.translate("submission", u"MetaData", None))
+        self.BottomTab.setTabText(self.BottomTab.indexOf(self.tab_22), QCoreApplication.translate("submission", u"Files", None))
         self.write_button.setText(QCoreApplication.translate("submission", u"Go", None))
+        self.pushButton.setText(QCoreApplication.translate("submission", u"to Farm", None))
         self.reload.setText(QCoreApplication.translate("submission", u"Reload", None))
     # retranslateUi
 
