@@ -66,6 +66,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.setupUi(self)
         self.no_gui = no_gui
 
+        self.envs = os.environ
+
         # Settings to gui
         # Top Tabs show / hide: Presets checkbox name: [tab index, tab name]
         self.tab_pairs = {
@@ -941,6 +943,73 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.tree_filter_value.textChanged.connect(
             partial(self.handler, 'tree_filter_value', 'data_filter'))
 
+
+        # Ayon Tab
+        self.ui.ayon_path.textChanged.connect(
+            partial(self.handler, 'ayon_path', 'ayon_changed'))
+        self.ui.ayon_server_url.textChanged.connect(
+            partial(self.handler, 'ayon_server_url', 'ayon_changed'))
+        self.ui.ayon_project.textChanged.connect(
+            partial(self.handler, 'ayon_project', 'ayon_changed'))
+        self.ui.ayon_prefix.textChanged.connect(
+            partial(self.handler, 'ayon_prefix', 'ayon_changed'))
+        self.ui.ayon_output_folder.textChanged.connect(
+            partial(self.handler, 'ayon_output_folder', 'ayon_changed'))
+
+        self.ui.ayon_do_shotlist.clicked.connect(
+            partial(self.handler, 'ayon_do_shotlist', 'ayon_changed'))
+        self.ui.ayon_export_csv.clicked.connect(
+            partial(self.handler, 'ayon_export_csv', 'ayon_changed'))
+        self.ui.ayon_export_excel.clicked.connect(
+            partial(self.handler, 'ayon_export_excel', 'ayon_changed'))
+        self.ui.ayon_thumbnails.clicked.connect(
+            partial(self.handler, 'ayon_thumbnails', 'ayon_changed'))
+
+        self.ui.ayon_filter_assets.clicked.connect(
+            partial(self.handler, 'ayon_filter_assets', 'ayon_changed_filter'))
+        self.ui.ayon_filter_shots.clicked.connect(
+            partial(self.handler, 'ayon_filter_shots', 'ayon_changed_filter'))
+        self.ui.ayon_filter_tasks.clicked.connect(
+            partial(self.handler, 'ayon_filter_tasks', 'ayon_changed_filter'))
+        self.ui.ayon_filter_other.clicked.connect(
+            partial(self.handler, 'ayon_filter_other', 'ayon_changed_filter'))
+        self.ui.ayon_filter_tasktype_chbx.clicked.connect(
+            partial(self.handler, 'ayon_filter_tasktype_chbx', 'ayon_changed_filter'))
+        self.ui.ayon_filter_assignee_chbx.clicked.connect(
+            partial(self.handler, 'ayon_filter_assignee_chbx', 'ayon_changed_filter'))
+        self.ui.ayon_filter_tasktypes.textChanged.connect(
+            partial(self.handler, 'ayon_filter_tasktypes', 'ayon_changed_filter'))
+        self.ui.ayon_filter_assignees.textChanged.connect(
+            partial(self.handler, 'ayon_filter_assignees', 'ayon_changed_filter'))
+
+        self.ui.ayon_package1_chbx.clicked.connect(
+            partial(self.handler, 'ayon_package1_chbx', 'ayon_changed_filter'))
+        self.ui.ayon_package2_chbx.clicked.connect(
+            partial(self.handler, 'ayon_package2_chbx', 'ayon_changed_filter'))
+        self.ui.ayon_package3_chbx.clicked.connect(
+            partial(self.handler, 'ayon_package3_chbx', 'ayon_changed_filter'))
+        self.ui.ayon_package1.textChanged.connect(
+            partial(self.handler, 'ayon_package1',
+                    'ayon_changed_filter'))
+        self.ui.ayon_list1.textChanged.connect(
+            partial(self.handler, 'ayon_list1',
+                    'ayon_changed_filter'))
+        self.ui.ayon_package2.textChanged.connect(
+            partial(self.handler, 'ayon_package2',
+                    'ayon_changed_filter'))
+        self.ui.ayon_list2.textChanged.connect(
+            partial(self.handler, 'ayon_list2',
+                    'ayon_changed_filter'))
+        self.ui.ayon_package3.textChanged.connect(
+            partial(self.handler, 'ayon_package3',
+                    'ayon_changed_filter'))
+        self.ui.ayon_list3.textChanged.connect(
+            partial(self.handler, 'ayon_list3',
+                    'ayon_changed_filter'))
+
+        self.ui.tree_filter_value.textChanged.connect(
+            partial(self.handler, 'tree_filter_value', 'data_filter'))
+
         # preset name is empty, disable save button
         self.ui.save_preset_button.setEnabled(False)
 
@@ -1175,6 +1244,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         if group == "data_filter":
             self.show_data()
+
+        if group == "ayon_changed_filter":
+            self.data.ayon_data_filter()
 
         if group == "tab_pairs":
             self.gui_show_hide_modules()

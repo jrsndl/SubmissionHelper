@@ -4,7 +4,7 @@ import sys
 import struct
 import logging
 
-log = logging.getLogger('vvzen.parse_metadata')
+log = logging.getLogger('parse_metadata')
 
 
 class EXR_ATTRIBUTES:

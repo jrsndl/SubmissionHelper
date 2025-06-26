@@ -393,12 +393,12 @@ class MetaData(object):
                     if streamType == 'video':
                         outdata['video_present'] = 1
                         try:
-                            outdata['width'] = int(onestr.attrib['width'])
+                            outdata['width'] = int(onestr.attrib.get('width'))
                         except:
                             pass
 
                         try:
-                            outdata['height'] = int(onestr.attrib['height'])
+                            outdata['height'] = int(onestr.attrib.get('height'))
                         except:
                             pass
 
@@ -417,11 +417,9 @@ class MetaData(object):
                             outdata['duration_frames_slate'] = int(
                                 onestr.attrib['nb_frames']) - 1
                         except:
-                            outdata['duration_frames'] = int(
-                                onestr.attrib['duration_ts'])
-                            outdata['duration_frames_slate'] = int(
-                                onestr.attrib['duration_ts']) - 1
-                            pass
+                            if onestr.attrib.get('duration_ts') is not None:
+                                outdata['duration_frames'] = int(onestr.attrib['duration_ts'])
+                                outdata['duration_frames_slate'] = int(onestr.attrib['duration_ts']) - 1
 
                         try:
                             outdata['duration_secs'] = float(onestr.attrib['duration'])  # "38.333333" seconds

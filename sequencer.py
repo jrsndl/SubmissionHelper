@@ -13,12 +13,13 @@ from operator import itemgetter
 
 import ftrack_api
 import xlsxwriter
-from PySide2 import QtGui, QtWidgets
+from PySide2 import QtGui, QtWidgets, QtCore
 from unidecode import unidecode
 
 import helpers
 import parse_file_name
 from metadata import MetaData
+from ayon_shotlist import AyonShotlist
 
 
 class Sequencer(object):
@@ -119,6 +120,20 @@ class Sequencer(object):
             self.prepare_file_table()
             self.display_file_table()
 
+        if not self.headless:
+            self.ui.statusBar.showMessage("Reading CSV Data", 3000)
+        self.csv_data = []
+        self.csv_data_read()
+        if not self.headless:
+            self.display_data_table()
+
+        if not self.headless:
+            self.ui.statusBar.showMessage("Reading Ayon Data", 3000)
+        self.ayon_data = []
+        self.ayon_data_read()
+        if not self.headless:
+            self.display_ayon_table()
+
         # metadata
         if not self.headless:
             self.ui.statusBar.showMessage("Gathering Metadata", 3000)
@@ -156,11 +171,14 @@ class Sequencer(object):
         self.select_ftrack_note()
         self.ftrack_op_attrs()
 
-        if not self.headless:
-            self.ui.statusBar.showMessage("Reading CSV Data", 3000)
-        self.csv_data = []
-        self.csv_data_read()
         self.csv_data_assign()
+        if not self.headless:
+            #self.display_data_table()
+            pass
+
+        self.ayon_data_assign()
+        if not self.headless:
+            self.display_ayon_table()
 
         # sidecar files filter
         if not self.headless:
@@ -2841,6 +2859,198 @@ class Sequencer(object):
                         ])
                 one_rename(_seq)
 
+    def ayon_collect_gui(self):
+
+        def split_itms(itm):
+            """
+            Gui task types and assignees are separated by commas
+            """
+            out = []
+            if itm is None:
+                return out
+            if len(itm) == 0:
+                return out
+            _s = itm.split(',')
+            for one in _s:
+                one = one.strip()
+                if one == '':
+                    continue
+                out.append(one.lower())
+            return out
+
+        self.ayon_gui = {
+            'server_url': self.settings['ayon_server_url']['value'] or "",
+            'do_shotlist': bool(self.settings['ayon_do_shotlist']['value']) or False,
+            'do_csv': bool(
+                self.settings['ayon_export_csv']['value']) or False,
+            'do_excel': bool(
+                self.settings['ayon_export_excel']['value']) or False,
+            'do_thumbs': bool(
+                self.settings['ayon_thumbnails']['value']) or False,
+            'project': self.settings['ayon_project']['value'] or "",
+            'prefix': self.settings['ayon_prefix']['value'] or "",
+            'out_folder': self.settings['ayon_output_folder']['value'] or "",
+            'filter_assets': bool(
+                self.settings['ayon_filter_assets']['value']) or False,
+            'filter_shots': bool(
+                self.settings['ayon_filter_shots']['value']) or False,
+            'filter_tasks': bool(
+                self.settings['ayon_filter_tasks']['value']) or False,
+            'filter_other': bool(
+                self.settings['ayon_filter_other']['value']) or False,
+            'filter_tasktype': bool(
+                self.settings['ayon_filter_tasktype_chbx']['value']) or False,
+            'filter_tasktypes': split_itms(self.settings['ayon_filter_tasktypes'][
+                                    'value'] or ""),
+            'filter_assignee': bool(
+                self.settings['ayon_filter_assignee_chbx']['value']) or False,
+            'filter_assignees': split_itms(self.settings['ayon_filter_assignees'][
+                                    'value'] or "")
+        }
+        # turn off multi filter if no filter provided
+        if self.ayon_gui['filter_tasktypes'] is None or len(self.ayon_gui['filter_tasktypes']) == 0:
+            self.ayon_gui['filter_tasktype'] = False
+        if self.ayon_gui['filter_assignees'] is None or len(self.ayon_gui['filter_assignees']) == 0:
+            self.ayon_gui['filter_assignee'] = False
+
+
+    def ayon_data_read(self):
+        """
+
+        """
+        self.ayon_collect_gui()
+
+        if self.ayon_gui['server_url'] == "" or not self.ayon_gui['do_shotlist'] or self.ayon_gui['project'] == "":
+            self.ayon_data = []
+            return self.ayon_data
+
+        ayon_api_key = "7ca45320bba24bb1b7f38f8a9e04d641"
+        self.my_ayon = AyonShotlist(
+            self.ayon_gui,
+            self.ui,
+            ayon_api_key
+        )
+        self.ayon_data = self.my_ayon.get_shotlist()
+
+    def ayon_data_filter(self):
+        self.ayon_collect_gui()
+        self.my_ayon.ayon_gui = self.ayon_gui
+        self.my_ayon.filter_shotlist()
+        self.ayon_data = self.my_ayon.data
+        self.display_ayon_table()
+
+    def ayon_data_assign(self):
+        class Default(dict):
+            def __missing__(self, key):
+                return '{' + key + '}'
+
+        if self.ayon_data is None or len(self.csv_data) == 0:
+            return
+        if self.merged_list is None or len(self.merged_list) == 0:
+            return
+        if self.settings is None:
+            return
+        if self.ayon_gui is None:
+            return
+
+        # get filters from gui, exit if filters empty
+        filters = []
+        if bool(self.settings['ayon_package1_chbx']['value']):
+            filters.append({
+                'pkg' : self.settings['ayon_package1']['value'],
+                'data': self.settings['ayon_list1']['value']
+            })
+        if bool(self.settings['ayon_package2_chbx']['value']):
+            filters.append({
+                'pkg': self.settings['ayon_package2']['value'],
+                'data': self.settings['ayon_list2']['value']
+            })
+        if bool(self.settings['ayon_package3_chbx']['value']):
+            filters.append({
+                'pkg': self.settings['ayon_package3']['value'],
+                'data': self.settings['ayon_list3']['value']
+            })
+
+        if filters is None or len(filters) == 0:
+            return
+
+        for item in self.merged_list:
+            for one_data_line in self.ayon_data:
+                matched_filters = 0
+                for one_filter in filters:
+                    pkg = one_filter['pkg'].format_map(Default(item))
+                    pkg = pkg.format_map(Default(one_data_line))
+                    data = one_filter['data'].format_map(Default(one_data_line))
+                    data = data.format_map(Default(item))
+                    if pkg is None or data is None:
+                        continue
+                    if str(pkg) == str(data):
+                        matched_filters += 1
+
+                # skip item if not matching
+                if matched_filters != len(filters):
+                    continue
+
+                # merge data lines
+                prefixed_line = {}
+                for k, v in one_data_line.items():
+                    prefixed_line[f"prefix_{self.ayon_gui['prefix']}"] = v
+                item.update(prefixed_line)
+                one_data_line["_matched"] = True
+                continue
+
+    def display_ayon_table(self):
+        """
+        table data to ui
+        """
+        if self.ayon_data is None or len(self.ayon_data) == 0:
+            return
+
+        table = self.ayon_data
+        table_ui = self.ui.ayon_table
+        titles = table[0].keys()
+
+        # display table
+        table_ui.clear()
+        table_ui.setColumnCount(0)
+        table_ui.setRowCount(0)
+        if table and titles:
+            table_ui.setSortingEnabled(False)
+            table_ui.setColumnCount(len(titles))
+            table_ui.setHorizontalHeaderLabels(titles)
+            table_ui.setRowCount(len(table))
+
+            row = -1
+            for line in table:
+                # skip displaying filtered out lines
+                if line.get('_hide', False):
+                    continue
+                row += 1
+                for column_number, one_column in enumerate(titles):
+                    if line[one_column] is None:
+                        line[one_column] = ''
+                    table_ui.setItem(row,
+                                     column_number,
+                                     QtWidgets.QTableWidgetItem(
+                                         line[one_column])
+                                     )
+                    # colorize
+                    itm = table_ui.item(row, column_number)
+                    color = 'white'
+                    if bool(line.get('_matched', False)):
+                        color = 'green'
+                    if itm:
+                        if color == 'green':
+                            itm.setBackground(QtGui.QColor('darkgreen'))
+                        else:
+                            # white
+                            itm.setBackground(QtGui.QColor("#4d4d4d"))
+
+            table_ui.setRowCount(row+1)
+            table_ui.resizeColumnsToContents()
+            table_ui.resizeRowsToContents()
+            table_ui.setSortingEnabled(True)
+
     def csv_data_read(self):
         """
         Retrieves and processes CSV data based on settings configured in the instance. The function identifies
@@ -2918,10 +3128,10 @@ class Sequencer(object):
                           encoding='utf-8-sig') as csv_file:
                     reader = csv.DictReader(csv_file)
                     for row in reader:
-                        prefixed_row = {f"{prefix}_{key}": value for key, value
+                        prefixed_row = {f"{prefix}{key}": value for key, value
                                         in row.items()}
                         # for pairing indication
-                        prefixed_row[f"{prefix}_matched"] = False
+                        prefixed_row["_matched"] = False
                         result.append(prefixed_row)
             except Exception as e:
                 print(f"Failed to read CSV file: {e}")
@@ -2931,7 +3141,7 @@ class Sequencer(object):
         if self.settings is None:
             return
 
-        do_csv_data = bool(self.settings['csv_data']['value'])
+        do_csv_data = bool(self.settings['data_enable']['value'])
         if not do_csv_data:
             return
 
@@ -2940,12 +3150,16 @@ class Sequencer(object):
             return
 
         csv_data = []
-        csv_data = csv_to_list_of_dicts(valid_csv, bool(self.settings['data_csv_latest']['value']))
+        csv_data = csv_to_list_of_dicts(valid_csv, self.settings['name_date_prefix']['value'])
         if csv_data is None or len(csv_data) == 0:
             return
         self.csv_data = csv_data
 
     def csv_data_assign(self):
+
+        class Default(dict):
+            def __missing__(self, key):
+                return '{' + key + '}'
 
         if self.csv_data is None or len(self.csv_data) == 0:
             return
@@ -2971,16 +3185,78 @@ class Sequencer(object):
                 'pkg': self.settings['data_package3']['value'],
                 'data': self.settings['data_data3']['value']
             })
+
         if filters is None or len(filters) == 0:
             return
 
-        # column names from data
-        data_column_names = self.csv_data[0].keys()
-
         for item in self.merged_list:
-            # keys in current item
-            keys = item.keys()
+            for one_data_line in self.csv_data:
+                matched_filters = 0
+                for one_filter in filters:
+                    pkg = one_filter['pkg'].format_map(Default(item))
+                    pkg = pkg.format_map(Default(one_data_line))
+                    data = one_filter['data'].format_map(Default(one_data_line))
+                    data = data.format_map(Default(item))
+                    if pkg is None or data is None:
+                        continue
+                    if str(pkg) == str(data):
+                        matched_filters += 1
 
+                # skip item if not matching
+                if matched_filters != len(filters):
+                    continue
+
+                # merge data lines
+                item.update(one_data_line)
+                one_data_line["_matched"] = True
+                continue
+
+    def display_data_table(self):
+        """
+        table data to ui
+        """
+        if self.csv_data is None or len(self.csv_data) == 0:
+            return
+
+        table = self.csv_data
+        table_ui = self.ui.data_table
+        titles = table[0].keys()
+
+        # display table
+        table_ui.clear()
+        table_ui.setColumnCount(0)
+        table_ui.setRowCount(0)
+        if table and titles:
+            table_ui.setSortingEnabled(False)
+            table_ui.setColumnCount(len(titles))
+            table_ui.setHorizontalHeaderLabels(titles)
+            table_ui.setRowCount(len(table))
+
+            for row, line in enumerate(table):
+                for column_number, one_column in enumerate(titles):
+                    if line[one_column] is None:
+                        line[one_column] = ''
+                    table_ui.setItem(row,
+                                     column_number,
+                                     QtWidgets.QTableWidgetItem(
+                                         line[one_column])
+                                     )
+
+                    # colorize
+                    itm = table_ui.item(row, column_number)
+                    color = 'white'
+                    if bool(line['_matched']):
+                        color = 'green'
+                    if itm:
+                        if color == 'green':
+                            itm.setBackground(QtGui.QColor('darkgreen'))
+                        else:
+                            # white
+                            itm.setBackground(QtGui.QColor("#4d4d4d"))
+
+            table_ui.resizeColumnsToContents()
+            table_ui.resizeRowsToContents()
+            table_ui.setSortingEnabled(True)
 
     def ftrack_query(self):
         self.ftrack_clean_notes()
