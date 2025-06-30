@@ -78,16 +78,26 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             "preset_mod_data": [4, "Data"],
             "preset_mod_ftrack": [5, "Ftrack"],
             "preset_mod_vendor": [6, "Vendor"],
-            "preset_mod_convert": [7, "Convert"],
-            "preset_mod_spreadsheet": [8, "Spreadsheet"],
-            "preset_mod_text": [9, "Text"],
-            "preset_mod_checks": [10, "Checks"],
-            "preset_mod_deadline": [11, "Deadline"],
-            "preset_mod_ayon": [12, "Ayon"],
-            "preset_mod_preferences": [13, "Preferences"],
-            "preset_mod_exports": [14, "Exports"],
-            "preset_mod_log": [16, "Log"],
-            "preset_mod_help": [17, "Help"]
+            "preset_mod_replace": [7, "Replace"],
+            "preset_mod_convert": [8, "Convert"],
+            "preset_mod_spreadsheet": [9, "Spreadsheet"],
+            "preset_mod_text": [10, "Text"],
+            "preset_mod_checks": [11, "Checks"],
+            "preset_mod_deadline": [12, "Deadline"],
+            "preset_mod_ayon": [13, "Ayon"],
+            "preset_mod_preferences": [14, "Preferences"],
+            "preset_mod_exports": [15, "Exports"],
+            "preset_mod_log": [17, "Log"],
+            "preset_mod_help": [18, "Help"]
+        }
+        self.tab_pairs_bottom = {
+            "preset_mod_submission": [0, "Submission"],
+            "preset_mod_drivelog": [1, "Drive Log"],
+            "preset_mod_text": [2, "Text"],
+            "preset_mod_sidecar": [3, "Sidecar Files"],
+            "preset_mod_rename": [4, "Rename"],
+            "preset_mod_inspector": [5, "Inspector"],
+            "preset_mod_files": [6, "Files"]
         }
         self.ui_start = True
         self.settings_obj = s
@@ -910,6 +920,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'preset_mod_ftrack', 'tab_pairs'))
         self.ui.preset_mod_vendor.clicked.connect(
             partial(self.handler, 'preset_mod_vendor', 'tab_pairs'))
+        self.ui.preset_mod_replace.clicked.connect(
+            partial(self.handler, 'preset_mod_replace', 'tab_pairs'))
         self.ui.preset_mod_convert.clicked.connect(
             partial(self.handler, 'preset_mod_convert', 'tab_pairs'))
         self.ui.preset_mod_spreadsheet.clicked.connect(
@@ -930,6 +942,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'preset_mod_log', 'tab_pairs'))
         self.ui.preset_mod_help.clicked.connect(
             partial(self.handler, 'preset_mod_help', 'tab_pairs'))
+
+        self.ui.preset_mod_submission.clicked.connect(
+            partial(self.handler, 'preset_mod_submission', 'tab_pairs'))
+        self.ui.preset_mod_drivelog.clicked.connect(
+            partial(self.handler, 'preset_mod_drivelog', 'tab_pairs'))
+        self.ui.preset_mod_inspector.clicked.connect(
+            partial(self.handler, 'preset_mod_inspector', 'tab_pairs'))
+        self.ui.preset_mod_files.clicked.connect(
+            partial(self.handler, 'preset_mod_files', 'tab_pairs'))
 
         # GO button
         self.ui.write_button.clicked.connect(
@@ -1234,6 +1255,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             self.settings_to_gui()
             self.settings_update_app_title()
             self.settings_update_dropbox()
+            self.gui_show_hide_modules()
             """
             except:
                 log.error('Error reading preset {}'.format(preset_to_load))
@@ -1564,7 +1586,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         for checkbox, val in self.tab_pairs.items():
             index = val[0]
             tab_name = val[1]
-            self.ui.TopTab.setTabVisible(index, self.settings.get(checkbox)['value'])
+            chbx = self.settings.get(checkbox)
+            if chbx:
+                is_on = chbx.get('value', False)
+                if is_on:
+                    self.ui.TopTab.setTabVisible(index, True)
+                else:
+                    self.ui.TopTab.setTabVisible(index, False)
+
+        for checkbox, val in self.tab_pairs_bottom.items():
+            index = val[0]
+            tab_name = val[1]
+            chbx = self.settings.get(checkbox)
+            if chbx:
+                is_on = chbx.get('value', False)
+                if is_on:
+                    self.ui.BottomTab.setTabVisible(index, True)
+                else:
+                    self.ui.BottomTab.setTabVisible(index, False)
 
     def settings_to_gui(self):
         """
