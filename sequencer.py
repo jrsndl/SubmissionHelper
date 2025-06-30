@@ -21,7 +21,6 @@ import parse_file_name
 from metadata import MetaData
 from ayon_shotlist import AyonShotlist
 
-
 class Sequencer(object):
     def __init__(self, in_path, sequence_mode='to_subsequences', gui=None, more_settings=None, ui=None, headless=False):
 

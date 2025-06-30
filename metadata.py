@@ -5,6 +5,7 @@ import sys
 import re
 import subprocess
 import struct
+import json
 import logging
 
 import xml.etree.ElementTree
@@ -13,6 +14,8 @@ from PyTimeCode import PyTimeCode
 import helpers
 import inspect
 import logging
+
+from nukery.parser import NukeScriptParser
 
 
 class MetaData(object):
@@ -53,6 +56,7 @@ class MetaData(object):
                      'is_log': False}
 
         self.meta_exr = {}
+        self.meta_nk = {}
 
         self.platform, self.platform_extension = self.__get_platform()
         self.ffmpeg_path, self.ffprobe_path = self.__get_ffmpeg_path()
@@ -115,6 +119,12 @@ class MetaData(object):
             meta_data.update(self.meta_exr)
         except:
             print("Reading EXR metadata failed")
+
+        # add exr header
+        try:
+            meta_data.update(self.meta_nk)
+        except:
+            pass
 
         return meta_data
 
@@ -180,6 +190,10 @@ class MetaData(object):
         # DPX:
         if my_extension == 'dpx':
             self.meta.update(self.read_metadata_from_dpx())
+
+        # Nuke
+        if my_extension == 'nk':
+            self.meta_nk = self.read_metadata_from_nuke()
 
         # EXR
         if my_extension == 'exr':
@@ -582,6 +596,73 @@ class MetaData(object):
             outdata['error'] += 'Failed to parse is_log from file ' + filename + ' by ffmbc'
 
         return outdata
+
+    def read_metadata_from_nuke(self):
+        """
+        Use Nukery to read metadata from file.
+
+        :return:
+        """
+        pth = self.meta['file']
+        metadict = {
+            "file": pth,
+            "error": '',
+            "meta_nk_handleStart": '',
+            "meta_nk_handleEnd": '',
+            "meta_nk_folderPath": '',
+            "meta_nk_task": '',
+            "meta_nk_first_frame": '',
+            "meta_nk_last_frame": '',
+            "meta_nk_fps": '',
+            "meta_nk_ocio_path": '',
+            "meta_nk_width": '',
+            "meta_nk_height": '',
+            "meta_nk_pixel_aspect": '',
+            "meta_nk_format_name": ''
+        }
+
+        if pth is None:
+            metadict["error"] = f"File {pth} is not set."
+            return metadict
+
+        try:
+            prs = list(NukeScriptParser.from_file(pth))
+        except Exception as e:
+            metadict["error"] = f"Problem parsing file:{pth} error {e}"
+            return metadict
+
+        for one in prs:
+            node_class = one.get('class')
+            node_knobs = one.get('knobs')
+            if node_class == 'Group':
+                for knob_name, knob_value in node_knobs.items():
+                    if knob_name == 'renderCompMain':
+                        render_json = node_knobs['publish_instance']
+
+            elif node_class == 'Root':
+                root_json = node_knobs.get('publish_instance')
+                if root_json is not None and len(root_json) > 9:
+                    j = str(root_json)[8:-1].replace("\\", "")
+                    root_json_dict = json.loads(j)
+                    if root_json_dict is not None:
+                        metadict['meta_nk_handleStart'] = root_json_dict.get("handleStart")
+                        metadict['meta_nk_handleEnd'] = root_json_dict.get("handleEnd")
+                        metadict['meta_nk_folderPath'] = root_json_dict.get("folderPath")
+                        metadict['meta_nk_task'] = root_json_dict.get("task")
+                metadict['meta_nk_first_frame'] = node_knobs.get('first_frame')
+                metadict['meta_nk_last_frame'] = node_knobs.get('last_frame')
+                metadict['meta_nk_fps'] = node_knobs.get('fps')
+                metadict['meta_nk_ocio_path'] = node_knobs.get('customOCIOConfigPath')
+
+                root_format = node_knobs.get('format')
+                if root_format is not None and len(root_format) > 2:
+                    sep = root_format[1:-1].split(' ')
+                    if len(sep) == 8:
+                        metadict['meta_nk_width'] = sep[0]
+                        metadict['meta_nk_height'] = sep[1]
+                        metadict['meta_nk_pixel_aspect'] = sep[6]
+                        metadict['meta_nk_format_name'] = sep[7]
+        return metadict
 
     def read_metadata_from_dpx(self):
 
