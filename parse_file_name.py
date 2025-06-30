@@ -119,17 +119,20 @@ def printf_pattern(full_path):
 
     # if normal
     r = prs['clean_name'] + '%0' + str(prs['padding']) + 'd.' + prs['extension']
+    h = prs['clean_name'] + '#' * int(prs['padding']) + '.' + prs['extension']
 
     # check if there are leading zeroes
     # WARNING this will not work if it is not first frame of the sequence !!!
     if len(str(prs['number'])) == prs['padding']:
         r = prs['clean_name'] + '%' + str(prs['padding']) + 'd.' + prs['extension']
+        h = prs['clean_name'] + '#' * int(prs['padding']) + '.' + prs['extension']
 
     # if no number (overwrites previous)
     if prs['padding'] == -1:
         r = prs['clean_name'] + '.' + prs['extension']
+        h = r
 
-    return r
+    return r, h
 
 
 def path_from_path_and_number(some_path, number):

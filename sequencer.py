@@ -33,7 +33,7 @@ class Sequencer(object):
         self.merged_list = None
         self.settings = gui
         self.regexes = None
-        self.static_keywords = None
+        self.static_keywords = {}
         self.column_titles_sub = None
         self.column_expressions_sub = None
         self.column_titles_log = None
@@ -173,7 +173,7 @@ class Sequencer(object):
 
         self.csv_data_assign()
         if not self.headless:
-            #self.display_data_table()
+            self.display_data_table()
             pass
 
         self.ayon_data_assign()
@@ -784,7 +784,12 @@ class Sequencer(object):
         root_dir_length = len(root_dir)
         if self.merged_list and len(self.merged_list) > 0:
             for one_item in self.merged_list:
-                one_item['relative_path'] = one_item['path'][root_dir_length:]
+                relative_path = one_item['path'][root_dir_length:]
+                relative_path = relative_path.lstrip('/')
+                relative_folder = "/".join(relative_path.split('/')[:-1]) + '/'
+                relative_folder = relative_folder.lstrip('/')
+                one_item['relative_path'] = relative_path
+                one_item['relative_folder'] = relative_folder
 
     def get_file_sizes(self):
 
@@ -1422,12 +1427,12 @@ class Sequencer(object):
                     sub_ranges.append({'start': start_frame, 'end': end_frame})
                     temp_result[one_key][3] = sub_ranges
 
-                    patt = parse_file_name.printf_pattern(temp_result[one_key][1])
+                    patt, hash_patt = parse_file_name.printf_pattern(temp_result[one_key][1])
                     prs = parse_file_name.parse(temp_result[one_key][1])
 
                     # now we have all data gathered, let's format it nicely for output
                     one_record = {'path': temp_result[one_key][1], 'missing_numbers': temp_result[one_key][2],
-                                    'sub_ranges': temp_result[one_key][3], 'printf_pattern': patt,
+                                    'sub_ranges': temp_result[one_key][3], 'printf_pattern': patt, 'hash_pattern': hash_patt,
                                     'master_start_number': frames[0], 'master_end_number': frames[-1],
                                     'category': 'sequence'}
                     prs['path_prs'] = prs.pop('path')  # path in one_dict shadows path from parse
@@ -1937,7 +1942,7 @@ class Sequencer(object):
             })
 
         # make public
-        self.static_keywords = date_keys
+        self.static_keywords = {**date_keys, **self.static_keywords}
         # add to outputs
         self.output.update(date_keys)
 
@@ -2080,7 +2085,6 @@ class Sequencer(object):
 
             # only one row, return as is
             if rows and len(rows) == 1:
-                print('!!! onerow')
                 return rows[0]
 
             columns = len(rows[0]) - 1
@@ -3085,6 +3089,7 @@ class Sequencer(object):
 
             valid_csv_files = []
             csv_files = []
+            self.static_keywords['csv_data_file'] = ""
 
             # get list of csv files
             if not get_latest and os.path.isfile(file_path):
@@ -3110,7 +3115,10 @@ class Sequencer(object):
             if valid_csv_files is None or len(valid_csv_files) == 0:
                 return None
 
-            return sorted(valid_csv_files)[-1]
+            latest = sorted(valid_csv_files)[-1]
+            latest = latest.replace("\\", "/")
+            self.static_keywords['csv_data_file'] = latest.split("/")[-1]
+            return latest
 
         def csv_to_list_of_dicts(csv_path, prefix=''):
             """
@@ -3205,10 +3213,11 @@ class Sequencer(object):
                 # skip item if not matching
                 if matched_filters != len(filters):
                     continue
-
-                # merge data lines
-                item.update(one_data_line)
+                # flag data line as matched
                 one_data_line["_matched"] = True
+
+                # merge data to matched item
+                item.update(one_data_line)
                 continue
 
     def display_data_table(self):
@@ -3756,15 +3765,17 @@ class Sequencer(object):
                         # it is warning or error
                         m = one_check['message'].format_map(Default(item))
                         if one_check['is_error']:
-                            try:
-                                item['error'] = item['error'] + '; ' + m
-                            except:
+                            e = item.get('error', '')
+                            if e == '':
                                 item['error'] = m
-                        else:
-                            if item['warning'] and item['warning'] != '':
-                                item['warning'] = item['warning'] + '; ' + m
                             else:
+                                item['error'] = f"{item['error']}; {m}"
+                        else:
+                            w = item.get('warning', '')
+                            if w == '':
                                 item['warning'] = m
+                            else:
+                                item['warning'] = f"{item['warning']}; {m}"
             sw = item.get('size_warning', '')
             if sw and sw != '':
                 if item['warning'] and item['warning'] != '':
