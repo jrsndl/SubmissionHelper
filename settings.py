@@ -38,12 +38,22 @@ class Settings(object):
                     if self.install_settings['ffprobe_path'].startswith('./'):
                         _p = self._get_script_path() + self.install_settings[
                                                            'ffprobe_path'][1:]
+                if self.install_settings['ffmpeg_path']:
+                    if self.install_settings['ffmpeg_path'].startswith('./'):
+                        _p = self._get_script_path() + self.install_settings[
+                                                           'ffmpeg_path'][1:]
                         self.install_settings['ffprobe_path'] = _p
                 if self.install_settings['oiio_path']:
                     if self.install_settings['oiio_path'].startswith('./'):
                         _p = self._get_script_path() + self.install_settings[
                                                            'oiio_path'][1:]
                         self.install_settings['oiio_path'] = _p
+
+                if self.install_settings['ayon_path']:
+                    if self.install_settings['ayon_path'].startswith('./'):
+                        _p = self._get_script_path() + self.install_settings[
+                                                           'ayon_path'][1:]
+                        self.install_settings['ayon_path'] = _p
 
         except Exception:
             # no prefs found

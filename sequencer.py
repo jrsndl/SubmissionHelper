@@ -48,6 +48,9 @@ class Sequencer(object):
         self.table_files = []
         self.columns_files = ['File', 'Size', 'Category', 'Missing', 'Path', 'Meta']
 
+        self.paths = {}
+        self._prep_paths_vars()
+
         self.renames = []
 
         self.output = {}
@@ -67,6 +70,80 @@ class Sequencer(object):
 
         #pprint.pprint(self.merged_list)
         # logging.debug('-> Sequencer Init')
+
+    def _prep_paths_vars(self):
+        """
+        Get paths and environment variables for executables
+        sources are environment variables, install.json, and os paths
+        :return:
+        """
+        def which(program):
+            def is_exe(fpath):
+                return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+            fpath, fname = os.path.split(program)
+            if fpath:
+                if is_exe(program):
+                    return program
+            else:
+                for path in os.environ.get("PATH", "").split(os.pathsep):
+                    exe_file = os.path.join(path, program)
+                    if is_exe(exe_file):
+                        return exe_file
+            return None
+
+        envs = os.environ
+        if sys.platform == 'win':
+            usr = envs.get('USERNAME', '')
+            executables = ['ayon.exe', 'ffprobe.exe', 'ffplay.exe', 'oiiotool.exe']
+        else:
+            usr = envs.get('USER', '')
+            executables = ['ayon', 'ffprobe', 'ffplay', 'oiiotool']
+
+        together = {
+            'USER': usr,
+            'FTRACK_API_USER': envs.get('FTRACK_API_USER', ''),
+            'FTRACK_SERVER': envs.get('FTRACK_SERVER', ''),
+            'FTRACK_API_KEY': envs.get('FTRACK_API_KEY', ''),
+            'AYON_SERVER_URL': envs.get('AYON_SERVER_URL', ''),
+            'AYON_USERNAME': envs.get('AYON_USERNAME', ''),
+            'AYON_API_KEY': envs.get('AYON_API_KEY', ''),
+            'AYON': '',
+            'FFMPEG': '',
+            'FFPROBE': '',
+            'OIIOTOOL': ''
+        }
+
+        # check if executables are available on path
+        for one_exec in executables:
+            exe_path = which(one_exec)
+            k = one_exec.strip('.exe').upper()
+            if exe_path:
+                together[k] = exe_path
+            else:
+                together[k] = ''
+
+        # override executable paths by Submission Helper specific environment variables
+        if envs.get('SH_FFMPEG'):
+            together['FFMPEG'] = envs['SH_FFMPEG']
+        if envs.get('SH_FFPROBE'):
+            together['FFPROBE'] = envs['SH_FFPROBE']
+        if envs.get('SH_OIIOTOOL'):
+            together['OIIOTOOL'] = envs['SH_OIIOTOOL']
+        if envs.get('SH_AYON'):
+            together['AYON'] = envs['SH_AYON']
+
+        # check if install.json config has valid stuff, use it if yes
+        if self.more_settings.get('ffprobe_path') and os.path.exists(self.more_settings['ffprobe_path']):
+            together['FFPROBE'] = self.more_settings['ffprobe_path']
+        if self.more_settings.get('ffmpeg_path') and os.path.exists(self.more_settings['ffmpeg_path']):
+            together['FFMPEG'] = self.more_settings['ffmpeg_path']
+        if self.more_settings.get('oiio_path') and os.path.exists(self.more_settings['oiio_path']):
+            together['OIIOTOOL'] = self.more_settings['oiio_path']
+        if self.more_settings.get('ayon_path') and os.path.exists(self.more_settings['ayon_path']):
+            together['AYON'] = self.more_settings['ayon_path']
+
+        self.paths = together
 
     def _prepare_in_path(self):
 
@@ -2109,7 +2186,7 @@ class Sequencer(object):
                 # skip none
                 kill_dupes = [x for x in kill_dupes if x is not None]
                 # skip empty strings
-                kill_dupes = [x for x in kill_dupes if x is not ""]
+                kill_dupes = [x for x in kill_dupes if x != ""]
                 merged_c.append(kill_dupes)
 
             merged_str = []

@@ -66,8 +66,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.setupUi(self)
         self.no_gui = no_gui
 
-        self.envs = os.environ
-
         # Settings to gui
         # Top Tabs show / hide: Presets checkbox name: [tab index, tab name]
         self.tab_pairs = {
