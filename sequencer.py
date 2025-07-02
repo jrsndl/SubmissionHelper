@@ -27,6 +27,7 @@ class Sequencer(object):
         self.converts = None
         self.ui = ui
         self.headless = headless
+        self.more_settings = more_settings
         self.log = logging.getLogger("mylog")
         self.sequence_mode = sequence_mode
         self.merged_list = None
@@ -62,7 +63,6 @@ class Sequencer(object):
 
         self.in_path = in_path
         self._prepare_in_path()
-        self.more_settings = more_settings
 
         if os.path.exists(self.in_path):
             self.read_files()
@@ -92,26 +92,28 @@ class Sequencer(object):
                         return exe_file
             return None
 
-        envs = os.environ
-        if sys.platform == 'win':
+        envs = dict(os.environ)
+        if sys.platform == 'win32':
             usr = envs.get('USERNAME', '')
             executables = ['ayon.exe', 'ffprobe.exe', 'ffplay.exe', 'oiiotool.exe']
         else:
             usr = envs.get('USER', '')
             executables = ['ayon', 'ffprobe', 'ffplay', 'oiiotool']
 
+        # paths are lowercase
         together = {
-            'USER': usr,
+            'user': usr,
             'FTRACK_API_USER': envs.get('FTRACK_API_USER', ''),
             'FTRACK_SERVER': envs.get('FTRACK_SERVER', ''),
             'FTRACK_API_KEY': envs.get('FTRACK_API_KEY', ''),
             'AYON_SERVER_URL': envs.get('AYON_SERVER_URL', ''),
             'AYON_USERNAME': envs.get('AYON_USERNAME', ''),
             'AYON_API_KEY': envs.get('AYON_API_KEY', ''),
-            'AYON': '',
-            'FFMPEG': '',
-            'FFPROBE': '',
-            'OIIOTOOL': ''
+            'ayon': '',
+            'ffmpeg': '',
+            'ffprobe': '',
+            'oiio': '',
+            'ocio': envs.get('OCIO', ''),
         }
 
         # check if executables are available on path
@@ -125,23 +127,35 @@ class Sequencer(object):
 
         # override executable paths by Submission Helper specific environment variables
         if envs.get('SH_FFMPEG'):
-            together['FFMPEG'] = envs['SH_FFMPEG']
+            together['ffmpeg'] = envs['SH_FFMPEG']
         if envs.get('SH_FFPROBE'):
-            together['FFPROBE'] = envs['SH_FFPROBE']
+            together['ffprobe'] = envs['SH_FFPROBE']
         if envs.get('SH_OIIOTOOL'):
-            together['OIIOTOOL'] = envs['SH_OIIOTOOL']
+            together['oiiotool'] = envs['SH_OIIOTOOL']
         if envs.get('SH_AYON'):
-            together['AYON'] = envs['SH_AYON']
+            together['ayon'] = envs['SH_AYON']
+        if envs.get('SH_OCIO'):
+            together['ocio'] = envs['SH_OCIO']
 
         # check if install.json config has valid stuff, use it if yes
-        if self.more_settings.get('ffprobe_path') and os.path.exists(self.more_settings['ffprobe_path']):
-            together['FFPROBE'] = self.more_settings['ffprobe_path']
-        if self.more_settings.get('ffmpeg_path') and os.path.exists(self.more_settings['ffmpeg_path']):
-            together['FFMPEG'] = self.more_settings['ffmpeg_path']
-        if self.more_settings.get('oiio_path') and os.path.exists(self.more_settings['oiio_path']):
-            together['OIIOTOOL'] = self.more_settings['oiio_path']
-        if self.more_settings.get('ayon_path') and os.path.exists(self.more_settings['ayon_path']):
-            together['AYON'] = self.more_settings['ayon_path']
+        if self.more_settings is not None:
+            if self.more_settings.get('ffprobe_path') and self.more_settings.get('ffprobe_path') != "" and os.path.exists(self.more_settings['ffprobe_path']):
+                together['ffprobe'] = self.more_settings['ffprobe_path']
+            if self.more_settings.get('ffmpeg_path') and self.more_settings.get('ffmpeg_path') != "" and os.path.exists(self.more_settings['ffmpeg_path']):
+                together['ffmpeg'] = self.more_settings['ffmpeg_path']
+            if self.more_settings.get('oiio_path') and self.more_settings.get('oiio_path') != "" and os.path.exists(self.more_settings['oiio_path']):
+                together['oiiotool'] = self.more_settings['oiio_path']
+            if self.more_settings.get('ayon_path') and  self.more_settings.get('ayon_path') != "" and os.path.exists(self.more_settings['ayon_path']):
+                together['ayon'] = self.more_settings['ayon_path']
+            if self.more_settings.get('ocio') and  self.more_settings.get('ocio') != "" and os.path.exists(self.more_settings['ocio']):
+                together['ocio'] = self.more_settings['ocio']
+
+        # OCIO path from gui overrides everything
+        if self.settings is not None:
+            gui_pth = self.settings.get('prefs_oiio_custom_ocio_path')
+            gui_pth_enabled = bool(self.settings.get('prefs_oiio_custom_ocio', False))
+            if gui_pth and gui_pth['value'] and os.path.exists(gui_pth['value']) and gui_pth_enabled:
+                together['ocio'] = gui_pth['value']
 
         self.paths = together
 
@@ -317,7 +331,7 @@ class Sequencer(object):
             # prepare meta objects
             meta_objs = []
             for one_item in self.merged_list:
-                meta_objs.append(MetaData(one_item, self.settings))
+                meta_objs.append(MetaData(one_item, self.settings, self.paths))
 
             # run threaded metadata load
             if not self.headless:
@@ -3004,11 +3018,11 @@ class Sequencer(object):
             self.ayon_data = []
             return self.ayon_data
 
-        ayon_api_key = "7ca45320bba24bb1b7f38f8a9e04d641"
+        #ayon_api_key = "7ca45320bba24bb1b7f38f8a9e04d641"
         self.my_ayon = AyonShotlist(
             self.ayon_gui,
             self.ui,
-            ayon_api_key
+            self.paths
         )
         self.ayon_data = self.my_ayon.get_shotlist()
 
@@ -3175,11 +3189,12 @@ class Sequencer(object):
                     folder_path = os.path.dirname(file_path)
                 else:
                     folder_path = file_path
-                csv_files = [
-                    os.path.join(folder_path, f) for f in
-                    os.listdir(folder_path)
-                    if f.endswith(".csv")
-                ]
+                if os.path.exists(folder_path):
+                    csv_files = [
+                        os.path.join(folder_path, f) for f in
+                        os.listdir(folder_path)
+                        if f.endswith(".csv")
+                    ]
 
             if csv_files is None or len(csv_files) == 0:
                 return None
@@ -3407,9 +3422,9 @@ class Sequencer(object):
             self.ftrack['project_id'] = None
             self.ftrack['label_obj'] = None
             if self.ftrack['do_ftrack']:
-                self.ftrack['url'] = self.more_settings.get('server_url', '')
-                self.ftrack['key'] = self.more_settings.get('api_key', '')
-                self.ftrack['user'] = self.more_settings.get('api_user', '')
+                self.ftrack['url'] = self.paths.get('FTRACK_SERVER', '')
+                self.ftrack['key'] = self.paths.get('FTRACK_API_KEY', '')
+                self.ftrack['user'] = self.paths.get('FTRACK_API_USER', '')
                 self.ftrack['session'] = ftrack_api.Session(
                     server_url=self.ftrack['url'],
                     api_key=self.ftrack['key'],
@@ -3869,32 +3884,6 @@ class Sequencer(object):
             def __missing__(self, key):
                 return '{' + key + '}'
 
-        def _get_exes():
-            if sys.platform.startswith('win'):
-                exe_extension = '.exe'
-            else:
-                exe_extension = ''
-
-            if getattr(sys, 'frozen', False):
-                script_path = os.path.dirname(sys.executable).replace("\\", "/")
-            else:
-                script_path = os.path.dirname(__file__).replace("\\", "/")
-
-            #script_path = os.path.dirname(os.path.abspath(inspect.stack()[-1][1])).replace("\\", "/")
-            probe = script_path + '/ffmpeg/ffprobe' + exe_extension
-            if not os.path.exists(probe):
-                probe = ''
-            mpg = script_path + '/ffmpeg/ffmpeg' + exe_extension
-            if not os.path.exists(mpg):
-                mpg = ''
-            oiio = script_path + '/oiio/win/oiiotool.exe'
-            if not os.path.exists(oiio):
-                oiio = ''
-            ocio = script_path + '/ocio/config.ocio'
-            if not os.path.exists(ocio):
-                ocio = ''
-            return {'ffmpeg': mpg, 'ffprobe': probe, 'oiio': oiio, 'ocio': ocio}
-
         self.converts = []
         if self.settings:
             # read all the settings from ui
@@ -3917,8 +3906,15 @@ class Sequencer(object):
 
         if self.converts is None:
             return
+            return
 
-        _exes = _get_exes()
+        _exes = {
+                'ffmpeg': self.paths['ffmpeg'],
+                'ffprobe': self.paths['ffprobe'],
+                'oiio': self.paths['oiiotool'],
+                'ocio': self.paths['ocio']
+        }
+
         for item in self.merged_list:
             for one_conv in self.converts:
                 # filter out first

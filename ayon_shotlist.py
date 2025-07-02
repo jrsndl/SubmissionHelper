@@ -6,7 +6,7 @@ import logging
 import os
 
 class AyonShotlist(object):
-    def __init__(self, ayon_gui, settings, ayon_api_key):
+    def __init__(self, ayon_gui, settings, paths):
 
         self.ayon_gui = ayon_gui
         project = "BCV_009_JA_Hiphi"
@@ -17,8 +17,8 @@ class AyonShotlist(object):
 
         self.error = None
         self.log = logging.getLogger("mylog")
-        os.environ["AYON_SERVER_URL"] = ayon_gui['server_url']
-        os.environ["AYON_API_KEY"] = ayon_api_key
+        os.environ["AYON_SERVER_URL"] = paths['AYON_SERVER_URL']
+        os.environ["AYON_API_KEY"] = paths['AYON_API_KEY']
 
         import ayon_api
         self.ayon = ayon_api.get_server_api_connection()

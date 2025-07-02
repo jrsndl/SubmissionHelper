@@ -17,13 +17,17 @@ import logging
 
 from nukery.parser import NukeScriptParser
 
+# for meta from exr header
+import parse_metadata
+
 
 class MetaData(object):
 
-    def __init__(self, item, gui):
+    def __init__(self, item, gui, pths):
 
         self.log = logging.getLogger("mylog")
         self.settings = gui
+        self.paths = pths
 
         self.gui_fps = '24'
         if self.settings['prefs_frame_rate_txt']['value'] is not None:
@@ -59,7 +63,9 @@ class MetaData(object):
         self.meta_nk = {}
 
         self.platform, self.platform_extension = self.__get_platform()
-        self.ffmpeg_path, self.ffprobe_path = self.__get_ffmpeg_path()
+        self.ffmpeg_path = self.paths['ffmpeg']
+        self.ffprobe_path = self.paths['ffprobe']
+        self.oiiotool_path = self.paths['oiiotool']
         self.meta_data = {}
 
     def meta_get(self):
@@ -68,44 +74,43 @@ class MetaData(object):
         return self
 
     def metadata_to_keywords(self):
-
         meta_data = {
-            'meta_file': self.meta['file'],
-            'meta_error': self.meta['error'],
-            'meta_width': str(self.meta['width']),
-            'meta_height': str(self.meta['height']),
-            'meta_fps': self.meta['fps_str'],
-            'meta_fps_a': str(self.meta['fps_a']),
-            'meta_fps_b': str(self.meta['fps_b']),
+            'meta_file': self.meta.get('file'),
+            'meta_error': self.meta.get('error'),
+            'meta_width': str(self.meta.get('width')),
+            'meta_height': str(self.meta.get('height')),
+            'meta_fps': self.meta.get('fps_str'),
+            'meta_fps_a': str(self.meta.get('fps_a')),
+            'meta_fps_b': str(self.meta.get('fps_b')),
             'meta_fps_raw': self.meta.get('fps_raw', '0/0'),
-            'meta_duration_frames': str(self.meta['duration_frames']),
+            'meta_duration_frames': str(self.meta.get('duration_frames')),
             'meta_duration_frames_slate': str(self.meta.get('duration_frames_slate', '')),
-            'meta_duration_secs': str(self.meta['duration_secs']),
-            'meta_bitrate_video': str(self.meta['bitrate_video']),
-            'meta_aspect': str(self.meta['aspect']),
-            'meta_aspect_x': str(self.meta['aspect_x']),
-            'meta_aspect_y': str(self.meta['aspect_y']),
-            'meta_codec_name_video': self.meta['codec_name_video'],
-            'meta_codec_long_name_video': self.meta['codec_long_name_video'],
-            'meta_time_stamp_video': self.meta['time_stamp_video'],
-            'meta_codec_profile_video': self.meta['codec_profile_video'],
-            'meta_fields': str(self.meta['fields']),
-            'meta_time_code': self.meta['time_code'],
-            'time_code_from_metadata': self.meta['time_code_from_metadata'],
-            'time_code_from_seq': self.meta['time_code_from_seq'],
-            'meta_reel': self.meta['reel'],
-            'meta_sample_rate_audio': str(self.meta['sample_rate_audio']),
-            'meta_channels_audio': str(self.meta['channels_audio']),
-            'meta_bits_per_sample_audio': str(self.meta['bits_per_sample_audio']),
-            'meta_duration_audio': str(self.meta['duration_audio']),
-            'meta_bitrate_audio': str(self.meta['bitrate_audio']),
-            'meta_codec_name_audio': self.meta['codec_name_audio'],
-            'meta_codec_long_name_audio': self.meta['codec_long_name_audio'],
-            'meta_time_stamp_audio': self.meta['time_stamp_audio'],
-            'meta_video_present': str(self.meta['video_present']),
-            'meta_audio_present': str(self.meta['audio_present']),
-            'meta_data_present': str(self.meta['data_present']),
-            'meta_is_log': str(self.meta['is_log']),
+            'meta_duration_secs': str(self.meta.get('duration_secs')),
+            'meta_bitrate_video': str(self.meta.get('bitrate_video')),
+            'meta_aspect': str(self.meta.get('aspect')),
+            'meta_aspect_x': str(self.meta.get('aspect_x')),
+            'meta_aspect_y': str(self.meta.get('aspect_y')),
+            'meta_codec_name_video': self.meta.get('codec_name_video'),
+            'meta_codec_long_name_video': self.meta.get('codec_long_name_video'),
+            'meta_time_stamp_video': self.meta.get('time_stamp_video'),
+            'meta_codec_profile_video': self.meta.get('codec_profile_video'),
+            'meta_fields': str(self.meta.get('fields')),
+            'meta_time_code': self.meta.get('time_code'),
+            'time_code_from_metadata': self.meta.get('time_code_from_metadata'),
+            'time_code_from_seq': self.meta.get('time_code_from_seq'),
+            'meta_reel': self.meta.get('reel'),
+            'meta_sample_rate_audio': str(self.meta.get('sample_rate_audio')),
+            'meta_channels_audio': str(self.meta.get('channels_audio')),
+            'meta_bits_per_sample_audio': str(self.meta.get('bits_per_sample_audio')),
+            'meta_duration_audio': str(self.meta.get('duration_audio')),
+            'meta_bitrate_audio': str(self.meta.get('bitrate_audio')),
+            'meta_codec_name_audio': self.meta.get('codec_name_audio'),
+            'meta_codec_long_name_audio': self.meta.get('codec_long_name_audio'),
+            'meta_time_stamp_audio': self.meta.get('time_stamp_audio'),
+            'meta_video_present': str(self.meta.get('video_present')),
+            'meta_audio_present': str(self.meta.get('audio_present')),
+            'meta_data_present': str(self.meta.get('data_present')),
+            'meta_is_log': str(self.meta.get('is_log')),
             'meta_frame_start_from_tc': str(self.meta.get('frame_start_from_tc', '')),
             'meta_frame_start_from_tc_slate': str(self.meta.get('frame_start_from_tc_slate', '')),
             'meta_frame_end_from_tc': str(self.meta.get('frame_end_from_tc', '')),
@@ -116,13 +121,14 @@ class MetaData(object):
 
         # add exr header
         try:
-            meta_data.update(self.meta_exr)
+            meta_data = {**meta_data, **self.meta_exr}
         except:
             print("Reading EXR metadata failed")
 
-        # add exr header
+        # add nuke and maya metadata
         try:
             meta_data.update(self.meta_nk)
+            meta_data.update(self.meta_maya)
         except:
             pass
 
@@ -194,6 +200,9 @@ class MetaData(object):
         # Nuke
         if my_extension == 'nk':
             self.meta_nk = self.read_metadata_from_nuke()
+
+        if my_extension == 'ma':
+            self.meta_maya = self.read_metadata_from_maya()
 
         # EXR
         if my_extension == 'exr':
@@ -597,6 +606,54 @@ class MetaData(object):
 
         return outdata
 
+    def read_metadata_from_maya(self):
+        """
+        search text file for two regular expressions
+        :return:
+        return list of dictionaries containing ref ref_rn and path named groups
+        """
+
+        regrex1 = r"(?s)^file -rdi([^\"]*)\"(?P<ref>[^\"]*)\"([^\"]*)\"(?P<ref_rn>[^\"]*)\"([^\"]*)\"([^\"]*)\"([^\"]*)\"(?P<path>[^\"]*)\".*;$"
+        regrex2 = r"(?s)^file -r -ns \"(?P<ref>[^\"]*)\"([^\"]*)\"(?P<ref_rn>[^\"]*)\"([^\"]*)\"([^\"]*)\"([^\"]*)\"(?P<path>[^\"]*)\";$"
+
+        pth = self.meta['file']
+
+        result = []
+        try:
+            with open(pth, 'r') as f:
+                content = f.read()
+
+            # Search for both regex patterns
+            matches1 = re.finditer(regrex1, content, re.MULTILINE)
+            matches2 = re.finditer(regrex2, content, re.MULTILINE)
+
+            # Process matches from first regex
+            for match in matches1:
+                result.append({
+                    'ref': match.group('ref'),
+                    'ref_rn': match.group('ref_rn'),
+                    'path': match.group('path'),
+                    'type': 'rdi'
+                })
+
+            # Process matches from second regex 
+            for match in matches2:
+                result.append({
+                    'ref': match.group('ref'),
+                    'ref_rn': match.group('ref_rn'),
+                    'path': match.group('path'),
+                    'type': 'r'
+                })
+
+        except Exception as e:
+            self.log.warning(f"Failed to read Maya metadata from {pth}: {str(e)}")
+
+        refs = [match.get('ref') for match in result]
+        metadict = {
+            'meta_maya_allrefs':  ' '.join(refs)
+        }
+        return metadict
+
     def read_metadata_from_nuke(self):
         """
         Use Nukery to read metadata from file.
@@ -758,11 +815,11 @@ class MetaData(object):
 
         return metadict
 
-    def read_metadata_from_exr(self):
+    def read_metadata_from_exr_header(self):
         """ Read some metadata from exr header."""
         """
             from include/OpenEXR/ImfTimeCode.h:
-            
+
               bits    packing for      packing for        packing for
                         24-frame       60-field         50-field
                         film          television        television
@@ -782,13 +839,28 @@ class MetaData(object):
             31        bgf2          bgf2            field/phase flag
         """
 
-        import parse_metadata
+        def calc_res(data_window):
+            if data_window is not None:
+                w = int(data_window.get('xMax', 0)) - int(data_window.get('xMin', 0)) + 1
+                h = int(data_window.get('yMax', 0)) - int(data_window.get('yMin', 0)) + 1
+                return w, h
+            return 0, 0
 
         exr_metadata = {}
         exr_fpstc = {}
         exr_metadata = parse_metadata.read_exr_header(self.meta['file'])
 
         try:
+            # get resolutions from coordinates
+            data_width, data_height = calc_res(exr_metadata.get('dataWindow'))
+            if data_width > 0 and data_height > 0:
+                exr_metadata['dataWindow_width'] = data_width
+                exr_metadata['dataWindow_height'] = data_height
+            display_width, display_height = calc_res(exr_metadata.get('displayWindow'))
+            if display_width > 0 and display_height > 0:
+                exr_metadata['displayWindow_width'] = display_width
+                exr_metadata['displayWindow_height'] = display_height
+
             # this updates tc and framerate from ffprobe
             # to be taken from EX instead
             fps_a = int(exr_metadata['framesPerSecond']['first_num'])
@@ -811,29 +883,42 @@ class MetaData(object):
             exr_metadata['time_code'] = "{}:{}:{}{}{}".format(_h, _m, _s, _drop, _f)
         except Exception:
             pass
+        return exr_metadata
 
-        # try to use OIIO tool for reading metadata
-        # currently only used to get layers and channels
-        chans = {}
-        if getattr(sys, 'frozen', False):
-            script_path = os.path.dirname(sys.executable).replace("\\", "/")
-        else:
-            script_path = os.path.dirname(__file__).replace("\\", "/")
-        oiio = script_path + '/oiio/win/oiiotool.exe'
-        if not os.path.exists(oiio):
-            oiio = ''
-        if oiio:
-            oiio_meta = self.get_oiio_info_for_input(self.meta['file'], oiio_path=oiio, subimages=True)
+    def exr_get_first_subimage_meta(self, oiio_meta):
+
+        first_meta = {}
+        if not oiio_meta:
+            return first_meta
+        if len(oiio_meta) == 0:
+            return first_meta
+
+        picked_meta = ['width', 'height', 'full_width', 'full_height', 'format', 'nchannels',]
+        first_meta = oiio_meta[0].get('attribs')
+        for one in picked_meta:
+            if oiio_meta[0].get(one):
+                first_meta[one] = oiio_meta[0].get(one)
+        return first_meta
+
+    def read_metadata_from_exr_oiio(self):
+
+        if self.oiiotool_path is not None and os.path.exists(self.oiiotool_path):
+            oiio_meta = self.get_oiio_info_for_input(self.meta['file'], oiio_path=self.oiiotool_path, subimages=True)
+            first_meta = self.exr_get_first_subimage_meta(oiio_meta)
             chans = self.oiio_chanels_prep(oiio_meta)
+            return {**first_meta, **chans}
+        else:
+            return {}
 
-            #print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-            #pprint.pprint(oiio_meta)
-            #print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+    def read_metadata_from_exr(self):
+        header = self.read_metadata_from_exr_header()
+        oiio = self.read_metadata_from_exr_oiio()
+        exr_metadata_merged = {**header, **oiio}
 
+        # add exr prefix to meta
         exr_renamed = {}
-        exr_metadata_merged = {**exr_metadata, **chans}
         for k, v in exr_metadata_merged.items():
-            exr_renamed['metaExr_' + str(k)] = v
+            exr_renamed[f"metaExr_{str(k)}"] = v
 
         return exr_renamed
 
@@ -861,6 +946,7 @@ class MetaData(object):
             'layers_extra': '',
             'layers_channels': '',
             'layers_channels_extra': '',
+            'layers_extra_summary': ''
         }
 
         if not oiio_meta:
@@ -917,6 +1003,9 @@ class MetaData(object):
                             subimage_name + '.' + one_chan)
             cnt += 1
         # join lists and store counts
+        summary = ""
+        if len(channels['layers_channels_extra_list']) > 0:
+            summary = f"{len(channels['layers_channels_extra_list'])} : {' '.join(channels['layers_channels_extra_list'])}"
         channels = {
             'layers_count': len(channels['layers_list']),
             'layers_extra_count': len(channels['layers_extra_list']),
@@ -926,6 +1015,7 @@ class MetaData(object):
             'layers_extra': ' '.join(channels['layers_extra_list']),
             'layers_channels': ' '.join(channels['layers_channels_list']),
             'layers_channels_extra': ' '.join(channels['layers_channels_extra_list']),
+            'layers_extra_summary' : summary
         }
 
         return channels
