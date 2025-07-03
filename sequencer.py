@@ -218,6 +218,14 @@ class Sequencer(object):
             self.display_data_table()
 
         if not self.headless:
+            self.ui.statusBar.showMessage("Reading Replace Data", 3000)
+        self.replace_data = []
+        self.csv_replace_data_read()
+        self.csv_replace_prepare()
+        if not self.headless:
+            self.display_replace_table()
+
+        if not self.headless:
             self.ui.statusBar.showMessage("Reading Ayon Data", 3000)
         self.ayon_data = []
         self.ayon_data_read()
@@ -3145,6 +3153,194 @@ class Sequencer(object):
             table_ui.resizeRowsToContents()
             table_ui.setSortingEnabled(True)
 
+    def _get_latest_valid_csv_file(self, file_path, get_latest=False):
+        """
+        Checks if path is a folder. If it is a file, converts it to its parent folder.
+        Gets all .csv files in that folder, sorts them and checks if they can be parsed as CSV.
+
+        :param file_path: Path to file or folder
+        :param get_latest: If True, returns the latest CSV file in the folder. If False, returns the csv file provided in file_path.
+        :return: Path to valid csv file, or None
+        """
+
+        def validate_csv(csv_file):
+            is_valid = False
+            try:
+                with open(csv_file, "r") as f:
+                    reader = csv.reader(f)
+                    # Read the first row to validate
+                    next(reader, None)
+                    is_valid = True
+            except Exception:
+                pass
+            return is_valid
+
+        valid_csv_files = []
+        csv_files = []
+
+        # get list of csv files
+        if not get_latest and os.path.isfile(file_path):
+            csv_files = [file_path]
+        else:
+            if os.path.isfile(file_path):
+                folder_path = os.path.dirname(file_path)
+            else:
+                folder_path = file_path
+            if os.path.exists(folder_path):
+                csv_files = [
+                    os.path.join(folder_path, f) for f in
+                    os.listdir(folder_path)
+                    if f.endswith(".csv")
+                ]
+
+        if csv_files is None or len(csv_files) == 0:
+            return None
+
+        for csv_file in csv_files:
+            if validate_csv(csv_file):
+                valid_csv_files.append(csv_file)
+
+        if valid_csv_files is None or len(valid_csv_files) == 0:
+            return None
+
+        latest = sorted(valid_csv_files)[-1]
+        latest = latest.replace("\\", "/")
+        return latest
+
+    def _csv_to_list_of_dicts(self, csv_path, prefix=''):
+        """
+        Reads a CSV file and returns a list of dictionaries.
+
+        :param csv_path: Path to the CSV file.
+        :param prefix: Prefix to be added to the keys of the dictionaries.
+        :return: List of dictionaries representing the data in the file.
+        """
+
+        result = []
+        try:
+            with open(csv_path, mode='r',
+                      encoding='utf-8-sig') as csv_file:
+                reader = csv.DictReader(csv_file)
+                for row in reader:
+                    prefixed_row = {f"{prefix}{key}": value for key, value
+                                    in row.items()}
+                    # for pairing indication
+                    prefixed_row["_matched"] = False
+                    result.append(prefixed_row)
+        except Exception as e:
+            self.log.error(f"Failed to read CSV file: {e}")
+        return result
+
+
+    def csv_replace_data_read(self):
+
+        self.static_keywords['csv_replace_file'] = ""
+        if self.settings is None or self.settings.get('replace_enable') is None:
+            return
+
+        if not bool(self.settings['replace_enable']['value']):
+            return
+
+        valid_csv = self._get_latest_valid_csv_file(self.settings['replace_csv_path']['value'], True)
+        if valid_csv is None or valid_csv == '':
+            return
+
+        csv_data = self._csv_to_list_of_dicts(valid_csv, '')
+        if csv_data is None or len(csv_data) == 0:
+            return
+
+        valid_columns = ['Extension', 'Pattern', 'Search', 'Replace']
+        columns = list(csv_data[0].keys())
+        missing_columns = set(valid_columns) - set(columns)
+        if missing_columns:
+            self.log.error(f"File {valid_csv} is missing required columns: {missing_columns}")
+            return
+
+        # put the name of the csv data file to static keywords, so it can be part of the output
+        self.static_keywords['csv_replace_file'] = valid_csv.replace("\\", "/").split("/")[-1]
+
+        self.replace_data = csv_data
+
+    def csv_replace_prepare(self):
+
+        self.replace_prep = None
+        if self.replace_data is None or len(self.replace_data) == 0:
+            return
+        if self.merged_list is None or len(self.merged_list) == 0:
+            return
+        if self.settings is None:
+            return
+
+        # build dict of lists of dicts: file: [{search:'', replace:''}]
+        to_replace = {}
+        for item in self.merged_list:
+            ext = item.get('extension')
+            if ext is None:
+                continue
+            file_path = item.get('full_path')
+            if file_path is None:
+                continue
+            for one_rule in self.replace_data:
+                if one_rule['Extension'] == ext:
+                    #if one_rule['Pattern'] is None or one_rule['Pattern'] == '':
+                    pass
+                    pass
+                    existing = to_replace.get(file_path)
+                    if existing is None:
+                        to_replace[file_path] = [{'search': one_rule['Search'], 'replace': one_rule['Replace']}]
+                    else:
+                        to_replace[file_path] = existing.append({'search': one_rule['Search'], 'replace': one_rule['Replace']})
+        self.replace_prep = to_replace
+
+
+    def display_replace_table(self):
+        """
+        table data to ui
+        """
+        if self.replace_prep is None or self.replace_prep == {}:
+            return
+
+        titles = ['File', 'Number of Searches', 'Rules']
+        table = []
+        for file_path, rules in self.replace_prep.items():
+            if rules is None or len(rules) == 0:
+                continue
+            rules_str = ""
+            for rule in rules:
+                rules_str += f"{rule['search']} => {rule['replace']};"
+            one_line = {
+                'File': file_path.replace('\\', '/').split('/')[-1],
+                'Number of Searches': str(len(rules)),
+                'Rules': rules_str
+            }
+            table.append(one_line)
+        table_ui = self.ui.replace_table
+
+
+        # display table
+        table_ui.clear()
+        table_ui.setColumnCount(0)
+        table_ui.setRowCount(0)
+        if table and titles:
+            table_ui.setSortingEnabled(False)
+            table_ui.setColumnCount(len(titles))
+            table_ui.setHorizontalHeaderLabels(titles)
+            table_ui.setRowCount(len(table))
+
+            for row, line in enumerate(table):
+                for column_number, one_column in enumerate(titles):
+                    if line[one_column] is None:
+                        line[one_column] = ''
+                    table_ui.setItem(row,
+                                     column_number,
+                                     QtWidgets.QTableWidgetItem(
+                                         line[one_column])
+                                     )
+
+            table_ui.resizeColumnsToContents()
+            table_ui.resizeRowsToContents()
+            table_ui.setSortingEnabled(True)
+
     def csv_data_read(self):
         """
         Retrieves and processes CSV data based on settings configured in the instance. The function identifies
@@ -3154,88 +3350,7 @@ class Sequencer(object):
 
         :return: None
         """
-
-        def get_csv_data_file(file_path, get_latest=False):
-            """
-            Checks if path is a folder. If it is a file, converts it to its parent folder.
-            Gets all .csv files in that folder, sorts them and checks if they can be parsed as CSV.
-            
-            :param file_path: Path to file or folder
-            :param get_latest: If True, returns the latest CSV file in the folder. If False, returns the csv file provided in file_path.
-            :return: Path to valid csv file, or None
-            """
-
-            def validate_csv(csv_file):
-                is_valid = False
-                try:
-                    with open(csv_file, "r") as f:
-                        reader = csv.reader(f)
-                        # Read the first row to validate
-                        next(reader, None)
-                        is_valid = True
-                except Exception:
-                    pass
-                return is_valid
-
-            valid_csv_files = []
-            csv_files = []
-            self.static_keywords['csv_data_file'] = ""
-
-            # get list of csv files
-            if not get_latest and os.path.isfile(file_path):
-                csv_files = [file_path]
-            else:
-                if os.path.isfile(file_path):
-                    folder_path = os.path.dirname(file_path)
-                else:
-                    folder_path = file_path
-                if os.path.exists(folder_path):
-                    csv_files = [
-                        os.path.join(folder_path, f) for f in
-                        os.listdir(folder_path)
-                        if f.endswith(".csv")
-                    ]
-
-            if csv_files is None or len(csv_files) == 0:
-                return None
-
-            for csv_file in csv_files:
-                if validate_csv(csv_file):
-                    valid_csv_files.append(csv_file)
-
-            if valid_csv_files is None or len(valid_csv_files) == 0:
-                return None
-
-            latest = sorted(valid_csv_files)[-1]
-            latest = latest.replace("\\", "/")
-            self.static_keywords['csv_data_file'] = latest.split("/")[-1]
-            return latest
-
-        def csv_to_list_of_dicts(csv_path, prefix=''):
-            """
-            Reads a CSV file and returns a list of dictionaries.
-            
-            :param csv_path: Path to the CSV file.
-            :param prefix: Prefix to be added to the keys of the dictionaries.
-            :return: List of dictionaries representing the data in the file.
-            """
-            import csv
-
-            result = []
-            try:
-                with open(csv_path, mode='r',
-                          encoding='utf-8-sig') as csv_file:
-                    reader = csv.DictReader(csv_file)
-                    for row in reader:
-                        prefixed_row = {f"{prefix}{key}": value for key, value
-                                        in row.items()}
-                        # for pairing indication
-                        prefixed_row["_matched"] = False
-                        result.append(prefixed_row)
-            except Exception as e:
-                print(f"Failed to read CSV file: {e}")
-            return result
-            
+        self.static_keywords['csv_data_file'] = ""
 
         if self.settings is None:
             return
@@ -3244,14 +3359,18 @@ class Sequencer(object):
         if not do_csv_data:
             return
 
-        valid_csv = get_csv_data_file(self.settings['data_csv_path']['value'], bool(self.settings['data_csv_latest']['value']))
+        valid_csv = self._get_latest_valid_csv_file(self.settings['data_csv_path']['value'], bool(self.settings['data_csv_latest']['value']))
         if valid_csv is None or valid_csv == '':
             return
 
         csv_data = []
-        csv_data = csv_to_list_of_dicts(valid_csv, self.settings['name_date_prefix']['value'])
+        csv_data = self._csv_to_list_of_dicts(valid_csv, self.settings['name_date_prefix']['value'])
         if csv_data is None or len(csv_data) == 0:
             return
+
+        # put the name of the csv data file to static keywords, so it can be part of the output
+        self.static_keywords['csv_data_file'] = valid_csv.replace("\\", "/").split("/")[-1]
+
         self.csv_data = csv_data
 
     def csv_data_assign(self):
