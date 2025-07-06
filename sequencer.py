@@ -20,6 +20,7 @@ import helpers
 import parse_file_name
 from metadata import MetaData
 from ayon_shotlist import AyonShotlist
+from deadline import Deadline
 
 class Sequencer(object):
     def __init__(self, in_path, sequence_mode='to_subsequences', gui=None, more_settings=None, ui=None, headless=False):
@@ -93,12 +94,15 @@ class Sequencer(object):
             return None
 
         envs = dict(os.environ)
+        deadline_command = 'deadlinecommand'
         if sys.platform == 'win32':
             usr = envs.get('USERNAME', '')
-            executables = ['ayon.exe', 'ffprobe.exe', 'ffplay.exe', 'oiiotool.exe']
+            deadline_command += '.exe'
+            executables = ['ayon.exe', 'ffprobe.exe', 'ffplay.exe', 'oiiotool.exe', deadline_command]
+
         else:
             usr = envs.get('USER', '')
-            executables = ['ayon', 'ffprobe', 'ffplay', 'oiiotool']
+            executables = ['ayon', 'ffprobe', 'ffplay', 'oiiotool', deadline_command]
 
         # paths are lowercase
         together = {
@@ -112,14 +116,23 @@ class Sequencer(object):
             'ayon': '',
             'ffmpeg': '',
             'ffprobe': '',
-            'oiio': '',
+            'oiiotool': '',
             'ocio': envs.get('OCIO', ''),
+            'deadline': ''
         }
+
+        # try to get deadline command from environment
+        dp = envs.get('DEADLINE_PATH', '')
+        if dp != '':
+            dp = dp.replace("\\", "/").rstrip('/')
+            dp = f"{dp}/{deadline_command}"
+            if os.path.exists(dp):
+                together['deadline'] = dp
 
         # check if executables are available on path
         for one_exec in executables:
             exe_path = which(one_exec)
-            k = one_exec.strip('.exe').upper()
+            k = one_exec.strip('.exe')
             if exe_path:
                 together[k] = exe_path
             else:
@@ -137,7 +150,8 @@ class Sequencer(object):
         if envs.get('SH_OCIO'):
             together['ocio'] = envs['SH_OCIO']
 
-        # check if install.json config has valid stuff, use it if yes
+        # check if install.json config has valid stuff, use it if yes.
+        # install.json overrides everything
         if self.more_settings is not None:
             if self.more_settings.get('ffprobe_path') and self.more_settings.get('ffprobe_path') != "" and os.path.exists(self.more_settings['ffprobe_path']):
                 together['ffprobe'] = self.more_settings['ffprobe_path']
@@ -149,6 +163,23 @@ class Sequencer(object):
                 together['ayon'] = self.more_settings['ayon_path']
             if self.more_settings.get('ocio') and  self.more_settings.get('ocio') != "" and os.path.exists(self.more_settings['ocio']):
                 together['ocio'] = self.more_settings['ocio']
+            if self.more_settings.get('deadline') and  self.more_settings.get('deadline') != "" and os.path.exists(self.more_settings['deadline']):
+                together['deadline'] = self.more_settings['deadline']
+
+            if self.more_settings.get('ftrack_server_url') and  self.more_settings.get('ftrack_server_url') != "":
+                together['FTRACK_SERVER'] = self.more_settings['ftrack_server_url']
+            if self.more_settings.get('ftrack_api_key') and  self.more_settings.get('ftrack_api_key') != "":
+                together['FTRACK_API_KEY'] = self.more_settings['ftrack_api_key']
+            if self.more_settings.get('ftrack_api_user') and  self.more_settings.get('ftrack_api_user') != "":
+                together['FTRACK_API_USER'] = self.more_settings['ftrack_api_user']
+
+            if self.more_settings.get('ayon_server_url') and  self.more_settings.get('ayon_server_url') != "":
+                together['AYON_SERVER_URL'] = self.more_settings['ayon_server_url']
+            if self.more_settings.get('ayon_api_key') and  self.more_settings.get('ayon_api_key') != "":
+                together['AYON_API_KEY'] = self.more_settings['ayon_api_key']
+            if self.more_settings.get('ayon_username') and  self.more_settings.get('ayon_username') != "":
+                together['AYON_USERNAME'] = self.more_settings['ayon_username']
+
 
         # OCIO path from gui overrides everything
         if self.settings is not None:
@@ -2407,19 +2438,12 @@ class Sequencer(object):
             _footer = txt_footer
         self.table_txt = _header + '\n' + _titles + body_txt + '\n' + _footer
 
-    def export_all(self, column_width_sub=None, column_width_log=None):
-
-        if self.settings and bool(self.settings['side_copywithgo']['value']):
-            self.sidecar_files_copy()
-
-        if self.settings and bool(self.settings['thumbs_make_on_go']['value']):
-            self.prepare_converts()
-            self.run_converts()
-
+    def prepare_export_file_names(self):
+        self.export_file_names = {}
         if self.settings and self.static_keywords:
             one_above = str(self.static_keywords['package_name_root']).replace('\\', '/') + '/'
             export_root = one_above + self.static_keywords['package_name_from_folder'] + '/'
-            # Submission
+
             s_pth_above = bool(self.settings['export_sub_above']['value'])
             s_pth_custom = bool(self.settings['export_sub_custom']['value'])
             s_custom = str(self.settings['export_sub_custom_path']['value'])
@@ -2434,10 +2458,6 @@ class Sequencer(object):
             s_export_root += self.static_keywords['package_name']
             if s_suffix:
                 s_export_root += s_suffix
-
-            self.export_spreadsheet(s_export_root, s_do_excel, s_do_csv,
-                                    self.table_sub, self.column_titles_sub,
-                                    column_width_sub)
 
             # Drive Log
             d_pth_above = bool(self.settings['export_log_above']['value'])
@@ -2457,10 +2477,6 @@ class Sequencer(object):
             else:
                 d_export_root += '_log'
 
-            self.export_spreadsheet(d_export_root, d_do_excel, d_do_csv,
-                                    self.table_log, self.column_titles_log,
-                                    column_width_log)
-
             # Text
             t_pth_above = bool(self.settings['text_above']['value'])
             t_pth_custom = bool(self.settings['text_custom']['value'])
@@ -2473,12 +2489,68 @@ class Sequencer(object):
                 t_export_root = one_above
             t_export_name = t_export_root + self.static_keywords['package_name'] + '.txt'
 
-            if self.table_txt is not None and t_do_txt:
+            exported_files = {
+                's_export_root': s_export_root,
+                's_do_excel': s_do_excel,
+                's_do_csv': s_do_csv,
+                'd_export_root': d_export_root,
+                'd_do_excel': d_do_excel,
+                'd_do_csv': d_do_csv,
+                't_do_txt': t_do_txt,
+                't_export_name': t_export_name
+            }
+            if s_do_csv:
+                exported_files['submission_csv'] = s_export_root + '.csv'
+            if s_do_excel:
+                exported_files['submission_excel'] = s_export_root + '.xlsx'
+            if d_do_csv:
+                exported_files['drivelog_csv'] = d_export_root + '.csv'
+            if d_do_excel:
+                exported_files['drivelog_excel'] = d_export_root + '.xlsx'
+            if t_do_txt:
+                exported_files['text'] = t_export_name
+            self.export_file_names = exported_files
+
+    def export_all(self, column_width_sub=None, column_width_log=None):
+
+        if self.settings and bool(self.settings['side_copywithgo']['value']):
+            self.sidecar_files_copy()
+
+        if self.settings and bool(self.settings['thumbs_make_on_go']['value']):
+            self.prepare_converts()
+            self.run_converts()
+
+        if self.settings and self.static_keywords:
+            self.prepare_export_file_names()
+
+            # submission
+            self.export_spreadsheet(self.export_file_names['s_export_root'],
+                                    self.export_file_names['s_do_excel'],
+                                    self.export_file_names['s_do_csv'],
+                                    self.table_sub, self.column_titles_sub,
+                                    column_width_sub)
+            # drive log
+            self.export_spreadsheet(self.export_file_names['d_export_root'],
+                                    self.export_file_names['d_do_excel'],
+                                    self.export_file_names['d_do_csv'],
+                                    self.table_log, self.column_titles_log,
+                                    column_width_log)
+
+            # text
+            if self.table_txt is not None and self.export_file_names['t_do_txt']:
                 try:
-                    with open(t_export_name, 'w') as f:
+                    with open(self.export_file_names['t_export_name'], 'w') as f:
                         f.write(self.table_txt)
                 except(FileNotFoundError, PermissionError, IOError) as e:
                     print(f"Error exporting text file: {e}")
+
+        # DEADLINE
+        csv_pth = self.export_file_names.get('submission_csv')
+        if csv_pth is not None:
+            d = Deadline(self.settings, self.paths)
+            if d.are_paths_ok:
+                d.build_ayon_csv(csv_pth, 'AYON_staging', folder='/edit/csv_ingest', task='ingest')
+                d.publish_local()
 
         # rename if autorename is ON
         if self.settings and\

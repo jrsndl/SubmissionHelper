@@ -950,10 +950,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.preset_mod_files.clicked.connect(
             partial(self.handler, 'preset_mod_files', 'tab_pairs'))
 
-        # GO button
-        self.ui.write_button.clicked.connect(
-            partial(self.handler, 'write_button', 'write'))
-
         # Data Tab
         self.ui.tree_filter_file.textChanged.connect(
             partial(self.handler, 'tree_filter_file', 'data_filter'))
@@ -1031,6 +1027,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         # preset name is empty, disable save button
         self.ui.save_preset_button.setEnabled(False)
+
+        # GO button
+        self.ui.write_button.clicked.connect(
+            partial(self.handler, 'write_button', 'write'))
+
+        # FARM button
+        self.ui.pushButton.clicked.connect(
+            partial(self.handler, 'farm_button', 'farm'))
 
         # For Headless operation, just run what is needed in init
         if self.no_gui and self.package_path is not None:
@@ -1216,6 +1220,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                         (float(self.ui.log_table.columnWidth(column_number))))
 
                 self.data.export_all(column_widths_sub, column_widths_log)
+
+        if sender == 'farm_button':
+            # read column widths from tablewidget for excel column sizes
+            # there is no way to change excel column sizes by content
+            column_widths_sub = []
+            if self.data and self.data.column_titles_sub:
+                for column_number, one_column in enumerate(self.data.column_titles_sub):
+                    column_widths_sub.append(
+                        (float(self.ui.sub_table.columnWidth(column_number))))
+                column_widths_log = []
+                for column_number, one_column in enumerate(self.data.column_titles_log):
+                    column_widths_log.append(
+                        (float(self.ui.log_table.columnWidth(column_number))))
+
+                self.data.export_all(column_widths_sub, column_widths_log)
+
+                d = Deadline(self.settings, self.paths)
+                if d.are_paths_ok:
+                    d.build_ayon_csv(csv_path, project, folder='', task='')
 
         if sender == 'preset_explore':
             self.expore_local_presets()
