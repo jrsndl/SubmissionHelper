@@ -18,6 +18,7 @@ from unidecode import unidecode
 
 import helpers
 import parse_file_name
+from ftrack import FtrackHelper
 from metadata import MetaData
 from ayon_shotlist import AyonShotlist
 from deadline import Deadline
@@ -267,6 +268,21 @@ class Sequencer(object):
         if not self.headless:
             self.ui.statusBar.showMessage("Gathering Metadata", 3000)
         self.get_metadata()
+
+        if not self.headless:
+            self.ui.statusBar.showMessage("Reading data from Ftrack", 3000)
+        f = FtrackHelper(self.settings, self.paths)
+        if f is not None:
+            print(f"Ftrack session is {f.is_session_ok()}")
+            f.get_ftrack_info()
+            f.ftrack_info_to_csv("D:/links.csv")
+            #f.get_ftrack_shots()
+            #f.get_ftrack_shot_links()
+            #f.get_ftrack_asset_links()
+
+        else:
+            print(f"Ftrack session bad")
+
 
     def transform_data(self):
         """
