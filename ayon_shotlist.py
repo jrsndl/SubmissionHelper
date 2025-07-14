@@ -1,4 +1,6 @@
 import os
+import pprint
+
 import httpx
 
 import csv
@@ -7,14 +9,6 @@ import os
 
 class AyonShotlist(object):
     def __init__(self, ayon_gui, settings, paths):
-
-        self.ayon_gui = ayon_gui
-        project = "BCV_009_JA_Hiphi"
-        output_folder = "D:/_code/SubmissionHelper/output"
-        do_thumbs = True
-        ayon_server_url = "http://192.168.0.162:5000"
-        api = "7ca45320bba24bb1b7f38f8a9e04d641"
-
         self.error = None
         self.log = logging.getLogger("mylog")
         os.environ["AYON_SERVER_URL"] = paths['AYON_SERVER_URL']
@@ -23,9 +17,10 @@ class AyonShotlist(object):
         import ayon_api
         self.ayon = ayon_api.get_server_api_connection()
 
-        self.project = project
+        self.project = ayon_gui['project']
         self.projects = None
         self.settings = settings
+        self.ayon_gui = ayon_gui
 
         self.prefix = ayon_gui['prefix']
         self.do_thumbs = ayon_gui['do_thumbs']
@@ -33,7 +28,7 @@ class AyonShotlist(object):
         self.thumbs_dir = f"{self.output_folder}/_thumbsDownload"
 
         # where to put thumbnails and shotlist
-        self.output_folder = output_folder
+        self.output_folder = ayon_gui['out_folder']
         self.do_output_csv = ayon_gui['do_csv']
         self.output_csv_path = f"{self.output_folder}/list.csv"
         self.do_output_excel = ayon_gui['do_excel']
@@ -66,6 +61,8 @@ class AyonShotlist(object):
             "Folder Status",
             "Task Label",
             "Task Status",
+            "Links",
+            "_hide"
         ]
 
         self.task_empty = {
@@ -191,6 +188,21 @@ class AyonShotlist(object):
 
     def get_full_shotlist(self):
 
+        def get_links(folder_id):
+            links = self.ayon.get_folder_links(
+                self.project, folder_id, link_direction="in"
+            )
+            linked_folder_ids = {
+                link["entityId"]
+                for link in links
+                if link["entityType"] == "folder"
+            }
+            if not linked_folder_ids:
+                return []
+            return list(self.ayon.get_folders(
+                self.project, folder_ids=linked_folder_ids
+            ))
+
         # get folders
         asset_entities = self.ayon.get_folders(self.project,
                                                fields={
@@ -216,6 +228,12 @@ class AyonShotlist(object):
         # get folders + tasks and their attribs
         data = []
         for asset_name, asset in asset_entities.items():
+            link_list = get_links(asset["id"])
+            if link_list is not None and len(link_list) > 0:
+                #print(f"{asset_name} Link List:")
+                #pprint.pprint(link_list)
+                pass
+
             thumb_name_folder = asset["path"].replace("/", "-").strip("-")
             thumbnail_path = None
             if asset["thumbnailId"] is not None and self.do_thumbs:
@@ -234,6 +252,7 @@ class AyonShotlist(object):
                 "Folder Path": asset["path"],
                 "Folder Label": asset["label"],
                 "Folder Status": asset["label"],
+                "Links": " ".join(link_list)
             }
             attrs = self.attribs_to_columns(asset["attrib"])
             shot_clean = {**base, **attrs}

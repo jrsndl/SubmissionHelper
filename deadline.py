@@ -82,11 +82,8 @@ class Deadline(object):
         my_env = os.environ
         # AYON FTRACK
         my_env["FTRACK_SERVER"] = self.paths['FTRACK_SERVER']
-        print(my_env["FTRACK_SERVER"])
         my_env["FTRACK_API_KEY"] = self.paths['FTRACK_API_KEY']
-        print(my_env["FTRACK_API_KEY"])
         my_env["FTRACK_API_USER"] = self.paths['FTRACK_API_USER']
-        print(my_env["FTRACK_API_USER"])
         # AYON SERVER
         my_env["AYON_USERNAME"] = self.paths['AYON_USERNAME']
         my_env["AYON_API_KEY"] = self.paths['AYON_API_KEY']
@@ -106,7 +103,14 @@ class Deadline(object):
 
     def publish_deadline(self):
 
-        call_op = self.build_ayon_csv(csv_path, project, folder, task)
+        envs = ["FTRACK_SERVER", "FTRACK_API_KEY", "FTRACK_API_USER", "AYON_USERNAME", "AYON_API_KEY"]
+        envs_list = []
+        for i, one in enumerate(envs):
+            val = self.paths.get(one)
+            if val is not None:
+                envs_list.append("-prop")
+                envs_list.append(f"EnvironmentKeyValue{str(i)}={one}={val}")
+
         params_1 = [
             self.paths['deadline'], '-SubmitCommandLineJob', '-executable', self.paths['ayon'],
             '-pool', self.settings['dead_primpool']['value'],
@@ -116,6 +120,7 @@ class Deadline(object):
             '-prop', f"LimitGroups={self.settings['dead_limits']['value']}",
             "-prop", f"OutputDirectory0={self.csv_path}"
         ]
+        params_1.extend(envs_list)
 
         # the deadline arguments have to be quoted, so pre-joining here
         deadline_args = " ".join(self.ayon_csv)

@@ -1021,6 +1021,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.ayon_list3.textChanged.connect(
             partial(self.handler, 'ayon_list3',
                     'ayon_changed_filter'))
+        self.ui.ayon_export_butt.clicked.connect(
+            partial(self.handler, 'ayon_export_butt', 'ayon_export_butt'))
+
 
         self.ui.tree_filter_value.textChanged.connect(
             partial(self.handler, 'tree_filter_value', 'data_filter'))
@@ -1239,6 +1242,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 d = Deadline(self.settings, self.paths)
                 if d.are_paths_ok:
                     d.build_ayon_csv(csv_path, project, folder='', task='')
+
+        if sender == 'ayon_export_butt':
+            if self.data is not None:
+                self.data.ayon_data_read()
+                self.data.ayon_data_filter()
+                self.data.ayon_data_write()
 
         if sender == 'preset_explore':
             self.expore_local_presets()

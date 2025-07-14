@@ -2550,7 +2550,8 @@ class Sequencer(object):
             d = Deadline(self.settings, self.paths)
             if d.are_paths_ok:
                 d.build_ayon_csv(csv_pth, 'AYON_staging', folder='/edit/csv_ingest', task='ingest')
-                d.publish_local()
+                #d.publish_local()
+                d.publish_deadline()
 
         # rename if autorename is ON
         if self.settings and\
@@ -3112,6 +3113,10 @@ class Sequencer(object):
         self.my_ayon.filter_shotlist()
         self.ayon_data = self.my_ayon.data
         self.display_ayon_table()
+
+    def ayon_data_write(self):
+        if self.my_ayon is not None:
+            self.my_ayon.write_csv()
 
     def ayon_data_assign(self):
         class Default(dict):
