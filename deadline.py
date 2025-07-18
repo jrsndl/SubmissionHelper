@@ -88,8 +88,6 @@ class Deadline(object):
         my_env["AYON_USERNAME"] = self.paths['AYON_USERNAME']
         my_env["AYON_API_KEY"] = self.paths['AYON_API_KEY']
 
-
-
         popen = subprocess.Popen(self.ayon_csv, env=my_env)
         popen_stdout, popen_stderr = popen.communicate()
         ret_code = popen.returncode
@@ -99,7 +97,8 @@ class Deadline(object):
         if popen_stderr:
             print("stderr:")
             print(popen_stderr.decode("utf-8"))
-        print(f"Return code {ret_code}")
+
+        return ret_code
 
     def publish_deadline(self):
 
@@ -112,7 +111,7 @@ class Deadline(object):
                 envs_list.append(f"EnvironmentKeyValue{str(i)}={one}={val}")
 
         params_1 = [
-            self.paths['deadline'], '-SubmitCommandLineJob', '-executable', self.paths['ayon'],
+            self.paths['deadline'], '-SubmitCommandLineJob', '-executable', self.paths['ayon'].replace("/", "\\"),
             '-pool', self.settings['dead_primpool']['value'],
             '-group', self.settings['dead_group']['value'],
             '-priority', str(self.settings['dead_priority']['value']),
@@ -123,7 +122,8 @@ class Deadline(object):
         params_1.extend(envs_list)
 
         # the deadline arguments have to be quoted, so pre-joining here
-        deadline_args = " ".join(self.ayon_csv)
+        # since there is executable already in params_1, removing path to ayon
+        deadline_args = " ".join(self.ayon_csv[1:])
         params_2 = [
             '-name', self.csv_name,  # id
             '-arguments', deadline_args

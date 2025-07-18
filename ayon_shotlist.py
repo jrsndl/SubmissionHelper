@@ -1,7 +1,7 @@
 import os
 import pprint
-
 import httpx
+import ayon_api
 
 import csv
 import logging
@@ -14,8 +14,15 @@ class AyonShotlist(object):
         os.environ["AYON_SERVER_URL"] = paths['AYON_SERVER_URL']
         os.environ["AYON_API_KEY"] = paths['AYON_API_KEY']
 
-        import ayon_api
-        self.ayon = ayon_api.get_server_api_connection()
+
+        self.error = None
+        try:
+            self.ayon = ayon_api.get_server_api_connection()
+        except Exception as e:
+            error = f"Error connecting to Ayon: {e}"
+            print(error)
+            self.error = error
+            return
 
         self.project = ayon_gui['project']
         self.projects = None
@@ -74,13 +81,15 @@ class AyonShotlist(object):
         }
 
     def get_projects(self):
-        self.projects = self.ayon.get_projects()
+        if self.error is None:
+            self.projects = self.ayon.get_projects()
 
     def project_exists(self):
-        if self.project in self.projects:
-            return True
-        else:
-            return False
+        if self.error is None:
+            if self.project in self.projects:
+                return True
+            else:
+                return False
 
     def prep_paths(self):
 
@@ -182,9 +191,10 @@ class AyonShotlist(object):
 
 
     def get_shotlist(self):
-        self.get_full_shotlist()
-        self.filter_shotlist()
-        return self.data
+        if self.error is None:
+            self.get_full_shotlist()
+            self.filter_shotlist()
+            return self.data
 
     def get_full_shotlist(self):
 

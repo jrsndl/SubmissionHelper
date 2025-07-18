@@ -1029,15 +1029,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'tree_filter_value', 'data_filter'))
 
         # preset name is empty, disable save button
-        self.ui.save_preset_button.setEnabled(False)
+        #self.ui.save_preset_button.setEnabled(False)
 
         # GO button
         self.ui.write_button.clicked.connect(
             partial(self.handler, 'write_button', 'write'))
 
         # FARM button
-        self.ui.pushButton.clicked.connect(
-            partial(self.handler, 'farm_button', 'farm'))
+        self.ui.publish_farm_button.clicked.connect(
+            partial(self.handler, 'publish_farm_button', 'publish'))
+
+        # Publish Ayon LOCAL
+        self.ui.publish_local_button.clicked.connect(
+            partial(self.handler, 'publish_local_button', 'publish'))
 
         # For Headless operation, just run what is needed in init
         if self.no_gui and self.package_path is not None:
@@ -1199,6 +1203,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.data.prepare_tables()
                 self.show_all()
 
+        if group == 'publish':
+            if self.data and self.data.column_titles_sub:
+                if sender == 'publish_farm_button':
+                    self.data.publish_ayon(mode="farm")
+                elif sender == 'publish_local_button':
+                    self.data.publish_ayon(mode="local")
+
         if sender == 'side_copy':
             if self.data:
                 # sidecar files filter
@@ -1224,25 +1235,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
                 self.data.export_all(column_widths_sub, column_widths_log)
 
-        if sender == 'farm_button':
-            # read column widths from tablewidget for excel column sizes
-            # there is no way to change excel column sizes by content
-            column_widths_sub = []
-            if self.data and self.data.column_titles_sub:
-                for column_number, one_column in enumerate(self.data.column_titles_sub):
-                    column_widths_sub.append(
-                        (float(self.ui.sub_table.columnWidth(column_number))))
-                column_widths_log = []
-                for column_number, one_column in enumerate(self.data.column_titles_log):
-                    column_widths_log.append(
-                        (float(self.ui.log_table.columnWidth(column_number))))
-
-                self.data.export_all(column_widths_sub, column_widths_log)
-
-                d = Deadline(self.settings, self.paths)
-                if d.are_paths_ok:
-                    d.build_ayon_csv(csv_path, project, folder='', task='')
-
         if sender == 'ayon_export_butt':
             if self.data is not None:
                 self.data.ayon_data_read()
@@ -1257,20 +1249,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         if group == 'save_presets':
             preset_name = str(self.ui.save_preset_name.displayText())
-            if preset_name and preset_name != '':
-                self.ui.save_preset_button.setEnabled(True)
-                if sender == 'save_preset_button':
-                    try:
-                        self.settings_from_gui()
-                        self.settings_obj.settings = self.settings
-                        self.settings_obj.write(preset_name)
+            if preset_name is not None and preset_name != '':
+                    #self.ui.save_preset_button.setEnabled(True)
+                    if sender == 'save_preset_button':
+                        try:
+                            self.settings_from_gui()
+                            self.settings_obj.settings = self.settings
+                            self.settings_obj.write(preset_name)
 
-                        self.settings_update_app_title()
-                        self.settings_update_dropbox()
-                    except:
-                        log.error('Error saving preset {}'.format(preset_name))
+                            self.settings_update_app_title()
+                            self.settings_update_dropbox()
+                        except:
+                            log.error('Error saving preset {}'.format(preset_name))
             else:
-                self.ui.save_preset_button.setEnabled(False)
+                #self.ui.save_preset_button.setEnabled(False)
+                pass
 
         if group == 'load_preset':
             preset_to_load = ''
@@ -1286,19 +1279,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             self.settings_update_app_title()
             self.settings_update_dropbox()
             self.gui_show_hide_modules()
+            self.settings_update("save_preset_name",
+                                 self.ui.save_preset_name,
+                                 value=preset_to_load)
             """
             except:
                 log.error('Error reading preset {}'.format(preset_to_load))
             """
 
         if group == "thumbs_convert_now":
-            self.data.run_converts()
+            if self.data is not None:
+                self.data.run_converts()
 
         if group == "data_filter":
             self.show_data()
 
         if group == "ayon_changed_filter":
-            self.data.ayon_data_filter()
+            if self.data is not None:
+                self.data.ayon_data_filter()
 
         if group == "tab_pairs":
             self.gui_show_hide_modules()

@@ -2527,6 +2527,42 @@ class Sequencer(object):
                 exported_files['text'] = t_export_name
             self.export_file_names = exported_files
 
+    def publish_ayon(self, mode="local"):
+        if self.settings and self.static_keywords:
+            self.prepare_export_file_names()
+        else:
+            print("Can't export Csv!")
+            return
+
+        # DEADLINE
+        csv_pth = self.export_file_names.get('submission_csv')
+        ayon_project = self.settings['ayon_project']['value'] or ""
+        ayon_folder = self.settings['dead_ayon_folder']['value'] or ""
+        ayon_task = self.settings['dead_ayon_task']['value'] or ""
+        if ayon_project == "" or ayon_folder == "" or ayon_task == "":
+            print("Can't publish to Ayon!")
+            return
+
+        if csv_pth is None:
+            print("Can't export Csv file!")
+            return
+
+        self.export_spreadsheet(self.export_file_names['s_export_root'],
+                                False,
+                                True,
+                                self.table_sub, self.column_titles_sub)
+
+
+        d = Deadline(self.settings, self.paths)
+        if d.are_paths_ok:
+            d.build_ayon_csv(csv_pth, ayon_project, ayon_folder, ayon_task)
+            if mode == "local":
+                ret = d.publish_local()
+                print(f"Publish result: {ret}")
+            elif mode == "farm":
+                ret = d.publish_deadline()
+                print(f"Publish result: {ret}")
+
     def export_all(self, column_width_sub=None, column_width_log=None):
 
         if self.settings and bool(self.settings['side_copywithgo']['value']):
@@ -2559,15 +2595,6 @@ class Sequencer(object):
                         f.write(self.table_txt)
                 except(FileNotFoundError, PermissionError, IOError) as e:
                     print(f"Error exporting text file: {e}")
-
-        # DEADLINE
-        csv_pth = self.export_file_names.get('submission_csv')
-        if csv_pth is not None:
-            d = Deadline(self.settings, self.paths)
-            if d.are_paths_ok:
-                d.build_ayon_csv(csv_pth, 'AYON_staging', folder='/edit/csv_ingest', task='ingest')
-                #d.publish_local()
-                d.publish_deadline()
 
         # rename if autorename is ON
         if self.settings and\
@@ -3139,7 +3166,7 @@ class Sequencer(object):
             def __missing__(self, key):
                 return '{' + key + '}'
 
-        if self.ayon_data is None or len(self.csv_data) == 0:
+        if self.ayon_data is None or len(self.ayon_data) == 0:
             return
         if self.merged_list is None or len(self.merged_list) == 0:
             return
@@ -3189,10 +3216,9 @@ class Sequencer(object):
                 # merge data lines
                 prefixed_line = {}
                 for k, v in one_data_line.items():
-                    prefixed_line[f"prefix_{self.ayon_gui['prefix']}"] = v
+                    prefixed_line[f"{self.ayon_gui['prefix']}{k}"] = v
                 item.update(prefixed_line)
                 one_data_line["_matched"] = True
-                continue
 
     def display_ayon_table(self):
         """
