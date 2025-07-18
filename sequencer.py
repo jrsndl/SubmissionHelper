@@ -3327,6 +3327,7 @@ class Sequencer(object):
 
     def csv_replace_data_read(self):
 
+        # Remember the file name for reporting later.
         self.static_keywords['csv_replace_file'] = ""
         if self.settings is None or self.settings.get('replace_enable') is None:
             return
