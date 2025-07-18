@@ -3097,7 +3097,6 @@ class Sequencer(object):
             return out
 
         self.ayon_gui = {
-            'server_url': self.settings['ayon_server_url']['value'] or "",
             'do_shotlist': bool(self.settings['ayon_do_shotlist']['value']) or False,
             'do_csv': bool(
                 self.settings['ayon_export_csv']['value']) or False,
@@ -3138,7 +3137,7 @@ class Sequencer(object):
         """
         self.ayon_collect_gui()
 
-        if self.ayon_gui['server_url'] == "" or not self.ayon_gui['do_shotlist'] or self.ayon_gui['project'] == "":
+        if not self.ayon_gui['do_shotlist'] or self.ayon_gui['project'] == "":
             self.ayon_data = []
             return self.ayon_data
 

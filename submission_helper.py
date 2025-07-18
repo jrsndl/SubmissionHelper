@@ -960,10 +960,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
 
         # Ayon Tab
-        self.ui.ayon_path.textChanged.connect(
-            partial(self.handler, 'ayon_path', 'ayon_changed'))
-        self.ui.ayon_server_url.textChanged.connect(
-            partial(self.handler, 'ayon_server_url', 'ayon_changed'))
         self.ui.ayon_project.textChanged.connect(
             partial(self.handler, 'ayon_project', 'ayon_changed'))
         self.ui.ayon_prefix.textChanged.connect(
