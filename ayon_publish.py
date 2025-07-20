@@ -4,7 +4,7 @@ import os
 import platform
 import subprocess
 
-class Deadline(object):
+class AyonPublish(object):
 
     def __init__(self, gui, pths):
         self.log = logging.getLogger("mylog")
@@ -53,7 +53,7 @@ class Deadline(object):
         if popen.returncode != 0:
             self.log.error(f"Command failed with return code {popen.returncode}")
 
-    def build_ayon_csv(self, csv_path, project, folder='', task=''):
+    def build_ayon_csv_command(self, csv_path, project, folder='', task=''):
         self.csv_path = csv_path
         self.csv_name = os.path.basename(csv_path).strip(".csv")
         self.ayon_csv = [

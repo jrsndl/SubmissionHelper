@@ -320,12 +320,11 @@ if __name__ == "__main__":
     ayon_server_url = "http://192.168.0.162:5000"
 
     # just a test api key to test ayon instance here,
-    # nothing to worry about
     my_ayon = AyonShotlist(
         project,
         output_folder,
         do_thumbs,
         gui,
         ayon_server_url,
-        "7ca45320bba24bb1b7f38f8a9e04d641"
+        ""
         )

@@ -79,14 +79,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             "preset_mod_replace": [7, "Replace"],
             "preset_mod_convert": [8, "Convert"],
             "preset_mod_spreadsheet": [9, "Spreadsheet"],
-            "preset_mod_text": [10, "Text"],
-            "preset_mod_checks": [11, "Checks"],
-            "preset_mod_deadline": [12, "Deadline"],
-            "preset_mod_ayon": [13, "Ayon"],
-            "preset_mod_preferences": [14, "Preferences"],
-            "preset_mod_exports": [15, "Exports"],
-            "preset_mod_log": [17, "Log"],
-            "preset_mod_help": [18, "Help"]
+            "preset_mod_checks": [10, "Checks"],
+            "preset_mod_publish": [11, "Ayon Publish"],
+            "preset_mod_ayon": [12, "Ayon"],
+            "preset_mod_preferences": [13, "Preferences"],
+            "preset_mod_exports": [14, "Exports"],
+            "preset_mod_log": [16, "Log"],
+            "preset_mod_help": [17, "Help"]
         }
         self.tab_pairs_bottom = {
             "preset_mod_submission": [0, "Submission"],
@@ -928,8 +927,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'preset_mod_text', 'tab_pairs'))
         self.ui.preset_mod_checks.clicked.connect(
             partial(self.handler, 'preset_mod_checks', 'tab_pairs'))
-        self.ui.preset_mod_deadline.clicked.connect(
-            partial(self.handler, 'preset_mod_deadline', 'tab_pairs'))
+        self.ui.preset_mod_publish.clicked.connect(
+            partial(self.handler, 'preset_mod_publish', 'tab_pairs'))
         self.ui.preset_mod_ayon.clicked.connect(
             partial(self.handler, 'preset_mod_ayon', 'tab_pairs'))
         self.ui.preset_mod_preferences.clicked.connect(

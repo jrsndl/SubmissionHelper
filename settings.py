@@ -26,6 +26,19 @@ class Settings(object):
         #self.settings = {**self.settings, **self.install_settings}
 
     def read_install(self):
+        def fix_path(pth, do_exe=True):
+            pth_value = self.install_settings.get(pth, None)
+            if pth_value is not None and pth_value != "":
+                if pth_value.startswith('./'):
+                    pth_value = self._get_script_path() + pth_value[1:]
+                    if sys.platform == "win32":
+                        if do_exe:
+                            if not pth_value.endswith('.exe'):
+                                pth_value = f"{pth_value}.exe"
+                    else:
+                        if pth_value.endswith('.exe'):
+                            pth_value = pth_value.rstrip(".exe")
+                self.install_settings[pth] = pth_value
 
         pth = self._get_script_path() + '/install.json'
         try:
@@ -34,19 +47,12 @@ class Settings(object):
 
             # replace relative path in ffprobe path
             if self.install_settings is not None:
-                pths = ['ffprobe_path', 'ffmpeg_path', 'oiio_path', 'ayon_path']
+                pths = ['ffprobe_path', 'ffmpeg_path', 'oiio_path', 'ayon_path', 'vfx-transcode_path']
                 for pth in pths:
-                    pth_value = self.install_settings.get(pth, None)
-                    if pth_value is not None and pth_value != "":
-                        if pth_value.startswith('./'):
-                            pth_value = self._get_script_path() + pth_value[1:]
-                            if sys.platform == "win32":
-                                if not pth_value.endswith('.exe'):
-                                    pth_value = f"{pth_value}.exe"
-                            else:
-                                if pth_value.endswith('.exe'):
-                                    pth_value = pth_value.rstrip(".exe")
-                        self.install_settings[pth] = pth_value
+                    fix_path(pth, do_exe=True)
+                pths_noexe = ['ocio_path']
+                for pth in pths_noexe:
+                    fix_path(pth, do_exe=False)
         except Exception:
             # no prefs found
             self.log.error("-> Error opening install prefs file {}".format(

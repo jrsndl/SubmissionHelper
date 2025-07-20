@@ -21,7 +21,7 @@ import parse_file_name
 from ftrack import FtrackHelper
 from metadata import MetaData
 from ayon_shotlist import AyonShotlist
-from deadline import Deadline
+from ayon_publish import AyonPublish
 
 class Sequencer(object):
     def __init__(self, in_path, sequence_mode='to_subsequences', gui=None, more_settings=None, ui=None, headless=False):
@@ -160,10 +160,12 @@ class Sequencer(object):
                 together['ffmpeg'] = self.more_settings['ffmpeg_path']
             if self.more_settings.get('oiio_path') and self.more_settings.get('oiio_path') != "" and os.path.exists(self.more_settings['oiio_path']):
                 together['oiiotool'] = self.more_settings['oiio_path']
+            if self.more_settings.get('vfx-transcode_path') and self.more_settings.get('vfx-transcode_path') != "" and os.path.exists(self.more_settings['vfx-transcode_path']):
+                together['vfx-transcode'] = self.more_settings['vfx-transcode_path']
             if self.more_settings.get('ayon_path') and  self.more_settings.get('ayon_path') != "" and os.path.exists(self.more_settings['ayon_path']):
                 together['ayon'] = self.more_settings['ayon_path']
-            if self.more_settings.get('ocio') and  self.more_settings.get('ocio') != "" and os.path.exists(self.more_settings['ocio']):
-                together['ocio'] = self.more_settings['ocio']
+            if self.more_settings.get('ocio_path') and  self.more_settings.get('ocio_path') != "" and os.path.exists(self.more_settings['ocio_path']):
+                together['ocio'] = self.more_settings['ocio_path']
             if self.more_settings.get('deadline') and  self.more_settings.get('deadline') != "" and os.path.exists(self.more_settings['deadline']):
                 together['deadline'] = self.more_settings['deadline']
 
@@ -2093,6 +2095,8 @@ class Sequencer(object):
 
     def prepare_columns(self, gui_columns):
         """
+        For Spreadsheet Table, parse columns
+
         Gets columns definition as a string like:
         Thumbnail={thumb_path}, Thumbnail={created_thumb_path},
         Shot={shot_name}, CheckShot={check_shot_name}, ...
@@ -2455,6 +2459,7 @@ class Sequencer(object):
         self.table_txt = _header + '\n' + _titles + body_txt + '\n' + _footer
 
     def prepare_export_file_names(self):
+
         self.export_file_names = {}
         if self.settings and self.static_keywords:
             one_above = str(self.static_keywords['package_name_root']).replace('\\', '/') + '/'
@@ -2463,7 +2468,7 @@ class Sequencer(object):
             s_pth_above = bool(self.settings['export_sub_above']['value'])
             s_pth_custom = bool(self.settings['export_sub_custom']['value'])
             s_custom = str(self.settings['export_sub_custom_path']['value'])
-            s_suffix = str(self.settings['export_sub_custom_suffix']['value'])
+            s_suffix = str(self.settings['export_sub_custom_suffix']['value']) or ""
             s_do_excel = bool(self.settings['export_sub_excel']['value'])
             s_do_csv = bool(self.settings['export_sub_csv']['value'])
             s_export_root = export_root
@@ -2471,15 +2476,27 @@ class Sequencer(object):
                 s_export_root = s_custom.replace('\\', '/') + '/'
             elif s_pth_above:
                 s_export_root = one_above
-            s_export_root += self.static_keywords['package_name']
-            if s_suffix:
-                s_export_root += s_suffix
+
+            s_nme = str(self.settings['export_sub_name']['value']) or ""
+            s_do_split = bool(self.settings['export_sub_split_on']['value']) or False
+            s_split = str(self.settings['export_sub_split']['value']) or ""
+            s_do_skip = bool(self.settings['export_sub_skip_on']['value']) or False
+            s_skip = str(self.settings['export_sub_skip']['value']) or ""
+            s_num = str(self.settings['export_sub_splitnum']['value'])
+            try:
+                s_num = int(s_num)
+            except ValueError:
+                s_num = 3
+            if s_nme != "":
+                s_export_root += s_nme + s_suffix
+            else:
+                s_export_root += self.static_keywords['package_name'] + s_suffix
 
             # Drive Log
             d_pth_above = bool(self.settings['export_log_above']['value'])
             d_pth_custom = bool(self.settings['export_log_custom']['value'])
             d_custom = str(self.settings['export_log_custom_path']['value'])
-            d_suffix = str(self.settings['export_log_custom_suffix']['value'])
+            d_suffix = str(self.settings['export_log_custom_suffix']['value']) or ""
             d_do_excel = bool(self.settings['export_log_excel']['value'])
             d_do_csv = bool(self.settings['export_log_csv']['value'])
             d_export_root = export_root
@@ -2487,11 +2504,25 @@ class Sequencer(object):
                 d_export_root = d_custom.replace('\\', '/') + '/'
             elif d_pth_above:
                 d_export_root = one_above
-            d_export_root += self.static_keywords['package_name']
-            if d_suffix:
-                d_export_root += d_suffix
+
+            d_nme = str(self.settings['export_log_name']['value']) or ""
+            d_do_split = bool(self.settings['export_log_split_on']['value']) or False
+            d_split = str(self.settings['export_log_split']['value']) or ""
+            d_do_skip = bool(self.settings['export_log_skip_on']['value']) or False
+            d_skip = str(self.settings['export_log_skip']['value']) or ""
+            d_num = str(self.settings['export_log_splitnum']['value'])
+            try:
+                d_num = int(d_num)
+            except ValueError:
+                d_num = 3
+            # if exporting both sub and log, and using just package name (name is empty),
+            # add suffix to avoid overwriting
+            if d_suffix == "" and d_nme == "" and (s_do_excel or s_do_csv):
+                d_suffix = '_log'
+            if d_nme != "":
+                d_export_root += d_nme + d_suffix
             else:
-                d_export_root += '_log'
+                d_export_root += self.static_keywords['package_name'] + d_suffix
 
             # Text
             t_pth_above = bool(self.settings['text_above']['value'])
@@ -2506,12 +2537,28 @@ class Sequencer(object):
             t_export_name = t_export_root + self.static_keywords['package_name'] + '.txt'
 
             exported_files = {
-                's_export_root': s_export_root,
-                's_do_excel': s_do_excel,
-                's_do_csv': s_do_csv,
-                'd_export_root': d_export_root,
-                'd_do_excel': d_do_excel,
-                'd_do_csv': d_do_csv,
+                'sub': {
+                    'export_root': s_export_root,
+                    'do_excel': s_do_excel,
+                    'do_csv': s_do_csv,
+                    'nme': s_nme,
+                    'do_split': s_do_split,
+                    'split': s_split,
+                    'do_skip': s_do_skip,
+                    'skip': s_skip,
+                    'num': s_num
+                },
+                'log': {
+                    'export_root': d_export_root,
+                    'do_excel': d_do_excel,
+                    'do_csv': d_do_csv,
+                    'nme': d_nme,
+                    'do_split': d_do_split,
+                    'split': d_split,
+                    'do_skip': d_do_skip,
+                    'skip': d_skip,
+                    'num': d_num
+                },
                 't_do_txt': t_do_txt,
                 't_export_name': t_export_name
             }
@@ -2525,6 +2572,7 @@ class Sequencer(object):
                 exported_files['drivelog_excel'] = d_export_root + '.xlsx'
             if t_do_txt:
                 exported_files['text'] = t_export_name
+
             self.export_file_names = exported_files
 
     def publish_ayon(self, mode="local"):
@@ -2534,7 +2582,7 @@ class Sequencer(object):
             print("Can't export Csv!")
             return
 
-        # DEADLINE
+        # Ayon Publish
         csv_pth = self.export_file_names.get('submission_csv')
         ayon_project = self.settings['ayon_project']['value'] or ""
         ayon_folder = self.settings['dead_ayon_folder']['value'] or ""
@@ -2547,21 +2595,22 @@ class Sequencer(object):
             print("Can't export Csv file!")
             return
 
-        self.export_spreadsheet(self.export_file_names['s_export_root'],
-                                False,
-                                True,
-                                self.table_sub, self.column_titles_sub)
+        # export the sub csv spreadsheet(s) now
+        # the exports is a dict where keys are file names (excluding extension), and values are list
+        exports = self.export_spreadsheet('sub', self.table_sub, self.column_titles_sub, None, dry_run=False)
+        csv_file_paths =  [s + '.csv' for s in list(exports.keys())]
+        print(f"Publishing {len(csv_file_paths)} files to Ayon...")
 
-
-        d = Deadline(self.settings, self.paths)
-        if d.are_paths_ok:
-            d.build_ayon_csv(csv_pth, ayon_project, ayon_folder, ayon_task)
-            if mode == "local":
-                ret = d.publish_local()
-                print(f"Publish result: {ret}")
-            elif mode == "farm":
-                ret = d.publish_deadline()
-                print(f"Publish result: {ret}")
+        a = AyonPublish(self.settings, self.paths)
+        if a.are_paths_ok:
+            for one_csv_file_path in csv_file_paths:
+                a.build_ayon_csv_command(one_csv_file_path, ayon_project, ayon_folder, ayon_task)
+                if mode == "local":
+                    ret = a.publish_local()
+                    print(f"Publish result: {ret}")
+                elif mode == "farm":
+                    ret = a.publish_deadline()
+                    print(f"Publish result: {ret}")
 
     def export_all(self, column_width_sub=None, column_width_log=None):
 
@@ -2576,17 +2625,9 @@ class Sequencer(object):
             self.prepare_export_file_names()
 
             # submission
-            self.export_spreadsheet(self.export_file_names['s_export_root'],
-                                    self.export_file_names['s_do_excel'],
-                                    self.export_file_names['s_do_csv'],
-                                    self.table_sub, self.column_titles_sub,
-                                    column_width_sub)
+            self.export_spreadsheet('sub', self.table_sub, self.column_titles_sub, column_width_sub)
             # drive log
-            self.export_spreadsheet(self.export_file_names['d_export_root'],
-                                    self.export_file_names['d_do_excel'],
-                                    self.export_file_names['d_do_csv'],
-                                    self.table_log, self.column_titles_log,
-                                    column_width_log)
+            self.export_spreadsheet('log', self.table_log, self.column_titles_log, column_width_log)
 
             # text
             if self.table_txt is not None and self.export_file_names['t_do_txt']:
@@ -2619,18 +2660,26 @@ class Sequencer(object):
         except:
             logging.error('Renaming {} {} -> {} failed'.format(pth, src, dst))
 
-    def export_spreadsheet(self, export_root, do_excel, do_csv,
-                           table, titles, column_widths=None):
+    def export_spreadsheet(self, mode, table, titles, column_widths=None, dry_run=False):
+        """
+        Expects self.export_file_names dictionary with following keys:
+        """
 
-        _excel = 0.15
-        if table and titles:
+        def write_csv(file_name, table, titles):
+            with open(file_name + '.csv', 'w', newline='', encoding='utf-8') as f:
+                writer = csv.writer(f)
+                writer.writerow(titles)
+                for row, line in enumerate(table):
+                    writer.writerow(line[:len(titles)])
+
+        def write_excel(file_name, table, titles):
+            _excel = 0.15
             # Excel
             if do_excel:
-                workbook = xlsxwriter.Workbook(export_root + '.xlsx')
+                workbook = xlsxwriter.Workbook(file_name + '.xlsx')
                 worksheet = workbook.add_worksheet()
                 cnt = -1
-                for column_number, one_column in enumerate(
-                        titles):
+                for column_number, one_column in enumerate(titles):
                     cnt += 1
                     if column_widths:
                         worksheet.set_column(
@@ -2642,18 +2691,75 @@ class Sequencer(object):
                         worksheet.set_column(column_number, column_number)
                     worksheet.write(0, column_number, one_column)
                 for row, line in enumerate(table):
-                    for column_number, one_column in enumerate(
-                            titles):
-                        worksheet.write(row + 1, column_number,
-                                        line[column_number])
+                    for column_number, one_column in enumerate(titles):
+                        worksheet.write(row + 1, column_number,line[column_number])
                 workbook.close()
-            # CSV
-            if do_csv:
-                with open(export_root + '.csv', 'w', newline='', encoding='utf-8') as f:
-                    writer = csv.writer(f)
-                    writer.writerow(titles)
-                    for row, line in enumerate(table):
-                        writer.writerow(line[:len(titles)])
+
+        if table is None or len(table) == 0:
+            print("No data to export!")
+            return
+        if titles is None or len(titles) == 0:
+            print("No data titles to export!")
+            return
+
+        # mode is sub or log
+        if self.export_file_names.get(mode) is None:
+            pass
+
+        # remove skips from table
+        skip_column = self.export_file_names.get(mode)['skip']
+        if self.export_file_names.get(mode)['do_skip'] and self.export_file_names.get(mode)['skip'] in titles:
+            skip_index = titles.index(skip_column)
+            skipped_table = []
+            for row in table:
+                if row[skip_index] is None or row[skip_index] == "":
+                    skipped_table.append(row)
+                else:
+                    # there is some text in the column of this row - this row will be skipped
+                    pass
+            if len(skipped_table) == 0:
+                print(f"All {len(table)} rows were skipped, nothing to write to {mode} file!")
+                return
+            table = skipped_table
+
+        # split to more than one table if needed
+        split_column = self.export_file_names.get(mode)['split']
+        if self.export_file_names.get(mode)['do_split'] and self.export_file_names.get(mode)['split'] in titles:
+            split_tables = {}
+            split_index = titles.index(split_column)
+            for row in table:
+                v = row[split_index]
+                if v in split_tables.keys():
+                    split_tables[v].append(row)
+                else:
+                    split_tables[v] = [row]
+            subtable_count = len(split_tables.keys())
+            print(f"{mode} Export will be split to {subtable_count} tables.")
+        else:
+            # split to just one
+            split_tables = {'all': table}
+
+        do_excel = self.export_file_names.get(mode)['do_excel']
+        do_csv = self.export_file_names.get(mode)['do_csv']
+
+        # make split tables keys the file names, except extension
+        file_tables = {}
+        cnt = 1
+        export_root = self.export_file_names.get(mode)['export_root']
+        for tab_key, tab in split_tables.items():
+            if len(split_tables.keys()) == 1 or not self.export_file_names.get(mode)['do_split']:
+                # do not add a split number at the end of file name
+                file_name = export_root
+            else:
+                file_name = export_root + str(cnt).zfill(self.export_file_names.get(mode)['num'])
+            file_tables[file_name] = tab
+            cnt += 1
+            if do_excel and not dry_run:
+                write_excel(file_name, tab, titles)
+            if do_csv and not dry_run:
+                write_csv(file_name, tab, titles)
+
+        return file_tables
 
     def sidecar_files_copy(self):
 
@@ -4144,16 +4250,17 @@ class Sequencer(object):
 
         if self.converts is None:
             return
-            return
 
         _exes = {
                 'ffmpeg': self.paths['ffmpeg'],
                 'ffprobe': self.paths['ffprobe'],
                 'oiio': self.paths['oiiotool'],
-                'ocio': self.paths['ocio']
+                'ocio': self.paths['ocio'],
+                'vfx-transcode': self.paths['vfx-transcode'],
         }
 
         for item in self.merged_list:
+            convert_number = 1
             for one_conv in self.converts:
                 # filter out first
                 _if_eval = False
@@ -4182,20 +4289,27 @@ class Sequencer(object):
 
                         # static keywords or item can include "unfilled tokens" in curly brackets
                         # skip file outputs that have curly brackets
+                        convert_count_string = str(convert_number).zfill(2)
                         if '{' in _fn:
-                            item['convert_path'] = None
-                            item['convert_path_relative'] = None
-                            item['convert_cmd'] = None
+                            item[f"convert_path{convert_count_string}"] = None
+                            item[f"convert_path_relative{convert_count_string}"] = None
+                            if item.get('convert_cmd') is None:
+                                item["convert_cmd"] = [""]
+                            else:
+                                item["convert_cmd"].append("")
                         else:
                             _fnr = _fn
                             if _fn.startswith(_root):
                                 _fnr = _fn[len(_root)+1:]
-                            item['convert_path'] = _fn
-                            item['convert_path_relative'] = _fnr
-                            item['convert_cmd'] = _cmd
-
+                            item[f"convert_path{convert_count_string}"] = _fn
+                            item[f"convert_path_relative{convert_count_string}"] = _fnr
+                            if item.get('convert_cmd') is None:
+                                item["convert_cmd"] = [_cmd]
+                            else:
+                                item["convert_cmd"].append(_cmd)
                     except:
                         pass
+                convert_number += 1
 
     def run_converts(self):
         """
@@ -4206,40 +4320,50 @@ class Sequencer(object):
         if self.settings:
             _skip_existing = bool(self.settings['thumbs_skip_existing']['value'])
         for item in self.merged_list:
-            _fn = item.get('convert_path')
-            _cmd = item.get('convert_cmd')
-            _itm_name = item['part2'] + '/' + item['part1']
-            if not _fn:
+            if item.get("convert_cmd") is None or len(item["convert_cmd"]) == 0:
                 continue
-            if not _cmd:
-                continue
-            _run = True
-            if _skip_existing and os.path.exists(_fn):
-                _run = False
+            # there can be more than one convert for one item
+            for i, one_command in enumerate(item["convert_cmd"]):
+                if one_command == "":
+                    # skip empty commands
+                    continue
 
-            if _fn and _cmd and _run:
-                _d = os.path.dirname(os.path.abspath(_fn))
-                if not os.path.exists(_d):
-                    os.makedirs(_d)
+                _pth = item.get(f"convert_path{str(i + 1).zfill(2)}", "")
+                if _pth == "":
+                    # skip empty paths
+                    continue
 
-                self.log.debug(
-                    "Running Convert of item {}:\n{}".format(_itm_name, _cmd))
-                process = subprocess.Popen(_cmd, shell=True,
-                                           stdout=subprocess.PIPE,
-                                           stderr=subprocess.PIPE,
-                                           bufsize=-1)
-                out, err = process.communicate()
-                if process.returncode != 0:
+                item_label = item['part2'] + '/' + item['part1']
+
+                _run = True
+                if _skip_existing and os.path.exists(_pth):
+                    _run = False
+
+                if _pth and one_command and _run:
+                    _d = os.path.dirname(os.path.abspath(_pth))
+                    if not os.path.exists(_d):
+                        os.makedirs(_d)
+
                     self.log.debug(
-                        "Convert of item {} OK".format(
-                            _itm_name))
-                else:
-                    self.log.debug(
-                        "Convert of item {} return code is not zero".format(
-                            _itm_name))
+                        "Running Convert of item {}:\n{}".format(item_label, one_command))
+                    process = subprocess.Popen(one_command, shell=True,
+                                               stdout=subprocess.PIPE,
+                                               stderr=subprocess.PIPE,
+                                               bufsize=-1)
+                    out, err = process.communicate()
+                    if process.returncode != 0:
+                        self.log.debug(
+                            "Convert of item {} OK".format(
+                                item_label))
+                    else:
+                        self.log.debug(
+                            "Convert of item {} return code is not zero".format(
+                                item_label))
 
-                if not os.path.exists(_fn):
-                    item['convert_path'] = ''
+                    # if command didn't produce desired output, clear convert path to indicate so
+                    if not os.path.exists(_pth):
+                        item[f"convert_path{str(i + 1).zfill(2)}"] = ''
+                        item[f"convert_path_relative{str(i + 1).zfill(2)}"] = ''
 
     def checks_init(self):
         self.checks = []
