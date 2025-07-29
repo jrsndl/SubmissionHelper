@@ -1,0 +1,6 @@
+PySide2
+ftrack-python-api
+xls-writer
+unidecode
+httpx
+ayon-python-api
