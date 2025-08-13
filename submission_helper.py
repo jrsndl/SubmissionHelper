@@ -1047,6 +1047,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                     self.settings_update("vendor_csv_path",
                                          self.ui.vendor_csv_path,
                                          value=self.package_path)
+
+            # get args
+            #args
+
             self.data = Sequencer(self.package_path, sequence_mode='holes_allowed',
                                   gui=self.settings,
                                   more_settings=self.settings_inst, ui=self.ui, headless=self.no_gui)
@@ -1800,22 +1804,26 @@ def get_args():
         required=False
     )
     parser.add_argument(
-        '-s',
-        help="Run Copy Sidecar Files",
-        type=bool,
-        default=False
+        '--actions',
+        help="Run actions like"
+        "copy (s)idecar files"
+        "(r)ename files"
+        "run (c)onvert"
+        "reloa(d)"
+        "(g)o"
+        "Each letter runs the action, Example:"
+        "--action rdsg"
+        "will rename files, reload them, copy sidecar files, and pres go",
+        type=str,
+        default="g"
     )
     parser.add_argument(
-        '-r',
-        help="Run Rename",
-        type=bool,
-        default=False
-    )
-    parser.add_argument(
-        '-c',
-        help="Run Convert",
-        type=bool,
-        default=False
+        '--settings',
+        help="Expects one or more string pairs in form key1=value1,key2=value2"
+             "Overrides preset values. Example:"
+             "--settings name_rename_auto=true,name_from_folder=true,name_from_template=false",
+        type=str,
+        default=""
     )
     return parser.parse_args()
 

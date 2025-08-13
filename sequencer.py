@@ -2719,7 +2719,7 @@ class Sequencer(object):
                     # there is some text in the column of this row - this row will be skipped
                     pass
             if len(skipped_table) == 0:
-                print(f"All {len(table)} rows were skipped, nothing to write to {mode} file!")
+                self.log.warning(f"All {len(table)} rows were skipped, nothing to write to {mode} file!")
                 return
             table = skipped_table
 
