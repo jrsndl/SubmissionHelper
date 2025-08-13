@@ -1052,6 +1052,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                                   more_settings=self.settings_inst, ui=self.ui, headless=self.no_gui)
 
             self.data.export_all()
+            logging.debug("Headless operation finished.")
+            # exit properly after headless go
+            sys.exit()
 
     def handler(self, sender, group, *more):
         """
@@ -1522,22 +1525,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
 
     def settings_update_dropbox(self):
-        self.ui.load_preset_combobox.blockSignals(True)
-        self.ui.load_preset_combobox.clear()
-        self.ui.load_preset_combobox.addItems(self.settings_obj.preset_names)
+        if not self.no_gui:
+            self.ui.load_preset_combobox.blockSignals(True)
+            self.ui.load_preset_combobox.clear()
+            self.ui.load_preset_combobox.addItems(self.settings_obj.preset_names)
 
-        try:
-            index = self.settings_obj.preset_names.index(
-                self.settings_obj.current_settings_name)
-            if index <= -1 or index > len(self.settings_obj.preset_names):
-                pass
-            else:
-                # preselect a combobox value by index
-                self.ui.load_preset_combobox.setCurrentIndex(index)
-        except:
-            log.error("Failed to set settings dropbox index.")
+            try:
+                index = self.settings_obj.preset_names.index(
+                    self.settings_obj.current_settings_name)
+                if index <= -1 or index > len(self.settings_obj.preset_names):
+                    pass
+                else:
+                    # preselect a combobox value by index
+                    self.ui.load_preset_combobox.setCurrentIndex(index)
+            except:
+                log.error("Failed to set settings dropbox index.")
 
-        self.ui.load_preset_combobox.blockSignals(False)
+            self.ui.load_preset_combobox.blockSignals(False)
 
     def settings_update_app_title(self):
         self.setWindowTitle(self.bare_title + ": " +

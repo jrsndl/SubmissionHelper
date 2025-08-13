@@ -275,8 +275,9 @@ class Sequencer(object):
             self.ui.statusBar.showMessage("Reading data from Ftrack", 3000)
         f = FtrackHelper(self.settings, self.paths)
         if f is not None:
-            print(f"Ftrack session is {f.is_session_ok()}")
+            #print(f"Ftrack session is {f.is_session_ok()}")
             f.get_ftrack_info()
+            # TODO make proper output from gui
             f.ftrack_info_to_csv("D:/links.csv")
             #f.get_ftrack_shots()
             #f.get_ftrack_shot_links()
@@ -2696,10 +2697,10 @@ class Sequencer(object):
                 workbook.close()
 
         if table is None or len(table) == 0:
-            print("No data to export!")
+            self.log.error("Spreadsheet for export is empty. Nothing exported.")
             return
         if titles is None or len(titles) == 0:
-            print("No data titles to export!")
+            self.log.error("Spreadsheet column names empty. Nothing exported.")
             return
 
         # mode is sub or log
