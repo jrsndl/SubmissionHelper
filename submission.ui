@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>1619</width>
     <height>600</height>
    </rect>
   </property>
@@ -1498,7 +1498,7 @@ p, li { white-space: pre-wrap; }
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>751</width>
+               <width>1570</width>
                <height>1070</height>
               </rect>
              </property>
@@ -12540,7 +12540,7 @@ p, li { white-space: pre-wrap; }
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>791</width>
+               <width>1570</width>
                <height>469</height>
               </rect>
              </property>
@@ -15036,7 +15036,7 @@ p, li { white-space: pre-wrap; }
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>756</width>
+                 <width>1575</width>
                  <height>299</height>
                 </rect>
                </property>
@@ -15616,7 +15616,7 @@ Vendor = AmazingVFX</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>749</width>
+                 <width>1568</width>
                  <height>2030</height>
                 </rect>
                </property>
@@ -20415,7 +20415,7 @@ Vendor = AmazingVFX</string>
                            </property>
                            <property name="minimumSize">
                             <size>
-                             <width>200</width>
+                             <width>100</width>
                              <height>25</height>
                             </size>
                            </property>
@@ -20624,7 +20624,7 @@ Vendor = AmazingVFX</string>
                            </property>
                            <property name="minimumSize">
                             <size>
-                             <width>420</width>
+                             <width>100</width>
                              <height>25</height>
                             </size>
                            </property>
@@ -20635,7 +20635,7 @@ Vendor = AmazingVFX</string>
                             </size>
                            </property>
                            <property name="toolTip">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder containing media files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder where list.csv and optionally thumbnails will be saved to by &lt;span style=&quot; font-weight:600;&quot;&gt;Export Shot List&lt;/span&gt; button.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                            </property>
                            <property name="text">
                             <string/>
@@ -21118,7 +21118,7 @@ p, li { white-space: pre-wrap; }
                    <item>
                     <layout class="QVBoxLayout" name="verticalLayout_114">
                      <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_210">
+                      <layout class="QHBoxLayout" name="horizontalLayout_188">
                        <item>
                         <widget class="QCheckBox" name="ayon_filter_assets">
                          <property name="minimumSize">
@@ -21192,6 +21192,13 @@ p, li { white-space: pre-wrap; }
                          </property>
                          <property name="text">
                           <string>Other</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QCheckBox" name="ayon_filter_matched">
+                         <property name="text">
+                          <string>Matched Only</string>
                          </property>
                         </widget>
                        </item>
