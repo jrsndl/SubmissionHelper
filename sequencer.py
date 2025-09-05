@@ -229,6 +229,9 @@ class Sequencer(object):
         # other (audio, office, graphics, other)
         self.merged_list.extend(self.other_files_from_file_list(file_list))
 
+        # make paths relative
+        self.get_relative_paths(parse_file_name.parse(self.in_path))
+
         # get file sizes for merged list
         if not self.headless:
             self.ui.statusBar.showMessage("Calculating file sizes", 3000)
@@ -299,7 +302,7 @@ class Sequencer(object):
         self.prepare_package_name()
 
         # make paths relative
-        self.get_relative_paths(parse_file_name.parse(self.in_path))
+        #self.get_relative_paths(parse_file_name.parse(self.in_path))
 
         # also adds totals to static keywords
         if not self.headless:
@@ -1205,6 +1208,7 @@ class Sequencer(object):
                 subRanges.append({'start': startFrame, 'end': endFrame})
 
                 prs = parse_file_name.parse(temp_result[onekey][1])
+                # add printf and hash pattern for convenience
                 patt = prs["name"] + '.' + prs["extension"]
 
                 if endFrame == -1:
@@ -1214,7 +1218,7 @@ class Sequencer(object):
                     _category = 'video'
 
                 onedict = {'path': temp_result[onekey][1], 'missing_numbers': [], 'sub_ranges': subRanges,
-                           'printf_pattern': patt,
+                           'printf_pattern': patt, 'hash_pattern': patt,
                            'master_start_number': startFrame, 'master_end_number': endFrame,
                            'start_number': startFrame, 'end_number': endFrame,
                            'trim_in': 0, 'trim_out': 0,
@@ -3248,7 +3252,6 @@ class Sequencer(object):
             self.ayon_data = []
             return self.ayon_data
 
-        #ayon_api_key = "7ca45320bba24bb1b7f38f8a9e04d641"
         self.my_ayon = AyonShotlist(
             self.ayon_gui,
             self.ui,
@@ -3326,7 +3329,7 @@ class Sequencer(object):
                 item.update(prefixed_line)
                 one_data_line["_matched"] = True
 
-    def display_ayon_table(self):
+    def display_ayon_table(self, show_matched_only=False):
         """
         table data to ui
         """
@@ -3352,6 +3355,13 @@ class Sequencer(object):
                 # skip displaying filtered out lines
                 if line.get('_hide', False):
                     continue
+                if bool(line.get('_matched', False)):
+                    color = 'green'
+                else:
+                    color = 'white'
+                if color != 'green' and show_matched_only:
+                    # skip showing this
+                    continue
                 row += 1
                 for column_number, one_column in enumerate(titles):
                     if line[one_column] is None:
@@ -3363,9 +3373,6 @@ class Sequencer(object):
                                      )
                     # colorize
                     itm = table_ui.item(row, column_number)
-                    color = 'white'
-                    if bool(line.get('_matched', False)):
-                        color = 'green'
                     if itm:
                         if color == 'green':
                             itm.setBackground(QtGui.QColor('darkgreen'))
