@@ -3226,6 +3226,8 @@ class Sequencer(object):
                 self.settings['ayon_filter_tasks']['value']) or False,
             'filter_other': bool(
                 self.settings['ayon_filter_other']['value']) or False,
+            'filter_matched': bool(
+                self.settings['ayon_filter_matched']['value']) or False,
             'filter_tasktype': bool(
                 self.settings['ayon_filter_tasktype_chbx']['value']) or False,
             'filter_tasktypes': split_itms(self.settings['ayon_filter_tasktypes'][
@@ -3329,12 +3331,14 @@ class Sequencer(object):
                 item.update(prefixed_line)
                 one_data_line["_matched"] = True
 
-    def display_ayon_table(self, show_matched_only=False):
+    def display_ayon_table(self):
         """
         table data to ui
         """
         if self.ayon_data is None or len(self.ayon_data) == 0:
             return
+
+        show_matched_only = bool(self.settings['ayon_filter_matched']['value']) or False
 
         table = self.ayon_data
         table_ui = self.ui.ayon_table

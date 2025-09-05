@@ -983,6 +983,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'ayon_filter_tasks', 'ayon_changed_filter'))
         self.ui.ayon_filter_other.clicked.connect(
             partial(self.handler, 'ayon_filter_other', 'ayon_changed_filter'))
+        self.ui.ayon_filter_matched.clicked.connect(
+            partial(self.handler, 'ayon_filter_matched', 'ayon_changed_filter'))
         self.ui.ayon_filter_tasktype_chbx.clicked.connect(
             partial(self.handler, 'ayon_filter_tasktype_chbx', 'ayon_changed_filter'))
         self.ui.ayon_filter_assignee_chbx.clicked.connect(
