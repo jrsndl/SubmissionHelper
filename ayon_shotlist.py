@@ -34,6 +34,7 @@ class AyonShotlist(object):
         self.do_thumbs = ayon_gui['do_thumbs']
         self.output_folder = ayon_gui['out_folder'].replace("\\", "/")
         self.thumbs_dir = f"{self.output_folder}/_thumbsDownload"
+        self.show_matched_only = ayon_gui['filter_matched']
 
         # where to put thumbnails and shotlist
         self.output_folder = ayon_gui['out_folder']
