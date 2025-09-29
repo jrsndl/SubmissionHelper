@@ -59,6 +59,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
     def __init__(self, no_gui=False, s=None, package_path=None, args=None):
         super().__init__()
+
+        self.log = logging.getLogger("Submission Helper Main Window")
         self.bare_title = "Submission Helper"
         self.package_path = package_path
 
@@ -101,10 +103,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.settings = self.settings_obj.settings
         self.settings_inst = self.settings_obj.install_settings
 
-        self.settings_to_gui()
-        self.settings_update_app_title()
-        self.settings_update_dropbox()
-        self.gui_show_hide_modules()
+        if not self.no_gui:
+            self.settings_to_gui()
+            self.settings_update_app_title()
+            self.settings_update_dropbox()
+            self.gui_show_hide_modules()
         self.ui_start = False
 
         # Other inits
@@ -1053,10 +1056,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
             self.data = Sequencer(self.package_path, sequence_mode='holes_allowed',
                                   gui=self.settings,
-                                  more_settings=self.settings_inst, ui=self.ui, headless=self.no_gui)
+                                  more_settings=self.settings_obj, ui=self.ui, headless=self.no_gui)
 
             self.data.export_all()
-            logging.debug("Headless operation finished.")
+            self.log.debug("Headless operation finished.")
             # exit properly after headless go
             sys.exit()
 
@@ -1092,7 +1095,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                         self.settings_update("vendor_csv_path",
                                              self.ui.vendor_csv_path,
                                              value=pth)
-            self.data = Sequencer(pth, sequence_mode='holes_allowed', gui=self.settings, more_settings=self.settings_inst, ui=self.ui, headless=self.no_gui)
+            self.data = Sequencer(pth, sequence_mode='holes_allowed', gui=self.settings, more_settings=self.settings_obj, ui=self.ui, headless=self.no_gui)
             self.show_all()
 
         if sender == 'name_rename':
@@ -1106,7 +1109,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                     self.settings_from_gui()
                     self.data = Sequencer(renamed, sequence_mode='holes_allowed',
                                           gui=self.settings,
-                                          more_settings=self.settings_inst, ui=self.ui, headless=self.no_gui)
+                                          more_settings=self.settings_obj, ui=self.ui, headless=self.no_gui)
                     self.show_all()
 
         if group == 'package_rename':
@@ -1136,7 +1139,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         if group == 'refresh_size_checks':
             if self.data:
-                self.data.clear_errors()
+                #self.data.clear_errors()
                 self.data.get_file_sizes()
                 self.data.transform_data()
                 self.show_all()
@@ -1557,7 +1560,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         """
 
         # Save geometry
-        logging.debug('-> settings_from_gui')
+        self.log.debug('-> settings_from_gui')
         self.settings = {}
         xs = str(self.geometry().width())
         ys = str(self.geometry().height())
@@ -1653,7 +1656,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 _b = bool(my_str)
             return _b
 
-        logging.debug('-> settings_to_gui')
+        self.log.debug('-> settings_to_gui')
         skip_names = [
             'package_folder',
             'name_preview',
@@ -1811,11 +1814,13 @@ def get_args():
         "run (c)onvert"
         "reloa(d)"
         "(g)o"
+        "read (f)iles"
+        "(t)ransform data"
         "Each letter runs the action, Example:"
-        "--action rdsg"
-        "will rename files, reload them, copy sidecar files, and pres go",
+        "--action ftrftsg"
+        "will rename files, reload them, copy sidecar files, and presses go",
         type=str,
-        default="g"
+        default="ftg"
     )
     parser.add_argument(
         '--settings',
@@ -1827,17 +1832,11 @@ def get_args():
     )
     return parser.parse_args()
 
+# log
+logging.basicConfig(level="INFO")
+log = logging.getLogger("Submission Helper")
 
 if __name__ == "__main__":
-    # log
-    log = logging.getLogger("mylog")
-    log.setLevel(logging.DEBUG)
-    """
-    logging.basicConfig(filename=os.path.join(self.settings_get_user_settings_path(),
-                                              'SubmissionHelperLog.log').replace('\\', '/'), level=logging.DEBUG)
-    """
-    log.info('Started at: ' + time.strftime("%Y-%m-%d, %H:%M"))
-
     args = vars(get_args())
     input_path = args['i']
     input_preset = args['p']
@@ -1855,13 +1854,15 @@ if __name__ == "__main__":
         app = QtWidgets.QApplication([])
 
     if headless:
-        settings_obj = Settings(input_preset)
+        log.debug('Starting headless')
+        settings_obj = Settings(input_preset, args)
         main = MainWindow(no_gui=True, s=settings_obj, package_path=input_path, args=args)
         #main.show()
         app.exec_()
     else:
-        settings_obj = Settings('last_' + getpass.getuser())
-        main = MainWindow(no_gui=False, s=settings_obj)
+        log.debug('Starting GUI')
+        settings_obj = Settings('last_' + getpass.getuser(), args)
+        main = MainWindow(no_gui=False, s=settings_obj, args=args)
         main.show()
         app.exec_()
 

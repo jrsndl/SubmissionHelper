@@ -25,7 +25,7 @@ class MetaData(object):
 
     def __init__(self, item, gui, pths):
 
-        self.log = logging.getLogger("mylog")
+        self.log = logging.getLogger("MetaData")
         self.settings = gui
         self.paths = pths
 

@@ -103,13 +103,15 @@ def read_exr_header(exrpath, maxreadsize=2000):
         openxr_version_number = struct.unpack('c', exr_file.read(1))
         version_field_attrs = struct.unpack('ccc', exr_file.read(3))
 
-        log.info("File name: '%s'\nMagic number: %i\n"
+        """
+        log.debug("File name: '%s'\nMagic number: %i\n"
                  "OpenEXR Version Number: %i\nVersion field: %s %s %s",
                  os.path.basename(exrpath), magic_number[0],
                  ord(openxr_version_number[0]),
                  ord(version_field_attrs[0]), ord(version_field_attrs[1]),
                  ord(version_field_attrs[2]))
-        log.info("METADATA:")
+        log.debug("METADATA:")
+        """
         i = 0
 
         while i < maxreadsize:
@@ -123,7 +125,7 @@ def read_exr_header(exrpath, maxreadsize=2000):
             # If we're reading only byte it means it's the null byte
             # and we've reached the end of the header
             if attribute_name_length == 1:
-                log.debug('reached the end of the header!')
+                #log.debug('reached the end of the header!')
                 break
 
             if not attribute_name in metadata:

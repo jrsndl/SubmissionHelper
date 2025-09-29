@@ -29,8 +29,13 @@ class Sequencer(object):
         self.converts = None
         self.ui = ui
         self.headless = headless
-        self.more_settings = more_settings
-        self.log = logging.getLogger("mylog")
+
+        self.settings_obj = more_settings
+        self.settings = self.settings_obj.settings
+        self.settings_inst = self.settings_obj.install_settings
+        self.settings_args = self.settings_obj.args
+
+        self.log = logging.getLogger("Sequencer")
         self.sequence_mode = sequence_mode
         self.merged_list = None
         self.settings = gui
@@ -55,7 +60,6 @@ class Sequencer(object):
         self._prep_paths_vars()
 
         self.renames = []
-
         self.output = {}
 
         self.vendor_csv = []
@@ -63,15 +67,103 @@ class Sequencer(object):
         self.vendor_csv_prefs_spreadsheet = {}
         self.vendor_csv_prefs_repres = {}
 
-        self.in_path = in_path
-        self._prepare_in_path()
+        if not os.path.exists(in_path):
+            self.log.error(f"Package path '{in_path}' does not exist.")
+        else:
+            self.log.info(f"Package path '{in_path}")
+        self.in_path = self._prepare_in_path(in_path)
 
-        if os.path.exists(self.in_path):
+        if self.headless:
+            # HEADLESS MODE
+            self.settings['package_folder']['value'] = self.in_path
+            self._process_headless()
+        else:
+            # GUI MODE
             self.read_files()
             self.transform_data()
-
         #pprint.pprint(self.merged_list)
-        # logging.debug('-> Sequencer Init')
+
+    def _process_headless(self):
+        action_names = {
+            "r": "Rename",
+            "s": "Sidecar Files",
+            "c": "Convert",
+            "d": "Reload",
+            "g": "Go",
+            "f": "Read Files",
+            "t": "Transform Data",
+            "p": "Publish to Ayon - local",
+            "P": "Publish to Ayon - Deadline",
+            "a": "Export Ayon Shotlist",
+            "x": "Export Ftrack Shotlist"
+        }
+        if self.settings_args is not None:
+            actions_arg = self.settings_args.get("actions", None)
+            if actions_arg is not None:
+                self.log.info(
+                    'Started at: ' + time.strftime("%Y-%m-%d, %H:%M"))
+                time_start = time.time()
+                actions = list(actions_arg)
+                action_count = 0
+                action_lenght = len(actions_arg)
+                self.log.info(
+                    f"Running {action_lenght} headless actions: {actions_arg}")
+                for action in actions:
+                    action_count += 1
+                    self.log.info(
+                        f"Running headless action {action_count}/{action_lenght}: {action_names[action]}")
+                    if action == "g":
+                        # GO
+                        self.export_all()
+                    elif action == "d":
+                        # RELOAD
+                        self.read_files()
+                        self.transform_data()
+                    elif action == "s":
+                        # SIDECAR
+                        self.sidecar_files_copy()
+                    elif action == "r":
+                        # RENAME
+                        self.rename_execute()
+                    elif action == "c":
+                        # CONVERT
+                        self.run_converts()
+                    elif action == "f":
+                        # READ FILES
+                        self.read_files()
+                    elif action == "t":
+                        # TRANSFORM DATA
+                        self.transform_data()
+                    elif action == "p":
+                        # Publish to Ayon - local
+                        self.publish_ayon(mode="local")
+                    elif action == "P":
+                        # Publish to Ayon - Deadline
+                        self.publish_ayon(mode="farm")
+                    elif action == "a":
+                        # Export Ayon Shotlist
+                        self.ayon_data_read()
+                        self.ayon_data_filter()
+                        self.ayon_data_write()
+                    elif action == "x":
+                        # Export Ftrack Shotlist
+                        # TODO make proper output
+                        f = FtrackHelper(self.settings, self.paths)
+                        if f is not None:
+                            f.get_ftrack_info()
+                            f.ftrack_info_to_csv("D:/ftrack_shotlist.csv")
+                    else:
+                        self.log.warning(f"Unknown action: {action}")
+                    self.log.info(
+                        f"Headless action {action_count}/{action_lenght}: {action_names[action]} finished")
+                self.log.info(
+                    'Finished at: ' + time.strftime("%Y-%m-%d, %H:%M"))
+                self.log.info(
+                    f'Processing time {round(time.time() - time_start, 2)} seconds')
+            else:
+                self.log.error("Actions CLI argument is missing.")
+        else:
+            self.log.error("CLI arguments are missing.")
 
     def _prep_paths_vars(self):
         """
@@ -153,35 +245,35 @@ class Sequencer(object):
 
         # check if install.json config has valid stuff, use it if yes.
         # install.json overrides everything
-        if self.more_settings is not None:
-            if self.more_settings.get('ffprobe_path') and self.more_settings.get('ffprobe_path') != "" and os.path.exists(self.more_settings['ffprobe_path']):
-                together['ffprobe'] = self.more_settings['ffprobe_path']
-            if self.more_settings.get('ffmpeg_path') and self.more_settings.get('ffmpeg_path') != "" and os.path.exists(self.more_settings['ffmpeg_path']):
-                together['ffmpeg'] = self.more_settings['ffmpeg_path']
-            if self.more_settings.get('oiio_path') and self.more_settings.get('oiio_path') != "" and os.path.exists(self.more_settings['oiio_path']):
-                together['oiiotool'] = self.more_settings['oiio_path']
-            if self.more_settings.get('vfx-transcode_path') and self.more_settings.get('vfx-transcode_path') != "" and os.path.exists(self.more_settings['vfx-transcode_path']):
-                together['vfx-transcode'] = self.more_settings['vfx-transcode_path']
-            if self.more_settings.get('ayon_path') and  self.more_settings.get('ayon_path') != "" and os.path.exists(self.more_settings['ayon_path']):
-                together['ayon'] = self.more_settings['ayon_path']
-            if self.more_settings.get('ocio_path') and  self.more_settings.get('ocio_path') != "" and os.path.exists(self.more_settings['ocio_path']):
-                together['ocio'] = self.more_settings['ocio_path']
-            if self.more_settings.get('deadline') and  self.more_settings.get('deadline') != "" and os.path.exists(self.more_settings['deadline']):
-                together['deadline'] = self.more_settings['deadline']
+        if self.settings_inst is not None:
+            if self.settings_inst.get('ffprobe_path') and self.settings_inst.get('ffprobe_path') != "" and os.path.exists(self.settings_inst['ffprobe_path']):
+                together['ffprobe'] = self.settings_inst['ffprobe_path']
+            if self.settings_inst.get('ffmpeg_path') and self.settings_inst.get('ffmpeg_path') != "" and os.path.exists(self.settings_inst['ffmpeg_path']):
+                together['ffmpeg'] = self.settings_inst['ffmpeg_path']
+            if self.settings_inst.get('oiio_path') and self.settings_inst.get('oiio_path') != "" and os.path.exists(self.settings_inst['oiio_path']):
+                together['oiiotool'] = self.settings_inst['oiio_path']
+            if self.settings_inst.get('vfx-transcode_path') and self.settings_inst.get('vfx-transcode_path') != "" and os.path.exists(self.settings_inst['vfx-transcode_path']):
+                together['vfx-transcode'] = self.settings_inst['vfx-transcode_path']
+            if self.settings_inst.get('ayon_path') and  self.settings_inst.get('ayon_path') != "" and os.path.exists(self.settings_inst['ayon_path']):
+                together['ayon'] = self.settings_inst['ayon_path']
+            if self.settings_inst.get('ocio_path') and  self.settings_inst.get('ocio_path') != "" and os.path.exists(self.settings_inst['ocio_path']):
+                together['ocio'] = self.settings_inst['ocio_path']
+            if self.settings_inst.get('deadline') and  self.settings_inst.get('deadline') != "" and os.path.exists(self.settings_inst['deadline']):
+                together['deadline'] = self.settings_inst['deadline']
 
-            if self.more_settings.get('ftrack_server_url') and  self.more_settings.get('ftrack_server_url') != "":
-                together['FTRACK_SERVER'] = self.more_settings['ftrack_server_url']
-            if self.more_settings.get('ftrack_api_key') and  self.more_settings.get('ftrack_api_key') != "":
-                together['FTRACK_API_KEY'] = self.more_settings['ftrack_api_key']
-            if self.more_settings.get('ftrack_api_user') and  self.more_settings.get('ftrack_api_user') != "":
-                together['FTRACK_API_USER'] = self.more_settings['ftrack_api_user']
+            if self.settings_inst.get('ftrack_server_url') and  self.settings_inst.get('ftrack_server_url') != "":
+                together['FTRACK_SERVER'] = self.settings_inst['ftrack_server_url']
+            if self.settings_inst.get('ftrack_api_key') and  self.settings_inst.get('ftrack_api_key') != "":
+                together['FTRACK_API_KEY'] = self.settings_inst['ftrack_api_key']
+            if self.settings_inst.get('ftrack_api_user') and  self.settings_inst.get('ftrack_api_user') != "":
+                together['FTRACK_API_USER'] = self.settings_inst['ftrack_api_user']
 
-            if self.more_settings.get('ayon_server_url') and  self.more_settings.get('ayon_server_url') != "":
-                together['AYON_SERVER_URL'] = self.more_settings['ayon_server_url']
-            if self.more_settings.get('ayon_api_key') and  self.more_settings.get('ayon_api_key') != "":
-                together['AYON_API_KEY'] = self.more_settings['ayon_api_key']
-            if self.more_settings.get('ayon_username') and  self.more_settings.get('ayon_username') != "":
-                together['AYON_USERNAME'] = self.more_settings['ayon_username']
+            if self.settings_inst.get('ayon_server_url') and  self.settings_inst.get('ayon_server_url') != "":
+                together['AYON_SERVER_URL'] = self.settings_inst['ayon_server_url']
+            if self.settings_inst.get('ayon_api_key') and  self.settings_inst.get('ayon_api_key') != "":
+                together['AYON_API_KEY'] = self.settings_inst['ayon_api_key']
+            if self.settings_inst.get('ayon_username') and  self.settings_inst.get('ayon_username') != "":
+                together['AYON_USERNAME'] = self.settings_inst['ayon_username']
 
 
         # OCIO path from gui overrides everything
@@ -193,18 +285,19 @@ class Sequencer(object):
 
         self.paths = together
 
-    def _prepare_in_path(self):
+    def _prepare_in_path(self, in_path):
+        """
+        Add trailing slash to folder path if it is existing folder
+        Convert to forward slashes
+        """
 
-        if self.in_path is None:
-            self.in_path = ''
-        # to detect if in_path is full path
-        # or just path to directory with no end slash
-        if os.path.isdir(self.in_path) \
-                and not (self.in_path[-1] == os.sep or
-                         self.in_path[-1] == os.altsep):
-            # add end slash
-            self.in_path += os.sep
-        self.in_path.replace("\\", "/")
+        if in_path is None:
+            in_path = ''
+        in_path = in_path.replace("\\", "/")
+        if os.path.isdir(in_path.rstrip('/')):
+            if in_path[-1] != '/':
+                in_path = f"{in_path}/"
+        return  in_path
 
     def read_files(self):
         """
@@ -281,11 +374,10 @@ class Sequencer(object):
             #print(f"Ftrack session is {f.is_session_ok()}")
             f.get_ftrack_info()
             # TODO make proper output from gui
-            f.ftrack_info_to_csv("D:/links.csv")
+            f.ftrack_info_to_csv("D:/ftrack_shotlist.csv")
             #f.get_ftrack_shots()
             #f.get_ftrack_shot_links()
             #f.get_ftrack_asset_links()
-
         else:
             print(f"Ftrack session bad")
 
@@ -372,10 +464,11 @@ class Sequencer(object):
                 _p = self.ui.progressBar.value()
                 self.ui.progressBar.setValue(_p + progress_step)
                 self.ui.statusBar.showMessage("Gathering Metadata: {} done.".format(one.item.get('part1')), 3000)
+            else:
+                self.log.info("Gathering Metadata: {} done.".format(one.item.get('part1')))
             return [one.item, one.meta_data]
 
-        self.output['status'] = "Getting meta data" \
-                                " (get_metadata)"
+        self.output['status'] = "Getting meta data"
 
         if self.merged_list and len(self.merged_list) > 0:
             _cnt = 0
@@ -383,7 +476,7 @@ class Sequencer(object):
                 if one_item['category'] in\
                         ['still', 'video', 'sequence', 'audio']:
                     _cnt +=1
-            self.log.debug("Start Reading metadata for {} media files".format(_cnt))
+            self.log.info("Start Reading metadata for {} media files".format(_cnt))
             if _cnt > 0:
                 progress_step = (1 / _cnt) * 100
             else:
@@ -2739,7 +2832,7 @@ class Sequencer(object):
                 else:
                     split_tables[v] = [row]
             subtable_count = len(split_tables.keys())
-            print(f"{mode} Export will be split to {subtable_count} tables.")
+            self.log.info(f"{mode} Export will be split to {subtable_count} tables.")
         else:
             # split to just one
             split_tables = {'all': table}

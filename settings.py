@@ -5,11 +5,11 @@ import inspect
 import logging
 
 class Settings(object):
-    def __init__(self, name):
+    def __init__(self, name, args):
         self.settings = None
 
-        self.log = logging.getLogger("mylog")
-        self.log.setLevel(logging.DEBUG)
+        self.log = logging.getLogger("Settings")
+        #self.log.setLevel(logging.DEBUG)
 
         self.app_name = "SubmissionHelper"
         self.preset_names = []
@@ -21,6 +21,8 @@ class Settings(object):
         # start by reading last settings
         self.find_all()
         self.read(name)
+
+        self.args = args
 
         # merge install settings to settings
         #self.settings = {**self.settings, **self.install_settings}
@@ -165,7 +167,7 @@ class Settings(object):
         else:
             pth = os.path.dirname(__file__).replace("\\", "/")
 
-        self.log.debug('-> App Location: {}'.format(pth))
+        #self.log.debug('-> App Location: {}'.format(pth))
         return pth
         """
         return os.path.dirname(

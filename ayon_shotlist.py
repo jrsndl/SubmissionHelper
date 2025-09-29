@@ -10,17 +10,18 @@ import os
 class AyonShotlist(object):
     def __init__(self, ayon_gui, settings, paths):
         self.error = None
-        self.log = logging.getLogger("mylog")
+        self.log = logging.getLogger("AyonShotlist")
         os.environ["AYON_SERVER_URL"] = paths['AYON_SERVER_URL']
         os.environ["AYON_API_KEY"] = paths['AYON_API_KEY']
 
-
         self.error = None
         try:
+            self.log.info("Connecting to Ayon")
             self.ayon = ayon_api.get_server_api_connection()
+            self.log.info("Connected to Ayon")
         except Exception as e:
             error = f"Error connecting to Ayon: {e}"
-            print(error)
+            self.log.warning(error)
             self.error = error
             return
 
@@ -100,9 +101,13 @@ class AyonShotlist(object):
                 self.log.error(f"Error creating thumbs dir: {e}")
                 self.do_thumbs = False
         try:
-            os.makedirs(os.path.dirname(self.output_folder), exist_ok=True)
+            if self.output_folder != "":
+                os.makedirs(os.path.dirname(self.output_folder), exist_ok=True)
+            else:
+                self.log.error("Ayon Shotlist output folder is empty")
+                self.do_output = False
         except OSError as e:
-            self.log.error(f"Error creating output dir: {e}")
+            self.log.error(f"Error creating Ayon Shotlist output folder {self.output_folder} : {e}")
             self.do_output = False
 
     @staticmethod
