@@ -222,14 +222,19 @@ class MetaData(object):
                 self.meta['fps_raw'] = self.meta_exr.get(
                     'metaExr_fps_raw', self.meta['fps_raw'])
 
+                self.meta['width'] = str(
+                    self.meta_exr.get('metaExr_width', self.meta['width']))
+                self.meta['height'] = str(
+                    self.meta_exr.get('metaExr_height', self.meta['height']))
+                self.meta['aspect'] = str(self.meta_exr.get(
+                    'metaExr_pixelAspectRatio', self.meta['aspect']))
+
                 self.meta['codec_name_video'] = self.meta_exr.get(
                     'metaExr_compression', self.meta['codec_name_video'])
                 self.meta['codec_long_name_video'] = self.meta_exr.get(
                     'metaExr_compression',
                     self.meta['codec_long_name_video'])
 
-                self.meta['aspect'] = str(self.meta_exr.get(
-                    'metaExr_pixelAspectRatio', self.meta['aspect']))
             except:
                 print("Reading EXR metadata failed")
 

@@ -126,6 +126,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.reload.clicked.connect(
             partial(self.handler, 'package_reload', 'source_change'))
 
+        # File Age
+        self.ui.age_enabled.clicked.connect(
+            partial(self.handler, 'age_enabled', 'refresh_age'))
+        self.ui.age_number.valueChanged.connect(
+            partial(self.handler, 'age_number', 'refresh_age'))
+        self.ui.age_unit.currentIndexChanged.connect(
+            partial(self.handler, 'age_unit', 'refresh_age'))
+        self.ui.age_type.currentIndexChanged.connect(
+            partial(self.handler, 'age_type', 'refresh_age'))
+        self.ui.age_exclude.textChanged.connect(
+            partial(self.handler, 'age_exclude', 'refresh_age'))
+        self.ui.age_include.textChanged.connect(
+            partial(self.handler, 'age_include', 'refresh_age'))
+
         # Rename Package
         self.ui.name_template.textChanged.connect(
             partial(self.handler, 'name_template', 'package_rename'))
@@ -1197,6 +1211,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.data.prepare_tables()
                 self.show_all()
 
+        if group == 'refresh_age':
+            if self.data:
+                self.data.prepare_all_columns()
+                self.data.prepare_tables()
+                self.show_all()
+
         if group == 'refresh_vendor':
             if self.data:
 
@@ -1582,9 +1602,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 all_items = [obj.itemText(i) for i in range(obj.count())]
                 # get current index from combobox
                 index = int(obj.currentIndex())
+                text = str(obj.currentText())
                 self.settings.update({name: {
                                             'category': 'combobox',
-                                            'value': index,
+                                            'value': text,
                                             'all_items': all_items}})
             elif isinstance(obj, QtWidgets.QLineEdit):
                 value = obj.displayText()
@@ -1699,11 +1720,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 try:
                     obj.addItems(one_setting['all_items'])
                     _index = one_setting['value']
-                    if _index <= -1 or _index > len(one_setting['all_items']):
-                        pass
+                    if _index.isdigit():
+                        if _index <= -1 or _index > len(one_setting['all_items']):
+                            pass
+                        else:
+                            # preselect a combobox value by index
+                            obj.setCurrentIndex(_index)
                     else:
-                        # preselect a combobox value by index
-                        obj.setCurrentIndex(_index)
+                        obj.setCurrentText(_index)
                 except:
                     logging.error("Error restoring QComboBox {}".format(
                         str(obj.objectName())))

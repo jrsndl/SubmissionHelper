@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1619</width>
+    <width>1109</width>
     <height>600</height>
    </rect>
   </property>
@@ -747,9 +747,9 @@ QCalendarWidget
          <attribute name="title">
           <string>Package</string>
          </attribute>
-         <layout class="QHBoxLayout" name="horizontalLayout_50">
+         <layout class="QVBoxLayout" name="verticalLayout_129">
           <item>
-           <layout class="QVBoxLayout" name="verticalLayout_33">
+           <layout class="QVBoxLayout" name="verticalLayout_128">
             <item>
              <widget class="QGroupBox" name="groupBox">
               <property name="sizePolicy">
@@ -790,6 +790,9 @@ p, li { white-space: pre-wrap; }
                <bool>false</bool>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_7">
+               <property name="bottomMargin">
+                <number>5</number>
+               </property>
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_4">
                  <item>
@@ -917,6 +920,282 @@ p, li { white-space: pre-wrap; }
              </widget>
             </item>
             <item>
+             <widget class="QGroupBox" name="groupBox_5">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="title">
+               <string>File Age:</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_33">
+               <property name="topMargin">
+                <number>9</number>
+               </property>
+               <property name="bottomMargin">
+                <number>5</number>
+               </property>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_220">
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_191">
+                   <item>
+                    <widget class="QCheckBox" name="age_enabled">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>80</width>
+                       <height>25</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Only Last</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QSpinBox" name="age_number">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>40</width>
+                       <height>25</height>
+                      </size>
+                     </property>
+                     <property name="maximum">
+                      <number>999</number>
+                     </property>
+                     <property name="value">
+                      <number>4</number>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QComboBox" name="age_unit">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>100</width>
+                       <height>25</height>
+                      </size>
+                     </property>
+                     <item>
+                      <property name="text">
+                       <string>minutes</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>hours</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>days</string>
+                      </property>
+                     </item>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_50">
+                   <item>
+                    <widget class="QLabel" name="label_17">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>70</width>
+                       <height>25</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Use Time:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QComboBox" name="age_type">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>100</width>
+                       <height>25</height>
+                      </size>
+                     </property>
+                     <item>
+                      <property name="text">
+                       <string>modified</string>
+                      </property>
+                     </item>
+                     <item>
+                      <property name="text">
+                       <string>created</string>
+                      </property>
+                     </item>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_210">
+                   <item>
+                    <widget class="QLabel" name="label_330">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>60</width>
+                       <height>25</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>90</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Exclude:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="age_exclude">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>80</width>
+                       <height>25</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>150</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="readOnly">
+                      <bool>false</bool>
+                     </property>
+                     <property name="placeholderText">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_219">
+                   <item>
+                    <widget class="QLabel" name="label_331">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>90</width>
+                       <height>25</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>90</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>Include Only:</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLineEdit" name="age_include">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="minimumSize">
+                      <size>
+                       <width>80</width>
+                       <height>25</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>150</width>
+                       <height>16777215</height>
+                      </size>
+                     </property>
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
+                     <property name="text">
+                      <string/>
+                     </property>
+                     <property name="readOnly">
+                      <bool>false</bool>
+                     </property>
+                     <property name="placeholderText">
+                      <string/>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
              <widget class="QGroupBox" name="groupBox_8">
               <property name="sizePolicy">
                <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
@@ -934,6 +1213,12 @@ p, li { white-space: pre-wrap; }
                <string>Package Name:</string>
               </property>
               <layout class="QHBoxLayout" name="horizontalLayout_92">
+               <property name="topMargin">
+                <number>9</number>
+               </property>
+               <property name="bottomMargin">
+                <number>5</number>
+               </property>
                <item>
                 <layout class="QVBoxLayout" name="verticalLayout_53">
                  <item>
@@ -1445,19 +1730,6 @@ p, li { white-space: pre-wrap; }
               </layout>
              </widget>
             </item>
-            <item>
-             <spacer name="verticalSpacer">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>20</width>
-                <height>40</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
            </layout>
           </item>
          </layout>
@@ -1498,7 +1770,7 @@ p, li { white-space: pre-wrap; }
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>1570</width>
+               <width>1486</width>
                <height>1070</height>
               </rect>
              </property>
@@ -12540,7 +12812,7 @@ p, li { white-space: pre-wrap; }
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>1570</width>
+               <width>1486</width>
                <height>469</height>
               </rect>
              </property>
@@ -15036,7 +15308,7 @@ p, li { white-space: pre-wrap; }
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>1575</width>
+                 <width>1491</width>
                  <height>299</height>
                 </rect>
                </property>
@@ -15616,7 +15888,7 @@ Vendor = AmazingVFX</string>
                 <rect>
                  <x>0</x>
                  <y>0</y>
-                 <width>1568</width>
+                 <width>1484</width>
                  <height>2030</height>
                 </rect>
                </property>

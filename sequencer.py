@@ -330,6 +330,11 @@ class Sequencer(object):
             self.ui.statusBar.showMessage("Calculating file sizes", 3000)
         self.get_file_sizes()
 
+        # get file age
+        if not self.headless:
+            self.ui.statusBar.showMessage("Calculating file ages", 3000)
+        self.get_file_age()
+
         # sidecar files
         if not self.headless:
             self.ui.statusBar.showMessage("Processing Sidecar files", 3000)
@@ -1034,6 +1039,106 @@ class Sequencer(object):
                 relative_folder = relative_folder.lstrip('/')
                 one_item['relative_path'] = relative_path
                 one_item['relative_folder'] = relative_folder
+
+    def get_file_age(self):
+
+        def get_age(file_path):
+            """
+            Retrieve the file age.
+
+            :param file_path: Full path to the file.
+            :return: A dictionary containing file age details:
+                - age_created_minutes: Age of the file in minutes since creation.
+                - age_created_hours: Age of the file in hours since creation.
+                - age_created_days: Age of the file in days since creation.
+                - age_modified_minutes: Age of the file in minutes since the last modification.
+                - age_modified_hours: Age of the file in hours since the last modification.
+                - age_modified_days: Age of the file in days since the last modification.
+            """
+
+            try:
+                file_stats = os.stat(file_path)
+                current_time = time.time()
+                precision = 2
+
+                # Calculate creation time differences
+                created_time = file_stats.st_ctime
+                age_created_seconds = current_time - created_time
+                age_created_minutes = round(age_created_seconds / 60, precision)
+                age_created_hours = round(age_created_minutes / 60, precision)
+                age_created_days = round(age_created_hours / 24, precision)
+
+                # Calculate modified time differences
+                modified_time = file_stats.st_mtime
+                age_modified_seconds = current_time - modified_time
+                age_modified_minutes = round(age_modified_seconds / 60, precision)
+                age_modified_hours = round(age_modified_minutes / 60, precision)
+                age_modified_days = round(age_modified_hours / 24, precision)
+
+                return {
+                    'age_minutes_created': age_created_minutes,
+                    'age_hours_created': age_created_hours,
+                    'age_days_created': age_created_days,
+                    'age_minutes_modified': age_modified_minutes,
+                    'age_hours_modified': age_modified_hours,
+                    'age_days_modified': age_modified_days,
+                    'age_file_youngest': file_path,
+                    'age_error': None
+                }
+
+            except Exception as e:
+                return {
+                    'age_minutes_created': 0,
+                    'age_hours_created': 0,
+                    'age_days_created': 0,
+                    'age_minutes_modified': 0,
+                    'age_hours_modified': 0,
+                    'age_days_modified': 0,
+                    'age_file_youngest': 0,
+                    'age_error': str(e)
+                }
+
+        def is_younger(age_old, age_new, mode="auto"):
+
+            if age_old['age_error'] is not None or age_new['age_error'] is not None:
+                # Can't compare error
+                return False
+
+            if mode == "auto":
+                if age_old['age_minutes_created'] < age_old['age_minutes_modified']:
+                    mode = "modified"
+                else:
+                    mode = "created"
+
+            if mode == "created":
+                return age_new['age_minutes_modified'] < age_old['age_minutes_modified']
+            elif mode == "modified":
+                return age_new['age_minutes_modified'] < age_old['age_minutes_modified']
+
+        if self.merged_list is not None and len(self.merged_list) > 0:
+            for one_item in self.merged_list:
+                if one_item['category'] == 'sequence':
+                    youngest = {}
+                    for one_frame in range(one_item['start_number'],
+                                           one_item['end_number'] + 1):
+                        one_file = one_item['path_prs'] + '/' + one_item[
+                            'clean_name'] + str(one_frame).zfill(
+                            one_item['padding']) + '.' + one_item['extension']
+
+                        age_data = get_age(one_file)
+                        if youngest == {}:
+                            youngest = age_data
+                        # find youngest file in the sequence
+                        if is_younger(youngest, age_data):
+                            youngest = age_data
+                    one_item['file_age'] = youngest
+                else:
+                    one_item['file_age'] = get_age(one_item['path'])
+
+            for one_item in self.merged_list:
+                age_dict = one_item.get('file_age')
+                if age_dict is not None:
+                    one_item.update(age_dict)
 
     def get_file_sizes(self):
 
@@ -2416,11 +2521,71 @@ class Sequencer(object):
                 _merge_order = str(self.settings['prefs_merge_order']['value'])
             if self.settings['prefs_merge_hide']['value'] is not None:
                 _merge_hide = bool(self.settings['prefs_merge_hide']['value'])
+
+            if self.settings['age_enabled']['value'] is not None:
+                _age_enabled = bool(self.settings['age_enabled']['value'])
+            if self.settings['age_number']['value'] is not None:
+                _age_number = float(self.settings['age_number']['value'])
+            if self.settings['age_unit']['value'] is not None:
+                _age_unit = str(self.settings['age_unit']['value'])
+            if self.settings['age_type']['value'] is not None:
+                _age_type = str(self.settings['age_type']['value'])
+            if self.settings['age_exclude']['value'] is not None:
+                _age_exclude = self.settings['age_exclude']['value']
+                if _age_exclude == '':
+                    age_exclude = []
+                else:
+                    age_exclude = _age_exclude.strip().split(' ')
+            if self.settings['age_include']['value'] is not None:
+                _age_include = self.settings['age_include']['value']
+                if _age_include == '':
+                    age_include = []
+                else:
+                    age_include = _age_include.strip().split(' ')
         else:
             return
 
         sub_merges = {}
         if self.merged_list and len(self.merged_list) > 0:
+
+            # reset hiding items
+            for one_item in self.merged_list:
+                one_item['hide_sub'] = False
+                one_item['hide_log'] = False
+                one_item['hide_txt'] = False
+
+            # hiding items by age
+            if _age_enabled:
+                age_key = 'age_' + _age_unit + '_'  + _age_type
+                for one_item in self.merged_list:
+                    item_age = one_item.get(age_key, 0)
+                    hide_item = False
+                    if item_age > _age_number:
+                        hide_item = True
+                        if len(age_exclude) == 0 and len(age_include) == 0:
+                            hide_item = True
+                        else:
+
+                            includes = 0
+                            for one in age_include:
+                                if one in one_item['full_path']:
+                                    includes += 1
+                            if (len(age_include) > 0 and includes == len(age_include)) or len(age_include) == 0:
+                                hide_item = True
+                            else:
+                                # not hiding current item, it fits include only condition
+                                hide_item = False
+
+                            for one in age_exclude:
+                                if one in one_item['full_path']:
+                                    # not hiding current item, it fits Exclude condition
+                                    hide_item = False
+                                    break
+                        if hide_item:
+                            one_item['hide_sub'] = True
+                            one_item['hide_log'] = True
+                            one_item['hide_txt'] = True
+
             for one_item in self.merged_list:
                 one_item.update(self.static_keywords)
                 # build one row, if not hidden

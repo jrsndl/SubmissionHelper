@@ -166,3 +166,5 @@ vfx-transcode/oiio/zstd.dll
 vfx-transcode/vfx-transcode.exe
 
 default.json
+
+dist.zip
