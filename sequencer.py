@@ -332,7 +332,7 @@ class Sequencer(object):
 
         # get file age
         if not self.headless:
-            self.ui.statusBar.showMessage("Calculating file ages", 3000)
+            self.ui.statusBar.showMessage("Calculating file age", 3000)
         self.get_file_age()
 
         # sidecar files
@@ -1871,6 +1871,28 @@ class Sequencer(object):
                     counter_step = int(self.settings['prefs_counter_step']['value'])
                 if self.settings['prefs_counter_zeroes']['value']:
                     counter_zeroes = int(self.settings['prefs_counter_zeroes']['value'])
+
+                # age
+                if self.settings['age_enabled']['value'] is not None:
+                    _age_enabled = bool(self.settings['age_enabled']['value'])
+                if self.settings['age_number']['value'] is not None:
+                    _age_number = float(self.settings['age_number']['value'])
+                if self.settings['age_unit']['value'] is not None:
+                    _age_unit = str(self.settings['age_unit']['value'])
+                if self.settings['age_type']['value'] is not None:
+                    _age_type = str(self.settings['age_type']['value'])
+                if self.settings['age_exclude']['value'] is not None:
+                    _age_exclude = self.settings['age_exclude']['value']
+                    if _age_exclude == '':
+                        age_exclude = []
+                    else:
+                        age_exclude = _age_exclude.strip().split(' ')
+                if self.settings['age_include']['value'] is not None:
+                    _age_include = self.settings['age_include']['value']
+                    if _age_include == '':
+                        age_include = []
+                    else:
+                        age_include = _age_include.strip().split(' ')
         except:
             pass
 
@@ -1934,6 +1956,34 @@ class Sequencer(object):
                 for one_excluded in txt_exclude_list:
                     if one_excluded in one_item['path']:
                         one_item['hide_txt'] = True
+
+                # hide by AGE, for submission Only
+                if _age_enabled and not one_item['hide_sub']:
+                    age_key = 'age_' + _age_unit + '_' + _age_type
+                    item_age = one_item.get(age_key, 0)
+                    hide_item = False
+                    if item_age > _age_number:
+                        hide_item = True
+                        if len(age_exclude) == 0 and len(
+                                age_include) == 0:
+                            hide_item = True
+                        else:
+                            includes = False
+                            for one in age_include:
+                                if one in one_item['full_path']:
+                                    includes = True
+                                    break
+                            if len(age_include) > 0 and includes or len(age_include) == 0:
+                                hide_item = True
+
+                            for one in age_exclude:
+                                if one in one_item['full_path']:
+                                    # not hiding current item, it fits Exclude
+                                    # condition, even if it fits include only
+                                    hide_item = False
+                                    break
+                        if hide_item:
+                            one_item['hide_sub'] = True
 
                 # add counter to the items that are not hidden
                 _frames = int(one_item.get('meta_duration_frames', 0))
@@ -2521,70 +2571,11 @@ class Sequencer(object):
                 _merge_order = str(self.settings['prefs_merge_order']['value'])
             if self.settings['prefs_merge_hide']['value'] is not None:
                 _merge_hide = bool(self.settings['prefs_merge_hide']['value'])
-
-            if self.settings['age_enabled']['value'] is not None:
-                _age_enabled = bool(self.settings['age_enabled']['value'])
-            if self.settings['age_number']['value'] is not None:
-                _age_number = float(self.settings['age_number']['value'])
-            if self.settings['age_unit']['value'] is not None:
-                _age_unit = str(self.settings['age_unit']['value'])
-            if self.settings['age_type']['value'] is not None:
-                _age_type = str(self.settings['age_type']['value'])
-            if self.settings['age_exclude']['value'] is not None:
-                _age_exclude = self.settings['age_exclude']['value']
-                if _age_exclude == '':
-                    age_exclude = []
-                else:
-                    age_exclude = _age_exclude.strip().split(' ')
-            if self.settings['age_include']['value'] is not None:
-                _age_include = self.settings['age_include']['value']
-                if _age_include == '':
-                    age_include = []
-                else:
-                    age_include = _age_include.strip().split(' ')
         else:
             return
 
         sub_merges = {}
         if self.merged_list and len(self.merged_list) > 0:
-
-            # reset hiding items
-            for one_item in self.merged_list:
-                one_item['hide_sub'] = False
-                one_item['hide_log'] = False
-                one_item['hide_txt'] = False
-
-            # hiding items by age
-            if _age_enabled:
-                age_key = 'age_' + _age_unit + '_'  + _age_type
-                for one_item in self.merged_list:
-                    item_age = one_item.get(age_key, 0)
-                    hide_item = False
-                    if item_age > _age_number:
-                        hide_item = True
-                        if len(age_exclude) == 0 and len(age_include) == 0:
-                            hide_item = True
-                        else:
-
-                            includes = 0
-                            for one in age_include:
-                                if one in one_item['full_path']:
-                                    includes += 1
-                            if (len(age_include) > 0 and includes == len(age_include)) or len(age_include) == 0:
-                                hide_item = True
-                            else:
-                                # not hiding current item, it fits include only condition
-                                hide_item = False
-
-                            for one in age_exclude:
-                                if one in one_item['full_path']:
-                                    # not hiding current item, it fits Exclude condition
-                                    hide_item = False
-                                    break
-                        if hide_item:
-                            one_item['hide_sub'] = True
-                            one_item['hide_log'] = True
-                            one_item['hide_txt'] = True
 
             for one_item in self.merged_list:
                 one_item.update(self.static_keywords)

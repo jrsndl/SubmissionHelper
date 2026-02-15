@@ -105,7 +105,7 @@ class AyonShotlist(object):
             if self.output_folder != "":
                 os.makedirs(os.path.dirname(self.output_folder), exist_ok=True)
             else:
-                self.log.error("Ayon Shotlist output folder is empty")
+                self.log.warning("Ayon Shotlist output folder is empty")
                 self.do_output = False
         except OSError as e:
             self.log.error(f"Error creating Ayon Shotlist output folder {self.output_folder} : {e}")
@@ -268,7 +268,7 @@ class AyonShotlist(object):
                 "Folder Path": asset["path"],
                 "Folder Label": asset["label"],
                 "Folder Status": asset["label"],
-                "Links": " ".join(link_list)
+                "Links": " ".join([link["name"] for link in link_list])
             }
             attrs = self.attribs_to_columns(asset["attrib"])
             shot_clean = {**base, **attrs}

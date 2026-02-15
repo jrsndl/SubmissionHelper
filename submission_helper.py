@@ -128,17 +128,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         # File Age
         self.ui.age_enabled.clicked.connect(
-            partial(self.handler, 'age_enabled', 'refresh_age'))
+            partial(self.handler, 'age_enabled', 'refresh_spreadsheets_age'))
         self.ui.age_number.valueChanged.connect(
-            partial(self.handler, 'age_number', 'refresh_age'))
+            partial(self.handler, 'age_number', 'refresh_spreadsheets_age'))
         self.ui.age_unit.currentIndexChanged.connect(
-            partial(self.handler, 'age_unit', 'refresh_age'))
+            partial(self.handler, 'age_unit', 'refresh_spreadsheets_age'))
         self.ui.age_type.currentIndexChanged.connect(
-            partial(self.handler, 'age_type', 'refresh_age'))
+            partial(self.handler, 'age_type', 'refresh_spreadsheets_age'))
         self.ui.age_exclude.textChanged.connect(
-            partial(self.handler, 'age_exclude', 'refresh_age'))
+            partial(self.handler, 'age_exclude', 'refresh_spreadsheets_age'))
         self.ui.age_include.textChanged.connect(
-            partial(self.handler, 'age_include', 'refresh_age'))
+            partial(self.handler, 'age_include', 'refresh_spreadsheets_age'))
 
         # Rename Package
         self.ui.name_template.textChanged.connect(
@@ -1143,6 +1143,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.data.transform_data()
                 self.show_all()
 
+        if group == 'refresh_spreadsheets_age':
+            if self.data:
+                self.data.filter_items_add_counters()
+                self.data.prepare_all_columns()
+                self.data.prepare_tables()
+                self.show_all()
+
+        if group == 'refresh_age':
+            if self.data:
+                self.data.prepare_all_columns()
+                self.data.prepare_tables()
+                self.show_all()
+
         if group == 'refresh_text':
             if self.data:
                 self.data.transform_data()
@@ -1206,12 +1219,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.show_all()
 
         if group == 'refresh_merge':
-            if self.data:
-                self.data.prepare_all_columns()
-                self.data.prepare_tables()
-                self.show_all()
-
-        if group == 'refresh_age':
             if self.data:
                 self.data.prepare_all_columns()
                 self.data.prepare_tables()
