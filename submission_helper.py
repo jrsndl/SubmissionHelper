@@ -1967,70 +1967,151 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         # prevents second call
         sys.exit()
 
-def get_args():
+CLI_ACTIONS = "ftdgsrcpPax"
 
-    parser = argparse.ArgumentParser(description="Submission Helper lives to help.")
+CLI_DESCRIPTION = """\
+Submission Helper - check, rename and document vfx packages.
+
+Without -i/-p the GUI starts. With both -i and -p it runs headless:
+the preset is loaded, the --actions are run in order, and the app exits.
+"""
+
+CLI_EPILOG = """\
+actions (letters for --actions, run left to right):
+  f  read files      scan the package folder, read metadata, csv/ayon/ftrack data
+  t  transform data  apply parsing, columns, naming and checks
+                     (most actions below need f and t to run first)
+  d  reload          same as f + t, use after r (rename) or c (convert)
+  g  go              same as the Go button: export submission, drive log and
+                     text as set in the preset. Also copies sidecars ("Copy
+                     with Go"), runs converts ("Convert on Go") and renames
+                     the package folder ("Auto Rename") when those are on.
+                     Nothing is exported without g.
+  s  sidecar files   copy sidecar files to their destinations
+  r  rename          rename / move files using the Rename tab rules
+  c  convert         run the Convert tab commands
+  p  publish ayon    export submission csv and ingest it to Ayon locally
+  P  publish farm    same as p, submitted as a Deadline job
+  a  ayon shotlist   read, filter and write the Ayon shot list (Ayon tab)
+  x  ftrack list     write ftrack_shotlist.csv next to the package
+
+examples:
+  # GUI
+  python submission_helper.py
+
+  # check a package and export spreadsheets with a preset file
+  python submission_helper.py -i D:/out/pkg_v001 -p D:/presets/clientX.json
+
+  # same, preset by name from the presets folder
+  python submission_helper.py -i D:/out/pkg_v001 -p clientX
+
+  # rename, reload, copy sidecars, export
+  python submission_helper.py -i D:/out/pkg_v001 -p clientX --actions ftrdsg
+
+  # override preset values for this run only
+  python submission_helper.py -i D:/out/pkg_v001 -p clientX --settings name_rename_auto=false,prefs_counter_start=5
+
+  (with the built exe, use submission_helper.exe instead of python submission_helper.py)
+
+exit codes:
+  0  finished
+  1  input or preset not found, or an action crashed
+     (many problems are only logged, check the log output)
+  2  bad arguments (only one of -i/-p, unknown action letter)
+"""
+
+
+def get_args(argv=None):
+
+    parser = argparse.ArgumentParser(
+        prog="submission_helper",
+        description=CLI_DESCRIPTION,
+        epilog=CLI_EPILOG,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument(
-        '-i',
-        help="The input folder or input csv file. Required for headless mode.",
+        '-i', '--input',
+        dest='i',
+        metavar='PATH',
+        help="Package folder, or a csv file inside it (with Vendor tab "
+             "'Auto Detect' on in the preset, the csv is used as the vendor csv). "
+             "Required for headless mode.",
         type=str,
         required=False
     )
     parser.add_argument(
-        '-p',
-        help="The preset json to be used. Required for headless mode.",
+        '-p', '--preset',
+        dest='p',
+        metavar='PRESET',
+        help="Preset json file, or the name of a saved preset (without "
+             ".json). Required for headless mode.",
         type=str,
         required=False
     )
     parser.add_argument(
         '--actions',
-        help="Run actions like"
-        "copy (s)idecar files"
-        "(r)ename files"
-        "run (c)onvert"
-        "reloa(d)"
-        "(g)o"
-        "read (f)iles"
-        "(t)ransform data"
-        "Each letter runs the action, Example:"
-        "--action ftrftsg"
-        "will rename files, reload them, copy sidecar files, and presses go. "
-        "Exports (spreadsheets, text) are only written by (g)o, so include g to export.",
+        metavar='LETTERS',
+        help="Headless actions to run, in order. See the list below. "
+             "Default: %(default)s",
         type=str,
         default="ftg"
     )
     parser.add_argument(
         '--settings',
-        help="Expects one or more string pairs in form key1=value1,key2=value2"
-             "Overrides preset values. Example:"
-             "--settings name_rename_auto=true,name_from_folder=true,name_from_template=false",
+        metavar='KEY=VALUE[,KEY=VALUE...]',
+        help="Override preset values for this run. Keys are the setting names "
+             "used in the preset json. Checkboxes take true/false (1/0, yes/no, "
+             "on/off), number fields take integers, text fields take the text "
+             "as is. Values can't contain commas.",
         type=str,
         default=""
     )
-    return parser.parse_args()
+    return parser.parse_args(argv)
 
 # log
 logging.basicConfig(level="INFO")
 log = logging.getLogger("Submission Helper")
+
+def check_cli_args(args):
+    """
+    Validate command line arguments.
+    :param args: dict from vars(get_args())
+    :return: (headless, exit_code) - exit_code is None when the app should start
+    """
+    input_path = args.get('i')
+    input_preset = args.get('p')
+    if input_path is None and input_preset is None:
+        return False, None
+
+    # headless was requested, fail loudly instead of silently opening the gui
+    if input_path is None or input_preset is None:
+        log.error("Headless mode needs both -i and -p.")
+        return True, 2
+    bad = sorted(set(args.get('actions') or '') - set(CLI_ACTIONS))
+    if bad:
+        log.error(f"Unknown action letter(s) {', '.join(bad)} in --actions '{args['actions']}'. "
+                  f"Valid: {CLI_ACTIONS}")
+        return True, 2
+    if not os.path.exists(input_path):
+        log.error(f"Input path '{input_path}' does not exist.")
+        return True, 1
+    if not os.path.isfile(input_preset):
+        # allow a preset name, resolved like the gui's preset list
+        _probe = Settings(input_preset, args)
+        if _probe.current_settings_name != input_preset:
+            log.error(f"Preset '{input_preset}' not found (not a file, not a saved preset name).")
+            return True, 1
+    return True, None
+
 
 if __name__ == "__main__":
     args = vars(get_args())
     input_path = args['i']
     input_preset = args['p']
 
-    headless = False
-    if input_path is not None or input_preset is not None:
-        # headless was requested, fail loudly instead of silently opening the gui
-        if input_path is None or input_preset is None:
-            log.error("Headless mode needs both -i and -p.")
-            sys.exit(2)
-        if not os.path.exists(input_path):
-            log.error(f"Input path '{input_path}' does not exist.")
-            sys.exit(1)
-        if not os.path.isfile(input_preset):
-            log.error(f"Preset file '{input_preset}' does not exist.")
-            sys.exit(1)
-        headless = True
+    headless, exit_code = check_cli_args(args)
+    if exit_code is not None:
+        sys.exit(exit_code)
+    if headless:
         # allow running on linux render nodes / farm without a display
         if sys.platform.startswith('linux') and not (os.environ.get('DISPLAY') or os.environ.get('WAYLAND_DISPLAY')):
             os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")

@@ -60,6 +60,120 @@ Submission Helper assumes you put the file(s) in one folder - the Package Folder
 4. Set the export options in Exports and text tabs
 5. Press Go to export
 
+## Installation
+
+Submission Helper needs Python 3.10 (PySide2 has no wheels for newer Python).
+With [uv](https://docs.astral.sh/uv/):
+
+```powershell
+uv venv --python 3.10
+uv pip install -r requirements.txt
+uv run python submission_helper.py
+```
+
+ffprobe and oiiotool are external tools. They are found on `PATH`, through
+`install.json`, or through the `SH_FFPROBE` / `SH_OIIOTOOL` / `SH_FFMPEG`
+environment variables. oiiotool for Windows is included in `oiio/win`.
+
+## Command line
+
+Without arguments Submission Helper opens the GUI. Given both `-i` and `-p`
+it runs **headless**: it loads the preset, runs the `--actions` in order,
+writes its log to the console and exits. This is meant for automation, for
+example a farm job or a watch-folder script.
+
+```
+python submission_helper.py [-h] [-i PATH] [-p PRESET] [--actions LETTERS]
+                            [--settings KEY=VALUE[,KEY=VALUE...]]
+```
+
+With the built executable use `submission_helper.exe` instead of
+`python submission_helper.py`. Run with `-h` to print the help.
+
+| Option | Meaning |
+|---|---|
+| `-i`, `--input PATH` | Package folder, or a csv file inside it. With *Vendor → Auto Detect* on in the preset, the csv is used as the vendor csv. |
+| `-p`, `--preset PRESET` | Preset json file, or the name of a saved preset (without `.json`), looked up in the same places as the GUI preset list. |
+| `--actions LETTERS` | Actions to run, left to right. Default `ftg`. |
+| `--settings KEY=VALUE,...` | Override preset values for this run only. |
+
+### Actions
+
+| Letter | Action | What it does |
+|---|---|---|
+| `f` | Read files | Scan the package folder, read metadata and csv / Ayon / ftrack data |
+| `t` | Transform data | Apply parsing, spreadsheet columns, naming and checks |
+| `d` | Reload | Same as `f` + `t`. Use it after `r` or `c`, which change files on disk |
+| `g` | Go | Same as the **Go** button: export submission, drive log and text as set in the preset. Also copies sidecar files (*Copy with Go*), runs converts (*Convert on Go*) and renames the package folder (*Auto Rename*) when those are on |
+| `s` | Sidecar files | Copy sidecar files to their destinations |
+| `r` | Rename | Rename / move files using the Rename tab rules |
+| `c` | Convert | Run the Convert tab commands |
+| `p` | Publish to Ayon | Export the submission csv and ingest it to Ayon locally |
+| `P` | Publish to Ayon (farm) | Same as `p`, submitted as a Deadline job |
+| `a` | Ayon shot list | Read, filter and write the Ayon shot list (Ayon tab) |
+| `x` | ftrack shot list | Write `ftrack_shotlist.csv` next to the package |
+
+Most actions work on data prepared by `f` and `t`, so start with `ft`.
+Spreadsheets and text are **only** exported by `g`; a run without `g`
+exports nothing (useful for rename-only or publish-only jobs).
+
+Typical sequences:
+
+| `--actions` | Result |
+|---|---|
+| `ftg` | Check the package and export (default) |
+| `ftrdg` | Rename files, re-read them, export |
+| `ftrdsg` | Rename, re-read, copy sidecars, export |
+| `ftp` / `ftP` | Publish to Ayon locally / on the farm (writes only the submission csv it ingests) |
+| `a` | Export the Ayon shot list only |
+
+### Overriding preset values
+
+`--settings` takes comma separated `key=value` pairs. Keys are the setting
+names used in the preset json (open a saved preset to see them, e.g.
+`name_rename_auto`, `prefs_counter_start`). Values are converted by the type
+of the setting:
+
+* checkboxes and radio buttons: `true` / `false` (also `1`/`0`, `yes`/`no`, `on`/`off`)
+* number fields: integers
+* text fields: the text as is
+
+Unknown keys and values that don't fit the type are skipped with a warning.
+Values can't contain commas.
+
+### Examples
+
+```powershell
+# check a package and export, preset given as a file
+python submission_helper.py -i D:/out/pkg_v001 -p D:/presets/clientX.json
+
+# the same with a saved preset name
+python submission_helper.py -i D:/out/pkg_v001 -p clientX
+
+# rename, re-read, copy sidecars, export
+python submission_helper.py -i D:/out/pkg_v001 -p clientX --actions ftrdsg
+
+# export without renaming the package folder, start the counter at 5
+python submission_helper.py -i D:/out/pkg_v001 -p clientX --settings name_rename_auto=false,prefs_counter_start=5
+
+# vendor delivery: the csv sets the package folder and is used as vendor csv
+python submission_helper.py -i D:/in/vendor_0412/delivery.csv -p ingest_vendor
+```
+
+### Exit codes
+
+| Code | Meaning |
+|---|---|
+| `0` | Finished |
+| `1` | Input or preset not found, or an action crashed |
+| `2` | Bad arguments: only one of `-i` / `-p`, or an unknown action letter |
+
+Many problems (a file that can't be read, a failed export) are logged but
+don't stop the run, so check the log output, not only the exit code.
+
+On Linux without a display (render nodes), headless mode switches Qt to
+the `offscreen` platform automatically.
+
 ## Keywords
 
 Many SH operations produce or link keywords to files in the package. Use the Inspector tab to check and search keywords.
