@@ -282,12 +282,20 @@ class Sequencer(object):
             if self.settings_inst.get('deadline') and  self.settings_inst.get('deadline') != "" and os.path.exists(self.settings_inst['deadline']):
                 together['deadline'] = self.settings_inst['deadline']
 
-            if self.settings_inst.get('ftrack_server_url') and  self.settings_inst.get('ftrack_server_url') != "":
-                together['FTRACK_SERVER'] = self.settings_inst['ftrack_server_url']
-            if self.settings_inst.get('ftrack_api_key') and  self.settings_inst.get('ftrack_api_key') != "":
-                together['FTRACK_API_KEY'] = self.settings_inst['ftrack_api_key']
-            if self.settings_inst.get('ftrack_api_user') and  self.settings_inst.get('ftrack_api_user') != "":
-                together['FTRACK_API_USER'] = self.settings_inst['ftrack_api_user']
+            # ftrack: current names, then the names used until mid 2025
+            # (server_url / api_key / api_user), still in older install.json files
+            legacy_used = []
+            for env_key, name, legacy in (('FTRACK_SERVER', 'ftrack_server_url', 'server_url'),
+                                          ('FTRACK_API_KEY', 'ftrack_api_key', 'api_key'),
+                                          ('FTRACK_API_USER', 'ftrack_api_user', 'api_user')):
+                if self.settings_inst.get(name):
+                    together[env_key] = self.settings_inst[name]
+                elif self.settings_inst.get(legacy):
+                    together[env_key] = self.settings_inst[legacy]
+                    legacy_used.append(f"{legacy} -> {name}")
+            if legacy_used:
+                self.log.debug("install.json uses old ftrack key names, consider renaming: "
+                               + ", ".join(legacy_used))
 
             if self.settings_inst.get('ayon_server_url') and  self.settings_inst.get('ayon_server_url') != "":
                 together['AYON_SERVER_URL'] = self.settings_inst['ayon_server_url']
@@ -4583,12 +4591,20 @@ class Sequencer(object):
         if self.merged_list is None:
             self.log.debug("Ftrack query skipped: no files")
             return
-        _validate = [self.ftrack.get('project'), self.ftrack.get('project_id'), self.ftrack.get('shot'),
-                     self.ftrack.get('task'), self.ftrack.get('session')]
-        if None in _validate:
+        if self.ftrack.get('session') is None:
+            # the connection problem was already logged by ftrack.open_session
+            self.log.debug("Ftrack query skipped: no ftrack session")
+            return
+        missing = [label for label, value in (("Project", self.ftrack.get('project')),
+                                              ("Shot", self.ftrack.get('shot')),
+                                              ("Task", self.ftrack.get('task')))
+                   if not value]
+        if self.ftrack.get('project') and self.ftrack.get('project_id') is None:
+            missing.append(f"project '{self.ftrack.get('project')}' not found in ftrack")
+        if missing:
             # refreshes run on every edit, warn once per loaded package
             if not getattr(self, '_warned_ftrack_incomplete', False):
-                self.log.warning("Ftrack query skipped: ftrack project, shot, task or session missing")
+                self.log.warning("Ftrack query skipped, set on the ftrack tab: " + ", ".join(missing))
                 self._warned_ftrack_incomplete = True
             return
 

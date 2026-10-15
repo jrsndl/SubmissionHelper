@@ -23,7 +23,7 @@
     "global_prefs_enabled": false,
     "global_prefs_path": "",
 
-    "_comment_ftrack": "ftrack connection.",
+    "_comment_ftrack": "ftrack connection. Older install.json files may use server_url / api_user / api_key, those still work.",
     "ftrack_server_url": "",
     "ftrack_api_user": "",
     "ftrack_api_key": "",
