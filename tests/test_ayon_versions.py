@@ -633,10 +633,22 @@ class MatchedVersionsBandingTest(unittest.TestCase):
         with mock.patch.object(sequencer.QtWidgets, 'QTableWidgetItem', side_effect=make_item), \
                 mock.patch.object(sequencer.QtGui, 'QColor', side_effect=lambda c: c):
             s.display_ayon_versions_table()
-        ncols = len(ayon_shotlist.MATCHED_VERSION_COLUMNS)
-        per_row = [colors[r * ncols][1] for r in range(5)]
+        cols = ayon_shotlist.MATCHED_VERSION_COLUMNS
+        ncols = len(cols)
+        path_col = cols.index('Folder Path')
+        version_col = cols.index('Version')
+        status_col = cols.index('Version Status')
+
+        def color(row, col):
+            return colors[row * ncols + col][1]
+        per_row = [color(r, path_col) for r in range(5)]
         self.assertEqual(per_row[0], per_row[1])           # /a
         self.assertNotEqual(per_row[1], per_row[2])        # /a -> /b
         self.assertEqual(per_row[2], '#3a3a3a')
-        self.assertEqual(per_row[3], 'darkgreen')          # preferred keeps its color
+        self.assertEqual(per_row[3], '#4d4d4d')            # preferred row: path keeps the folder shade
         self.assertEqual(per_row[4], '#4d4d4d')            # /c back to the first shade
+        # preferred mark only in the marked columns
+        self.assertEqual(color(3, version_col), 'darkgreen')
+        self.assertEqual(color(3, cols.index('Product')), 'darkgreen')
+        self.assertEqual(color(3, status_col), '#4d4d4d')
+        self.assertEqual(color(4, version_col), '#4d4d4d')

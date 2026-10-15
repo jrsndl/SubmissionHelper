@@ -3613,6 +3613,11 @@ class Sequencer(object):
                 rows = self.my_ayon.get_matched_versions(matched)
         self.ayon_matched_versions = rows
 
+    # Matched Versions columns that show the preferred (green) / file
+    # matched (teal) mark; the others keep the folder shade
+    AYON_MARKED_COLUMNS = ('Folder Name', 'Folder Type', 'Product', 'Product Type',
+                           'Version', 'Version Name')
+
     # prefix + this + column, e.g. {ayon_Matched Version}
     MATCHED_VERSION_KEY = "Matched "
 
@@ -3730,7 +3735,9 @@ class Sequencer(object):
                 if title in self.AYON_CAPPED_COLUMNS or shown != value:
                     itm.setToolTip(value)
                 # file matched (Match version): teal, preferred: green
-                color = '#1f6f78' if file_matched else ('darkgreen' if preferred else band_colors[band])
+                color = band_colors[band]
+                if title in self.AYON_MARKED_COLUMNS:
+                    color = '#1f6f78' if file_matched else ('darkgreen' if preferred else color)
                 itm.setBackground(QtGui.QColor(color))
                 table_ui.setItem(row, col, itm)
         self.fit_ayon_columns(table_ui, titles)
