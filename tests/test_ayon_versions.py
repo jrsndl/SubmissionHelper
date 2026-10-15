@@ -607,3 +607,36 @@ class TaskFilterTest(unittest.TestCase):
         got = self.visible(filter_tasktype=True, filter_tasktypes=['compositing'],
                            filter_assignee=True, filter_assignees=['bob'])
         self.assertEqual(got, ['compFinal'])
+
+
+class MatchedVersionsBandingTest(unittest.TestCase):
+    def test_same_folder_same_shade(self):
+        import sequencer
+        s = sequencer.Sequencer.__new__(sequencer.Sequencer)
+        s.ui = mock.Mock()
+        s.ui.ayon_tables_tab.indexOf.return_value = 1
+        s.fit_ayon_columns = mock.Mock()
+        s.single_line_rows = mock.Mock()
+        s.ayon_matched_versions = [
+            {'Folder Path': '/a', 'Version': '1'}, {'Folder Path': '/a', 'Version': '2'},
+            {'Folder Path': '/b', 'Version': '1'},
+            {'Folder Path': '/c', 'Version': '1', 'Preferred': 'yes'}, {'Folder Path': '/c', 'Version': '2'},
+        ]
+        colors = []
+        items = []
+
+        def make_item(text):
+            itm = mock.Mock()
+            itm.setBackground.side_effect = lambda c: colors.append((len(items), c))
+            items.append(itm)
+            return itm
+        with mock.patch.object(sequencer.QtWidgets, 'QTableWidgetItem', side_effect=make_item), \
+                mock.patch.object(sequencer.QtGui, 'QColor', side_effect=lambda c: c):
+            s.display_ayon_versions_table()
+        ncols = len(ayon_shotlist.MATCHED_VERSION_COLUMNS)
+        per_row = [colors[r * ncols][1] for r in range(5)]
+        self.assertEqual(per_row[0], per_row[1])           # /a
+        self.assertNotEqual(per_row[1], per_row[2])        # /a -> /b
+        self.assertEqual(per_row[2], '#3a3a3a')
+        self.assertEqual(per_row[3], 'darkgreen')          # preferred keeps its color
+        self.assertEqual(per_row[4], '#4d4d4d')            # /c back to the first shade

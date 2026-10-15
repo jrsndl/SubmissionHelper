@@ -3712,9 +3712,17 @@ class Sequencer(object):
         table_ui.setColumnCount(len(titles))
         table_ui.setHorizontalHeaderLabels(titles)
         table_ui.setRowCount(len(rows))
+        # rows of the same folder share a shade, alternating per folder
+        band_colors = ('#4d4d4d', '#3a3a3a')
+        band = 0
+        last_folder = None
         for row, line in enumerate(rows):
             preferred = bool(line.get('Preferred'))
             file_matched = bool(line.get('Matched Files'))
+            folder = line.get('Folder Path')
+            if last_folder is not None and folder != last_folder:
+                band = 1 - band
+            last_folder = folder
             for col, title in enumerate(titles):
                 value = str(line.get(title) or '')
                 shown = ' '.join(value.split()) if '\n' in value else value
@@ -3722,7 +3730,7 @@ class Sequencer(object):
                 if title in self.AYON_CAPPED_COLUMNS or shown != value:
                     itm.setToolTip(value)
                 # file matched (Match version): teal, preferred: green
-                color = '#1f6f78' if file_matched else ('darkgreen' if preferred else '#4d4d4d')
+                color = '#1f6f78' if file_matched else ('darkgreen' if preferred else band_colors[band])
                 itm.setBackground(QtGui.QColor(color))
                 table_ui.setItem(row, col, itm)
         self.fit_ayon_columns(table_ui, titles)
