@@ -18,7 +18,7 @@ from unidecode import unidecode
 
 import helpers
 import parse_file_name
-from ftrack import FtrackHelper
+from ftrack import FtrackHelper, open_session, find_project_id
 from metadata import MetaData
 from ayon_shotlist import AyonShotlist, parse_product_filters
 from ayon_publish import AyonPublish
@@ -4437,29 +4437,21 @@ class Sequencer(object):
                 self.ftrack['url'] = self.paths.get('FTRACK_SERVER', '')
                 self.ftrack['key'] = self.paths.get('FTRACK_API_KEY', '')
                 self.ftrack['user'] = self.paths.get('FTRACK_API_USER', '')
-                self.ftrack['session'] = ftrack_api.Session(
-                    server_url=self.ftrack['url'],
-                    api_key=self.ftrack['key'],
-                    api_user=self.ftrack['user']
-                )
+                # never raises: missing settings / failed connection are logged
+                # and the session stays None (ftrack is then skipped)
+                self.ftrack['session'] = open_session(
+                    self.ftrack['url'], self.ftrack['user'], self.ftrack['key'])
+                self.ftrack['project_id'] = find_project_id(
+                    self.ftrack['session'], self.ftrack['project'])
 
-                if self.ftrack['session'] is not None:
-                    try:
-                        all_projects = self.ftrack['session'].query(
-                            'Project where status is "Active"').all()
-                        for p in all_projects:
-                            if p["full_name"] == self.ftrack['project']:
-                                self.ftrack['project_id'] = p["id"]
-                    except ftrack_api.exception.NoResultFoundError:
-                        self.log.error("Ftrack project query failed")
-
-                if self.ftrack['label'] != '' and self.ftrack['do_label']:
+                if self.ftrack['session'] is not None and self.ftrack['label'] != '' \
+                        and self.ftrack['do_label']:
                     try:
                         self.ftrack['label_obj'] = self.ftrack['session']\
                             .query('NoteLabel where name is "{}"'.format(
                             self.ftrack['label'])).first()
-                    except:
-                        pass
+                    except Exception as e:
+                        self.log.warning(f"Ftrack note label '{self.ftrack['label']}' query failed: {e}")
 
     def get_ftrack_notes(self):
         """
