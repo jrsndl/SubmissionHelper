@@ -87,3 +87,22 @@ class SettingsReadTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class InstallExampleTest(unittest.TestCase):
+    def test_example_loads_as_install_json(self):
+        import shutil
+        repo = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        with tempfile.TemporaryDirectory() as tmp:
+            app = os.path.join(tmp, 'app')
+            os.makedirs(app)
+            shutil.copy(os.path.join(repo, 'install.example.json'), os.path.join(app, 'install.json'))
+            s = make_settings(app, os.path.join(tmp, 'user'))
+            inst = s.install_settings
+            # relative tool paths are resolved to the app folder
+            self.assertTrue(inst['oiio_path'].startswith(app.replace('\\', '/')))
+            self.assertTrue(inst['ocio_path'].endswith('/ocio/config.ocio'))
+            # no secrets in the example
+            for k in ('ftrack_api_key', 'ayon_api_key'):
+                self.assertEqual(inst[k], '')
+            self.assertIsNone(s.get_global_settings_path())

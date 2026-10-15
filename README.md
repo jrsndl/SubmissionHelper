@@ -75,6 +75,11 @@ ffprobe and oiiotool are external tools. They are found on `PATH`, through
 `install.json`, or through the `SH_FFPROBE` / `SH_OIIOTOOL` / `SH_FFMPEG`
 environment variables. oiiotool for Windows is included in `oiio/win`.
 
+Studio settings (tool paths, OCIO config, shared presets folder, ftrack and
+Ayon connection) go to `install.json` next to the app. Copy
+`install.example.json` to `install.json` and fill it in. `install.json` is
+ignored by git, so API keys stay local; keep them out of the example.
+
 ## Building the exe
 
 Run `build_exe.bat` (needs [uv](https://docs.astral.sh/uv/)). It creates
