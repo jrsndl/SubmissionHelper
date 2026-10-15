@@ -440,6 +440,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         # Sidecar Tab
         self.ui.side_folder.textChanged.connect(
             partial(self.handler, 'side_folder', 'refresh_side_files'))
+        self.ui.package_browse_2.clicked.connect(
+            partial(self.browse_line_edit, self.ui.side_folder, 'dir', "Select Sidecar Search Folder"))
+        self.ui.package_explore_2.clicked.connect(
+            partial(self.explore_line_edit, self.ui.side_folder))
         self.ui.side_exclude.textChanged.connect(
             partial(self.handler, 'side_exclude', 'refresh_side_files'))
         self.ui.side_include.textChanged.connect(
@@ -623,9 +627,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.vendor_csv_path.textChanged.connect(
             partial(self.handler, 'vendor_csv_path', 'refresh_vendor'))
         self.ui.vendor_csv_explore.clicked.connect(
-            partial(self.handler, 'vendor_csv_explore', 'refresh_vendor'))
+            partial(self.explore_line_edit, self.ui.vendor_csv_path))
         self.ui.vendor_csv_browse.clicked.connect(
-            partial(self.handler, 'vendor_csv_browse', 'refresh_vendor'))
+            partial(self.browse_line_edit, self.ui.vendor_csv_path, 'csv', "Select Vendor CSV"))
 
         self.ui.vendor_csv_package_key.textChanged.connect(
             partial(self.handler, 'vendor_csv_package_key', 'refresh_vendor'))
@@ -993,6 +997,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'ayon_prefix', 'ayon_changed'))
         self.ui.ayon_output_folder.textChanged.connect(
             partial(self.handler, 'ayon_output_folder', 'ayon_changed'))
+        self.ui.ayon_path_browse_2.clicked.connect(
+            partial(self.browse_line_edit, self.ui.ayon_output_folder, 'dir', "Select Ayon List Output Folder"))
+
+        # Data CSV (Data tab)
+        self.ui.data_csv_browse.clicked.connect(self.browse_data_csv)
+        self.ui.data_csv_path.textChanged.connect(
+            partial(self.handler, 'data_csv_path', 'refresh_data_csv'))
+        self.ui.data_csv_latest.clicked.connect(
+            partial(self.handler, 'data_csv_latest', 'refresh_data_csv'))
+        self.ui.data_enable.clicked.connect(
+            partial(self.handler, 'data_enable', 'refresh_data_csv'))
+
+        # Search and Replace CSV
+        self.ui.data_csv_browse_2.clicked.connect(
+            partial(self.browse_line_edit, self.ui.replace_csv_path, 'csv', "Select Search and Replace CSV"))
+        self.ui.replace_csv_path.textChanged.connect(
+            partial(self.handler, 'replace_csv_path', 'refresh_replace_csv'))
+        self.ui.replace_enable.clicked.connect(
+            partial(self.handler, 'replace_enable', 'refresh_replace_csv'))
 
         self.ui.ayon_do_shotlist.clicked.connect(
             partial(self.handler, 'ayon_do_shotlist', 'ayon_changed'))
@@ -1248,6 +1271,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.data.prepare_tables()
                 self.show_all()
 
+        if group == 'refresh_data_csv':
+            if self.data:
+                self.data.csv_data = []
+                self.data.csv_data_read()
+                self.data.transform_data()
+                self.show_all()
+
+        if group == 'refresh_replace_csv':
+            if self.data:
+                self.data.replace_data = []
+                self.data.csv_replace_data_read()
+                self.data.csv_replace_prepare()
+                self.data.display_replace_table()
+
         if group == 'publish':
             if self.data and self.data.column_titles_sub:
                 if sender == 'publish_farm_button':
@@ -1438,13 +1475,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         if path and path != '' and os.path.exists(path):
             if platform == 'win':
-                if os.path.isdir(path):
-                    path = path + '/'
-                subprocess.Popen('explorer /root,  \"' + path.replace('/', '\\') + '\"')
+                win_path = os.path.normpath(path)
+                if os.path.isdir(win_path):
+                    os.startfile(win_path)
+                else:
+                    # open the parent folder with the file selected
+                    subprocess.Popen(['explorer', '/select,', win_path])
             if platform == 'mac':
-                subprocess.call(['open', "-R", path])
+                if os.path.isdir(path):
+                    subprocess.Popen(['open', path])
+                else:
+                    subprocess.Popen(['open', '-R', path])
             if platform == 'nix':
-                subprocess.call(('xdg-open', path))
+                if not os.path.isdir(path):
+                    path = os.path.dirname(path)
+                subprocess.Popen(['xdg-open', path])
 
     def browse(self, start_path):
 
@@ -1454,11 +1499,64 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             start_path = os.path.expanduser('~')
             if start_path is None:
                 start_path = ''
-        dir_name = QtWidgets.QFileDialog.getExistingDirectory(None, "Select Folder", start_path,
+        dir_name = QtWidgets.QFileDialog.getExistingDirectory(self, "Select Folder", start_path,
                                                               QtWidgets.QFileDialog.ShowDirsOnly)
-        if dir_name:
-            dir_name.replace('\\', '/')
-        return dir_name
+        if not dir_name:
+            # dialog cancelled
+            return None
+        return dir_name.replace('\\', '/')
+
+    @staticmethod
+    def _existing_start_dir(path):
+        """
+        Return the closest existing folder for a path typed in the gui,
+        or the home folder. Used as the starting point of file dialogs.
+        """
+        path = (path or '').strip().replace('\\', '/')
+        while path:
+            if os.path.isdir(path):
+                return path
+            parent = os.path.dirname(path.rstrip('/'))
+            if parent == path.rstrip('/'):
+                break
+            path = parent
+        return os.path.expanduser('~')
+
+    def browse_line_edit(self, line_edit, mode='dir', title="Select", *args):
+        """
+        Browse button handler: pick a folder or file and put it to the line edit.
+        Setting the text fires the line edit's textChanged, which refreshes the data.
+        :param line_edit: QLineEdit to read the start path from and write the result to
+        :param mode: 'dir' for folders, 'csv' for csv files
+        """
+        start = self._existing_start_dir(line_edit.text())
+        if mode == 'csv':
+            picked, _ = QtWidgets.QFileDialog.getOpenFileName(
+                self, title, start, "CSV files (*.csv *.CSV);;All files (*)")
+        else:
+            picked = QtWidgets.QFileDialog.getExistingDirectory(
+                self, title, start, QtWidgets.QFileDialog.ShowDirsOnly)
+        if picked:
+            line_edit.setText(picked.replace('\\', '/'))
+
+    def browse_data_csv(self, *args):
+        """
+        Data CSV can be a file, or a folder when 'Latest in Folder' is checked
+        """
+        if self.ui.data_csv_latest.isChecked():
+            self.browse_line_edit(self.ui.data_csv_path, 'dir', "Select Data CSV Folder")
+        else:
+            self.browse_line_edit(self.ui.data_csv_path, 'csv', "Select Data CSV")
+
+    def explore_line_edit(self, line_edit, *args):
+        """
+        Explore button handler: open the path from the line edit in the file manager.
+        Falls back to the closest existing parent folder.
+        """
+        path = line_edit.text().strip().replace('\\', '/')
+        if not (path and os.path.exists(path)):
+            path = self._existing_start_dir(path)
+        self.explore(path)
 
     def expore_local_presets(self):
         """
