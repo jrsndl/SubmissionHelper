@@ -160,9 +160,7 @@ class Sequencer(object):
                         self.publish_ayon(mode="farm")
                     elif action == "a":
                         # Export Ayon Shotlist
-                        self.ayon_data_read()
-                        self.ayon_data_filter()
-                        self.ayon_data_write()
+                        self.ayon_export()
                     elif action == "x":
                         # Export Ftrack Shotlist
                         f = FtrackHelper(self.settings, self.paths)
@@ -3804,8 +3802,23 @@ class Sequencer(object):
         # list filters also limit Matched Versions
         self.display_ayon_versions_table()
 
+    def ayon_export(self):
+        """
+        Export Shot List button / headless action a: write what the tables
+        show. Ayon is only read when nothing is loaded yet (then like Scan,
+        including matching to the files); re-reading used to drop the
+        matches, which emptied the tables and the csv with Matched Only on.
+        """
+        if self.my_ayon is None or self.my_ayon.error or not self.ayon_data:
+            self.ayon_scan()
+        else:
+            self.ayon_data_filter()
+        self.ayon_data_write()
+
     def ayon_data_write(self):
         if self.my_ayon is not None and not getattr(self.my_ayon, 'error', None):
+            self.ayon_collect_gui()
+            self.my_ayon.update_output(self.ayon_gui)
             # export what is shown
             self.my_ayon.write_csv(self.ayon_visible_list())
             if self.ayon_gui and self.ayon_gui.get('do_versions_csv'):

@@ -757,6 +757,25 @@ class AyonShotlist(object):
                     data.append(shot_task_attr)
         self.data = sorted(data, key=lambda d: d['Folder Path'])
 
+    def update_output(self, ayon_gui):
+        """
+        Take the current output settings (folder, csv checkboxes), they may
+        have changed since the list was read
+        """
+        self.ayon_gui = ayon_gui
+        self.output_folder = (ayon_gui.get('out_folder') or '').replace("\\", "/")
+        self.thumbs_dir = f"{self.output_folder}/_thumbsDownload"
+        self.do_output_csv = ayon_gui.get('do_csv')
+        self.do_output_versions_csv = bool(ayon_gui.get('do_versions_csv'))
+        self.output_csv_path = f"{self.output_folder}/{LIST_CSV_NAME}"
+        self.output_versions_csv_path = f"{self.output_folder}/{VERSIONS_CSV_NAME}"
+        self.output_excel_path = f"{self.output_folder}/ayon-list.xlsx"
+        self.do_output = True
+        do_thumbs = self.do_thumbs
+        self.do_thumbs = False      # thumbnails were downloaded with the read
+        self.prep_paths()
+        self.do_thumbs = do_thumbs
+
     def write_csv(self, rows=None):
         """
         :param rows: rows to write (what the table shows), default: rows not

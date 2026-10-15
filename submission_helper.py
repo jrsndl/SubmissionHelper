@@ -1106,11 +1106,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         if sender == 'ayon_export_butt':
             target = self._ayon_target()
 
-            def _export():
-                target.ayon_data_read(force=True)
-                target.ayon_data_filter()
-                target.ayon_data_write()
-            self._ayon_busy(_export, "Reading Ayon shot list...")
+            self._ayon_busy(target.ayon_export, "Exporting Ayon shot list...")
+            if target is self.data and self.data.merged_list:
+                # a first read also matches files: refresh the spreadsheets
+                self.data.prepare_all_columns()
+                self.data.prepare_tables()
+                self.show_all()
 
         if group == 'ayon_scan':
             target = self._ayon_target()

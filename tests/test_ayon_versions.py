@@ -751,8 +751,56 @@ class ShownEqualsExportedTest(unittest.TestCase):
         s = self.bare(ayon_versions_matched_only=True)
         s.my_ayon = mock.Mock(error=None)
         s.ayon_gui = {'do_versions_csv': True}
+        s.ayon_collect_gui = mock.Mock()
         s.ayon_data_write()
+        s.my_ayon.update_output.assert_called_once_with(s.ayon_gui)
         written_list = s.my_ayon.write_csv.call_args[0][0]
         written_versions = s.my_ayon.write_versions_csv.call_args[0][0]
         self.assertEqual([r['Folder Path'] for r in written_list], ['/a', '/b'])
         self.assertEqual([(r['_folder_id'], r['Version']) for r in written_versions], [('a', '1')])
+
+
+class AyonExportTest(unittest.TestCase):
+    def bare(self, loaded):
+        import logging
+        import sequencer
+        s = sequencer.Sequencer.__new__(sequencer.Sequencer)
+        s.log = logging.getLogger('Sequencer')
+        s.my_ayon = mock.Mock(error=None) if loaded else None
+        s.ayon_data = [{'Folder Path': '/a', '_folder_id': 'a', '_matched': True}] if loaded else []
+        s.ayon_scan = mock.Mock()
+        s.ayon_data_read = mock.Mock()
+        s.ayon_data_filter = mock.Mock()
+        s.ayon_data_write = mock.Mock()
+        return s
+
+    def test_loaded_list_is_not_read_again(self):
+        # re-reading dropped the file matches: empty tables, empty csv
+        s = self.bare(loaded=True)
+        s.ayon_export()
+        s.ayon_data_read.assert_not_called()
+        s.ayon_scan.assert_not_called()
+        s.ayon_data_filter.assert_called_once()
+        s.ayon_data_write.assert_called_once()
+        self.assertTrue(s.ayon_data[0]['_matched'])
+
+    def test_nothing_loaded_scans_first(self):
+        s = self.bare(loaded=False)
+        s.ayon_export()
+        s.ayon_scan.assert_called_once()
+        s.ayon_data_write.assert_called_once()
+
+
+class UpdateOutputTest(unittest.TestCase):
+    def test_paths_follow_current_settings(self):
+        with tempfile.TemporaryDirectory() as old, tempfile.TemporaryDirectory() as new:
+            fake = FakeAyon()
+            with mock.patch.object(ayon_shotlist.ayon_api, 'get_server_api_connection',
+                                   return_value=fake, create=True):
+                a = AyonShotlist(gui(old, do_versions=False), None, {'AYON_SERVER_URL': 'x', 'AYON_API_KEY': 'y'})
+                a.get_shotlist()
+            target = os.path.join(new, 'sub')
+            a.update_output(gui(target, do_versions=False))
+            a.write_csv()
+            self.assertTrue(os.path.isfile(os.path.join(target, 'ayon-list.csv')))
+            self.assertFalse(os.path.exists(os.path.join(old, 'ayon-list.csv')))
