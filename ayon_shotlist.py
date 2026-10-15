@@ -372,6 +372,7 @@ class AyonShotlist(object):
         self.data = []
         # task id -> task name, filled by get_full_shotlist
         self.task_names = {}
+        self._thumb_stats = {'ok': 0, 'failed': 0}
 
         self.columns = [
             "Thumbnail",
@@ -426,6 +427,10 @@ class AyonShotlist(object):
 
     def prep_paths(self):
 
+        if self.do_thumbs and not self.output_folder:
+            # thumbnails go to <output>/_thumbsDownload, would land in the drive root
+            self.log.warning("Ayon thumbnails are on, but the output folder is empty: no thumbnails")
+            self.do_thumbs = False
         if self.do_thumbs:
             try:
                 os.makedirs(self.thumbs_dir, exist_ok=True)
@@ -638,21 +643,58 @@ class AyonShotlist(object):
         self.log.info(f"Ayon versions: {len(picked)} of {len(folder_ids)} folder(s) have a matching product "
                       f"({len(products)} product(s), {len(repres)} representation(s) read)")
 
-    def _download_thumbnail(self, thumbnail_id, file_path):
+    THUMB_EXTENSIONS = {'image/jpeg': '.jpg', 'image/jpg': '.jpg', 'image/png': '.png',
+                        'image/webp': '.webp', 'image/gif': '.gif'}
+
+    def _download_thumbnail(self, entity_type, entity_id, thumbnail_id, file_base):
         """
-        :return: file_path, or None when the thumbnail is missing / invalid
+        Download the thumbnail of a folder / task.
+
+        Uses get_thumbnail(entity type, id), which works for every user;
+        get_thumbnail_by_id is only allowed for admins and managers, for other
+        users it returned empty content, so no thumbnail was ever written.
+        :param file_base: path without extension, the extension comes from
+                          the image type (Ayon thumbnails are often jpg)
+        :return: written file path, or None
         """
+        stats = self._thumb_stats
+        thumbnail = None
         try:
-            thumbnail = self.ayon.get_thumbnail_by_id(self.project, thumbnail_id)
+            thumbnail = self.ayon.get_thumbnail(self.project, entity_type, entity_id)
         except Exception as e:
-            self.log.warning(f"Downloading thumbnail {thumbnail_id} failed: {e}")
+            self.log.debug(f"get_thumbnail {entity_type} {entity_id} failed: {e}")
+        if thumbnail is None or not getattr(thumbnail, 'is_valid', bool(getattr(thumbnail, 'content', None))):
+            # fall back for admins / older servers
+            try:
+                thumbnail = self.ayon.get_thumbnail_by_id(self.project, thumbnail_id)
+            except Exception as e:
+                self.log.debug(f"get_thumbnail_by_id {thumbnail_id} failed: {e}")
+        content = getattr(thumbnail, 'content', None) if thumbnail is not None else None
+        if not content:
+            stats['failed'] += 1
+            self.log.debug(f"No thumbnail content for {entity_type} {entity_id}")
             return None
-        content = getattr(thumbnail, 'content', None)
-        if not content or (hasattr(thumbnail, 'is_valid') and not thumbnail.is_valid):
+        content_type = (getattr(thumbnail, 'content_type', None) or '').split(';')[0].strip().lower()
+        file_path = file_base + self.THUMB_EXTENSIONS.get(content_type, '.png')
+        try:
+            with open(file_path, "wb") as stream:
+                stream.write(content)
+        except OSError as e:
+            stats['failed'] += 1
+            self.log.warning(f"Writing thumbnail {file_path} failed: {e}")
             return None
-        with open(file_path, "wb") as stream:
-            stream.write(content)
-        return file_path if os.path.isfile(file_path) else None
+        stats['ok'] += 1
+        return file_path
+
+    def _log_thumbnail_stats(self):
+        ok, failed = self._thumb_stats['ok'], self._thumb_stats['failed']
+        if not ok and not failed:
+            return
+        msg = f"Ayon thumbnails: {ok} downloaded to {self.thumbs_dir}"
+        if failed:
+            msg += (f", {failed} not available (no permission or no thumbnail on the server, "
+                    f"set log level DEBUG for details)")
+        self.log.log(logging.WARNING if failed and not ok else logging.INFO, msg)
 
     def get_full_shotlist(self):
 
@@ -708,7 +750,7 @@ class AyonShotlist(object):
             thumbnail_path = None
             if asset["thumbnailId"] is not None and self.do_thumbs:
                 thumbnail_path = self._download_thumbnail(
-                    asset["thumbnailId"], f"{self.thumbs_dir}/{thumb_name_folder}.png")
+                    "folder", asset["id"], asset["thumbnailId"], f"{self.thumbs_dir}/{thumb_name_folder}")
 
             base = {
                 "Thumbnail": thumbnail_path,
@@ -742,7 +784,8 @@ class AyonShotlist(object):
                     thumbnail_path = None
                     if task_info["thumbnailId"] is not None and self.do_thumbs:
                         thumbnail_path = self._download_thumbnail(
-                            task_info["thumbnailId"], f"{self.thumbs_dir}/{thumb_name_task}.png")
+                            "task", task_info["id"], task_info["thumbnailId"],
+                            f"{self.thumbs_dir}/{thumb_name_task}")
                     tsk = {
                         "Task Type": task_info["type"],
                         "Task Name": task_info["name"],
@@ -756,6 +799,7 @@ class AyonShotlist(object):
                     shot_task_attr = {**shot_task, **self.attribs_to_columns(task_info["attrib"])}
                     data.append(shot_task_attr)
         self.data = sorted(data, key=lambda d: d['Folder Path'])
+        self._log_thumbnail_stats()
 
     def update_output(self, ayon_gui):
         """

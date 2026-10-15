@@ -804,3 +804,74 @@ class UpdateOutputTest(unittest.TestCase):
             a.write_csv()
             self.assertTrue(os.path.isfile(os.path.join(target, 'ayon-list.csv')))
             self.assertFalse(os.path.exists(os.path.join(old, 'ayon-list.csv')))
+
+
+class ThumbContent:
+    """like ayon_api.utils.ThumbnailContent"""
+    def __init__(self, thumbnail_id, content, content_type):
+        self.thumbnail_id = thumbnail_id
+        self.content = content or b""
+        self.content_type = content_type
+
+    @property
+    def is_valid(self):
+        return self.thumbnail_id is not None and self.content_type is not None
+
+
+class ThumbnailTest(unittest.TestCase):
+    def fake(self):
+        fake = FakeAyon()
+        folders = fake.get_folders('P')
+        folders[0]['thumbnailId'] = 'th1'
+        fake.get_folders = lambda *a, **k: folders
+        orig_tasks = fake.get_tasks
+
+        def tasks(*a, **k):
+            out = orig_tasks(*a, **k)
+            out[0]['thumbnailId'] = 'th2'
+            return out
+        fake.get_tasks = tasks
+        fake.calls = []
+
+        def get_thumbnail(project, entity_type, entity_id):
+            fake.calls.append((entity_type, entity_id))
+            if entity_type == 'folder':
+                return ThumbContent('th1', b'\xff\xd8jpegdata', 'image/jpeg')
+            return ThumbContent(None, None, None)       # no thumbnail / no access
+
+        def get_thumbnail_by_id(project, thumbnail_id):
+            # admins only: an artist key gets an empty answer
+            return ThumbContent(None, None, 'application/json')
+        fake.get_thumbnail = get_thumbnail
+        fake.get_thumbnail_by_id = get_thumbnail_by_id
+        return fake
+
+    def test_artist_key_downloads_via_entity(self):
+        fake = self.fake()
+        with tempfile.TemporaryDirectory() as out:
+            with mock.patch.object(ayon_shotlist.ayon_api, 'get_server_api_connection',
+                                   return_value=fake, create=True):
+                a = AyonShotlist(gui(out, do_thumbs=True, do_versions=False), None,
+                                 {'AYON_SERVER_URL': 'x', 'AYON_API_KEY': 'y'})
+                with self.assertLogs('AyonShotlist', 'INFO') as cm:
+                    rows = a.get_shotlist()
+            folder_row = [r for r in rows if r['Folder Path'] == '/ep01/sh010' and not r['Task Name']][0]
+            task_row = [r for r in rows if r['Task Name'] == 'comp'][0]
+            # jpeg keeps a .jpg extension, task without its own thumbnail uses the folder one
+            self.assertTrue(folder_row['Thumbnail'].endswith('ep01-sh010.jpg'))
+            with open(folder_row['Thumbnail'], 'rb') as f:
+                self.assertEqual(f.read(), b'\xff\xd8jpegdata')
+            self.assertEqual(task_row['Thumbnail'], folder_row['Thumbnail'])
+            self.assertIn(('folder', 'f1'), fake.calls)
+            self.assertIn(('task', 't_comp'), fake.calls)
+            self.assertTrue(any('1 downloaded' in m and '1 not available' in m for m in cm.output))
+
+    def test_no_output_folder_no_thumbnails(self):
+        fake = self.fake()
+        with mock.patch.object(ayon_shotlist.ayon_api, 'get_server_api_connection',
+                               return_value=fake, create=True):
+            with self.assertLogs('AyonShotlist', 'WARNING'):
+                a = AyonShotlist(gui('', do_thumbs=True, do_versions=False), None,
+                                 {'AYON_SERVER_URL': 'x', 'AYON_API_KEY': 'y'})
+            a.get_shotlist()
+        self.assertEqual(fake.calls, [])
