@@ -1,8 +1,76 @@
 import csv
 import logging
+import time
+
 import ftrack_api
 
 log = logging.getLogger("Ftrack")
+
+# (url, user, key) -> session; connecting takes seconds and refreshes run on
+# every edit, so a working session is reused
+_SESSIONS = {}
+# (url, user, key) -> time of the last failed attempt
+_FAILED = {}
+RETRY_AFTER = 30.0
+_last_message = None
+
+
+def _log_once(level, msg):
+    """same message is logged only once in a row (refreshes repeat it)"""
+    global _last_message
+    if msg != _last_message:
+        _last_message = msg
+        log.log(level, msg)
+
+
+def open_session(url, user, key):
+    """
+    Connect to ftrack, or reuse the connection for the same server and user.
+    Never raises: a missing setting or a failed connection is logged and
+    None returned, the app then works without ftrack data.
+    """
+    missing = [name for name, value in (("server url", url), ("api user", user), ("api key", key))
+               if not value]
+    if missing:
+        _log_once(logging.WARNING,
+                  f"Ftrack is on, but the {', '.join(missing)} is not set: ftrack is skipped. "
+                  f"Set ftrack_server_url / ftrack_api_user / ftrack_api_key in install.json, "
+                  f"or FTRACK_SERVER / FTRACK_API_USER / FTRACK_API_KEY.")
+        return None
+    cache_key = (url, user, key)
+    session = _SESSIONS.get(cache_key)
+    if session is not None:
+        return session
+    failed_at = _FAILED.get(cache_key)
+    if failed_at is not None and time.monotonic() - failed_at < RETRY_AFTER:
+        return None
+    try:
+        # 15 s instead of 60: a server that is down must not freeze the gui for a minute
+        session = ftrack_api.Session(server_url=url, api_key=key, api_user=user,
+                                     auto_connect_event_hub=False, timeout=15)
+    except Exception as e:
+        _FAILED[cache_key] = time.monotonic()
+        _log_once(logging.ERROR, f"Connecting to ftrack {url} as {user} failed: {e}")
+        return None
+    _FAILED.pop(cache_key, None)
+    _SESSIONS[cache_key] = session
+    _log_once(logging.INFO, f"Connected to ftrack {url} as {user}")
+    return session
+
+
+def find_project_id(session, project_name):
+    """id of the active project with this full name, or None (logged)"""
+    if session is None or not project_name:
+        return None
+    try:
+        for p in session.query('Project where status is "Active"').all():
+            if p["full_name"] == project_name:
+                return p["id"]
+    except Exception as e:
+        _log_once(logging.ERROR, f"Ftrack project query failed: {e}")
+        return None
+    _log_once(logging.WARNING, f"Ftrack project '{project_name}' not found among active projects")
+    return None
 
 class FtrackHelper(object):
 
@@ -195,10 +263,8 @@ class FtrackHelper(object):
         """
 
         if self.settings:
-            self.ftrack['do_ftrack'] = bool(
-                self.settings['ftrack_use']['value'])
-            self.ftrack['project'] = str(
-                self.settings['ftrack_project']['value'])
+            self.ftrack['do_ftrack'] = bool((self.settings.get('ftrack_use') or {}).get('value'))
+            self.ftrack['project'] = str((self.settings.get('ftrack_project') or {}).get('value') or '')
 
             self.ftrack['session'] = None
             self.ftrack['project_id'] = None
@@ -207,18 +273,7 @@ class FtrackHelper(object):
                 self.ftrack['url'] = self.paths.get('FTRACK_SERVER', '')
                 self.ftrack['key'] = self.paths.get('FTRACK_API_KEY', '')
                 self.ftrack['user'] = self.paths.get('FTRACK_API_USER', '')
-                self.ftrack['session'] = ftrack_api.Session(
-                    server_url=self.ftrack['url'],
-                    api_key=self.ftrack['key'],
-                    api_user=self.ftrack['user']
-                )
-
-                if self.ftrack['session'] is not None:
-                    try:
-                        self.ftrack['all_projects'] = self.ftrack['session'].query(
-                            'Project where status is "Active"').all()
-                        for p in self.ftrack['all_projects']:
-                            if p["full_name"] == self.ftrack['project']:
-                                self.ftrack['project_id'] = p["id"]
-                    except ftrack_api.exception.NoResultFoundError:
-                        log.error("Ftrack project query failed")
+                self.ftrack['session'] = open_session(
+                    self.ftrack['url'], self.ftrack['user'], self.ftrack['key'])
+                self.ftrack['project_id'] = find_project_id(
+                    self.ftrack['session'], self.ftrack['project'])

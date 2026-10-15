@@ -92,3 +92,22 @@ class AyonPublishPathsTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class FtrackInstallKeysTest(unittest.TestCase):
+    def run_prep(self, inst):
+        with mock.patch.dict(os.environ, {'PATH': ''}, clear=True):
+            s = bare_sequencer()
+            s.settings_inst = inst
+            s._prep_paths_vars()
+        return s.paths
+
+    def test_legacy_names_from_older_install_json(self):
+        p = self.run_prep({'server_url': 'https://studio.ftrackapp.com', 'api_key': 'k', 'api_user': 'u'})
+        self.assertEqual((p['FTRACK_SERVER'], p['FTRACK_API_KEY'], p['FTRACK_API_USER']),
+                         ('https://studio.ftrackapp.com', 'k', 'u'))
+
+    def test_current_names_win(self):
+        p = self.run_prep({'server_url': 'old', 'ftrack_server_url': 'new',
+                           'ftrack_api_key': 'k', 'ftrack_api_user': 'u'})
+        self.assertEqual(p['FTRACK_SERVER'], 'new')

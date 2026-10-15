@@ -75,6 +75,28 @@ ffprobe and oiiotool are external tools. They are found on `PATH`, through
 `install.json`, or through the `SH_FFPROBE` / `SH_OIIOTOOL` / `SH_FFMPEG`
 environment variables. oiiotool for Windows is included in `oiio/win`.
 
+Studio settings (tool paths, OCIO config, shared presets folder, ftrack and
+Ayon connection) go to `install.json` next to the app. Copy
+`install.example.json` to `install.json` and fill it in. `install.json` is
+ignored by git, so API keys stay local; keep them out of the example.
+
+## Building the exe
+
+Run `build_exe.bat` (needs [uv](https://docs.astral.sh/uv/)). It creates
+`.venv` if needed, installs the requirements and PyInstaller, and builds
+`dist\SubmissionHelper\`:
+
+| File | Use |
+|---|---|
+| `SubmissionHelper.exe` | the GUI, no console window |
+| `SubmissionHelper-cli.exe` | the same app with a console: headless / command line runs and log output |
+
+The `oiio`, `ocio` and `ffmpeg` folders and `install.json` / `default.json`
+are copied next to the exes, where the app looks for them. Zip the whole
+`dist\SubmissionHelper` folder to share it; check `install.json` for API keys
+first. Console tools the app runs (ffprobe, oiiotool, converts, ayon) don't
+open console windows.
+
 ## Command line
 
 Without arguments Submission Helper opens the GUI. Given both `-i` and `-p`
@@ -87,8 +109,9 @@ python submission_helper.py [-h] [-i PATH] [-p PRESET] [--actions LETTERS]
                             [--settings KEY=VALUE[,KEY=VALUE...]]
 ```
 
-With the built executable use `submission_helper.exe` instead of
-`python submission_helper.py`. Run with `-h` to print the help.
+With the built executable use `SubmissionHelper-cli.exe` instead of
+`python submission_helper.py` (the windowed `SubmissionHelper.exe` has no
+console to print to). Run with `-h` to print the help.
 
 | Option | Meaning |
 |---|---|
@@ -174,6 +197,135 @@ don't stop the run, so check the log output, not only the exit code.
 
 On Linux without a display (render nodes), headless mode switches Qt to
 the `offscreen` platform automatically.
+
+## Ayon shot list and versions
+
+The **Ayon** tab reads the folders (shots, assets) and tasks of an Ayon
+project. Rows are matched to the package files with the matching rules, and
+their values become keywords with the Ayon prefix, e.g. `{ayon_Folder Path}`.
+
+* **Scan** reads the list now. It works without a loaded package, and also
+  when *Enable* is off (that checkbox controls reading on package load).
+* **List Filters** limit the list: Assets / Shots / Tasks / Other, task types,
+  **Task Names** (comma separated, wildcards `*` `?`, e.g. `comp*`) and
+  assignees. A task row must pass every enabled filter.
+* **Export Shot List** writes `ayon-list.csv` (visible rows only) to the output
+  folder, and with **Versions CSV** also `ayon-list-versions.csv` (see below).
+
+Columns per row include the frame range (`In`, `Out`, `Head`, `Tail`,
+`Range` with handles, `Length`), resolution, `Start Date` / `End Date`
+(`YYYY-MM-DD`, task rows use the task's dates), status, assignees and links.
+
+### Pulling versions
+
+Turn on **Pull versions** and set **Product filters** to add version info of
+the preferred product to every shot / asset row and its task rows:
+
+```
+comp:renderCompMain:exr, :platePl01:exr
+```
+
+Each filter is `task:product:representation`:
+
+| Filter | Means |
+|---|---|
+| `comp:renderCompMain:exr` | representation `exr` of product `renderCompMain`, published from task `comp` |
+| `:platePl01:exr` | the same, from any task |
+| `platePl01:exr` | the same as above |
+| `:platePl01` | any representation |
+| `render*:exr` | wildcards `*` `?` in any part, names are not case sensitive |
+
+Filters are tried in order and the first one with a match is used, so put the
+preferred product first. The **latest version** of the product is used; if it
+doesn't have the representation, that filter doesn't match.
+
+Added columns: `Product`, `Product Type`, `Version`, `Version Name` (`v007`),
+`Version Status`, `Version Author`, `Version Date`, `Version Comment`,
+`Version Task`, `Representation`, `Repre Path`, `Version Filter`, and from
+the version's attributes and data: `Version Frame Start`, `Version Frame End`,
+`Version Handle Start`, `Version Handle End`, `Version FPS`, `Version Width`,
+`Version Height`, `Version Pixel Aspect`, `Version Step`, `Version Host`,
+`Version Colorspace` (taken from the representation when the version doesn't
+have it). With the default prefix they are available as `{ayon_Version}`,
+`{ayon_Version FPS}`...
+
+Versions are read with three queries for the whole project. Changing the
+filters takes effect with the next **Scan** or package load.
+
+### Matched Versions
+
+With **Pull versions** on and package files matched to Ayon folders (*Match
+Package Keys to Shot List Keys*), the **Matched Versions** sub-tab lists all
+versions of the configured products (the product filters: product name, task
+and representation must fit) of the matched folders only, sorted by folder
+path and then version. The version picked by the filters as the preferred one
+is marked `Preferred` and highlighted.
+
+Columns: `Folder Path`, `Folder Name`, `Folder Type`, `Product`,
+`Product Type`, `Version`, `Version Exists` (`True` when a package file has
+this version, see Match version), `Max Existing Version` (highest version of
+the product in the folder), `Version Name`, `Preferred`, `Version Status`,
+`Version Author`, `Version Date`, `Version Comment`, `Version Task`,
+`Representations` (all representation names), and the version attribute /
+data columns listed above.
+
+Ayon is asked again only when the matched folders or the product filters
+change, not on every edit. Turn on **Versions CSV** to also write the list to
+`ayon-list-versions.csv` with **Export Shot List**.
+
+**Show matched only** (above the table) shows just the versions a package
+file matched (teal, see Match version). The list filters apply here too:
+versions of folders hidden in the Shot List are not shown.
+
+Both csv files contain exactly what the tables show: `ayon-list.csv` follows
+the list filters and **Matched Only**, `ayon-list-versions.csv` follows the
+list filters and **Show matched only**.
+
+### Matching a version to each file
+
+**Match version** (second row of the Versions group) finds, for every file
+matched to an Ayon folder, the Matched Versions row of the same folder where
+the **Package** key equals the **Version** key:
+
+| Package | Version | Matches |
+|---|---|---|
+| `{version}` | `{Version}` | file version `007` to Ayon version `7` (numbers compare by value) |
+| `v{version}` | `{Version Name}` | `v007` to `v007` |
+
+The row's columns are added to the file with the Ayon prefix and `Matched`,
+for example `{ayon_Matched Version}`, `{ayon_Matched Version Status}`,
+`{ayon_Matched Version Comment}`, `{ayon_Matched Repre Path}`. When several
+products have the same version number, the preferred product wins. Matched
+rows are teal in Matched Versions and the `Matched Files` column counts the
+files.
+
+For checks, every file matched to an Ayon folder also gets
+`{ayon_Matched Version Exists}` (`True` / `False`: is the file's version
+already in Ayon) and `{ayon_Matched Max Existing Version}` (highest existing
+version of the preferred product), also when its version is not in Ayon yet. Changing these keys doesn't query Ayon again. When some files don't
+find their version, the Log tab shows what was compared.
+
+## Ftrack
+
+The ftrack tab reads notes and shot attributes for the loaded files. Server, user and api key come
+from `install.json` (`ftrack_server_url`, `ftrack_api_user`, `ftrack_api_key`).
+
+* **Use Ftrack** turns it on. **Project** is the full name of an *active* ftrack project.
+* **Shot** / **Task** are templates filled per file from the parsed keys (default `{shot}` / `{task}`).
+* **Extensions** limits the files that get notes (`exr, mov`, with or without dot; empty = all).
+* **Query Notes** reads the notes on the task, or with **Version** on, on that version of the task;
+  **Note Label** keeps only notes with that label. **Note pattern** / **repl** pick the text that goes to `{ftrack_note}`.
+* **Query OpenPype Attributes** reads frame range and handles of the shot (`{ftrack_op_range}` ...).
+* **Export** writes the ftrack shot list to the path next to it (a `.csv` file or a folder;
+  empty = the package folder). Same as the command line action `x`.
+
+The table on the tab has one row per file: the shot / task / version it looked up, a **Status**
+(`ok`, `task not found`, `version not found`, `template not resolved`, `skipped (extension)`, ...),
+how many notes were found and the selected note. When nothing was queried it says why.
+
+The log gets one summary line per change (INFO), for example
+`Ftrack: project 'MyProj'; 12 file(s); 9 with notes; status: ok 9, task not found 3`.
+Set the Log tab (or `-v` on the command line) to DEBUG to see the settings used and a line per file.
 
 ## Logging
 

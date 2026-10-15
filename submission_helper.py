@@ -14,7 +14,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 
 from ui_Submission import Ui_submission
 
-from sequencer import Sequencer
+from sequencer import Sequencer, PARSE_ROWS, PARSE_FIELDS
 from settings import Settings
 import parse_file_name
 import sh_logging
@@ -72,6 +72,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui = Ui_submission()
         self.ui.setupUi(self)
         self.no_gui = no_gui
+
+        # top / bottom tab panels in a draggable splitter
+        self.panel_splitter = self._setup_panel_splitter()
+        self._tune_top_tab_layouts()
+        # Parsing tab rows beyond the 32 from the .ui file
+        self._add_parse_rows()
+        # Ayon tab: Scan button, version / product filter controls
+        self._add_ayon_controls()
+        # Sequencer used by the Ayon tab when no package is loaded
+        self.ayon_only = None
 
         # Log tab: shows everything logged by any module
         self.log_view = None
@@ -188,265 +198,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'name_rename_auto', 'package_rename'))
 
         # Parsing Tab
-        self.ui.parse_name_01.textChanged.connect(
-            partial(self.handler, 'parse_name_01', 'refresh_parsing'))
-        self.ui.parse_name_02.textChanged.connect(
-            partial(self.handler, 'parse_name_02', 'refresh_parsing'))
-        self.ui.parse_name_03.textChanged.connect(
-            partial(self.handler, 'parse_name_03', 'refresh_parsing'))
-        self.ui.parse_name_04.textChanged.connect(
-            partial(self.handler, 'parse_name_04', 'refresh_parsing'))
-        self.ui.parse_name_05.textChanged.connect(
-            partial(self.handler, 'parse_name_05', 'refresh_parsing'))
-        self.ui.parse_name_06.textChanged.connect(
-            partial(self.handler, 'parse_name_06', 'refresh_parsing'))
-        self.ui.parse_name_07.textChanged.connect(
-            partial(self.handler, 'parse_name_07', 'refresh_parsing'))
-        self.ui.parse_name_08.textChanged.connect(
-            partial(self.handler, 'parse_name_08', 'refresh_parsing'))
-        self.ui.parse_name_09.textChanged.connect(
-            partial(self.handler, 'parse_name_09', 'refresh_parsing'))
-        self.ui.parse_name_10.textChanged.connect(
-            partial(self.handler, 'parse_name_10', 'refresh_parsing'))
-        self.ui.parse_name_11.textChanged.connect(
-            partial(self.handler, 'parse_name_11', 'refresh_parsing'))
-        self.ui.parse_name_12.textChanged.connect(
-            partial(self.handler, 'parse_name_12', 'refresh_parsing'))
-        self.ui.parse_name_13.textChanged.connect(
-            partial(self.handler, 'parse_name_13', 'refresh_parsing'))
-        self.ui.parse_name_14.textChanged.connect(
-            partial(self.handler, 'parse_name_14', 'refresh_parsing'))
-        self.ui.parse_name_15.textChanged.connect(
-            partial(self.handler, 'parse_name_15', 'refresh_parsing'))
-        self.ui.parse_name_16.textChanged.connect(
-            partial(self.handler, 'parse_name_16', 'refresh_parsing'))
-        self.ui.parse_name_17.textChanged.connect(
-            partial(self.handler, 'parse_name_01', 'refresh_parsing'))
-        self.ui.parse_name_18.textChanged.connect(
-            partial(self.handler, 'parse_name_02', 'refresh_parsing'))
-        self.ui.parse_name_19.textChanged.connect(
-            partial(self.handler, 'parse_name_03', 'refresh_parsing'))
-        self.ui.parse_name_20.textChanged.connect(
-            partial(self.handler, 'parse_name_04', 'refresh_parsing'))
-        self.ui.parse_name_21.textChanged.connect(
-            partial(self.handler, 'parse_name_05', 'refresh_parsing'))
-        self.ui.parse_name_22.textChanged.connect(
-            partial(self.handler, 'parse_name_06', 'refresh_parsing'))
-        self.ui.parse_name_23.textChanged.connect(
-            partial(self.handler, 'parse_name_07', 'refresh_parsing'))
-        self.ui.parse_name_24.textChanged.connect(
-            partial(self.handler, 'parse_name_08', 'refresh_parsing'))
-        self.ui.parse_name_25.textChanged.connect(
-            partial(self.handler, 'parse_name_09', 'refresh_parsing'))
-        self.ui.parse_name_26.textChanged.connect(
-            partial(self.handler, 'parse_name_10', 'refresh_parsing'))
-        self.ui.parse_name_27.textChanged.connect(
-            partial(self.handler, 'parse_name_11', 'refresh_parsing'))
-        self.ui.parse_name_28.textChanged.connect(
-            partial(self.handler, 'parse_name_12', 'refresh_parsing'))
-        self.ui.parse_name_29.textChanged.connect(
-            partial(self.handler, 'parse_name_13', 'refresh_parsing'))
-        self.ui.parse_name_30.textChanged.connect(
-            partial(self.handler, 'parse_name_14', 'refresh_parsing'))
-        self.ui.parse_name_31.textChanged.connect(
-            partial(self.handler, 'parse_name_15', 'refresh_parsing'))
-        self.ui.parse_name_32.textChanged.connect(
-            partial(self.handler, 'parse_name_16', 'refresh_parsing'))
-
-        self.ui.parse_pattern_01.textChanged.connect(
-            partial(self.handler, 'parse_pattern_01', 'refresh_parsing'))
-        self.ui.parse_pattern_02.textChanged.connect(
-            partial(self.handler, 'parse_pattern_02', 'refresh_parsing'))
-        self.ui.parse_pattern_03.textChanged.connect(
-            partial(self.handler, 'parse_pattern_03', 'refresh_parsing'))
-        self.ui.parse_pattern_04.textChanged.connect(
-            partial(self.handler, 'parse_pattern_04', 'refresh_parsing'))
-        self.ui.parse_pattern_05.textChanged.connect(
-            partial(self.handler, 'parse_pattern_05', 'refresh_parsing'))
-        self.ui.parse_pattern_06.textChanged.connect(
-            partial(self.handler, 'parse_pattern_06', 'refresh_parsing'))
-        self.ui.parse_pattern_07.textChanged.connect(
-            partial(self.handler, 'parse_pattern_07', 'refresh_parsing'))
-        self.ui.parse_pattern_08.textChanged.connect(
-            partial(self.handler, 'parse_pattern_08', 'refresh_parsing'))
-        self.ui.parse_pattern_09.textChanged.connect(
-            partial(self.handler, 'parse_pattern_09', 'refresh_parsing'))
-        self.ui.parse_pattern_10.textChanged.connect(
-            partial(self.handler, 'parse_pattern_10', 'refresh_parsing'))
-        self.ui.parse_pattern_11.textChanged.connect(
-            partial(self.handler, 'parse_pattern_11', 'refresh_parsing'))
-        self.ui.parse_pattern_12.textChanged.connect(
-            partial(self.handler, 'parse_pattern_12', 'refresh_parsing'))
-        self.ui.parse_pattern_13.textChanged.connect(
-            partial(self.handler, 'parse_pattern_13', 'refresh_parsing'))
-        self.ui.parse_pattern_14.textChanged.connect(
-            partial(self.handler, 'parse_pattern_14', 'refresh_parsing'))
-        self.ui.parse_pattern_15.textChanged.connect(
-            partial(self.handler, 'parse_pattern_15', 'refresh_parsing'))
-        self.ui.parse_pattern_16.textChanged.connect(
-            partial(self.handler, 'parse_pattern_16', 'refresh_parsing'))
-        self.ui.parse_pattern_17.textChanged.connect(
-            partial(self.handler, 'parse_pattern_01', 'refresh_parsing'))
-        self.ui.parse_pattern_18.textChanged.connect(
-            partial(self.handler, 'parse_pattern_02', 'refresh_parsing'))
-        self.ui.parse_pattern_19.textChanged.connect(
-            partial(self.handler, 'parse_pattern_03', 'refresh_parsing'))
-        self.ui.parse_pattern_20.textChanged.connect(
-            partial(self.handler, 'parse_pattern_04', 'refresh_parsing'))
-        self.ui.parse_pattern_21.textChanged.connect(
-            partial(self.handler, 'parse_pattern_05', 'refresh_parsing'))
-        self.ui.parse_pattern_22.textChanged.connect(
-            partial(self.handler, 'parse_pattern_06', 'refresh_parsing'))
-        self.ui.parse_pattern_23.textChanged.connect(
-            partial(self.handler, 'parse_pattern_07', 'refresh_parsing'))
-        self.ui.parse_pattern_24.textChanged.connect(
-            partial(self.handler, 'parse_pattern_08', 'refresh_parsing'))
-        self.ui.parse_pattern_25.textChanged.connect(
-            partial(self.handler, 'parse_pattern_09', 'refresh_parsing'))
-        self.ui.parse_pattern_26.textChanged.connect(
-            partial(self.handler, 'parse_pattern_10', 'refresh_parsing'))
-        self.ui.parse_pattern_27.textChanged.connect(
-            partial(self.handler, 'parse_pattern_11', 'refresh_parsing'))
-        self.ui.parse_pattern_28.textChanged.connect(
-            partial(self.handler, 'parse_pattern_12', 'refresh_parsing'))
-        self.ui.parse_pattern_29.textChanged.connect(
-            partial(self.handler, 'parse_pattern_13', 'refresh_parsing'))
-        self.ui.parse_pattern_30.textChanged.connect(
-            partial(self.handler, 'parse_pattern_14', 'refresh_parsing'))
-        self.ui.parse_pattern_31.textChanged.connect(
-            partial(self.handler, 'parse_pattern_15', 'refresh_parsing'))
-        self.ui.parse_pattern_32.textChanged.connect(
-            partial(self.handler, 'parse_pattern_16', 'refresh_parsing'))
-
-        self.ui.parse_repl_01.textChanged.connect(
-            partial(self.handler, 'parse_repl_01', 'refresh_parsing'))
-        self.ui.parse_repl_02.textChanged.connect(
-            partial(self.handler, 'parse_repl_02', 'refresh_parsing'))
-        self.ui.parse_repl_03.textChanged.connect(
-            partial(self.handler, 'parse_repl_03', 'refresh_parsing'))
-        self.ui.parse_repl_04.textChanged.connect(
-            partial(self.handler, 'parse_repl_04', 'refresh_parsing'))
-        self.ui.parse_repl_05.textChanged.connect(
-            partial(self.handler, 'parse_repl_05', 'refresh_parsing'))
-        self.ui.parse_repl_06.textChanged.connect(
-            partial(self.handler, 'parse_repl_06', 'refresh_parsing'))
-        self.ui.parse_repl_07.textChanged.connect(
-            partial(self.handler, 'parse_repl_07', 'refresh_parsing'))
-        self.ui.parse_repl_08.textChanged.connect(
-            partial(self.handler, 'parse_repl_08', 'refresh_parsing'))
-        self.ui.parse_repl_09.textChanged.connect(
-            partial(self.handler, 'parse_repl_09', 'refresh_parsing'))
-        self.ui.parse_repl_10.textChanged.connect(
-            partial(self.handler, 'parse_repl_10', 'refresh_parsing'))
-        self.ui.parse_repl_11.textChanged.connect(
-            partial(self.handler, 'parse_repl_11', 'refresh_parsing'))
-        self.ui.parse_repl_12.textChanged.connect(
-            partial(self.handler, 'parse_repl_12', 'refresh_parsing'))
-        self.ui.parse_repl_13.textChanged.connect(
-            partial(self.handler, 'parse_repl_13', 'refresh_parsing'))
-        self.ui.parse_repl_14.textChanged.connect(
-            partial(self.handler, 'parse_repl_14', 'refresh_parsing'))
-        self.ui.parse_repl_15.textChanged.connect(
-            partial(self.handler, 'parse_repl_15', 'refresh_parsing'))
-        self.ui.parse_repl_16.textChanged.connect(
-            partial(self.handler, 'parse_repl_16', 'refresh_parsing'))
-        self.ui.parse_repl_17.textChanged.connect(
-            partial(self.handler, 'parse_repl_01', 'refresh_parsing'))
-        self.ui.parse_repl_18.textChanged.connect(
-            partial(self.handler, 'parse_repl_02', 'refresh_parsing'))
-        self.ui.parse_repl_19.textChanged.connect(
-            partial(self.handler, 'parse_repl_03', 'refresh_parsing'))
-        self.ui.parse_repl_20.textChanged.connect(
-            partial(self.handler, 'parse_repl_04', 'refresh_parsing'))
-        self.ui.parse_repl_21.textChanged.connect(
-            partial(self.handler, 'parse_repl_05', 'refresh_parsing'))
-        self.ui.parse_repl_22.textChanged.connect(
-            partial(self.handler, 'parse_repl_06', 'refresh_parsing'))
-        self.ui.parse_repl_23.textChanged.connect(
-            partial(self.handler, 'parse_repl_07', 'refresh_parsing'))
-        self.ui.parse_repl_24.textChanged.connect(
-            partial(self.handler, 'parse_repl_08', 'refresh_parsing'))
-        self.ui.parse_repl_25.textChanged.connect(
-            partial(self.handler, 'parse_repl_09', 'refresh_parsing'))
-        self.ui.parse_repl_26.textChanged.connect(
-            partial(self.handler, 'parse_repl_10', 'refresh_parsing'))
-        self.ui.parse_repl_27.textChanged.connect(
-            partial(self.handler, 'parse_repl_11', 'refresh_parsing'))
-        self.ui.parse_repl_28.textChanged.connect(
-            partial(self.handler, 'parse_repl_12', 'refresh_parsing'))
-        self.ui.parse_repl_29.textChanged.connect(
-            partial(self.handler, 'parse_repl_13', 'refresh_parsing'))
-        self.ui.parse_repl_30.textChanged.connect(
-            partial(self.handler, 'parse_repl_14', 'refresh_parsing'))
-        self.ui.parse_repl_31.textChanged.connect(
-            partial(self.handler, 'parse_repl_15', 'refresh_parsing'))
-        self.ui.parse_repl_32.textChanged.connect(
-            partial(self.handler, 'parse_repl_16', 'refresh_parsing'))
-
-        self.ui.parse_source_01.textChanged.connect(
-            partial(self.handler, 'parse_source_01', 'refresh_parsing'))
-        self.ui.parse_source_02.textChanged.connect(
-            partial(self.handler, 'parse_source_02', 'refresh_parsing'))
-        self.ui.parse_source_03.textChanged.connect(
-            partial(self.handler, 'parse_source_03', 'refresh_parsing'))
-        self.ui.parse_source_04.textChanged.connect(
-            partial(self.handler, 'parse_source_04', 'refresh_parsing'))
-        self.ui.parse_source_05.textChanged.connect(
-            partial(self.handler, 'parse_source_05', 'refresh_parsing'))
-        self.ui.parse_source_06.textChanged.connect(
-            partial(self.handler, 'parse_source_06', 'refresh_parsing'))
-        self.ui.parse_source_07.textChanged.connect(
-            partial(self.handler, 'parse_source_07', 'refresh_parsing'))
-        self.ui.parse_source_08.textChanged.connect(
-            partial(self.handler, 'parse_source_08', 'refresh_parsing'))
-        self.ui.parse_source_09.textChanged.connect(
-            partial(self.handler, 'parse_source_09', 'refresh_parsing'))
-        self.ui.parse_source_10.textChanged.connect(
-            partial(self.handler, 'parse_source_10', 'refresh_parsing'))
-        self.ui.parse_source_11.textChanged.connect(
-            partial(self.handler, 'parse_source_11', 'refresh_parsing'))
-        self.ui.parse_source_12.textChanged.connect(
-            partial(self.handler, 'parse_source_12', 'refresh_parsing'))
-        self.ui.parse_source_13.textChanged.connect(
-            partial(self.handler, 'parse_source_13', 'refresh_parsing'))
-        self.ui.parse_source_14.textChanged.connect(
-            partial(self.handler, 'parse_source_14', 'refresh_parsing'))
-        self.ui.parse_source_15.textChanged.connect(
-            partial(self.handler, 'parse_source_15', 'refresh_parsing'))
-        self.ui.parse_source_16.textChanged.connect(
-            partial(self.handler, 'parse_source_16', 'refresh_parsing'))
-        self.ui.parse_source_17.textChanged.connect(
-            partial(self.handler, 'parse_source_01', 'refresh_parsing'))
-        self.ui.parse_source_18.textChanged.connect(
-            partial(self.handler, 'parse_source_02', 'refresh_parsing'))
-        self.ui.parse_source_19.textChanged.connect(
-            partial(self.handler, 'parse_source_03', 'refresh_parsing'))
-        self.ui.parse_source_20.textChanged.connect(
-            partial(self.handler, 'parse_source_04', 'refresh_parsing'))
-        self.ui.parse_source_21.textChanged.connect(
-            partial(self.handler, 'parse_source_05', 'refresh_parsing'))
-        self.ui.parse_source_22.textChanged.connect(
-            partial(self.handler, 'parse_source_06', 'refresh_parsing'))
-        self.ui.parse_source_23.textChanged.connect(
-            partial(self.handler, 'parse_source_07', 'refresh_parsing'))
-        self.ui.parse_source_24.textChanged.connect(
-            partial(self.handler, 'parse_source_08', 'refresh_parsing'))
-        self.ui.parse_source_25.textChanged.connect(
-            partial(self.handler, 'parse_source_09', 'refresh_parsing'))
-        self.ui.parse_source_26.textChanged.connect(
-            partial(self.handler, 'parse_source_10', 'refresh_parsing'))
-        self.ui.parse_source_27.textChanged.connect(
-            partial(self.handler, 'parse_source_11', 'refresh_parsing'))
-        self.ui.parse_source_28.textChanged.connect(
-            partial(self.handler, 'parse_source_12', 'refresh_parsing'))
-        self.ui.parse_source_29.textChanged.connect(
-            partial(self.handler, 'parse_source_13', 'refresh_parsing'))
-        self.ui.parse_source_30.textChanged.connect(
-            partial(self.handler, 'parse_source_14', 'refresh_parsing'))
-        self.ui.parse_source_31.textChanged.connect(
-            partial(self.handler, 'parse_source_15', 'refresh_parsing'))
-        self.ui.parse_source_32.textChanged.connect(
-            partial(self.handler, 'parse_source_16', 'refresh_parsing'))
+        # every field of every row refreshes the parsing
+        for row in range(1, PARSE_ROWS + 1):
+            for field in PARSE_FIELDS:
+                name = f"parse_{field}_{row:02d}"
+                getattr(self.ui, name).textChanged.connect(
+                    partial(self.handler, name, 'refresh_parsing'))
 
         # Sidecar Tab
         self.ui.side_folder.textChanged.connect(
@@ -619,6 +376,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'ftrack_shot', 'refresh_ftrack'))
         self.ui.ftrack_task.textChanged.connect(
             partial(self.handler, 'ftrack_task', 'refresh_ftrack'))
+        # Extensions (only these get ftrack notes); was never connected
+        self.ui.ftrack_include_2.textChanged.connect(
+            partial(self.handler, 'ftrack_include_2', 'refresh_ftrack'))
         self.ui.ftrack_label_use.clicked.connect(
             partial(self.handler, 'ftrack_label_use', 'refresh_ftrack'))
         self.ui.ftrack_label.textChanged.connect(
@@ -633,6 +393,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'ftrack_note_repl', 'select_ftrack'))
         self.ui.ftrack_do_op.clicked.connect(
             partial(self.handler, 'ftrack_do_op', 'refresh_ftrack'))
+        # Query Notes was never connected: toggling it did nothing until a re-read
+        self.ui.ftrack_do_notes.clicked.connect(
+            partial(self.handler, 'ftrack_do_notes', 'refresh_ftrack'))
+        self.ui.ftrack_export.clicked.connect(
+            partial(self.handler, 'ftrack_export', 'ftrack_export'))
 
         # vendor
         self.ui.vendor_csv_path.textChanged.connect(
@@ -1053,6 +818,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'ayon_filter_assignee_chbx', 'ayon_changed_filter'))
         self.ui.ayon_filter_tasktypes.textChanged.connect(
             partial(self.handler, 'ayon_filter_tasktypes', 'ayon_changed_filter'))
+        self.ui.ayon_filter_taskname_chbx.clicked.connect(
+            partial(self.handler, 'ayon_filter_taskname_chbx', 'ayon_changed_filter'))
+        self.ui.ayon_filter_tasknames.textChanged.connect(
+            partial(self.handler, 'ayon_filter_tasknames', 'ayon_changed_filter'))
         self.ui.ayon_filter_assignees.textChanged.connect(
             partial(self.handler, 'ayon_filter_assignees', 'ayon_changed_filter'))
 
@@ -1082,6 +851,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                     'ayon_changed_filter'))
         self.ui.ayon_export_butt.clicked.connect(
             partial(self.handler, 'ayon_export_butt', 'ayon_export_butt'))
+        self.ui.ayon_scan_butt.clicked.connect(
+            partial(self.handler, 'ayon_scan_butt', 'ayon_scan'))
+        self.ui.ayon_versions_matched_only.clicked.connect(
+            partial(self.handler, 'ayon_versions_matched_only', 'ayon_changed_filter'))
+        # Match version uses the cached Matched Versions: no Ayon query, just refresh
+        self.ui.ayon_version_match_chbx.clicked.connect(
+            partial(self.handler, 'ayon_version_match_chbx', 'refresh_spreadsheets'))
+        self.ui.ayon_version_match_pkg.textChanged.connect(
+            partial(self.handler, 'ayon_version_match_pkg', 'refresh_spreadsheets'))
+        self.ui.ayon_version_match_data.textChanged.connect(
+            partial(self.handler, 'ayon_version_match_data', 'refresh_spreadsheets'))
 
 
         self.ui.tree_filter_value.textChanged.connect(
@@ -1252,16 +1032,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         if group == 'refresh_ftrack':
             if self.data:
-                self.data.ftrack_query()
+                self._ayon_busy(self.data.ftrack_query, "Reading data from Ftrack...")
                 self.data.select_ftrack_note()
+                self.data.display_ftrack_table()
                 self.data.prepare_all_columns()
                 self.data.prepare_tables()
                 self.show_all()
+            else:
+                log.debug("Ftrack: load a package first, the ftrack tab queries the loaded files")
 
         if group == 'select_ftrack':
             # Skipping ftrack queries for speed
             if self.data:
                 self.data.select_ftrack_note()
+                self.data.display_ftrack_table()
                 self.data.prepare_all_columns()
                 self.data.prepare_tables()
                 self.show_all()
@@ -1331,11 +1115,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
                 self.data.export_all(column_widths_sub, column_widths_log)
 
+        if group == 'ftrack_export':
+            target = self._ayon_target()
+            self._ayon_busy(target.ftrack_export, "Exporting Ftrack shot list...")
+
         if sender == 'ayon_export_butt':
-            if self.data is not None:
-                self.data.ayon_data_read()
-                self.data.ayon_data_filter()
-                self.data.ayon_data_write()
+            target = self._ayon_target()
+
+            self._ayon_busy(target.ayon_export, "Exporting Ayon shot list...")
+            if target is self.data and self.data.merged_list:
+                # a first read also matches files: refresh the spreadsheets
+                self.data.prepare_all_columns()
+                self.data.prepare_tables()
+                self.show_all()
+
+        if group == 'ayon_scan':
+            target = self._ayon_target()
+            self._ayon_busy(target.ayon_scan, "Scanning Ayon...")
+            if target is self.data and self.data.merged_list:
+                self.data.prepare_all_columns()
+                self.data.prepare_tables()
+                self.show_all()
 
         if sender == 'preset_explore':
             self.expore_local_presets()
@@ -1398,6 +1198,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         if group == "ayon_changed_filter":
             if self.data is not None:
                 self.data.ayon_data_filter()
+            elif self.ayon_only is not None:
+                self.ayon_only.settings = self.settings
+                self.ayon_only.ayon_data_filter()
 
         if group == "tab_pairs":
             self.gui_show_hide_modules()
@@ -1731,6 +1534,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                                         'category': 'mainwindow_position',
                                         'position_x': x,
                                         'position_y': y}})
+        if getattr(self, 'panel_splitter', None) is not None:
+            self.settings.update({'panel_splitter': {
+                                        'category': 'splitter',
+                                        'sizes': [int(v) for v in self.panel_splitter.sizes()]}})
         for my_name, obj in inspect.getmembers(self.ui):
             name = my_name
             if name in self.NOT_SETTINGS:
@@ -1842,6 +1649,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.move(
                     int(setting_pos['position_x']),
                     int(setting_pos['position_y']))
+            setting_split = self.settings.get("panel_splitter")
+            if setting_split and getattr(self, 'panel_splitter', None) is not None:
+                try:
+                    sizes = [int(v) for v in setting_split.get('sizes', [])]
+                    if len(sizes) == 2 and min(sizes) > 0:
+                        self.panel_splitter.setSizes(sizes)
+                except (TypeError, ValueError):
+                    self.log.warning("Ignoring invalid saved panel sizes")
             self.ui_start = False
 
         for my_name, obj in inspect.getmembers(self.ui):
@@ -1972,6 +1787,367 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             one_setting['value'] = value
             log.info(f"Settings override: {key} = {value!r}")
 
+    # default height of the top tabs panel, it was fixed to this before
+    TOP_PANEL_DEFAULT = 350
+    TOP_PANEL_MIN = 350
+    BOTTOM_PANEL_MIN = 120
+
+    def _setup_panel_splitter(self):
+        """
+        Put TopTab and BottomTab into a vertical QSplitter, so the user can drag
+        the border between them. Done in code so ui_Submission.py can still be
+        regenerated from submission.ui.
+        Double click on the handle restores the default height.
+        :return: the splitter
+        """
+        top = self.ui.TopTab
+        bottom = self.ui.BottomTab
+        top_layout = self.ui.verticalLayout_15      # [TopTab, verticalLayout_10]
+        bottom_layout = self.ui.verticalLayout_10   # [BottomTab, buttons, progress]
+
+        top_layout.removeWidget(top)
+        bottom_layout.removeWidget(bottom)
+
+        splitter = QtWidgets.QSplitter(QtCore.Qt.Vertical, self.ui.centralwidget)
+        splitter.setObjectName("panel_splitter")
+        splitter.setChildrenCollapsible(False)
+        splitter.setHandleWidth(7)
+        splitter.addWidget(top)
+        splitter.addWidget(bottom)
+        # window resizing goes to the bottom panel, as before
+        splitter.setStretchFactor(0, 0)
+        splitter.setStretchFactor(1, 1)
+        splitter.setStyleSheet(
+            "QSplitter::handle:vertical { background: #3a3a3a; margin: 1px 40px; border-radius: 2px; }"
+            "QSplitter::handle:vertical:hover { background: #ffa02f; }")
+        handle = splitter.handle(1)
+        handle.setToolTip("Drag to resize the panels, double click to reset")
+        handle.installEventFilter(self)
+
+        # was a fixed 350 px, now 350 px minimum and free to grow
+        top.setMinimumHeight(self.TOP_PANEL_MIN)
+        top.setMaximumHeight(16777215)
+        bottom.setMinimumHeight(self.BOTTOM_PANEL_MIN)
+
+        top_layout.insertWidget(0, splitter, 1)
+        self._reset_panel_splitter(splitter)
+        return splitter
+
+    def _tune_top_tab_layouts(self):
+        """
+        Layout fixes for a top panel taller than the old fixed 350 px.
+        Done in code so ui_Submission.py can still be regenerated.
+        """
+        ui = self.ui
+        no_limit = 16777215
+        fixed_v = QtWidgets.QSizePolicy.Fixed
+
+        def keep_horizontal(widget, vertical):
+            pol = widget.sizePolicy()
+            pol.setVerticalPolicy(vertical)
+            widget.setSizePolicy(pol)
+
+        # Package: the file age group stays compact, extra height is empty
+        # space below all the controls
+        keep_horizontal(ui.groupBox_5, fixed_v)
+        ui.verticalLayout_128.addStretch(1)
+
+        # Parsing: the scroll area grows with the panel (was max 350 px),
+        # rows stay at the top
+        ui.scrollArea.setMaximumHeight(no_limit)
+        ui.verticalLayout_31.addStretch(1)
+
+        # Rename: Rename button as high as the Go button instead of
+        # stretching, extra height is empty space below
+        go_h = ui.write_button.minimumHeight() or 40
+        ui.Rename_go.setMinimumHeight(go_h)
+        ui.Rename_go.setMaximumHeight(go_h)
+        keep_horizontal(ui.Rename_go, fixed_v)
+        ui.verticalLayout_66.addStretch(1)
+
+        # Vendor: the scroll area (was max 450 px) and the two json editors
+        # (were max 400 px) grow with the panel
+        ui.scrollArea_4.setMaximumHeight(no_limit)
+        ui.vendor_csv_prefs_spreadsheet.setMaximumHeight(no_limit)
+        ui.vendor_csv_prefs_repres.setMaximumHeight(no_limit)
+
+        # Convert: controls at the top, extra height below them
+        ui.verticalLayout_35.addStretch(1)
+
+        # Presets: the group boxes were vertically centered, keep them at the top
+        ui.verticalLayout_95.addStretch(1)
+
+        # Spreadsheet: the column editors (were max 300 px) use the full height
+        for edit in (ui.sub_columns, ui.log_columns, ui.txt_columns):
+            edit.setMaximumHeight(no_limit)
+
+    def _add_parse_rows(self):
+        """
+        Add Parsing tab rows up to PARSE_ROWS, copying the look of the last
+        row from the .ui file. The new fields are set on self.ui with the same
+        naming (parse_name_33 ...), so they are saved in presets like the others.
+        """
+        ui = self.ui
+        labels = {'name': "Name:", 'pattern': "Pattern:", 'repl': "Repl:",
+                  'source': "Source:", 'filter': "Filter:"}
+        # last row that exists in the ui file
+        last = 0
+        while hasattr(ui, f"parse_name_{last + 1:02d}"):
+            last += 1
+        if last == 0 or last >= PARSE_ROWS:
+            return
+        template_row = ui.hl_parse032 if hasattr(ui, 'hl_parse032') else None
+        template_labels = []
+        if template_row is not None:
+            for i in range(template_row.count()):
+                w = template_row.itemAt(i).widget()
+                if isinstance(w, QtWidgets.QLabel):
+                    template_labels.append(w)
+        parent = ui.scrollAreaWidgetContents
+
+        def copy_look(dst, src):
+            dst.setSizePolicy(src.sizePolicy())
+            dst.setMinimumSize(src.minimumSize())
+            dst.setMaximumSize(src.maximumSize())
+            dst.setToolTip(src.toolTip())
+
+        for row in range(last + 1, PARSE_ROWS + 1):
+            hl = QtWidgets.QHBoxLayout()
+            hl.setObjectName(f"hl_parse{row:03d}")
+            for idx, field in enumerate(PARSE_FIELDS):
+                label = QtWidgets.QLabel(labels[field], parent)
+                if idx < len(template_labels):
+                    copy_look(label, template_labels[idx])
+                hl.addWidget(label)
+                edit = QtWidgets.QLineEdit(parent)
+                name = f"parse_{field}_{row:02d}"
+                edit.setObjectName(name)
+                src = getattr(ui, f"parse_{field}_{last:02d}", None)
+                if src is not None:
+                    copy_look(edit, src)
+                    edit.setPlaceholderText(src.placeholderText())
+                setattr(ui, name, edit)
+                hl.addWidget(edit)
+            setattr(ui, hl.objectName(), hl)
+            ui.verticalLayout_30.addLayout(hl)
+
+    def _add_ayon_controls(self):
+        """
+        Ayon tab additions, built in code so ui_Submission.py can be regenerated:
+        - Scan button: read the Ayon list now, also without a package
+        - Versions group: Pull versions checkbox and Product filters
+        New widgets are set on self.ui, so they are saved in presets.
+        """
+        ui = self.ui
+        parent = ui.tab_25
+
+        scan = QtWidgets.QPushButton("Scan", parent)
+        scan.setObjectName("ayon_scan_butt")
+        scan.setMinimumSize(QtCore.QSize(120, ui.ayon_export_butt.minimumHeight() or 35))
+        scan.setMaximumHeight(ui.ayon_export_butt.maximumHeight())
+        scan.setToolTip("Read the Ayon list now (also without a loaded package) "
+                        "and match it to the files, if any.")
+        ui.ayon_scan_butt = scan
+        ui.horizontalLayout_212.insertWidget(0, scan)
+
+        group = QtWidgets.QGroupBox("Versions", parent)
+        group.setObjectName("ayon_versions_group")
+        group.setMinimumSize(QtCore.QSize(350, 80))
+        group.setMaximumHeight(80)
+        pol = group.sizePolicy()
+        pol.setVerticalPolicy(QtWidgets.QSizePolicy.Fixed)
+        group.setSizePolicy(pol)
+        rows = QtWidgets.QVBoxLayout(group)
+        rows.setContentsMargins(6, 2, 6, 2)
+        rows.setSpacing(4)
+        row = QtWidgets.QHBoxLayout()
+        rows.addLayout(row)
+
+        chbx = QtWidgets.QCheckBox("Pull versions", group)
+        chbx.setObjectName("ayon_versions_chbx")
+        chbx.setMinimumSize(QtCore.QSize(110, 25))
+        chbx.setToolTip("Add version info of the preferred product to every Ayon shot / asset row "
+                        "(and its task rows). Used with the next Scan or package load.")
+        ui.ayon_versions_chbx = chbx
+        row.addWidget(chbx)
+
+        label = QtWidgets.QLabel("Product filters:", group)
+        row.addWidget(label)
+
+        filters = QtWidgets.QLineEdit(group)
+        filters.setObjectName("ayon_product_filters")
+        filters.setMinimumSize(QtCore.QSize(100, 25))
+        filters.setPlaceholderText("comp:renderCompMain:exr, :platePl01:exr")
+        filters.setToolTip(
+            "<p>task:product:representation, separated by commas. The task is optional.</p>"
+            "<p><b>comp:renderCompMain:exr</b> - representation exr of product renderCompMain "
+            "published from task comp<br>"
+            "<b>:platePl01:exr</b> - any task</p>"
+            "<p>Filters are tried in order, the first one with a match is used, so list the "
+            "preferred product first. The latest version of the product is used. "
+            "Wildcards * ? are allowed, names are not case sensitive.</p>"
+            "<p>Columns added: Product, Product Type, Version, Version Name, Version Status, "
+            "Version Author, Version Date, Version Comment, Version Task, Representation, "
+            "Repre Path, Version Filter, Version Frame Start / End, Version Handle Start / End, "
+            "Version FPS, Version Width / Height, Version Pixel Aspect, Version Step, Version Host, "
+            "Version Colorspace (keywords with the Ayon prefix, e.g. {ayon_Version}).</p>")
+        ui.ayon_product_filters = filters
+        row.addWidget(filters, 1)
+
+        # second row: match a concrete version of Matched Versions to each file
+        row2 = QtWidgets.QHBoxLayout()
+        rows.addLayout(row2)
+        match = QtWidgets.QCheckBox("Match version", group)
+        match.setObjectName("ayon_version_match_chbx")
+        match.setMinimumSize(QtCore.QSize(110, 25))
+        match_tip = (
+            "<p>For every file matched to an Ayon folder, find the Matched Versions row "
+            "(same folder) whose <b>Version key</b> equals the file's <b>Package key</b>, "
+            "e.g. Package <b>{version}</b> and Version <b>{Version}</b>. Numbers compare by "
+            "value, so 007 equals 7.</p>"
+            "<p>The row's columns are added to the file with the Ayon prefix and "
+            "<b>Matched</b>, e.g. {ayon_Matched Version}, {ayon_Matched Version Status}, "
+            "{ayon_Matched Version Comment}, {ayon_Matched Repre Path}. "
+            "Matched rows are teal in Matched Versions.</p>"
+            "<p>For checks every file matched to an Ayon folder also gets "
+            "{ayon_Matched Version Exists} (True / False) and "
+            "{ayon_Matched Max Existing Version}, also when its version is not in Ayon yet.</p>")
+        match.setToolTip(match_tip)
+        ui.ayon_version_match_chbx = match
+        row2.addWidget(match)
+        row2.addWidget(QtWidgets.QLabel("Package:", group))
+        mpkg = QtWidgets.QLineEdit(group)
+        mpkg.setObjectName("ayon_version_match_pkg")
+        mpkg.setMinimumSize(QtCore.QSize(100, 25))
+        mpkg.setPlaceholderText("{version}")
+        mpkg.setToolTip(match_tip)
+        ui.ayon_version_match_pkg = mpkg
+        row2.addWidget(mpkg, 1)
+        row2.addWidget(QtWidgets.QLabel("Version:", group))
+        mdata = QtWidgets.QLineEdit(group)
+        mdata.setObjectName("ayon_version_match_data")
+        mdata.setMinimumSize(QtCore.QSize(100, 25))
+        mdata.setPlaceholderText("{Version}")
+        mdata.setToolTip(match_tip)
+        ui.ayon_version_match_data = mdata
+        row2.addWidget(mdata, 1)
+
+        idx = ui.verticalLayout_116.indexOf(ui.groupBox_33)
+        ui.verticalLayout_116.insertWidget(idx + 1 if idx >= 0 else -1, group)
+
+        # List Filters: Task Names row, below Task Types, same look
+        name_row = QtWidgets.QHBoxLayout()
+        tn_chbx = QtWidgets.QCheckBox("Task Names:", ui.groupBox_34)
+        tn_chbx.setObjectName("ayon_filter_taskname_chbx")
+        tn_chbx.setSizePolicy(ui.ayon_filter_tasktype_chbx.sizePolicy())
+        tn_chbx.setMinimumSize(ui.ayon_filter_tasktype_chbx.minimumSize())
+        tn_chbx.setMaximumSize(ui.ayon_filter_tasktype_chbx.maximumSize())
+        tn_tip = ("Show only tasks with these names, separated by commas, e.g. comp, compFinal. "
+                  "Wildcards * ? allowed, not case sensitive. Works together with Task Types "
+                  "and Assignees: a task must pass all enabled filters.")
+        tn_chbx.setToolTip(tn_tip)
+        ui.ayon_filter_taskname_chbx = tn_chbx
+        name_row.addWidget(tn_chbx)
+        tn_edit = QtWidgets.QLineEdit(ui.groupBox_34)
+        tn_edit.setObjectName("ayon_filter_tasknames")
+        tn_edit.setSizePolicy(ui.ayon_filter_tasktypes.sizePolicy())
+        tn_edit.setMinimumSize(ui.ayon_filter_tasktypes.minimumSize())
+        tn_edit.setMaximumSize(ui.ayon_filter_tasktypes.maximumSize())
+        tn_edit.setPlaceholderText("comp, compFinal")
+        tn_edit.setToolTip(tn_tip)
+        ui.ayon_filter_tasknames = tn_edit
+        name_row.addWidget(tn_edit)
+        pos = ui.verticalLayout_114.indexOf(ui.horizontalLayout_208)
+        ui.verticalLayout_114.insertLayout(pos + 1 if pos >= 0 else -1, name_row)
+
+        ui.ayon_output_folder.setToolTip(
+            "<p>Folder where <b>Export Shot List</b> saves ayon-list.csv, ayon-list-versions.csv "
+            "(with Versions CSV) and optionally the thumbnails.</p>")
+
+        # export checkbox for the Matched Versions csv, next to the CSV / Excel ones
+        vcsv = QtWidgets.QCheckBox("Versions CSV", parent)
+        vcsv.setObjectName("ayon_export_versions_csv")
+        vcsv.setMinimumSize(QtCore.QSize(110, 25))
+        vcsv.setToolTip("Also write the Matched Versions list to ayon-list-versions.csv, "
+                        "in the same folder as ayon-list.csv")
+        ui.ayon_export_versions_csv = vcsv
+        pos = ui.horizontalLayout_68.indexOf(ui.ayon_export_excel)
+        ui.horizontalLayout_68.insertWidget(pos + 1 if pos >= 0 else -1, vcsv)
+
+        # sub tabs: Shot List (the existing table) and Matched Versions
+        tabs = QtWidgets.QTabWidget(parent)
+        tabs.setObjectName("ayon_tables_tab")
+        list_page = QtWidgets.QWidget()
+        list_layout = QtWidgets.QVBoxLayout(list_page)
+        list_layout.setContentsMargins(0, 0, 0, 0)
+        table_index = ui.verticalLayout_118.indexOf(ui.ayon_table)
+        ui.verticalLayout_118.removeWidget(ui.ayon_table)
+        list_layout.addWidget(ui.ayon_table)
+        tabs.addTab(list_page, "Shot List")
+
+        versions_page = QtWidgets.QWidget()
+        versions_layout = QtWidgets.QVBoxLayout(versions_page)
+        versions_layout.setContentsMargins(0, 0, 0, 0)
+        vtable = QtWidgets.QTableWidget(versions_page)
+        vtable.setObjectName("ayon_versions_table")
+        vtable.setSizePolicy(ui.ayon_table.sizePolicy())
+        vtable.setMinimumSize(ui.ayon_table.minimumSize())
+        vtable.setToolTip("All versions of the configured products (Product filters) of the Ayon folders "
+                          "matched to the package files, sorted by folder path and version "
+                          "(needs Pull versions). Preferred = picked by the product filters.")
+        vbar = QtWidgets.QHBoxLayout()
+        vmatched = QtWidgets.QCheckBox("Show matched only", versions_page)
+        vmatched.setObjectName("ayon_versions_matched_only")
+        vmatched.setToolTip("Only the versions a package file matched (teal, Match version). "
+                            "Versions CSV exports what is shown.")
+        ui.ayon_versions_matched_only = vmatched
+        vbar.addWidget(vmatched)
+        vbar.addStretch(1)
+        versions_layout.addLayout(vbar)
+        versions_layout.addWidget(vtable)
+        tabs.addTab(versions_page, "Matched Versions")
+        ui.ayon_versions_table = vtable
+        ui.ayon_versions_page = versions_page
+        ui.ayon_tables_tab = tabs
+        ui.verticalLayout_118.insertWidget(table_index if table_index >= 0 else -1, tabs, 1)
+
+    def _ayon_target(self):
+        """
+        Sequencer for Ayon operations: the loaded package, or an Ayon only
+        one when no package is loaded
+        """
+        if self.data is not None:
+            return self.data
+        if self.ayon_only is None:
+            self.ayon_only = Sequencer(None, sequence_mode='holes_allowed', gui=self.settings,
+                                       more_settings=self.settings_obj, ui=self.ui,
+                                       headless=self.no_gui)
+        self.ayon_only.settings = self.settings
+        return self.ayon_only
+
+    def _ayon_busy(self, fn, message):
+        """run fn with a wait cursor and a status bar message"""
+        self.ui.statusBar.showMessage(message)
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        try:
+            return fn()
+        finally:
+            QtWidgets.QApplication.restoreOverrideCursor()
+            self.ui.statusBar.clearMessage()
+
+    def _reset_panel_splitter(self, splitter=None):
+        splitter = splitter or self.panel_splitter
+        total = max(sum(splitter.sizes()), self.TOP_PANEL_DEFAULT + self.BOTTOM_PANEL_MIN)
+        splitter.setSizes([self.TOP_PANEL_DEFAULT, total - self.TOP_PANEL_DEFAULT])
+
+    def eventFilter(self, obj, event):
+        splitter = getattr(self, 'panel_splitter', None)
+        if splitter is not None and obj is splitter.handle(1) \
+                and event.type() == QtCore.QEvent.MouseButtonDblClick:
+            self._reset_panel_splitter()
+            return True
+        return super().eventFilter(obj, event)
+
     def get_user_name(self):
         return getpass.getuser()
 
@@ -2033,7 +2209,7 @@ examples:
   # override preset values for this run only
   python submission_helper.py -i D:/out/pkg_v001 -p clientX --settings name_rename_auto=false,prefs_counter_start=5
 
-  (with the built exe, use submission_helper.exe instead of python submission_helper.py)
+  (with the built exe, use SubmissionHelper-cli.exe instead of python submission_helper.py)
 
 exit codes:
   0  finished
@@ -2159,6 +2335,12 @@ def check_cli_args(args):
 
 
 if __name__ == "__main__":
+    # the windowed exe has no console: stdout / stderr are None there, a
+    # stray print or argparse message must not crash the app
+    if sys.stdout is None:
+        sys.stdout = open(os.devnull, 'w')
+    if sys.stderr is None:
+        sys.stderr = open(os.devnull, 'w')
     args = vars(get_args())
     input_path = args['i']
     input_preset = args['p']

@@ -18,10 +18,22 @@ from unidecode import unidecode
 
 import helpers
 import parse_file_name
-from ftrack import FtrackHelper
+from ftrack import FtrackHelper, open_session, find_project_id
 from metadata import MetaData
-from ayon_shotlist import AyonShotlist
+from ayon_shotlist import AyonShotlist, parse_product_filters
 from ayon_publish import AyonPublish
+
+# number of rows on the Parsing tab (32 come from the .ui file, the rest are
+# added by MainWindow._add_parse_rows)
+PARSE_ROWS = 48
+PARSE_FIELDS = ('name', 'pattern', 'repl', 'source', 'filter')
+
+
+class _KeepMissing(dict):
+    """format_map helper: unknown {keys} stay in the text"""
+    def __missing__(self, key):
+        return '{' + key + '}'
+
 
 class Sequencer(object):
     def __init__(self, in_path, sequence_mode='to_subsequences', gui=None, more_settings=None, ui=None, headless=False):
@@ -60,6 +72,10 @@ class Sequencer(object):
         self._prep_paths_vars()
 
         self.my_ayon = None
+        self.ayon_data = []
+        self.ayon_gui = None
+        # every version of the products of the Ayon folders matched to files
+        self.ayon_matched_versions = []
 
         self.renames = []
         self.output = {}
@@ -69,6 +85,11 @@ class Sequencer(object):
         self.vendor_csv_prefs_spreadsheet = {}
         self.vendor_csv_prefs_repres = {}
 
+        if in_path is None:
+            # Ayon only: used by the Ayon tab Scan button before a package
+            # is loaded, no files are read
+            self.in_path = ''
+            return
         if not os.path.exists(in_path):
             self.log.error(f"Package path '{in_path}' does not exist.")
         else:
@@ -145,18 +166,10 @@ class Sequencer(object):
                         self.publish_ayon(mode="farm")
                     elif action == "a":
                         # Export Ayon Shotlist
-                        self.ayon_data_read()
-                        self.ayon_data_filter()
-                        self.ayon_data_write()
+                        self.ayon_export()
                     elif action == "x":
                         # Export Ftrack Shotlist
-                        f = FtrackHelper(self.settings, self.paths)
-                        if f.is_session_ok():
-                            f.get_ftrack_info()
-                            out_dir = self.in_path if os.path.isdir(self.in_path) else os.path.dirname(self.in_path)
-                            f.ftrack_info_to_csv(os.path.join(out_dir, "ftrack_shotlist.csv"))
-                        else:
-                            self.log.warning("Ftrack session is not available, shotlist not exported.")
+                        self.ftrack_export()
                     else:
                         self.log.warning(f"Unknown action: {action}")
                     self.log.info(
@@ -269,12 +282,20 @@ class Sequencer(object):
             if self.settings_inst.get('deadline') and  self.settings_inst.get('deadline') != "" and os.path.exists(self.settings_inst['deadline']):
                 together['deadline'] = self.settings_inst['deadline']
 
-            if self.settings_inst.get('ftrack_server_url') and  self.settings_inst.get('ftrack_server_url') != "":
-                together['FTRACK_SERVER'] = self.settings_inst['ftrack_server_url']
-            if self.settings_inst.get('ftrack_api_key') and  self.settings_inst.get('ftrack_api_key') != "":
-                together['FTRACK_API_KEY'] = self.settings_inst['ftrack_api_key']
-            if self.settings_inst.get('ftrack_api_user') and  self.settings_inst.get('ftrack_api_user') != "":
-                together['FTRACK_API_USER'] = self.settings_inst['ftrack_api_user']
+            # ftrack: current names, then the names used until mid 2025
+            # (server_url / api_key / api_user), still in older install.json files
+            legacy_used = []
+            for env_key, name, legacy in (('FTRACK_SERVER', 'ftrack_server_url', 'server_url'),
+                                          ('FTRACK_API_KEY', 'ftrack_api_key', 'api_key'),
+                                          ('FTRACK_API_USER', 'ftrack_api_user', 'api_user')):
+                if self.settings_inst.get(name):
+                    together[env_key] = self.settings_inst[name]
+                elif self.settings_inst.get(legacy):
+                    together[env_key] = self.settings_inst[legacy]
+                    legacy_used.append(f"{legacy} -> {name}")
+            if legacy_used:
+                self.log.debug("install.json uses old ftrack key names, consider renaming: "
+                               + ", ".join(legacy_used))
 
             if self.settings_inst.get('ayon_server_url') and  self.settings_inst.get('ayon_server_url') != "":
                 together['AYON_SERVER_URL'] = self.settings_inst['ayon_server_url']
@@ -420,9 +441,11 @@ class Sequencer(object):
         if not self.headless:
             self.ui.statusBar.showMessage("Reading data from Ftrack", 3000)
         self.ftrack = {}
+        # notes and OpenPype attributes
         self.ftrack_query()
         self.select_ftrack_note()
-        self.ftrack_op_attrs()
+        if not self.headless:
+            self.display_ftrack_table()
 
         self.csv_data_assign()
         if not self.headless:
@@ -430,8 +453,11 @@ class Sequencer(object):
             pass
 
         self.ayon_data_assign()
+        self.ayon_versions_update()
+        self.ayon_versions_assign()
         if not self.headless:
             self.display_ayon_table()
+            self.display_ayon_versions_table()
 
         # sidecar files filter
         if not self.headless:
@@ -2059,24 +2085,26 @@ class Sequencer(object):
 
         self.regexes = {}
         if self.settings:
-            indexes = [str(x).zfill(2) for x in range(1, 33)]
+            def _val(k):
+                # presets saved before the extra rows existed don't have them
+                return (self.settings.get(k) or {}).get("value") or ""
+
+            indexes = [str(x).zfill(2) for x in range(1, PARSE_ROWS + 1)]
             for one in indexes:
-                name_key = "parse_name_" + one
-                key = self.settings[name_key]["value"]
-                name_pat = "parse_pattern_" + one
-                pat = self.settings[name_pat]["value"]
-                name_filter = "parse_filter_" + one
-                fltr = self.settings[name_filter]["value"]
-                try:
-                    pat_compiled = re.compile(pat)
-                    pat_valid = True
-                except re.error:
-                    pat_compiled = None
-                    pat_valid = False
-                name_rep = "parse_repl_" + one
-                rep = self.settings[name_rep]["value"]
-                name_src = "parse_source_" + one
-                src = self.settings[name_src]["value"]
+                key = _val("parse_name_" + one)
+                pat = _val("parse_pattern_" + one)
+                fltr = _val("parse_filter_" + one)
+                pat_compiled = None
+                pat_valid = False
+                if pat:
+                    try:
+                        pat_compiled = re.compile(pat)
+                        pat_valid = True
+                    except re.error as e:
+                        # debug only: patterns are invalid while being typed
+                        self.log.debug(f"Parsing row {one}: invalid pattern '{pat}': {e}")
+                rep = _val("parse_repl_" + one)
+                src = _val("parse_source_" + one)
 
                 # only add regex if it is valid and not empty
                 if key and pat and src and pat_valid:
@@ -3511,25 +3539,43 @@ class Sequencer(object):
                 self.settings['ayon_filter_tasktype_chbx']['value']) or False,
             'filter_tasktypes': split_itms(self.settings['ayon_filter_tasktypes'][
                                     'value'] or ""),
+            'filter_taskname': bool((self.settings.get('ayon_filter_taskname_chbx') or {}).get('value')),
+            'filter_tasknames': split_itms((self.settings.get('ayon_filter_tasknames') or {}).get('value') or ""),
             'filter_assignee': bool(
                 self.settings['ayon_filter_assignee_chbx']['value']) or False,
             'filter_assignees': split_itms(self.settings['ayon_filter_assignees'][
-                                    'value'] or "")
+                                    'value'] or ""),
+            # added later, missing in older presets
+            'do_versions': bool((self.settings.get('ayon_versions_chbx') or {}).get('value')),
+            'do_versions_csv': bool((self.settings.get('ayon_export_versions_csv') or {}).get('value')),
+            'version_match': bool((self.settings.get('ayon_version_match_chbx') or {}).get('value')),
+            'version_match_pkg': (self.settings.get('ayon_version_match_pkg') or {}).get('value') or '',
+            'version_match_data': (self.settings.get('ayon_version_match_data') or {}).get('value') or '',
+            'product_filters': parse_product_filters(
+                (self.settings.get('ayon_product_filters') or {}).get('value') or ""),
         }
         # turn off multi filter if no filter provided
         if self.ayon_gui['filter_tasktypes'] is None or len(self.ayon_gui['filter_tasktypes']) == 0:
             self.ayon_gui['filter_tasktype'] = False
         if self.ayon_gui['filter_assignees'] is None or len(self.ayon_gui['filter_assignees']) == 0:
             self.ayon_gui['filter_assignee'] = False
+        if not self.ayon_gui['filter_tasknames']:
+            self.ayon_gui['filter_taskname'] = False
 
 
-    def ayon_data_read(self):
+    def ayon_data_read(self, force=False):
         """
-
+        Read the shot list (and versions, if enabled) from Ayon
+        :param force: read even when the Ayon "Enable" checkbox is off (Scan button)
         """
         self.ayon_collect_gui()
 
-        if not self.ayon_gui['do_shotlist'] or self.ayon_gui['project'] == "":
+        if self.ayon_gui['project'] == "":
+            if force:
+                self.log.warning("Ayon scan: set the Ayon project first")
+            self.ayon_data = []
+            return self.ayon_data
+        if not self.ayon_gui['do_shotlist'] and not force:
             self.ayon_data = []
             return self.ayon_data
 
@@ -3538,7 +3584,221 @@ class Sequencer(object):
             self.ui,
             self.paths
         )
-        self.ayon_data = self.my_ayon.get_shotlist()
+        self.ayon_data = self.my_ayon.get_shotlist() or []
+        if self.my_ayon.error:
+            self.log.error(f"Ayon: {self.my_ayon.error}")
+        else:
+            self.log.info(f"Ayon: {len(self.ayon_data)} row(s) read from project {self.ayon_gui['project']}")
+        return self.ayon_data
+
+    def ayon_scan(self):
+        """
+        Scan button: read the Ayon list now, match it to the files (if any)
+        and show it
+        """
+        self.ayon_data_read(force=True)
+        if self.my_ayon is None or self.my_ayon.error:
+            return
+        self.ayon_data_filter()
+        if self.merged_list:
+            self.ayon_data_assign()
+            self.ayon_versions_update()
+            self.ayon_versions_assign()
+            self.display_ayon_table()
+            self.display_ayon_versions_table()
+
+    def ayon_versions_update(self):
+        """
+        Matched Versions: with Pull versions on and files matched to Ayon
+        folders, read every version of the products of those folders
+        (cached in AyonShotlist, Ayon is asked only when the matches change)
+        """
+        rows = []
+        if self.my_ayon is not None and not self.my_ayon.error and self.ayon_gui \
+                and self.ayon_gui.get('do_versions') and self.merged_list:
+            matched = {r.get('_folder_id') for r in self.ayon_data or [] if r.get('_matched')}
+            if matched:
+                rows = self.my_ayon.get_matched_versions(matched)
+        self.ayon_matched_versions = rows
+
+    # Matched Versions columns that show the preferred (green) / file
+    # matched (teal) mark; the others keep the folder shade
+    AYON_MARKED_COLUMNS = ('Folder Name', 'Folder Type', 'Product', 'Product Type',
+                           'Version', 'Version Name')
+
+    # prefix + this + column, e.g. {ayon_Matched Version}
+    MATCHED_VERSION_KEY = "Matched "
+
+    @staticmethod
+    def _same_value(a, b):
+        """equal text, or equal numbers ("007" == "7", "v007" == "v7" is not)"""
+        a, b = str(a).strip(), str(b).strip()
+        if a == b:
+            return True
+        return a.isdigit() and b.isdigit() and int(a) == int(b)
+
+    def ayon_versions_assign(self):
+        """
+        Match version: for every file matched to an Ayon folder, find the row
+        of Matched Versions (same folder) where the package key equals the
+        list key, e.g. {version} == {Version}. Its columns are added to the
+        file as {<prefix>Matched <column>}, e.g. {ayon_Matched Version Status}.
+        """
+        class Default(dict):
+            def __missing__(self, key):
+                return '{' + key + '}'
+
+        def expand(template, values):
+            try:
+                return template.format_map(Default(values))
+            except (ValueError, IndexError, AttributeError):
+                return template
+
+        prefix = (self.ayon_gui or {}).get('prefix', '')
+        key_start = prefix + self.MATCHED_VERSION_KEY
+        for item in self.merged_list or []:
+            for k in [k for k in item if str(k).startswith(key_start)]:
+                del item[k]
+        for row in self.ayon_matched_versions or []:
+            row["Matched Files"] = ''
+            row["Version Exists"] = "False"
+
+        gui = self.ayon_gui or {}
+        if not gui.get('version_match') or not self.ayon_matched_versions or not self.merged_list:
+            return
+        pkg_tpl, data_tpl = gui.get('version_match_pkg', ''), gui.get('version_match_data', '')
+        if not pkg_tpl or not data_tpl:
+            self.log.warning("Match version is on, but its package or list key is empty")
+            return
+
+        rows_by_folder = {}
+        for row in self.ayon_matched_versions:
+            rows_by_folder.setdefault(row.get('_folder_id'), []).append(row)
+
+        files_matched = 0
+        files_in_folders = 0
+        example = None
+        for item in self.merged_list:
+            folder_ids = item.get('_ayon_folder_ids') or set()
+            candidates = [r for f in folder_ids for r in rows_by_folder.get(f, [])]
+            if not candidates:
+                continue
+            files_in_folders += 1
+            pkg = expand(pkg_tpl, item)
+            hits = [r for r in candidates if self._same_value(pkg, expand(data_tpl, {**item, **r}))]
+            if not hits:
+                if example is None:
+                    example = (item.get('name', ''), pkg,
+                               sorted({expand(data_tpl, {**item, **r}) for r in candidates})[:6])
+                # the file's version is not in Ayon yet: still tell the
+                # checks so, and what the highest existing version is
+                # (of the preferred product, or of all listed products)
+                preferred = next((r for r in candidates if r.get('Preferred')), None)
+                same_product = [r for r in candidates
+                                if preferred is None or r.get('Product') == preferred.get('Product')]
+                item[key_start + "Version Exists"] = "False"
+                item[key_start + "Max Existing Version"] = str(
+                    max(int(r.get('Version') or 0) for r in same_product))
+                continue
+            for r in hits:
+                r["Matched Files"] = str(int(r["Matched Files"] or 0) + 1)
+                r["Version Exists"] = "True"
+            # several products can have the same version number: prefer the
+            # preferred one, then the first by sort order
+            hit = next((r for r in hits if r.get('Preferred')), hits[0])
+            for k, v in hit.items():
+                if not str(k).startswith('_') and k != "Matched Files":
+                    item[key_start + k] = v
+            files_matched += 1
+
+        if files_in_folders and files_matched < files_in_folders:
+            msg = (f"Match version: {files_matched} of {files_in_folders} file item(s) matched a version")
+            if example:
+                msg += (f"; e.g. '{example[0]}': package {pkg_tpl!r} -> {example[1]!r}, "
+                        f"list {data_tpl!r} gives {example[2]}")
+            level = logging.WARNING
+        else:
+            msg = f"Match version: {files_matched} of {files_in_folders} file item(s) matched a version"
+            level = logging.INFO
+        if msg != getattr(self, '_last_version_match_msg', None):
+            self._last_version_match_msg = msg
+            self.log.log(level, msg)
+
+    def _setting_on(self, key):
+        settings = getattr(self, 'settings', None)
+        return bool((settings.get(key) or {}).get('value')) if settings else False
+
+    def ayon_visible_list(self):
+        """
+        Shot list rows as shown and exported: list filters, and Matched Only
+        """
+        matched_only = self._setting_on('ayon_filter_matched')
+        return [r for r in self.ayon_data or []
+                if not r.get('_hide') and (not matched_only or r.get('_matched'))]
+
+    def ayon_visible_versions(self):
+        """
+        Matched Versions rows as shown and exported: only folders still shown
+        in the shot list (list filters apply), and with "Show matched only"
+        only the versions a file matched (teal)
+        """
+        visible_folders = {r.get('_folder_id') for r in self.ayon_visible_list()}
+        rows = [r for r in self.ayon_matched_versions or [] if r.get('_folder_id') in visible_folders]
+        if self._setting_on('ayon_versions_matched_only'):
+            rows = [r for r in rows if r.get('Matched Files')]
+        return rows
+
+    def display_ayon_versions_table(self):
+        table_ui = getattr(self.ui, 'ayon_versions_table', None)
+        if table_ui is None:
+            return
+        rows = self.ayon_visible_versions()
+        from ayon_shotlist import MATCHED_VERSION_COLUMNS
+        titles = list(MATCHED_VERSION_COLUMNS)
+        table_ui.setSortingEnabled(False)
+        table_ui.clear()
+        table_ui.setColumnCount(len(titles))
+        table_ui.setHorizontalHeaderLabels(titles)
+        table_ui.setRowCount(len(rows))
+        # rows of the same folder share a shade, alternating per folder
+        band_colors = ('#4d4d4d', '#3a3a3a')
+        band = 0
+        last_folder = None
+        for row, line in enumerate(rows):
+            preferred = bool(line.get('Preferred'))
+            file_matched = bool(line.get('Matched Files'))
+            folder = line.get('Folder Path')
+            if last_folder is not None and folder != last_folder:
+                band = 1 - band
+            last_folder = folder
+            for col, title in enumerate(titles):
+                value = str(line.get(title) or '')
+                shown = ' '.join(value.split()) if '\n' in value else value
+                itm = QtWidgets.QTableWidgetItem(shown)
+                if title in self.AYON_CAPPED_COLUMNS or shown != value:
+                    itm.setToolTip(value)
+                # file matched (Match version): teal, preferred: green
+                color = band_colors[band]
+                if title in self.AYON_MARKED_COLUMNS:
+                    color = '#1f6f78' if file_matched else ('darkgreen' if preferred else color)
+                itm.setBackground(QtGui.QColor(color))
+                table_ui.setItem(row, col, itm)
+        self.fit_ayon_columns(table_ui, titles)
+        self.single_line_rows(table_ui)
+        table_ui.setSortingEnabled(True)
+        # sub tab title shows the count
+        tabs = getattr(self.ui, 'ayon_tables_tab', None)
+        if tabs is not None:
+            idx = tabs.indexOf(getattr(self.ui, 'ayon_versions_page', None))
+            if idx >= 0:
+                total = len(self.ayon_matched_versions or [])
+                if not total:
+                    text = "Matched Versions"
+                elif len(rows) == total:
+                    text = f"Matched Versions ({total})"
+                else:
+                    text = f"Matched Versions ({len(rows)} of {total})"
+                tabs.setTabText(idx, text)
 
     def ayon_data_filter(self):
         if self.my_ayon is None or getattr(self.my_ayon, 'error', None):
@@ -3549,10 +3809,30 @@ class Sequencer(object):
         self.my_ayon.filter_shotlist()
         self.ayon_data = self.my_ayon.data
         self.display_ayon_table()
+        # list filters also limit Matched Versions
+        self.display_ayon_versions_table()
+
+    def ayon_export(self):
+        """
+        Export Shot List button / headless action a: write what the tables
+        show. Ayon is only read when nothing is loaded yet (then like Scan,
+        including matching to the files); re-reading used to drop the
+        matches, which emptied the tables and the csv with Matched Only on.
+        """
+        if self.my_ayon is None or self.my_ayon.error or not self.ayon_data:
+            self.ayon_scan()
+        else:
+            self.ayon_data_filter()
+        self.ayon_data_write()
 
     def ayon_data_write(self):
         if self.my_ayon is not None and not getattr(self.my_ayon, 'error', None):
-            self.my_ayon.write_csv()
+            self.ayon_collect_gui()
+            self.my_ayon.update_output(self.ayon_gui)
+            # export what is shown
+            self.my_ayon.write_csv(self.ayon_visible_list())
+            if self.ayon_gui and self.ayon_gui.get('do_versions_csv'):
+                self.my_ayon.write_versions_csv(self.ayon_visible_versions())
 
     def ayon_data_assign(self):
         class Default(dict):
@@ -3561,6 +3841,11 @@ class Sequencer(object):
 
         if self.ayon_data is None or len(self.ayon_data) == 0:
             return
+        # matches from an earlier assign are stale (files or rules changed)
+        for one_data_line in self.ayon_data:
+            one_data_line.pop("_matched", None)
+        for item in self.merged_list or []:
+            item.pop("_ayon_folder_ids", None)
         if self.merged_list is None or len(self.merged_list) == 0:
             return
         if self.settings is None:
@@ -3589,29 +3874,76 @@ class Sequencer(object):
         if filters is None or len(filters) == 0:
             return
 
+        def expand(template, first, second):
+            try:
+                out = template.format_map(Default(first))
+                return out.format_map(Default(second))
+            except (ValueError, IndexError, AttributeError):
+                return template
+
+        def compare(item, one_data_line):
+            """:return: list of (package value, list value, equal) per rule"""
+            out = []
+            for one_filter in filters:
+                pkg = expand(one_filter['pkg'] or '', item, one_data_line)
+                data = expand(one_filter['data'] or '', one_data_line, item)
+                out.append((str(pkg), str(data), str(pkg) == str(data)))
+            return out
+
+        matched_items = 0
+        best = None  # closest miss, for the log: (rules equal, item, row, compare result)
         for item in self.merged_list:
+            item_matched = False
             for one_data_line in self.ayon_data:
-                matched_filters = 0
-                for one_filter in filters:
-                    pkg = one_filter['pkg'].format_map(Default(item))
-                    pkg = pkg.format_map(Default(one_data_line))
-                    data = one_filter['data'].format_map(Default(one_data_line))
-                    data = data.format_map(Default(item))
-                    if pkg is None or data is None:
-                        continue
-                    if str(pkg) == str(data):
-                        matched_filters += 1
+                result = compare(item, one_data_line)
+                equal = sum(1 for r in result if r[2])
 
                 # skip item if not matching
-                if matched_filters != len(filters):
+                if equal != len(filters):
+                    if best is None or equal > best[0]:
+                        best = (equal, item, one_data_line, result)
                     continue
 
-                # merge data lines
+                # merge data lines (not the internal _ columns)
                 prefixed_line = {}
                 for k, v in one_data_line.items():
+                    if str(k).startswith('_'):
+                        continue
                     prefixed_line[f"{self.ayon_gui['prefix']}{k}"] = v
                 item.update(prefixed_line)
                 one_data_line["_matched"] = True
+                item.setdefault("_ayon_folder_ids", set()).add(one_data_line.get("_folder_id"))
+                item_matched = True
+            if item_matched:
+                matched_items += 1
+
+        self._log_ayon_matching(matched_items, len(self.merged_list), filters, best)
+
+    def _log_ayon_matching(self, matched, total, filters, best):
+        """
+        Summary of the Ayon matching. When nothing matched, show what the
+        rules compared for the closest row, so a wrong rule is easy to spot.
+        Logged only when the result changes (refreshes run on every edit).
+        """
+        if matched:
+            msg = f"Ayon matching: {matched} of {total} file item(s) matched Ayon rows"
+            level = logging.INFO
+        else:
+            lines = [f"Ayon matching: none of {total} file item(s) matched an Ayon row "
+                     f"(all enabled rules must be equal)."]
+            if best is not None:
+                _, item, row, result = best
+                name = item.get('name') or item.get('full_path') or ''
+                where = row.get('Folder Path', '') + (f" / {row.get('Task Name')}" if row.get('Task Name') else '')
+                lines.append(f"  closest: file '{name}' vs Ayon '{where}'")
+                for n_rule, (one_filter, (pkg, data, equal)) in enumerate(zip(filters, result), 1):
+                    lines.append(f"  rule {n_rule}: package {one_filter['pkg']!r} -> {pkg!r}  "
+                                 f"{'==' if equal else '!='}  list {one_filter['data']!r} -> {data!r}")
+            msg = "\n".join(lines)
+            level = logging.WARNING
+        if msg != getattr(self, '_last_ayon_match_msg', None):
+            self._last_ayon_match_msg = msg
+            self.log.log(level, msg)
 
     def display_ayon_table(self):
         """
@@ -3624,7 +3956,8 @@ class Sequencer(object):
 
         table = self.ayon_data
         table_ui = self.ui.ayon_table
-        titles = table[0].keys()
+        # internal columns (_hide, _folder_id, _matched) are not shown
+        titles = [t for t in table[0].keys() if not str(t).startswith('_')]
 
         # display table
         table_ui.clear()
@@ -3637,7 +3970,8 @@ class Sequencer(object):
             table_ui.setRowCount(len(table))
 
             row = -1
-            for line in table:
+            # only the rows that pass the list filters / Matched Only
+            for line in self.ayon_visible_list():
                 # skip displaying filtered out lines
                 if line.get('_hide', False):
                     continue
@@ -3650,15 +3984,21 @@ class Sequencer(object):
                     continue
                 row += 1
                 for column_number, one_column in enumerate(titles):
-                    if line[one_column] is None:
-                        line[one_column] = ''
+                    value = line.get(one_column)
+                    if value is None:
+                        value = ''
+                    value = str(value)
+                    # one line per row: multi line values (comments) are joined
+                    shown = ' '.join(value.split()) if '\n' in value else value
                     table_ui.setItem(row,
                                      column_number,
-                                     QtWidgets.QTableWidgetItem(
-                                         line[one_column])
+                                     QtWidgets.QTableWidgetItem(shown)
                                      )
                     # colorize
                     itm = table_ui.item(row, column_number)
+                    if itm and (one_column in self.AYON_CAPPED_COLUMNS or shown != value):
+                        # shortened text: full text in the tooltip
+                        itm.setToolTip(value)
                     if itm:
                         if color == 'green':
                             itm.setBackground(QtGui.QColor('darkgreen'))
@@ -3667,9 +4007,54 @@ class Sequencer(object):
                             itm.setBackground(QtGui.QColor("#4d4d4d"))
 
             table_ui.setRowCount(row+1)
-            table_ui.resizeColumnsToContents()
-            table_ui.resizeRowsToContents()
+            self.fit_ayon_columns(table_ui, titles)
+            self.single_line_rows(table_ui)
             table_ui.setSortingEnabled(True)
+
+    # columns that don't get their full text width, see fit_ayon_columns
+    AYON_CAPPED_COLUMNS = ('Repre Path',)
+    AYON_CAPPED_MIN = 120
+
+    @staticmethod
+    def capped_width(widths, index, minimum=120):
+        """
+        Width for a capped column: like the wider of its neighbours, at least
+        minimum, never wider than its own content
+        :param widths: content widths of all columns
+        """
+        neighbours = [widths[i] for i in (index - 1, index + 1) if 0 <= i < len(widths)]
+        target = max(neighbours + [minimum])
+        return min(widths[index], target)
+
+    def fit_ayon_columns(self, table_ui, titles):
+        """
+        Every column as wide as its widest text (all rows, not only the
+        visible ones, and the header), except the capped columns
+        """
+        header = table_ui.horizontalHeader()
+        # -1: measure all rows. The default only looks at the visible rows,
+        # so columns came out too narrow when the tab was not shown.
+        header.setResizeContentsPrecision(-1)
+        table_ui.resizeColumnsToContents()
+        widths = [table_ui.columnWidth(i) for i in range(len(titles))]
+        for i, title in enumerate(titles):
+            if title in self.AYON_CAPPED_COLUMNS:
+                table_ui.setColumnWidth(i, self.capped_width(widths, i, self.AYON_CAPPED_MIN))
+        # long paths keep their start and file name visible
+        table_ui.setTextElideMode(QtCore.Qt.ElideMiddle)
+
+    @staticmethod
+    def single_line_rows(table_ui):
+        """
+        Every row exactly one text line high: no word wrap (long Repre Path
+        values made rows several lines tall), fixed row height
+        """
+        table_ui.setWordWrap(False)
+        vh = table_ui.verticalHeader()
+        line = table_ui.fontMetrics().height()
+        vh.setMinimumSectionSize(1)
+        vh.setDefaultSectionSize(line + 6)
+        vh.setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
 
     def _get_latest_valid_csv_file(self, file_path, get_latest=False):
         """
@@ -3996,130 +4381,137 @@ class Sequencer(object):
             table_ui.resizeRowsToContents()
             table_ui.setSortingEnabled(True)
 
+    # ------------------------------------------------------------------ ftrack
+    # Columns of the table on the ftrack tab, one row per file
+    FTRACK_TABLE_COLUMNS = ['File', 'Ext', 'Shot', 'Task', 'Version', 'Status',
+                            'Shot Found', 'Task Found', 'Notes', 'Note', 'Range']
+
+    @staticmethod
+    def _fq(value):
+        """value quoted for an ftrack query expression"""
+        return '"' + str(value).replace('\\', '\\\\').replace('"', '\\"') + '"'
+
+    @staticmethod
+    def _ftrack_file_name(item):
+        full = item.get('full_path') or ''
+        if full:
+            return os.path.basename(str(full))
+        ext = item.get('extension', '')
+        return str(item.get('name', '')) + ('.' + str(ext) if ext else '')
+
+    def _ftrack_setting(self, key, default=None):
+        one = (self.settings or {}).get(key)
+        if one is None or one.get('value') is None:
+            return default
+        return one['value']
+
     def ftrack_query(self):
+        """
+        Everything the ftrack tab does for the loaded files: connect, query
+        notes (Query Notes) and shot / task attributes (Query OpenPype
+        Attributes). Logs an INFO summary and DEBUG details per file, both only
+        when they changed (this runs on every edit of the ftrack tab).
+        """
         self.ftrack_clean_notes()
-        do_ftrack = False
-        if self.settings:
-            if self.settings['ftrack_use']['value'] is not None:
-                do_ftrack = bool(self.settings['ftrack_use']['value'])
-        if do_ftrack:
-            self.get_ftrack_session()
-            if self.ftrack['session'] is not None:
-                self.get_ftrack_notes()
+        if self.ftrack is None:
+            self.ftrack = {}
+        self.ftrack['status'] = ''
+        self._ftrack_cache = {}
+        self._ftrack_details = []
+        for item in self.merged_list or []:
+            item['_ftrack_status'] = ''
+            item['_ftrack_shot'] = ''
+            item['_ftrack_task'] = ''
+            item['_ftrack_version'] = ''
+
+        if not self.settings:
+            return
+        do_ftrack = bool(self._ftrack_setting('ftrack_use', False))
+        if not do_ftrack:
+            self.ftrack['session'] = None
+            self.ftrack['status'] = "Ftrack is off: check 'Use Ftrack' on the ftrack tab"
+            self._ftrack_log_summary(self.ftrack['status'], level=logging.DEBUG)
+            return
+
+        t0 = time.time()
+        self.get_ftrack_session()
+        if self.ftrack.get('session') is None:
+            self.ftrack['status'] = "No ftrack connection (see the warnings above)"
+            self._ftrack_log_summary(self.ftrack['status'], level=logging.WARNING)
+            return
+
+        do_notes = bool(self._ftrack_setting('ftrack_do_notes', False))
+        do_op = bool(self._ftrack_setting('ftrack_do_op', False))
+
+        problems = []
+        if not self.ftrack.get('project'):
+            problems.append("Project is empty")
+        elif self.ftrack.get('project_id') is None:
+            problems.append(f"project '{self.ftrack['project']}' not found among active ftrack projects")
+        if not self.ftrack.get('shot'):
+            problems.append("Shot is empty")
+        if not self.ftrack.get('task'):
+            problems.append("Task is empty")
+        if problems:
+            self.ftrack['status'] = "Ftrack query skipped, set on the ftrack tab: " + ", ".join(problems)
+            self._ftrack_log_summary(self.ftrack['status'], level=logging.WARNING)
+            return
+        if not do_notes and not do_op:
+            self.ftrack['status'] = ("Ftrack connected, but nothing to query: check 'Query Notes' "
+                                     "and / or 'Query OpenPype Attributes' on the ftrack tab")
+            self._ftrack_log_summary(self.ftrack['status'], level=logging.INFO)
+            return
+
+        if do_notes:
+            self.get_ftrack_notes()
+        if do_op:
+            self.ftrack_op_attrs()
+
+        items = self.merged_list or []
+        statuses = {}
+        for item in items:
+            st = item.get('_ftrack_status') or 'not queried'
+            # "ok, 3 notes" -> "ok"
+            st = st.split(',')[0]
+            statuses[st] = statuses.get(st, 0) + 1
+        with_notes = sum(1 for i in items if i.get('ftrack_notes'))
+        shots_found = sum(1 for i in items if i.get('ftrack_shot_exists') == "1")
+        tasks_found = sum(1 for i in items if i.get('ftrack_task_exists') == "1")
+        parts = [f"project '{self.ftrack['project']}'", f"{len(items)} file(s)"]
+        if do_notes:
+            parts.append(f"{with_notes} with notes")
+        if do_op:
+            parts.append(f"{shots_found} shot(s) and {tasks_found} task(s) found")
+        parts.append("status: " + ", ".join(f"{k} {v}" for k, v in sorted(statuses.items())))
+        self.ftrack['status'] = "Ftrack: " + "; ".join(parts)
+        level = logging.INFO
+        if items and do_notes and with_notes == 0:
+            level = logging.WARNING
+            self.ftrack['status'] += (". No notes found: check the Shot / Task / Version templates, "
+                                      "Extensions and Note Label (details in the log at DEBUG level)")
+        self._ftrack_log_summary(self.ftrack['status'], level=level,
+                                 details=self._ftrack_details,
+                                 seconds=time.time() - t0)
+
+    def _ftrack_log_summary(self, message, level=logging.INFO, details=None, seconds=None):
+        """log the summary and the per file details, only when they changed"""
+        details = list(details or [])
+        signature = (message, tuple(details))
+        if getattr(self, '_last_ftrack_log', None) == signature:
+            return
+        self._last_ftrack_log = signature
+        self.log.log(level, message + (f" ({seconds:.1f}s)" if seconds is not None else ""))
+        for line in details:
+            self.log.debug("Ftrack: " + line)
 
     def ftrack_clean_notes(self):
-        for item in self.merged_list:
+        for item in self.merged_list or []:
             item['ftrack_notes'] = []
             item['ftrack_note'] = ''
 
     def ftrack_clean_note(self):
-        for item in self.merged_list:
+        for item in self.merged_list or []:
             item['ftrack_note'] = ''
-
-    def get_ftrack_session(self):
-        """
-        Reads ftrack install prefs and gui settings
-        Tries to connect to Ftrack
-        Tries to query project id from project name and
-        label object from label name
-
-        :return:
-        self.ftrack dict with all ftrack info gathered
-        """
-
-        if self.settings:
-            self.ftrack['do_ftrack'] = bool(
-                self.settings['ftrack_use']['value'])
-            self.ftrack['include'] = str(
-                self.settings['ftrack_include']['value'])
-            self.ftrack['project'] = str(
-                self.settings['ftrack_project']['value'])
-            self.ftrack['shot'] = str(
-                self.settings['ftrack_shot']['value'])
-            self.ftrack['task'] = str(
-                self.settings['ftrack_task']['value'])
-            self.ftrack['do_label'] = bool(
-                self.settings['ftrack_label_use']['value'])
-            self.ftrack['label'] = str(
-                self.settings['ftrack_label']['value'])
-            self.ftrack['do_version'] = bool(
-                self.settings['ftrack_version_use']['value'])
-            self.ftrack['version'] = str(
-                self.settings['ftrack_version']['value'])
-            self.ftrack['note_pattern'] = str(
-                self.settings['ftrack_note_pattern']['value'])
-            self.ftrack['note_repl'] = str(
-                self.settings['ftrack_note_repl']['value'])
-
-            if self.ftrack['include'] != None:
-                self.ftrack['include'] = self.ftrack['include'].split()
-            else:
-                self.ftrack['include'] = []
-
-            self.ftrack['session'] = None
-            self.ftrack['project_id'] = None
-            self.ftrack['label_obj'] = None
-            if self.ftrack['do_ftrack']:
-                self.ftrack['url'] = self.paths.get('FTRACK_SERVER', '')
-                self.ftrack['key'] = self.paths.get('FTRACK_API_KEY', '')
-                self.ftrack['user'] = self.paths.get('FTRACK_API_USER', '')
-                self.ftrack['session'] = ftrack_api.Session(
-                    server_url=self.ftrack['url'],
-                    api_key=self.ftrack['key'],
-                    api_user=self.ftrack['user']
-                )
-
-                if self.ftrack['session'] is not None:
-                    try:
-                        all_projects = self.ftrack['session'].query(
-                            'Project where status is "Active"').all()
-                        for p in all_projects:
-                            if p["full_name"] == self.ftrack['project']:
-                                self.ftrack['project_id'] = p["id"]
-                    except ftrack_api.exception.NoResultFoundError:
-                        self.log.error("Ftrack project query failed")
-
-                if self.ftrack['label'] != '' and self.ftrack['do_label']:
-                    try:
-                        self.ftrack['label_obj'] = self.ftrack['session']\
-                            .query('NoteLabel where name is "{}"'.format(
-                            self.ftrack['label'])).first()
-                    except:
-                        pass
-
-    def get_ftrack_notes(self):
-        """
-        For every merged list item it tries to get Ftrack note
-        :return:
-        item['ftrack_notes']
-        """
-
-        if not self.settings:
-            return
-
-        _do_notes = False
-        if self.settings['ftrack_do_notes']['value'] is not None:
-            _do_notes = bool(self.settings['ftrack_do_notes']['value'])
-        if not _do_notes:
-            return
-
-        if self.ftrack is None:
-            return
-        if self.ftrack['project_id'] is None or self.ftrack['shot'] == '' or self.ftrack['task'] == '':
-            return
-        if self.merged_list is None:
-            return
-
-        do_filter = False
-        if len(self.ftrack['include']) > 0:
-            do_filter = True
-        for item in self.merged_list:
-            if do_filter:
-                e = item.get('extension', '')
-                if e in self.ftrack['include']:
-                    self.assign_ftrack_notes(item)
-            else:
-                self.assign_ftrack_notes(item)
 
     def ftrack_get_hierarchical_attribute( self,
             session,
@@ -4193,101 +4585,188 @@ class Sequencer(object):
 
         return attribute_value
 
-    def ftrack_op_attrs(self):
+    def get_ftrack_session(self):
         """
+        Reads ftrack install prefs and gui settings
+        Tries to connect to Ftrack
+        Tries to query project id from project name and
+        label object from label name
 
         :return:
-        add to item['ftrack_notes'] all notes on task or version
+        self.ftrack dict with all ftrack info gathered
         """
-        class Default(dict):
-            def __missing__(self, key):
-                return '{' + key + '}'
 
-        if not self.settings:
+        if self.settings:
+            def _val(*keys, default=''):
+                # first key that exists; missing keys don't crash
+                for k in keys:
+                    one = self.settings.get(k)
+                    if one is not None and one.get('value') is not None:
+                        return one['value']
+                return default
+
+            self.ftrack['do_ftrack'] = bool(_val('ftrack_use', default=False))
+            # the Extensions field is "ftrack_include_2" in the ui file;
+            # "ftrack_include" is its old name, still in older presets
+            self.ftrack['include'] = str(_val('ftrack_include_2', 'ftrack_include'))
+            self.ftrack['project'] = str(_val('ftrack_project')).strip()
+            self.ftrack['shot'] = str(_val('ftrack_shot')).strip()
+            self.ftrack['task'] = str(_val('ftrack_task')).strip()
+            self.ftrack['do_label'] = bool(_val('ftrack_label_use', default=False))
+            self.ftrack['label'] = str(_val('ftrack_label')).strip()
+            self.ftrack['do_version'] = bool(_val('ftrack_version_use', default=False))
+            self.ftrack['version'] = str(_val('ftrack_version')).strip()
+            self.ftrack['note_pattern'] = str(_val('ftrack_note_pattern'))
+            self.ftrack['note_repl'] = str(_val('ftrack_note_repl'))
+
+            # extensions separated by spaces or commas, with or without dot
+            self.ftrack['include'] = [e.strip().lstrip('.').lower()
+                                      for e in self.ftrack['include'].replace(',', ' ').split()
+                                      if e.strip()]
+
+            self.ftrack['session'] = None
+            self.ftrack['project_id'] = None
+            self.ftrack['label_obj'] = None
+            if self.ftrack['do_ftrack']:
+                self.ftrack['url'] = self.paths.get('FTRACK_SERVER', '')
+                self.ftrack['key'] = self.paths.get('FTRACK_API_KEY', '')
+                self.ftrack['user'] = self.paths.get('FTRACK_API_USER', '')
+                # never raises: missing settings / failed connection are logged
+                # and the session stays None (ftrack is then skipped)
+                self.ftrack['session'] = open_session(
+                    self.ftrack['url'], self.ftrack['user'], self.ftrack['key'])
+                self.ftrack['project_id'] = find_project_id(
+                    self.ftrack['session'], self.ftrack['project'])
+
+                settings_msg = (
+                    f"Ftrack settings: server {self.ftrack['url'] or '(not set)'}, "
+                    f"user {self.ftrack['user'] or '(not set)'}, "
+                    f"connected {self.ftrack['session'] is not None}, "
+                    f"project '{self.ftrack['project']}' "
+                    f"{'found' if self.ftrack['project_id'] else 'NOT found'}, "
+                    f"shot '{self.ftrack['shot']}', task '{self.ftrack['task']}', "
+                    f"version {repr(self.ftrack['version']) if self.ftrack['do_version'] else 'off'}, "
+                    f"label {repr(self.ftrack['label']) if self.ftrack['do_label'] else 'off'}, "
+                    f"extensions {','.join(self.ftrack['include']) or 'all'}")
+                if getattr(self, '_last_ftrack_settings_msg', None) != settings_msg:
+                    self._last_ftrack_settings_msg = settings_msg
+                    self.log.debug(settings_msg)
+
+                if self.ftrack['session'] is not None and self.ftrack['do_label']:
+                    if self.ftrack['label'] == '':
+                        self.log.debug("Ftrack: Note Label is checked but empty, notes are not filtered by label")
+                    else:
+                        try:
+                            self.ftrack['label_obj'] = self.ftrack['session']\
+                                .query('NoteLabel where name is {}'.format(
+                                    self._fq(self.ftrack['label']))).first()
+                        except Exception as e:
+                            self.log.warning(f"Ftrack note label '{self.ftrack['label']}' query failed: {e}")
+                        if self.ftrack['label_obj'] is None:
+                            msg = f"Ftrack note label '{self.ftrack['label']}' not found, no notes will match"
+                            if getattr(self, '_last_ftrack_label_msg', None) != msg:
+                                self._last_ftrack_label_msg = msg
+                                self.log.warning(msg)
+
+    def get_ftrack_notes(self):
+        """
+        For every merged list item it tries to get Ftrack note
+        :return:
+        item['ftrack_notes']
+        """
+        if not self.settings or not self.ftrack or self.merged_list is None:
             return
-        _do_op = False
-        if self.settings['ftrack_do_op']['value'] is not None:
-            _do_op = bool(self.settings['ftrack_do_op']['value'])
-        if not _do_op:
+        if not bool(self._ftrack_setting('ftrack_do_notes', False)):
             return
 
-        if self.ftrack is None:
-            self.log.debug("Ftrack query skipped: no ftrack session")
-            return
-        if self.merged_list is None:
-            self.log.debug("Ftrack query skipped: no files")
-            return
-        _validate = [self.ftrack.get('project'), self.ftrack.get('project_id'), self.ftrack.get('shot'),
-                     self.ftrack.get('task'), self.ftrack.get('session')]
-        if None in _validate:
-            # refreshes run on every edit, warn once per loaded package
-            if not getattr(self, '_warned_ftrack_incomplete', False):
-                self.log.warning("Ftrack query skipped: ftrack project, shot, task or session missing")
-                self._warned_ftrack_incomplete = True
-            return
-
+        include = self.ftrack.get('include') or []
         for item in self.merged_list:
+            if include:
+                e = str(item.get('extension', '')).lower().lstrip('.')
+                if e not in include:
+                    item['_ftrack_status'] = 'skipped (extension)'
+                    self._ftrack_details.append(
+                        f"{self._ftrack_file_name(item)}: skipped, extension '{e}' "
+                        f"is not in Extensions ({', '.join(include)})")
+                    continue
             self.assign_ftrack_notes(item)
 
-            current_shot = self.ftrack.get('shot', '').format_map(Default(item))
-            if '{' in current_shot:
-                continue
-            else:
+    def _ftrack_resolve(self, item):
+        """shot, task and version names of the item from the ftrack tab templates"""
+        current_shot = self.ftrack.get('shot', '').format_map(_KeepMissing(item))
+        current_task = self.ftrack.get('task', '').format_map(_KeepMissing(item))
+        current_version = self.ftrack.get('version', '').format_map(_KeepMissing(item))
+        item['_ftrack_shot'] = current_shot
+        item['_ftrack_task'] = current_task
+        item['_ftrack_version'] = current_version if self.ftrack.get('do_version') else ''
+        return current_shot, current_task, current_version
+
+    def _ftrack_cached(self, key, query):
+        """
+        first() of the query, cached for one refresh: files of one shot / task
+        share the result. Returns (entity or None, error text or None)
+        """
+        cache = getattr(self, '_ftrack_cache', None)
+        if cache is None:
+            cache = self._ftrack_cache = {}
+        if key in cache:
+            return cache[key]
+        try:
+            result = (self.ftrack['session'].query(query).first(), None)
+        except Exception as e:
+            result = (None, str(e))
+            self.log.warning(f"Ftrack query failed: {query}: {e}")
+        cache[key] = result
+        return result
+
+    def _ftrack_find_task(self, shot, task):
+        query = 'Task where name is {} and parent.name is {} and project.full_name is {}'.format(
+            self._fq(task), self._fq(shot), self._fq(self.ftrack['project']))
+        return self._ftrack_cached(('task', shot, task), query)
+
+    def _ftrack_find_shot(self, shot):
+        query = 'Shot where name is {} and project.full_name is {}'.format(
+            self._fq(shot), self._fq(self.ftrack['project']))
+        return self._ftrack_cached(('shot', shot), query)
+
+    @staticmethod
+    def _note_label_ids(note):
+        """ids of the labels of an ftrack note"""
+        ids = set()
+        try:
+            links = note['note_label_links'] or []
+        except Exception:
+            links = []
+        for link in links:
+            lid = None
+            try:
+                lid = link['label_id']
+            except Exception:
                 try:
-                    f_shot = self.ftrack['session'].query(
-                        'Shot where name is {}'
-                        ' and project.full_name is {}'.format(
-                            current_shot, self.ftrack['project'])).first()
+                    lid = link['label']['id']
                 except Exception:
-                    f_shot = None
+                    lid = None
+            if lid is not None:
+                ids.add(lid)
+        return ids
 
-            current_task = self.ftrack.get('task', '').format_map(Default(item))
-            if '{' in current_task:
-                continue
-            else:
-                try:
-                    f_task = self.ftrack['session'].query(
-                        'Task where name is {} and parent.name is {}'
-                        ' and project.full_name is {}'.format(
-                            current_task, current_shot,
-                            self.ftrack['project'])).first()
-                except Exception:
-                    f_task = None
+    def _ftrack_note_ok(self, note):
+        """True when the note passes the Note Label filter"""
+        if not self.ftrack.get('do_label') or not self.ftrack.get('label'):
+            return True
+        label_obj = self.ftrack.get('label_obj')
+        if label_obj is None:
+            return False
+        return label_obj['id'] in self._note_label_ids(note)
 
-            item['ftrack_task_exists'] = "0"
-            if f_task:
-                item['ftrack_task_exists'] = "1"
-            item['ftrack_shot_exists'] = "0"
-            if f_shot:
-                item['ftrack_shot_exists'] = "1"
-                _fs = int(float(self.ftrack_get_hierarchical_attribute(self.ftrack['session'], f_shot, "framestart")))
-                _fe = int(float(self.ftrack_get_hierarchical_attribute(self.ftrack['session'], f_shot, "frameend")))
-                _hs = int(float(self.ftrack_get_hierarchical_attribute(self.ftrack['session'], f_shot, "handleStart")))
-                _he = int(float(self.ftrack_get_hierarchical_attribute(self.ftrack['session'], f_shot, "handleEnd")))
-                item['ftrack_op_frame_start'] = str(_fs)
-                item['ftrack_op_handle_start'] = str(_hs)
-                item['ftrack_op_start'] = str(_fs - _hs)
-                item['ftrack_op_start_slate'] = str(_fs - _hs - 1)
-                item['ftrack_op_frame_end'] = str(_fe)
-                item['ftrack_op_handle_end'] = str(_he)
-                item['ftrack_op_end'] = str(_fe + _he)
-                item['ftrack_op_range'] = "{}-{}".format(_fs - _hs - 1, _fe + _he)
-                item['ftrack_op_range_slate'] = "{}-{}".format(_fs - _hs, _fe + _he)
-                item['ftrack_op_length'] = str(1 + (_fe + _he) -  (_fs - _hs) + 1)
-                item['ftrack_op_length_slate'] = str((_fe + _he) - (_fs - _hs) + 1)
-            else:
-                item['ftrack_op_frame_start'] = ""
-                item['ftrack_op_handle_start'] = ""
-                item['ftrack_op_start'] = ""
-                item['ftrack_op_start_slate'] = ""
-                item['ftrack_op_frame_end'] = ""
-                item['ftrack_op_handle_end'] = ""
-                item['ftrack_op_end'] = ""
-                item['ftrack_op_range'] = ""
-                item['ftrack_op_range_slate'] = ""
-                item['ftrack_op_length'] = ""
-                item['ftrack_op_length_slate'] = ""
-
+    @staticmethod
+    def _note_text(note):
+        content = str(note['content'])
+        try:
+            content = unidecode(content)
+        except Exception:
+            pass
+        return content
 
     def assign_ftrack_notes(self, item):
         """
@@ -4297,92 +4776,206 @@ class Sequencer(object):
         :return:
         add to item['ftrack_notes'] all notes on task or version
         """
-
-        class Default(dict):
-            def __missing__(self, key):
-                return '{' + key + '}'
-
-        if not self.settings:
+        if not self.settings or not bool(self._ftrack_setting('ftrack_do_notes', False)):
             return
-        _do_notes = False
-        if self.settings['ftrack_do_notes']['value'] is not None:
-            _do_notes = bool(self.settings['ftrack_do_notes']['value'])
-        if not _do_notes:
+        if not self.ftrack or self.ftrack.get('session') is None:
+            return
+        name = self._ftrack_file_name(item)
+        details = getattr(self, '_ftrack_details', None)
+        if details is None:
+            details = self._ftrack_details = []
+
+        def _status(status, detail):
+            item['_ftrack_status'] = status
+            details.append(f"{name}: {detail}")
+
+        item['ftrack_notes'] = []
+        current_shot, current_task, current_version = self._ftrack_resolve(item)
+
+        version_gui = 0
+        if self.ftrack.get('do_version'):
+            try:
+                version_gui = int(current_version)
+            except (TypeError, ValueError):
+                _status('version not a number',
+                        f"Version '{self.ftrack.get('version')}' gives '{current_version}', not a number")
+                return
+
+        if current_shot == '' or current_task == '' or self.ftrack.get('project', '') == '':
+            _status('empty shot / task', f"shot '{current_shot}' or task '{current_task}' is empty")
+            return
+        if '{' in current_shot or '{' in current_task:
+            _status('template not resolved',
+                    f"shot '{current_shot}', task '{current_task}': the {{keys}} left are not "
+                    f"parsed for this file (see the Parsing tab)")
+            return
+
+        f_task, error = self._ftrack_find_task(current_shot, current_task)
+        if error:
+            _status('query error', f"task query failed: {error}")
+            return
+        if f_task is None:
+            _status('task not found',
+                    f"task '{current_task}' on shot '{current_shot}' not found in project "
+                    f"'{self.ftrack['project']}'")
             return
 
         all_notes = []
-        current_shot = self.ftrack.get('shot', '').format_map(Default(item))
-        current_task = self.ftrack.get('task', '').format_map(Default(item))
-        current_version = self.ftrack.get('version', '').format_map(Default(item))
-
-        version_gui = 0
-        if self.ftrack['do_version']:
-            try:
-                version_gui = int(current_version)
-            except:
-                return ''
-
-        if current_shot == '' or current_task == '' or self.ftrack['project'] == '':
-            return ''
-
-        # get task from Ftrack
-        try:
-            f_task = self.ftrack['session'].query(
-                'Task where name is {} and parent.name is {}'
-                ' and project.full_name is {}'.format(
-                    current_task, current_shot, self.ftrack['project'])).first()
-        except:
-            return ''
-        if f_task is None:
-            return ''
-
-        # get sorted versions on the task
-        if self.ftrack['do_version']:
-            try:
-                assets = self.ftrack['session'].query(
-                    'select asset.name, version from AssetVersion '
-                    'where task_id is "{}" and asset.name is_not '
-                    'none order by version desc'.format(
-                        f_task['id'])).all()
-            except:
-                assets = None
+        seen = 0
+        if self.ftrack.get('do_version'):
+            key = ('versions', f_task['id'])
+            cache = self._ftrack_cache
+            if key not in cache:
+                try:
+                    cache[key] = (self.ftrack['session'].query(
+                        'select asset.name, version from AssetVersion '
+                        'where task_id is "{}" and asset.name is_not '
+                        'none order by version desc'.format(f_task['id'])).all(), None)
+                except Exception as e:
+                    self.log.warning(f"Ftrack version query failed for task '{current_task}' "
+                                     f"on shot '{current_shot}': {e}")
+                    cache[key] = (None, str(e))
+            assets, error = cache[key]
             if assets is None:
-                return ''
+                _status('query error', f"version query failed: {error}")
+                return
+            existing = []
+            matched = 0
             for one_asset in assets:
                 try:
                     version_asset = int(one_asset['version'])
-                except:
+                except Exception:
                     version_asset = 0
+                existing.append(version_asset)
                 if version_gui == version_asset:
+                    matched += 1
                     for one_note in one_asset['notes']:
-                        content = str(one_note['content'])
-                        try:
-                            content = unidecode(content)
-                        except Exception:
-                            pass
-                        _save = False
-                        if self.ftrack['do_label']:
-                            l = one_note['note_label_links']
-                            if self.ftrack['label_obj']['id'] in l:
-                                _save = True
-                        else:
-                            _save = True
-                        if _save:
-                            all_notes.append(content)
+                        seen += 1
+                        if self._ftrack_note_ok(one_note):
+                            all_notes.append(self._note_text(one_note))
+            if not matched:
+                _status('version not found',
+                        f"task found, but no version {version_gui} on it "
+                        f"(versions: {', '.join(str(v) for v in sorted(set(existing))) or 'none'})")
+                return
         else:
             for one_note in f_task['notes']:
-                _save = False
-                content = str(one_note['content'])
-                if self.ftrack['do_label']:
-                    l = one_note['note_label_links']
-                    if self.ftrack['label_obj']['id'] in l:
-                        _save = True
-                else:
-                    _save = True
-                if _save:
-                    all_notes.append(content)
+                seen += 1
+                if self._ftrack_note_ok(one_note):
+                    all_notes.append(self._note_text(one_note))
 
         item['ftrack_notes'] = all_notes
+        where = f"version {version_gui}" if self.ftrack.get('do_version') else "task"
+        label = ''
+        if self.ftrack.get('do_label') and self.ftrack.get('label'):
+            label = f", {seen - len(all_notes)} without label '{self.ftrack['label']}'"
+            if self.ftrack.get('label_obj') is None:
+                label = f", label '{self.ftrack['label']}' does not exist in ftrack"
+        if all_notes:
+            _status(f"ok, {len(all_notes)} notes",
+                    f"shot '{current_shot}', task '{current_task}': {len(all_notes)} note(s) on {where}"
+                    f" ({seen} in total{label})")
+        else:
+            _status('no notes',
+                    f"shot '{current_shot}', task '{current_task}': no matching notes on {where}"
+                    f" ({seen} in total{label})")
+
+    def ftrack_op_attrs(self):
+        """
+        Query OpenPype Attributes: shot / task exist, frame range and handles
+        of the shot (hierarchical attributes)
+        """
+        if not self.settings or not bool(self._ftrack_setting('ftrack_do_op', False)):
+            return
+        if not self.ftrack or self.ftrack.get('session') is None:
+            self.log.debug("Ftrack query skipped: no ftrack session")
+            return
+        if self.merged_list is None:
+            self.log.debug("Ftrack query skipped: no files")
+            return
+        if not self.ftrack.get('project') or not self.ftrack.get('shot') or not self.ftrack.get('task') \
+                or self.ftrack.get('project_id') is None:
+            # ftrack_query explains what is missing
+            return
+        details = getattr(self, '_ftrack_details', None)
+        if details is None:
+            details = self._ftrack_details = []
+
+        empty = ['ftrack_op_frame_start', 'ftrack_op_handle_start', 'ftrack_op_start',
+                 'ftrack_op_start_slate', 'ftrack_op_frame_end', 'ftrack_op_handle_end',
+                 'ftrack_op_end', 'ftrack_op_range', 'ftrack_op_range_slate',
+                 'ftrack_op_length', 'ftrack_op_length_slate']
+        attr_cache = {}
+        for item in self.merged_list:
+            name = self._ftrack_file_name(item)
+            for k in empty:
+                item[k] = ""
+            item['ftrack_task_exists'] = "0"
+            item['ftrack_shot_exists'] = "0"
+
+            current_shot, current_task, _ = self._ftrack_resolve(item)
+            if '{' in current_shot or '{' in current_task or not current_shot:
+                if not item.get('_ftrack_status'):
+                    item['_ftrack_status'] = 'template not resolved'
+                details.append(f"{name}: attributes skipped, shot '{current_shot}' / "
+                               f"task '{current_task}' not resolved")
+                continue
+
+            f_shot, _ = self._ftrack_find_shot(current_shot)
+            f_task = None
+            if current_task:
+                f_task, _ = self._ftrack_find_task(current_shot, current_task)
+            if f_task:
+                item['ftrack_task_exists'] = "1"
+            if not f_shot:
+                if not item.get('_ftrack_status'):
+                    item['_ftrack_status'] = 'shot not found'
+                details.append(f"{name}: shot '{current_shot}' not found in project '{self.ftrack['project']}'")
+                continue
+            item['ftrack_shot_exists'] = "1"
+
+            if f_shot['id'] not in attr_cache:
+                values = {}
+                # first name is the one used until now, then the OpenPype / Ayon spelling
+                for attr, keys in (("frameStart", ("framestart", "frameStart")),
+                                   ("frameEnd", ("frameend", "frameEnd")),
+                                   ("handleStart", ("handleStart", "handlestart")),
+                                   ("handleEnd", ("handleEnd", "handleend"))):
+                    values[attr] = None
+                    errors = []
+                    for one_key in keys:
+                        try:
+                            v = self.ftrack_get_hierarchical_attribute(self.ftrack['session'], f_shot, one_key)
+                            values[attr] = int(float(v))
+                            break
+                        except Exception as e:
+                            errors.append(f"{one_key}: {e or type(e).__name__}")
+                    if values[attr] is None:
+                        details.append(f"shot '{current_shot}': attribute {attr} not readable ({'; '.join(errors)})")
+                attr_cache[f_shot['id']] = values
+            values = attr_cache[f_shot['id']]
+            _fs, _fe = values["frameStart"], values["frameEnd"]
+            _hs, _he = values["handleStart"] or 0, values["handleEnd"] or 0
+            if _fs is None or _fe is None:
+                if not item.get('_ftrack_status'):
+                    item['_ftrack_status'] = 'no frame range'
+                details.append(f"{name}: shot '{current_shot}' found, no frameStart / frameEnd")
+                continue
+            item['ftrack_op_frame_start'] = str(_fs)
+            item['ftrack_op_handle_start'] = str(_hs)
+            item['ftrack_op_start'] = str(_fs - _hs)
+            item['ftrack_op_start_slate'] = str(_fs - _hs - 1)
+            item['ftrack_op_frame_end'] = str(_fe)
+            item['ftrack_op_handle_end'] = str(_he)
+            item['ftrack_op_end'] = str(_fe + _he)
+            item['ftrack_op_range'] = "{}-{}".format(_fs - _hs - 1, _fe + _he)
+            item['ftrack_op_range_slate'] = "{}-{}".format(_fs - _hs, _fe + _he)
+            item['ftrack_op_length'] = str(1 + (_fe + _he) - (_fs - _hs) + 1)
+            item['ftrack_op_length_slate'] = str((_fe + _he) - (_fs - _hs) + 1)
+            if not item.get('_ftrack_status'):
+                item['_ftrack_status'] = 'ok'
+            details.append(f"{name}: shot '{current_shot}' {_fs}-{_fe}, handles {_hs}/{_he}, "
+                           f"task '{current_task}' {'found' if f_task else 'NOT found'}")
 
     def select_ftrack_note(self):
         """
@@ -4390,35 +4983,119 @@ class Sequencer(object):
         filter the first note that fits note regex and optionally repl
         :return:
         """
-
-        class Default(dict):
-            def __missing__(self, key):
-                return '{' + key + '}'
-
+        if self.ftrack is None:
+            self.ftrack = {}
         self.ftrack_clean_note()
-        self.ftrack['note_pattern'] = str(
-            self.settings['ftrack_note_pattern']['value'])
-        self.ftrack['note_repl'] = str(
-            self.settings['ftrack_note_repl']['value'])
-        for item in self.merged_list:
+        self.ftrack['note_pattern'] = str(self._ftrack_setting('ftrack_note_pattern', ''))
+        self.ftrack['note_repl'] = str(self._ftrack_setting('ftrack_note_repl', ''))
+        with_notes = 0
+        selected = 0
+        for item in self.merged_list or []:
             all_notes = item.get('ftrack_notes', [])
-            if all_notes == []:
+            if not all_notes:
                 continue
-            current_note = self.ftrack.get('note_pattern', '').format_map(
-                Default(item))
+            with_notes += 1
+            current_note = self.ftrack.get('note_pattern', '').format_map(_KeepMissing(item))
             notes = []
             for one in all_notes:
                 v = self.note_regex(one, current_note, self.ftrack['note_repl'])
                 if v is not None:
                     notes.append(v)
-
-            out_note = ''
-            if notes is not None:
-                if len(notes) > 0:
-                    #out_note = notes[0]
-                    out_note = ";---;".join(notes)
+            out_note = ";---;".join(notes) if notes else ''
+            if out_note:
+                selected += 1
             item['ftrack_note'] = out_note
 
+        if with_notes:
+            msg = (f"Ftrack notes: {selected} of {with_notes} file(s) with notes match the Note pattern "
+                   f"'{self.ftrack['note_pattern']}'")
+            if getattr(self, '_last_ftrack_select_msg', None) != msg:
+                self._last_ftrack_select_msg = msg
+                if selected == 0:
+                    self.log.warning(msg + ", check the Note pattern (it is a regex, {keys} are filled per file)")
+                else:
+                    self.log.info(msg)
+
+    def ftrack_table_rows(self):
+        """rows of the ftrack tab table, one per file"""
+        rows = []
+        for item in self.merged_list or []:
+            notes = item.get('ftrack_notes') or []
+            rows.append({
+                'File': self._ftrack_file_name(item),
+                'Ext': str(item.get('extension', '')),
+                'Shot': item.get('_ftrack_shot', ''),
+                'Task': item.get('_ftrack_task', ''),
+                'Version': item.get('_ftrack_version', ''),
+                'Status': item.get('_ftrack_status', '') or 'not queried',
+                'Shot Found': {"1": "yes", "0": "no"}.get(item.get('ftrack_shot_exists'), ''),
+                'Task Found': {"1": "yes", "0": "no"}.get(item.get('ftrack_task_exists'), ''),
+                'Notes': str(len(notes)) if notes else '',
+                'Note': item.get('ftrack_note', ''),
+                'Range': item.get('ftrack_op_range', ''),
+            })
+        return rows
+
+    def display_ftrack_table(self):
+        """fill the table on the ftrack tab"""
+        if self.headless or self.ui is None or not hasattr(self.ui, 'ftrack_table'):
+            return
+        table_ui = self.ui.ftrack_table
+        table_ui.setSortingEnabled(False)
+        table_ui.clear()
+        table_ui.setColumnCount(0)
+        table_ui.setRowCount(0)
+        rows = self.ftrack_table_rows()
+        status = (self.ftrack or {}).get('status', '')
+        titles = list(self.FTRACK_TABLE_COLUMNS)
+        if status and (not rows or all(r['Status'] == 'not queried' for r in rows)):
+            # nothing queried: say why instead of an empty table
+            titles = ['Info']
+            rows = [{'Info': status}]
+        if not rows:
+            return
+        table_ui.setColumnCount(len(titles))
+        table_ui.setHorizontalHeaderLabels(titles)
+        table_ui.setRowCount(len(rows))
+        for r, row in enumerate(rows):
+            ok = str(row.get('Status', '')).startswith('ok')
+            for c, title in enumerate(titles):
+                value = str(row.get(title, '') or '')
+                itm = QtWidgets.QTableWidgetItem(value.replace('\n', ' '))
+                itm.setToolTip(value)
+                if ok:
+                    itm.setBackground(QtGui.QColor('darkgreen'))
+                table_ui.setItem(r, c, itm)
+        table_ui.resizeColumnsToContents()
+        # long notes: keep the Note column readable
+        if 'Note' in titles:
+            col = titles.index('Note')
+            if table_ui.columnWidth(col) > 400:
+                table_ui.setColumnWidth(col, 400)
+        table_ui.setSortingEnabled(True)
+
+    def ftrack_export(self, path=None):
+        """
+        Export button on the ftrack tab / headless action x: write the ftrack
+        shot list. path: a .csv file or a folder, default the package folder
+        """
+        path = path or str(self._ftrack_setting('ftrack_path', '') or '').strip()
+        if not path:
+            if not self.in_path:
+                self.log.warning("Ftrack export: set the export path on the ftrack tab")
+                return None
+            path = self.in_path if os.path.isdir(self.in_path) else os.path.dirname(self.in_path)
+        if not path.lower().endswith('.csv'):
+            path = os.path.join(path, "ftrack_shotlist.csv")
+        f = FtrackHelper(self.settings, self.paths)
+        if not f.is_session_ok():
+            self.log.warning("Ftrack session is not available (check Use Ftrack, the project "
+                             "and install.json), shot list not exported.")
+            return None
+        self.log.info(f"Ftrack export: reading project '{f.ftrack.get('project')}'...")
+        f.get_ftrack_info()
+        f.ftrack_info_to_csv(path)
+        return path
 
     def note_regex(self, content, note_pattern, note_repl):
         try:
@@ -4645,16 +5322,19 @@ class Sequencer(object):
                     process = subprocess.Popen(one_command, shell=True,
                                                stdout=subprocess.PIPE,
                                                stderr=subprocess.PIPE,
-                                               bufsize=-1)
+                                               bufsize=-1,
+                                               **helpers.no_window())
                     out, err = process.communicate()
-                    if process.returncode != 0:
+                    # was inverted: 0 logged as failure
+                    if process.returncode == 0:
                         self.log.debug(
                             "Convert of item {} OK".format(
                                 item_label))
                     else:
-                        self.log.debug(
-                            "Convert of item {} return code is not zero".format(
-                                item_label))
+                        _err = (err or b'').decode('utf-8', errors='replace').strip()
+                        self.log.warning(
+                            "Convert of item {} failed (return code {}): {}".format(
+                                item_label, process.returncode, _err[-500:]))
 
                     # if command didn't produce desired output, clear convert path to indicate so
                     if not os.path.exists(_pth):

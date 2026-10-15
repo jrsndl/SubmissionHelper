@@ -214,3 +214,15 @@ def humanize_file_size(size, suffix="B"):
 
 if __name__ == "__main__":
     tc_to_frames('00:00:41:16', 24000, 1001)
+
+
+def no_window():
+    """
+    Popen keyword arguments that keep a console window from opening for
+    console programs (ffprobe, oiiotool, converts, ayon) on Windows.
+    Needed when the app runs without a console (the windowed exe).
+    """
+    if sys.platform == 'win32':
+        import subprocess
+        return {'creationflags': getattr(subprocess, 'CREATE_NO_WINDOW', 0x08000000)}
+    return {}
