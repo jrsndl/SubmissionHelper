@@ -68,6 +68,8 @@ class Sequencer(object):
         self.my_ayon = None
         self.ayon_data = []
         self.ayon_gui = None
+        # every version of the products of the Ayon folders matched to files
+        self.ayon_matched_versions = []
 
         self.renames = []
         self.output = {}
@@ -443,6 +445,7 @@ class Sequencer(object):
             pass
 
         self.ayon_data_assign()
+        self.ayon_versions_update()
         if not self.headless:
             self.display_ayon_table()
 
@@ -3532,6 +3535,7 @@ class Sequencer(object):
                                     'value'] or ""),
             # added later, missing in older presets
             'do_versions': bool((self.settings.get('ayon_versions_chbx') or {}).get('value')),
+            'do_versions_csv': bool((self.settings.get('ayon_export_versions_csv') or {}).get('value')),
             'product_filters': parse_product_filters(
                 (self.settings.get('ayon_product_filters') or {}).get('value') or ""),
         }
@@ -3581,7 +3585,56 @@ class Sequencer(object):
         self.ayon_data_filter()
         if self.merged_list:
             self.ayon_data_assign()
+            self.ayon_versions_update()
             self.display_ayon_table()
+
+    def ayon_versions_update(self):
+        """
+        Matched Versions: with Pull versions on and files matched to Ayon
+        folders, read every version of the products of those folders
+        (cached in AyonShotlist, Ayon is asked only when the matches change)
+        """
+        rows = []
+        if self.my_ayon is not None and not self.my_ayon.error and self.ayon_gui \
+                and self.ayon_gui.get('do_versions') and self.merged_list:
+            matched = {r.get('_folder_id') for r in self.ayon_data or [] if r.get('_matched')}
+            if matched:
+                rows = self.my_ayon.get_matched_versions(matched)
+        self.ayon_matched_versions = rows
+        if not self.headless:
+            self.display_ayon_versions_table()
+
+    def display_ayon_versions_table(self):
+        table_ui = getattr(self.ui, 'ayon_versions_table', None)
+        if table_ui is None:
+            return
+        rows = self.ayon_matched_versions or []
+        from ayon_shotlist import MATCHED_VERSION_COLUMNS
+        titles = list(MATCHED_VERSION_COLUMNS)
+        table_ui.setSortingEnabled(False)
+        table_ui.clear()
+        table_ui.setColumnCount(len(titles))
+        table_ui.setHorizontalHeaderLabels(titles)
+        table_ui.setRowCount(len(rows))
+        for row, line in enumerate(rows):
+            preferred = bool(line.get('Preferred'))
+            for col, title in enumerate(titles):
+                value = str(line.get(title) or '')
+                shown = ' '.join(value.split()) if '\n' in value else value
+                itm = QtWidgets.QTableWidgetItem(shown)
+                if title in self.AYON_CAPPED_COLUMNS or shown != value:
+                    itm.setToolTip(value)
+                itm.setBackground(QtGui.QColor('darkgreen' if preferred else '#4d4d4d'))
+                table_ui.setItem(row, col, itm)
+        self.fit_ayon_columns(table_ui, titles)
+        self.single_line_rows(table_ui)
+        table_ui.setSortingEnabled(True)
+        # sub tab title shows the count
+        tabs = getattr(self.ui, 'ayon_tables_tab', None)
+        if tabs is not None:
+            idx = tabs.indexOf(getattr(self.ui, 'ayon_versions_page', None))
+            if idx >= 0:
+                tabs.setTabText(idx, f"Matched Versions ({len(rows)})" if rows else "Matched Versions")
 
     def ayon_data_filter(self):
         if self.my_ayon is None or getattr(self.my_ayon, 'error', None):
@@ -3596,6 +3649,8 @@ class Sequencer(object):
     def ayon_data_write(self):
         if self.my_ayon is not None and not getattr(self.my_ayon, 'error', None):
             self.my_ayon.write_csv()
+            if self.ayon_gui and self.ayon_gui.get('do_versions_csv'):
+                self.my_ayon.write_versions_csv(self.ayon_matched_versions)
 
     def ayon_data_assign(self):
         class Default(dict):
@@ -3604,6 +3659,9 @@ class Sequencer(object):
 
         if self.ayon_data is None or len(self.ayon_data) == 0:
             return
+        # matches from an earlier assign are stale (files or rules changed)
+        for one_data_line in self.ayon_data:
+            one_data_line.pop("_matched", None)
         if self.merged_list is None or len(self.merged_list) == 0:
             return
         if self.settings is None:

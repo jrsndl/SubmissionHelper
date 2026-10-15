@@ -6,6 +6,9 @@ import os
 
 import ayon_api
 
+LIST_CSV_NAME = "ayon-list.csv"
+VERSIONS_CSV_NAME = "ayon-list-versions.csv"
+
 # columns added by "Pull versions"
 VERSION_COLUMNS = [
     "Product",
@@ -52,6 +55,26 @@ VERSION_DATA = {
     "host_name": "Version Host",
     "colorspace": "Version Colorspace",
 }
+
+
+# columns of the "Matched Versions" list: every version of every product of
+# the Ayon folders matched to package files
+MATCHED_VERSION_COLUMNS = [
+    "Folder Path",
+    "Folder Name",
+    "Folder Type",
+    "Product",
+    "Product Type",
+    "Version",
+    "Version Name",
+    "Preferred",
+    "Version Status",
+    "Version Author",
+    "Version Date",
+    "Version Comment",
+    "Version Task",
+    "Representations",
+] + list(VERSION_ATTRIBS.values()) + list(VERSION_DATA.values())
 
 
 def _as_dict(value):
@@ -123,6 +146,71 @@ def _has_wildcard(pattern):
     return any(c in pattern for c in '*?[')
 
 
+def version_detail_columns(ver, repre=None):
+    """version attrib / data columns, colorspace falls back to the representation"""
+    attrib = ver.get('attrib') or {}
+    info = {}
+    for key, column in VERSION_ATTRIBS.items():
+        info[column] = _cell(attrib.get(key))
+    data = _as_dict(ver.get('data'))
+    for key, column in VERSION_DATA.items():
+        info[column] = _cell(data.get(key))
+    if not info["Version Colorspace"] and repre:
+        cs = _as_dict(repre.get('data')).get('colorspaceData') or {}
+        info["Version Colorspace"] = _cell(cs.get('colorspace') if isinstance(cs, dict) else '')
+    return info
+
+
+def matched_version_rows(folders, products, versions, repres, task_names, preferred):
+    """
+    Rows for the Matched Versions list: every version of every product
+    :param folders: dict folder id -> {'Folder Path', 'Folder Name', 'Folder Type'}
+    :param products: product dicts (id, name, folderId, productType)
+    :param versions: version dicts (id, version, productId, taskId, author, status,
+                     createdAt, attrib, data)
+    :param repres: representation dicts (id, name, versionId, data)
+    :param task_names: task id -> name
+    :param preferred: folder id -> version id picked by the product filters
+    :return: rows sorted by folder path, product, newest version first
+    """
+    product_by_id = {p['id']: p for p in products}
+    repres_by_version = {}
+    for r in repres:
+        repres_by_version.setdefault(r.get('versionId'), []).append(r)
+    rows = []
+    for ver in versions:
+        prod = product_by_id.get(ver.get('productId'))
+        if prod is None:
+            continue
+        folder_id = prod.get('folderId')
+        folder = folders.get(folder_id, {})
+        ver_repres = repres_by_version.get(ver.get('id'), [])
+        number = int(ver.get('version') or 0)
+        attrib = ver.get('attrib') or {}
+        row = {
+            "Folder Path": folder.get("Folder Path", ''),
+            "Folder Name": folder.get("Folder Name", ''),
+            "Folder Type": folder.get("Folder Type", ''),
+            "Product": prod.get('name', ''),
+            "Product Type": prod.get('productType', ''),
+            "Version": str(number),
+            "Version Name": f"v{number:03d}",
+            "Preferred": "yes" if preferred.get(folder_id) and preferred.get(folder_id) == ver.get('id') else "",
+            "Version Status": ver.get('status') or '',
+            "Version Author": ver.get('author') or '',
+            "Version Date": str(ver.get('createdAt') or ''),
+            "Version Comment": attrib.get('comment') or '',
+            "Version Task": task_names.get(ver.get('taskId'), ''),
+            "Representations": " ".join(sorted(r.get('name', '') for r in ver_repres)),
+            "_folder_id": folder_id,
+            "_version_id": ver.get('id'),
+        }
+        row.update(version_detail_columns(ver, ver_repres[0] if ver_repres else None))
+        rows.append(row)
+    rows.sort(key=lambda r: (r["Folder Path"], r["Product"].lower(), -int(r["Version"] or 0)))
+    return rows
+
+
 def pick_versions(folder_ids, products, last_versions, repres, task_names, filters):
     """
     For every folder pick the version of the preferred product.
@@ -192,18 +280,10 @@ def pick_versions(folder_ids, products, last_versions, repres, task_names, filte
             "Representation": (repre or {}).get('name', ''),
             "Repre Path": repre_path,
             "Version Filter": flt['text'],
+            "_version_id": ver.get('id'),
         }
-        info = result[folder_id]
-        for key, column in VERSION_ATTRIBS.items():
-            info[column] = _cell(attrib.get(key))
-        data = _as_dict(ver.get('data'))
-        for key, column in VERSION_DATA.items():
-            info[column] = _cell(data.get(key))
-        if not info["Version Colorspace"] and repre:
-            # newer publishes keep the colorspace on the representation
-            repre_data = _as_dict(repre.get('data'))
-            cs = repre_data.get('colorspaceData') or {}
-            info["Version Colorspace"] = _cell(cs.get('colorspace') if isinstance(cs, dict) else '')
+        # newer publishes keep the colorspace on the representation
+        result[folder_id].update(version_detail_columns(ver, repre))
     return result
 
 class AyonShotlist(object):
@@ -239,9 +319,14 @@ class AyonShotlist(object):
         # where to put thumbnails and shotlist
         self.output_folder = ayon_gui['out_folder']
         self.do_output_csv = ayon_gui['do_csv']
-        self.output_csv_path = f"{self.output_folder}/list.csv"
+        self.output_csv_path = f"{self.output_folder}/{LIST_CSV_NAME}"
+        self.output_versions_csv_path = f"{self.output_folder}/{VERSIONS_CSV_NAME}"
+        self.do_output_versions_csv = bool(ayon_gui.get('do_versions_csv'))
         self.do_output_excel = ayon_gui['do_excel']
-        self.output_excel_path = f"{self.output_folder}/list.xls"
+        self.output_excel_path = f"{self.output_folder}/ayon-list.xlsx"
+        # Matched Versions cache: (folder ids, filters) -> rows
+        self._matched_cache_key = None
+        self._matched_cache_rows = []
         self.do_output = True
         self.do_versions = bool(ayon_gui.get('do_versions'))
         self.product_filters = ayon_gui.get('product_filters') or []
@@ -638,15 +723,79 @@ class AyonShotlist(object):
         if not self.do_output:
             return
         rows = [r for r in self.data if not r.get('_hide')]
+        self._write_rows(self.output_csv_path, self.columns, rows, "Ayon shot list")
+
+    def write_versions_csv(self, rows):
+        """Matched Versions list to ayon-list-versions.csv, next to ayon-list.csv"""
+        if not self.do_output:
+            return
+        if not rows:
+            self.log.warning("Matched Versions list is empty, nothing written "
+                             "(needs Pull versions and files matched to Ayon folders)")
+            return
+        self._write_rows(self.output_versions_csv_path, MATCHED_VERSION_COLUMNS, rows, "Matched Versions")
+
+    def _write_rows(self, path, columns, rows, what):
         try:
             # utf-8-sig so Excel reads non-ascii names correctly
-            with open(self.output_csv_path, 'w', newline='', encoding='utf-8-sig') as output_file:
-                dict_writer = csv.DictWriter(output_file, [c for c in self.columns if not c.startswith('_')],
+            with open(path, 'w', newline='', encoding='utf-8-sig') as output_file:
+                dict_writer = csv.DictWriter(output_file, [c for c in columns if not c.startswith('_')],
                                              extrasaction='ignore')
                 dict_writer.writeheader()
                 dict_writer.writerows(rows)
-            self.log.info(f"Ayon shot list written to {self.output_csv_path} ({len(rows)} rows)")
+            self.log.info(f"{what} written to {path} ({len(rows)} rows)")
         except OSError as e:
-            self.log.error(f"Writing Ayon shot list {self.output_csv_path} failed: {e}")
+            self.log.error(f"Writing {what} {path} failed: {e}")
+
+    def get_matched_versions(self, folder_ids):
+        """
+        Every version of every product of the given folders (the ones matched
+        to package files). Cached: refreshes run on every edit, Ayon is only
+        asked again when the matched folders or the product filters change.
+        :return: rows with MATCHED_VERSION_COLUMNS
+        """
+        folder_ids = frozenset(f for f in folder_ids if f)
+        key = (folder_ids, tuple(f['text'] for f in self.product_filters))
+        if key == self._matched_cache_key:
+            return self._matched_cache_rows
+        rows = []
+        if folder_ids and self.error is None:
+            try:
+                products = list(self._query('get_products', self.project,
+                                            fields={"id", "name", "folderId", "productType"},
+                                            folder_ids=set(folder_ids)))
+                product_ids = {p['id'] for p in products}
+                versions = []
+                if product_ids:
+                    versions = list(self._query(
+                        'get_versions', self.project,
+                        fields={"id", "version", "productId", "taskId", "author", "status",
+                                "createdAt", "data", "attrib.comment"}
+                        | {f"attrib.{k}" for k in VERSION_ATTRIBS},
+                        product_ids=product_ids, hero=False))
+                version_ids = {v['id'] for v in versions}
+                repres = []
+                if version_ids:
+                    repres = list(self._query('get_representations', self.project,
+                                              fields={"id", "name", "versionId", "data"},
+                                              version_ids=version_ids))
+            except Exception as e:
+                self.log.error(f"Reading matched versions from Ayon failed: {e}")
+                self.log.debug("Ayon matched versions traceback", exc_info=True)
+                return self._matched_cache_rows
+            folders = {}
+            preferred = {}
+            for r in self.data:
+                fid = r.get('_folder_id')
+                if fid in folder_ids and fid not in folders and not r.get('Task Name'):
+                    folders[fid] = {k: r.get(k, '') for k in ("Folder Path", "Folder Name", "Folder Type")}
+                if fid in folder_ids and r.get('_version_id'):
+                    preferred[fid] = r['_version_id']
+            rows = matched_version_rows(folders, products, versions, repres, self.task_names, preferred)
+            self.log.info(f"Matched Versions: {len(rows)} version(s) of {len(product_ids)} product(s) "
+                          f"in {len(folder_ids)} matched folder(s)")
+        self._matched_cache_key = key
+        self._matched_cache_rows = rows
+        return rows
 
 

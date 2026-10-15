@@ -171,7 +171,7 @@ class ShotlistWithVersionsTest(unittest.TestCase):
         self.assertIn(('products', ['platePl01', 'renderCompMain']), a.ayon.calls)
         # csv: output folder created, version columns written, no internal columns
         a.write_csv()
-        with open(os.path.join(out, 'list.csv'), encoding='utf-8-sig') as f:
+        with open(os.path.join(out, 'ayon-list.csv'), encoding='utf-8-sig') as f:
             reader = csv.DictReader(f)
             written = list(reader)
         self.assertIn('Version', reader.fieldnames)
@@ -344,3 +344,93 @@ class AyonRowHeightTest(unittest.TestCase):
         table.setWordWrap.assert_called_once_with(False)
         table.verticalHeader().setDefaultSectionSize.assert_called_once_with(20)
         table.verticalHeader().setSectionResizeMode.assert_called_once()
+
+
+class MatchedVersionsTest(unittest.TestCase):
+    def make(self, out, **kw):
+        fake = FakeAyon()
+        all_versions = [
+            {'id': 'v1', 'version': 7, 'productId': 'p1', 'taskId': 't_comp', 'status': 'Approved',
+             'attrib': {'fps': 25, 'comment': 'final'}, 'data': {'host_name': 'nuke'}},
+            {'id': 'v1old', 'version': 6, 'productId': 'p1', 'taskId': 't_comp'},
+            {'id': 'v2', 'version': 2, 'productId': 'p2'},
+            {'id': 'v3', 'version': 1, 'productId': 'p3'},
+        ]
+        fake.version_calls = 0
+
+        def get_versions(project, product_ids=None, hero=True, fields=None):
+            fake.version_calls += 1
+            assert hero is False
+            return [v for v in all_versions if v['productId'] in product_ids]
+        fake.get_versions = get_versions
+        with mock.patch.object(ayon_shotlist.ayon_api, 'get_server_api_connection', return_value=fake, create=True):
+            a = AyonShotlist(gui(out, **kw), None, {'AYON_SERVER_URL': 'x', 'AYON_API_KEY': 'y'})
+            a.get_shotlist()
+        return a, fake
+
+    def test_rows_only_for_matched_folders_and_preferred(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        a, fake = self.make(tmp.name)
+        rows = a.get_matched_versions({'f1'})
+        # only folder f1 (not f2), every version of every product, newest first per product
+        self.assertEqual({r['Folder Path'] for r in rows}, {'/ep01/sh010'})
+        self.assertEqual([(r['Product'], r['Version']) for r in rows],
+                         [('platePl01', '2'), ('renderCompMain', '7'), ('renderCompMain', '6')])
+        pref = [r for r in rows if r['Preferred']]
+        self.assertEqual([(r['Product'], r['Version']) for r in pref], [('renderCompMain', '7')])
+        v7 = pref[0]
+        self.assertEqual(v7['Version FPS'], '25')
+        self.assertEqual(v7['Version Host'], 'nuke')
+        self.assertEqual(v7['Version Task'], 'comp')
+        self.assertEqual(v7['Representations'], 'exr mov')
+        # cached: same folders -> no new query
+        a.get_matched_versions({'f1'})
+        self.assertEqual(fake.version_calls, 1)
+        a.get_matched_versions({'f1', 'f2'})
+        self.assertEqual(fake.version_calls, 2)
+
+    def test_csv_names_and_versions_csv(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        a, _ = self.make(tmp.name, do_versions_csv=True)
+        a.write_csv()
+        a.write_versions_csv(a.get_matched_versions({'f1'}))
+        self.assertTrue(os.path.isfile(os.path.join(tmp.name, 'ayon-list.csv')))
+        with open(os.path.join(tmp.name, 'ayon-list-versions.csv'), encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f)
+            rows = list(reader)
+        self.assertEqual(len(rows), 3)
+        self.assertEqual(reader.fieldnames, [c for c in ayon_shotlist.MATCHED_VERSION_COLUMNS])
+        self.assertFalse(os.path.exists(os.path.join(tmp.name, 'list.csv')))
+
+
+class SequencerMatchedVersionsTest(unittest.TestCase):
+    def bare(self):
+        import logging
+        import sequencer
+        s = sequencer.Sequencer.__new__(sequencer.Sequencer)
+        s.log = logging.getLogger('test')
+        s.headless = True
+        s.my_ayon = mock.Mock(error=None)
+        s.my_ayon.get_matched_versions.return_value = [{'Product': 'x'}]
+        s.ayon_data = [{'_folder_id': 'f1', '_matched': True}, {'_folder_id': 'f2'}]
+        s.ayon_gui = {'do_versions': True}
+        s.merged_list = [{'name': 'a'}]
+        return s
+
+    def test_only_matched_folders_are_asked(self):
+        s = self.bare()
+        s.ayon_versions_update()
+        s.my_ayon.get_matched_versions.assert_called_once_with({'f1'})
+        self.assertEqual(s.ayon_matched_versions, [{'Product': 'x'}])
+
+    def test_needs_pull_versions_and_files(self):
+        s = self.bare()
+        s.ayon_gui = {'do_versions': False}
+        s.ayon_versions_update()
+        s.merged_list = []
+        s.ayon_gui = {'do_versions': True}
+        s.ayon_versions_update()
+        s.my_ayon.get_matched_versions.assert_not_called()
+        self.assertEqual(s.ayon_matched_versions, [])

@@ -1964,6 +1964,47 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         idx = ui.verticalLayout_116.indexOf(ui.groupBox_33)
         ui.verticalLayout_116.insertWidget(idx + 1 if idx >= 0 else -1, group)
 
+        ui.ayon_output_folder.setToolTip(
+            "<p>Folder where <b>Export Shot List</b> saves ayon-list.csv, ayon-list-versions.csv "
+            "(with Versions CSV) and optionally the thumbnails.</p>")
+
+        # export checkbox for the Matched Versions csv, next to the CSV / Excel ones
+        vcsv = QtWidgets.QCheckBox("Versions CSV", parent)
+        vcsv.setObjectName("ayon_export_versions_csv")
+        vcsv.setMinimumSize(QtCore.QSize(110, 25))
+        vcsv.setToolTip("Also write the Matched Versions list to ayon-list-versions.csv, "
+                        "in the same folder as ayon-list.csv")
+        ui.ayon_export_versions_csv = vcsv
+        pos = ui.horizontalLayout_68.indexOf(ui.ayon_export_excel)
+        ui.horizontalLayout_68.insertWidget(pos + 1 if pos >= 0 else -1, vcsv)
+
+        # sub tabs: Shot List (the existing table) and Matched Versions
+        tabs = QtWidgets.QTabWidget(parent)
+        tabs.setObjectName("ayon_tables_tab")
+        list_page = QtWidgets.QWidget()
+        list_layout = QtWidgets.QVBoxLayout(list_page)
+        list_layout.setContentsMargins(0, 0, 0, 0)
+        table_index = ui.verticalLayout_118.indexOf(ui.ayon_table)
+        ui.verticalLayout_118.removeWidget(ui.ayon_table)
+        list_layout.addWidget(ui.ayon_table)
+        tabs.addTab(list_page, "Shot List")
+
+        versions_page = QtWidgets.QWidget()
+        versions_layout = QtWidgets.QVBoxLayout(versions_page)
+        versions_layout.setContentsMargins(0, 0, 0, 0)
+        vtable = QtWidgets.QTableWidget(versions_page)
+        vtable.setObjectName("ayon_versions_table")
+        vtable.setSizePolicy(ui.ayon_table.sizePolicy())
+        vtable.setMinimumSize(ui.ayon_table.minimumSize())
+        vtable.setToolTip("Every version of every product of the Ayon folders matched to the "
+                          "package files (needs Pull versions). Preferred = picked by the product filters.")
+        versions_layout.addWidget(vtable)
+        tabs.addTab(versions_page, "Matched Versions")
+        ui.ayon_versions_table = vtable
+        ui.ayon_versions_page = versions_page
+        ui.ayon_tables_tab = tabs
+        ui.verticalLayout_118.insertWidget(table_index if table_index >= 0 else -1, tabs, 1)
+
     def _ayon_target(self):
         """
         Sequencer for Ayon operations: the loaded package, or an Ayon only

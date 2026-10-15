@@ -183,7 +183,8 @@ their values become keywords with the Ayon prefix, e.g. `{ayon_Folder Path}`.
 
 * **Scan** reads the list now. It works without a loaded package, and also
   when *Enable* is off (that checkbox controls reading on package load).
-* **Export Shot List** writes `list.csv` (visible rows only) to the output folder.
+* **Export Shot List** writes `ayon-list.csv` (visible rows only) to the output
+  folder, and with **Versions CSV** also `ayon-list-versions.csv` (see below).
 
 Columns per row include the frame range (`In`, `Out`, `Head`, `Tail`,
 `Range` with handles, `Length`), resolution, `Start Date` / `End Date`
@@ -224,6 +225,23 @@ have it). With the default prefix they are available as `{ayon_Version}`,
 
 Versions are read with three queries for the whole project. Changing the
 filters takes effect with the next **Scan** or package load.
+
+### Matched Versions
+
+With **Pull versions** on and package files matched to Ayon folders (*Match
+Package Keys to Shot List Keys*), the **Matched Versions** sub-tab lists every
+version of every product of the matched folders only, newest first. The
+version picked by the product filters is marked `Preferred` and highlighted.
+
+Columns: `Folder Path`, `Folder Name`, `Folder Type`, `Product`,
+`Product Type`, `Version`, `Version Name`, `Preferred`, `Version Status`,
+`Version Author`, `Version Date`, `Version Comment`, `Version Task`,
+`Representations` (all representation names), and the version attribute /
+data columns listed above.
+
+Ayon is asked again only when the matched folders or the product filters
+change, not on every edit. Turn on **Versions CSV** to also write the list to
+`ayon-list-versions.csv` with **Export Shot List**.
 
 ## Logging
 
