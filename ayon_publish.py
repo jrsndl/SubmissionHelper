@@ -7,7 +7,7 @@ import subprocess
 class AyonPublish(object):
 
     def __init__(self, gui, pths):
-        self.log = logging.getLogger("mylog")
+        self.log = logging.getLogger("AyonPublish")
         self.settings = gui
         self.paths = pths
         self.ayon_csv = None
@@ -56,6 +56,7 @@ class AyonPublish(object):
         # Check the return code
         if popen.returncode != 0:
             self.log.error(f"Command failed with return code {popen.returncode}")
+        return popen.returncode
 
     def build_ayon_csv_command(self, csv_path, project, folder='', task=''):
         self.csv_path = csv_path
@@ -92,15 +93,21 @@ class AyonPublish(object):
         my_env["AYON_USERNAME"] = self.paths['AYON_USERNAME']
         my_env["AYON_API_KEY"] = self.paths['AYON_API_KEY']
 
-        popen = subprocess.Popen(self.ayon_csv, env=my_env)
+        self.log.info(f"Publishing {self.csv_path} to Ayon")
+        self.log.debug(f"Command: {self.ayon_csv}")
+        popen = subprocess.Popen(self.ayon_csv, env=my_env,
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                 text=True, errors='replace')
         popen_stdout, popen_stderr = popen.communicate()
         ret_code = popen.returncode
-        if popen_stdout:
-            print("stdout:")
-            print(popen_stdout.decode("utf-8"))
-        if popen_stderr:
-            print("stderr:")
-            print(popen_stderr.decode("utf-8"))
+        for line in (popen_stdout or '').splitlines():
+            self.log.info(f"ayon: {line}")
+        for line in (popen_stderr or '').splitlines():
+            self.log.warning(f"ayon: {line}")
+        if ret_code == 0:
+            self.log.info(f"Ayon publish of {self.csv_name} finished")
+        else:
+            self.log.error(f"Ayon publish of {self.csv_name} failed with return code {ret_code}")
 
         return ret_code
 
@@ -132,6 +139,11 @@ class AyonPublish(object):
             '-name', self.csv_name,  # id
             '-arguments', deadline_args
         ]
-        print(f"Submitting job: {params_1 + params_2}")
-        self.external_execute(params_1 + params_2)
+        self.log.info(f"Submitting Deadline job '{self.csv_name}'")
+        # never put api keys to the log
+        masked = [p.split('=', 2)[0] + '=' + p.split('=', 2)[1] + '=***'
+                  if p.startswith('EnvironmentKeyValue') and p.count('=') >= 2 else p
+                  for p in params_1 + params_2]
+        self.log.debug(f"Deadline command: {masked}")
+        return self.external_execute(params_1 + params_2)
 

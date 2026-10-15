@@ -21,6 +21,10 @@ from nukery.parser import NukeScriptParser
 import parse_metadata
 
 
+# warn about a missing ffprobe once, not for every file
+_WARNED_NO_FFPROBE = False
+
+
 class MetaData(object):
 
     def __init__(self, item, gui, pths):
@@ -122,8 +126,8 @@ class MetaData(object):
         # add exr header
         try:
             meta_data = {**meta_data, **self.meta_exr}
-        except:
-            print("Reading EXR metadata failed")
+        except Exception:
+            self.log.warning(f"Reading EXR metadata failed for {self.meta.get('file')}", exc_info=True)
 
         # add nuke and maya metadata
         try:
@@ -179,13 +183,18 @@ class MetaData(object):
         my_extension = str.lower(str(self.item['extension']))
         ff_categories = ['still', 'sequence', 'video', 'audio', 'multiframe']
 
-        if self.ffprobe_path is None:
-            self.log.warning('Ffprobe not found')
+        if not self.ffprobe_path:
+            global _WARNED_NO_FFPROBE
+            if not _WARNED_NO_FFPROBE:
+                self.log.warning("ffprobe not found, video metadata will be missing. "
+                                 "Put it on PATH, set SH_FFPROBE or ffprobe_path in install.json.")
+                _WARNED_NO_FFPROBE = True
         else:
             try:
                 self.meta.update(self.probe_ffprobe())
-            except:
-                print("Reading ffprobe metadata failed.")
+            except Exception as e:
+                self.log.warning(f"Reading ffprobe metadata failed for {fn}: {e}")
+                self.log.debug("ffprobe traceback", exc_info=True)
 
             if self.meta['error'] != '':
                 if self.item['category'] in ff_categories:
@@ -235,8 +244,9 @@ class MetaData(object):
                     'metaExr_compression',
                     self.meta['codec_long_name_video'])
 
-            except:
-                print("Reading EXR metadata failed")
+            except Exception as e:
+                self.log.warning(f"Reading EXR metadata failed for {fn}: {e}")
+                self.log.debug("EXR metadata traceback", exc_info=True)
 
 
         # Other TCs

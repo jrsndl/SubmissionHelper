@@ -96,6 +96,7 @@ With the built executable use `submission_helper.exe` instead of
 | `-p`, `--preset PRESET` | Preset json file, or the name of a saved preset (without `.json`), looked up in the same places as the GUI preset list. |
 | `--actions LETTERS` | Actions to run, left to right. Default `ftg`. |
 | `--settings KEY=VALUE,...` | Override preset values for this run only. |
+| `-v`, `-q`, `--log-level`, `--log-file` | Console log level and log file, see [Logging](#logging). |
 
 ### Actions
 
@@ -173,6 +174,61 @@ don't stop the run, so check the log output, not only the exit code.
 
 On Linux without a display (render nodes), headless mode switches Qt to
 the `offscreen` platform automatically.
+
+## Logging
+
+Everything Submission Helper does is logged with a level:
+
+| Level | Used for |
+|---|---|
+| `DEBUG` | Details: every renamed frame, every metadata read, commands that are run |
+| `INFO` | What happened: files scanned, spreadsheets written, files renamed, sidecars copied |
+| `WARNING` | Something to check: missing ffprobe, a rename skipped because the destination exists |
+| `ERROR` | Something failed: an export could not be written, a publish failed |
+
+Messages from Qt itself (for example image or font warnings) are logged too,
+under the name `Qt`, and unexpected crashes are logged as `CRITICAL` with the
+full traceback.
+
+### Log tab (GUI)
+
+The **Log** tab shows the log of the current session. Its title counts
+warnings and errors, e.g. `Log (1 err, 3 warn)`, and turns orange or red, so
+you can see a problem without opening the tab.
+
+* **Show** – minimum level to display. Everything is recorded, so switching to
+  `DEBUG` also shows debug messages logged earlier. The choice is saved with
+  the GUI settings.
+* **Filter text** – show only lines containing the text.
+* **Auto-scroll** – keep the newest line in view.
+* **Copy** / **Save...** – copy or save the lines currently shown.
+* **Clear** – empty the log and reset the counters.
+
+The tab keeps the last 20,000 lines.
+
+### Console and log file
+
+The console (stderr) gets the log in GUI and headless mode. Its level is set
+on the command line and is independent of the Log tab:
+
+| Option | Console output |
+|---|---|
+| *(default)* | `INFO` and above |
+| `-v`, `--verbose` | `DEBUG` and above |
+| `-q`, `--quiet` | `WARNING` and above |
+| `--log-level LEVEL` | `debug`, `info`, `warning`, `error`, or `none` for no console output |
+| `--log-file PATH` | Also append the full log (all levels, with date and thread) to `PATH` |
+
+```powershell
+# farm job: only problems on the console, everything in a file
+python submission_helper.py -i D:/out/pkg_v001 -p clientX -q --log-file D:/logs/pkg_v001.log
+
+# debugging a preset in the GUI
+python submission_helper.py -v
+```
+
+A headless run ends with a summary line such as
+`Headless run finished: 0 error(s), 2 warning(s).`
 
 ## Keywords
 
