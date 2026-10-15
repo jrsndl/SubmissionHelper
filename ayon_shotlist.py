@@ -206,6 +206,8 @@ class AyonShotlist(object):
             "Pixel Aspect",
             "Clip In",
             "Clip Out",
+            "Start Date",
+            "End Date",
             "Folder Label",
             "Folder Status",
             "Task Label",
@@ -256,22 +258,50 @@ class AyonShotlist(object):
 
     @staticmethod
     def attribs_to_columns(a):
-        fin = int(a["frameStart"]) - int(a["handleStart"])
-        fout = int(a["frameEnd"]) - int(a["handleEnd"])
+        a = a or {}
+
+        def num(key):
+            try:
+                return int(float(a.get(key) or 0))
+            except (TypeError, ValueError):
+                return 0
+
+        def text(key):
+            v = a.get(key)
+            return '' if v is None else str(v)
+
+        # range with handles: first frame - head .. last frame + tail
+        fin = num("frameStart") - num("handleStart")
+        fout = num("frameEnd") + num("handleEnd")
         d = {
             "Range": f"{fin}-{fout}",
             "Length": str(fout - fin + 1),
-            "In": str(a["frameStart"]),
-            "Out": str(a["frameEnd"]),
-            "Head": str(a["handleStart"]),
-            "Tail": str(a["handleEnd"]),
-            "Width": str(a["resolutionWidth"]),
-            "Height": str(a["resolutionHeight"]),
-            "Pixel Aspect": str(a["pixelAspect"]),
-            "Clip In": str(a["clipIn"]),
-            "Clip Out": str(a["clipOut"]),
+            "In": text("frameStart"),
+            "Out": text("frameEnd"),
+            "Head": text("handleStart"),
+            "Tail": text("handleEnd"),
+            "Width": text("resolutionWidth"),
+            "Height": text("resolutionHeight"),
+            "Pixel Aspect": text("pixelAspect"),
+            "Clip In": text("clipIn"),
+            "Clip Out": text("clipOut"),
+            "Start Date": AyonShotlist.date_only(a.get("startDate")),
+            "End Date": AyonShotlist.date_only(a.get("endDate")),
         }
         return d
+
+    @staticmethod
+    def date_only(value):
+        """
+        Ayon dates are ISO date-times ("2026-10-01T00:00:00+00:00"),
+        return just the date "2026-10-01", or "" when not set
+        """
+        if not value:
+            return ''
+        value = str(value)
+        if len(value) >= 10 and value[4] == '-' and value[7] == '-':
+            return value[:10]
+        return value
 
     def set_filters(self, ayon_gui):
         self.ayon_gui = ayon_gui

@@ -229,3 +229,42 @@ class AyonOnlySequencerTest(unittest.TestCase):
             s.ayon_scan()
         fake.get_shotlist.assert_called_once()
         s.display_ayon_table.assert_called()
+
+
+class AttribColumnsTest(unittest.TestCase):
+    def test_dates_and_range_with_handles(self):
+        a = attrib()
+        a.update({'startDate': '2026-10-01T00:00:00+00:00', 'endDate': '2026-11-15T00:00:00Z'})
+        d = AyonShotlist.attribs_to_columns(a)
+        self.assertEqual(d['Start Date'], '2026-10-01')
+        self.assertEqual(d['End Date'], '2026-11-15')
+        # 1001-1100 with 8 frame handles
+        self.assertEqual(d['Range'], '993-1108')
+        self.assertEqual(d['Length'], '116')
+
+    def test_missing_attribs_do_not_crash(self):
+        d = AyonShotlist.attribs_to_columns({'frameStart': 1001, 'frameEnd': 1010, 'startDate': None})
+        self.assertEqual(d['Range'], '1001-1010')
+        self.assertEqual(d['Start Date'], '')
+        self.assertEqual(d['Width'], '')
+        self.assertEqual(AyonShotlist.attribs_to_columns(None)['Length'], '1')
+
+    def test_dates_in_rows_and_csv(self):
+        fake = FakeAyon()
+        orig_tasks = fake.get_tasks
+
+        def tasks(*a, **k):
+            out = orig_tasks(*a, **k)
+            out[0]['attrib'] = dict(attrib(), startDate='2026-10-05T00:00:00Z', endDate=None)
+            return out
+        fake.get_tasks = tasks
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        with mock.patch.object(ayon_shotlist.ayon_api, 'get_server_api_connection', return_value=fake, create=True):
+            a = AyonShotlist(gui(tmp.name, do_versions=False), None, {'AYON_SERVER_URL': 'x', 'AYON_API_KEY': 'y'})
+            rows = a.get_shotlist()
+        task_row = [r for r in rows if r['Task Name'] == 'comp'][0]
+        self.assertEqual(task_row['Start Date'], '2026-10-05')
+        self.assertEqual(task_row['End Date'], '')
+        self.assertIn('Start Date', a.columns)
+        self.assertLess(a.columns.index('Start Date'), a.columns.index('_hide'))

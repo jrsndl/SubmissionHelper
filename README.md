@@ -185,6 +185,10 @@ their values become keywords with the Ayon prefix, e.g. `{ayon_Folder Path}`.
   when *Enable* is off (that checkbox controls reading on package load).
 * **Export Shot List** writes `list.csv` (visible rows only) to the output folder.
 
+Columns per row include the frame range (`In`, `Out`, `Head`, `Tail`,
+`Range` with handles, `Length`), resolution, `Start Date` / `End Date`
+(`YYYY-MM-DD`, task rows use the task's dates), status, assignees and links.
+
 ### Pulling versions
 
 Turn on **Pull versions** and set **Product filters** to add version info of
