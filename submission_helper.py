@@ -100,14 +100,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         }
         self.ui_start = True
         self.settings_obj = s
-        self.settings = self.settings_obj.settings
+        self.settings = self.settings_obj.settings or {}
         self.settings_inst = self.settings_obj.install_settings
+        self.args = args or {}
 
         if not self.no_gui:
+            self.apply_settings_overrides(self.args.get('settings', ''))
             self.settings_to_gui()
+            # fill keys missing from an old / partial preset with the gui defaults
+            self.settings_from_gui()
             self.settings_update_app_title()
             self.settings_update_dropbox()
             self.gui_show_hide_modules()
+        else:
+            # headless: start from the gui defaults, overlay the preset, so
+            # older or partial presets don't raise KeyError later
+            preset = self.settings
+            self.settings_from_gui()
+            self.settings.update(preset)
+            self.apply_settings_overrides(self.args.get('settings', ''))
         self.ui_start = False
 
         # Other inits
@@ -291,7 +302,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'parse_pattern_13', 'refresh_parsing'))
         self.ui.parse_pattern_30.textChanged.connect(
             partial(self.handler, 'parse_pattern_14', 'refresh_parsing'))
-        self.ui.parse_pattern_32.textChanged.connect(
+        self.ui.parse_pattern_31.textChanged.connect(
             partial(self.handler, 'parse_pattern_15', 'refresh_parsing'))
         self.ui.parse_pattern_32.textChanged.connect(
             partial(self.handler, 'parse_pattern_16', 'refresh_parsing'))
@@ -1061,8 +1072,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         if self.no_gui and self.package_path is not None:
             self.settings_update("package_folder", self.ui.package_folder,
                                  value=os.path.dirname(self.package_path).replace('\\', '/'))
-            if self.package_path.endswith('.csv'):
-                if bool(self.settings['vendor_csv_path_detect']['value']):
+            if self.package_path.lower().endswith('.csv'):
+                if bool(self.settings.get('vendor_csv_path_detect', {}).get('value', False)):
                     self.settings_update("vendor_csv_path",
                                          self.ui.vendor_csv_path,
                                          value=self.package_path)
@@ -1073,8 +1084,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             self.data = Sequencer(self.package_path, sequence_mode='holes_allowed',
                                   gui=self.settings,
                                   more_settings=self.settings_obj, ui=self.ui, headless=self.no_gui)
-
-            self.data.export_all()
+            # the --actions string (default "ftg") already ran inside Sequencer,
+            # including export ("g"), so don't export a second time here
             self.log.debug("Headless operation finished.")
             # exit properly after headless go
             sys.exit()
@@ -1305,6 +1316,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             try:
             """
             index = int(self.ui.load_preset_combobox.currentIndex())
+            if index < 0 or index >= len(self.settings_obj.preset_names):
+                log.warning("No preset selected to load.")
+                return
             preset_to_load = str(self.settings_obj.preset_names[index])
 
             self.settings_obj.read(preset_to_load)
@@ -1811,6 +1825,37 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 elif one_setting["category"] == "combobox":
                     pass
 
+    def apply_settings_overrides(self, overrides):
+        """
+        Apply --settings overrides "key1=value1,key2=value2" to self.settings.
+        Values are converted by the category of the existing setting.
+        """
+        if not overrides:
+            return
+        for pair in overrides.split(','):
+            pair = pair.strip()
+            if not pair:
+                continue
+            if '=' not in pair:
+                log.warning(f"Ignoring settings override '{pair}', expected key=value")
+                continue
+            key, value = [x.strip() for x in pair.split('=', 1)]
+            one_setting = self.settings.get(key)
+            if one_setting is None:
+                log.warning(f"Ignoring settings override '{key}', unknown setting")
+                continue
+            category = one_setting.get('category', '')
+            try:
+                if category in ('checkbox', 'radiobutton'):
+                    value = value.lower() in ('1', 'true', 'yes', 'on')
+                elif category == 'spinbox':
+                    value = int(value)
+            except ValueError:
+                log.warning(f"Ignoring settings override '{key}={value}', bad value for {category}")
+                continue
+            one_setting['value'] = value
+            log.info(f"Settings override: {key} = {value!r}")
+
     def get_user_name(self):
         return getpass.getuser()
 
@@ -1829,13 +1874,13 @@ def get_args():
     parser = argparse.ArgumentParser(description="Submission Helper lives to help.")
     parser.add_argument(
         '-i',
-        help="The input folder or input csv file. Required.",
+        help="The input folder or input csv file. Required for headless mode.",
         type=str,
         required=False
     )
     parser.add_argument(
         '-p',
-        help="The preset json to be used. Required.",
+        help="The preset json to be used. Required for headless mode.",
         type=str,
         required=False
     )
@@ -1851,7 +1896,8 @@ def get_args():
         "(t)ransform data"
         "Each letter runs the action, Example:"
         "--action ftrftsg"
-        "will rename files, reload them, copy sidecar files, and presses go",
+        "will rename files, reload them, copy sidecar files, and presses go. "
+        "Exports (spreadsheets, text) are only written by (g)o, so include g to export.",
         type=str,
         default="ftg"
     )
@@ -1875,16 +1921,25 @@ if __name__ == "__main__":
     input_preset = args['p']
 
     headless = False
-    if input_path is not None and input_preset is not None:
-        if os.path.exists(input_path) and os.path.exists(input_preset):
-            headless = True
+    if input_path is not None or input_preset is not None:
+        # headless was requested, fail loudly instead of silently opening the gui
+        if input_path is None or input_preset is None:
+            log.error("Headless mode needs both -i and -p.")
+            sys.exit(2)
+        if not os.path.exists(input_path):
+            log.error(f"Input path '{input_path}' does not exist.")
+            sys.exit(1)
+        if not os.path.isfile(input_preset):
+            log.error(f"Preset file '{input_preset}' does not exist.")
+            sys.exit(1)
+        headless = True
+        # allow running on linux render nodes / farm without a display
+        if sys.platform.startswith('linux') and not (os.environ.get('DISPLAY') or os.environ.get('WAYLAND_DISPLAY')):
+            os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
-    app = QtWidgets.QApplication(sys.argv)
-    app.setStyle("Plastique")
-
-    app = app.instance()  # checks if QApplication already exists
+    app = QtWidgets.QApplication.instance()  # checks if QApplication already exists
     if not app:  # create QApplication if it doesn't exist
-        app = QtWidgets.QApplication([])
+        app = QtWidgets.QApplication(sys.argv)
 
     if headless:
         log.debug('Starting headless')
