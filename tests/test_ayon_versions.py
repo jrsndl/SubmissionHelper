@@ -355,7 +355,12 @@ class MatchedVersionsTest(unittest.TestCase):
             {'id': 'v1old', 'version': 6, 'productId': 'p1', 'taskId': 't_comp'},
             {'id': 'v2', 'version': 2, 'productId': 'p2'},
             {'id': 'v3', 'version': 1, 'productId': 'p3'},
+            # product that is not in the filters, must not be listed
+            {'id': 'v5', 'version': 4, 'productId': 'p5', 'taskId': 't_comp'},
         ]
+        fake.p.append({'id': 'p5', 'name': 'workfileCompositing', 'folderId': 'f1', 'productType': 'workfile'})
+        fake.r.append({'id': 'r6', 'name': 'exr', 'versionId': 'v1old'})
+        fake.r.append({'id': 'r5', 'name': 'exr', 'versionId': 'v5'})
         fake.version_calls = 0
 
         def get_versions(project, product_ids=None, hero=True, fields=None):
@@ -373,10 +378,11 @@ class MatchedVersionsTest(unittest.TestCase):
         self.addCleanup(tmp.cleanup)
         a, fake = self.make(tmp.name)
         rows = a.get_matched_versions({'f1'})
-        # only folder f1 (not f2), every version of every product, newest first per product
+        # only folder f1 (not f2), only configured products, sorted by folder path then version
         self.assertEqual({r['Folder Path'] for r in rows}, {'/ep01/sh010'})
         self.assertEqual([(r['Product'], r['Version']) for r in rows],
-                         [('platePl01', '2'), ('renderCompMain', '7'), ('renderCompMain', '6')])
+                         [('platePl01', '2'), ('renderCompMain', '6'), ('renderCompMain', '7')])
+        self.assertNotIn('workfileCompositing', {r['Product'] for r in rows})
         pref = [r for r in rows if r['Preferred']]
         self.assertEqual([(r['Product'], r['Version']) for r in pref], [('renderCompMain', '7')])
         v7 = pref[0]
@@ -475,3 +481,26 @@ class AyonMatchingDiagnosticsTest(unittest.TestCase):
         self.assertFalse(s.ayon_data[1].get('_matched'))
         self.assertEqual(s.merged_list[0]['ayon_Task Name'], 'comp')
         self.assertNotIn('ayon__folder_id', s.merged_list[0])
+
+
+class MatchedVersionsFilterTest(unittest.TestCase):
+    def test_filter_rules_and_sort(self):
+        folders = {'f1': {'Folder Path': '/b'}, 'f2': {'Folder Path': '/a'}}
+        products = [{'id': 'pr', 'name': 'renderCompMain', 'folderId': 'f1'},
+                    {'id': 'pp', 'name': 'platePl01', 'folderId': 'f1'},
+                    {'id': 'pa', 'name': 'platePl01', 'folderId': 'f2'},
+                    {'id': 'pw', 'name': 'workfile', 'folderId': 'f1'}]
+        versions = [{'id': 'r3', 'version': 3, 'productId': 'pr', 'taskId': 'tc'},
+                    {'id': 'r2', 'version': 2, 'productId': 'pr', 'taskId': 'tl'},   # wrong task
+                    {'id': 'p10', 'version': 10, 'productId': 'pp'},
+                    {'id': 'p1', 'version': 1, 'productId': 'pp'},                    # no exr
+                    {'id': 'a5', 'version': 5, 'productId': 'pa'},
+                    {'id': 'w9', 'version': 9, 'productId': 'pw', 'taskId': 'tc'}]  # not configured
+        repres = [{'name': 'exr', 'versionId': v} for v in ('r3', 'r2', 'p10', 'a5', 'w9')] + \
+                 [{'name': 'mov', 'versionId': 'p1'}]
+        rows = ayon_shotlist.matched_version_rows(
+            folders, products, versions, repres, {'tc': 'comp', 'tl': 'lighting'}, {},
+            parse_product_filters('comp:renderCompMain:exr, :platePl01:exr'))
+        self.assertEqual([(r['Folder Path'], r['Version'], r['Product']) for r in rows],
+                         [('/a', '5', 'platePl01'), ('/b', '3', 'renderCompMain'),
+                          ('/b', '10', 'platePl01')])

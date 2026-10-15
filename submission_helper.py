@@ -1996,8 +1996,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         vtable.setObjectName("ayon_versions_table")
         vtable.setSizePolicy(ui.ayon_table.sizePolicy())
         vtable.setMinimumSize(ui.ayon_table.minimumSize())
-        vtable.setToolTip("Every version of every product of the Ayon folders matched to the "
-                          "package files (needs Pull versions). Preferred = picked by the product filters.")
+        vtable.setToolTip("All versions of the configured products (Product filters) of the Ayon folders "
+                          "matched to the package files, sorted by folder path and version "
+                          "(needs Pull versions). Preferred = picked by the product filters.")
         versions_layout.addWidget(vtable)
         tabs.addTab(versions_page, "Matched Versions")
         ui.ayon_versions_table = vtable

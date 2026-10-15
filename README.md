@@ -229,9 +229,11 @@ filters takes effect with the next **Scan** or package load.
 ### Matched Versions
 
 With **Pull versions** on and package files matched to Ayon folders (*Match
-Package Keys to Shot List Keys*), the **Matched Versions** sub-tab lists every
-version of every product of the matched folders only, newest first. The
-version picked by the product filters is marked `Preferred` and highlighted.
+Package Keys to Shot List Keys*), the **Matched Versions** sub-tab lists all
+versions of the configured products (the product filters: product name, task
+and representation must fit) of the matched folders only, sorted by folder
+path and then version. The version picked by the filters as the preferred one
+is marked `Preferred` and highlighted.
 
 Columns: `Folder Path`, `Folder Name`, `Folder Type`, `Product`,
 `Product Type`, `Version`, `Version Name`, `Preferred`, `Version Status`,

@@ -161,9 +161,27 @@ def version_detail_columns(ver, repre=None):
     return info
 
 
-def matched_version_rows(folders, products, versions, repres, task_names, preferred):
+def version_matches_filters(prod, ver, ver_repres, task_names, filters):
     """
-    Rows for the Matched Versions list: every version of every product
+    True when the version fits any product filter: product name, task the
+    version was published from (if given), representation (if given)
+    """
+    task_name = task_names.get(ver.get('taskId'), '')
+    for flt in filters:
+        if not _match(flt['product'], prod.get('name')):
+            continue
+        if not _match(flt['task'], task_name):
+            continue
+        if flt['repre'] and not any(_match(flt['repre'], r.get('name')) for r in ver_repres):
+            continue
+        return True
+    return False
+
+
+def matched_version_rows(folders, products, versions, repres, task_names, preferred, filters=None):
+    """
+    Rows for the Matched Versions list: every version of the configured
+    products (product filters) of the matched folders
     :param folders: dict folder id -> {'Folder Path', 'Folder Name', 'Folder Type'}
     :param products: product dicts (id, name, folderId, productType)
     :param versions: version dicts (id, version, productId, taskId, author, status,
@@ -171,7 +189,9 @@ def matched_version_rows(folders, products, versions, repres, task_names, prefer
     :param repres: representation dicts (id, name, versionId, data)
     :param task_names: task id -> name
     :param preferred: folder id -> version id picked by the product filters
-    :return: rows sorted by folder path, product, newest version first
+    :param filters: product filters, versions not fitting any are left out;
+                    None keeps every version
+    :return: rows sorted by folder path, then version number (then product)
     """
     product_by_id = {p['id']: p for p in products}
     repres_by_version = {}
@@ -185,6 +205,8 @@ def matched_version_rows(folders, products, versions, repres, task_names, prefer
         folder_id = prod.get('folderId')
         folder = folders.get(folder_id, {})
         ver_repres = repres_by_version.get(ver.get('id'), [])
+        if filters is not None and not version_matches_filters(prod, ver, ver_repres, task_names, filters):
+            continue
         number = int(ver.get('version') or 0)
         attrib = ver.get('attrib') or {}
         row = {
@@ -207,7 +229,7 @@ def matched_version_rows(folders, products, versions, repres, task_names, prefer
         }
         row.update(version_detail_columns(ver, ver_repres[0] if ver_repres else None))
         rows.append(row)
-    rows.sort(key=lambda r: (r["Folder Path"], r["Product"].lower(), -int(r["Version"] or 0)))
+    rows.sort(key=lambda r: (r["Folder Path"], int(r["Version"] or 0), r["Product"].lower()))
     return rows
 
 
@@ -759,11 +781,19 @@ class AyonShotlist(object):
         if key == self._matched_cache_key:
             return self._matched_cache_rows
         rows = []
-        if folder_ids and self.error is None:
+        if folder_ids and self.error is None and not self.product_filters:
+            self.log.warning("Matched Versions: no product filters set, nothing to list")
+        elif folder_ids and self.error is None:
             try:
+                kwargs = {'folder_ids': set(folder_ids)}
+                # only the configured products; exact names narrow the query
+                if not any(_has_wildcard(f['product']) for f in self.product_filters):
+                    kwargs['product_names'] = sorted({f['product'] for f in self.product_filters})
                 products = list(self._query('get_products', self.project,
                                             fields={"id", "name", "folderId", "productType"},
-                                            folder_ids=set(folder_ids)))
+                                            **kwargs))
+                products = [p for p in products
+                            if any(_match(f['product'], p.get('name')) for f in self.product_filters)]
                 product_ids = {p['id'] for p in products}
                 versions = []
                 if product_ids:
@@ -791,7 +821,8 @@ class AyonShotlist(object):
                     folders[fid] = {k: r.get(k, '') for k in ("Folder Path", "Folder Name", "Folder Type")}
                 if fid in folder_ids and r.get('_version_id'):
                     preferred[fid] = r['_version_id']
-            rows = matched_version_rows(folders, products, versions, repres, self.task_names, preferred)
+            rows = matched_version_rows(folders, products, versions, repres, self.task_names, preferred,
+                                        self.product_filters)
             self.log.info(f"Matched Versions: {len(rows)} version(s) of {len(product_ids)} product(s) "
                           f"in {len(folder_ids)} matched folder(s)")
         self._matched_cache_key = key
