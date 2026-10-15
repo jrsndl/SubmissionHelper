@@ -434,3 +434,44 @@ class SequencerMatchedVersionsTest(unittest.TestCase):
         s.ayon_versions_update()
         s.my_ayon.get_matched_versions.assert_not_called()
         self.assertEqual(s.ayon_matched_versions, [])
+
+
+class AyonMatchingDiagnosticsTest(unittest.TestCase):
+    def run_assign(self, p1, d1):
+        import logging
+        import sequencer
+        s = sequencer.Sequencer.__new__(sequencer.Sequencer)
+        s.log = logging.getLogger('Sequencer')
+        s.ayon_data = [
+            {'Folder Name': 'HAR_204_404_0010', 'Folder Path': '/shots/HAR_204_404_0010',
+             'Task Name': 'comp', '_folder_id': 'a', '_hide': False},
+            {'Folder Name': 'HAR_204_404_0010', 'Folder Path': '/shots/HAR_204_404_0010',
+             'Task Name': '', '_folder_id': 'a'},
+        ]
+        s.merged_list = [{'shot': 'HAR_204_404_0010', 'task': 'comp', 'name': 'HAR_204_404_0010_comp_v007'}]
+        s.ayon_gui = {'prefix': 'ayon_'}
+        s.settings = {'ayon_package1_chbx': {'value': True}, 'ayon_package1': {'value': p1},
+                      'ayon_list1': {'value': d1}, 'ayon_package2_chbx': {'value': True},
+                      'ayon_package2': {'value': '{task}'}, 'ayon_list2': {'value': '{Task Name}'},
+                      'ayon_package3_chbx': {'value': False}, 'ayon_package3': {'value': ''},
+                      'ayon_list3': {'value': ''}}
+        return s
+
+    def test_wrong_rule_is_explained(self):
+        s = self.run_assign('/shots/{shot}', '{Folder Name}')
+        with self.assertLogs('Sequencer', 'WARNING') as cm:
+            s.ayon_data_assign()
+        text = '\n'.join(cm.output)
+        self.assertIn("'/shots/HAR_204_404_0010'  !=  list '{Folder Name}' -> 'HAR_204_404_0010'", text)
+        self.assertIn("'comp'  ==", text)
+        self.assertFalse(any(r.get('_matched') for r in s.ayon_data))
+
+    def test_matching_rule_and_no_internal_keys(self):
+        s = self.run_assign('/shots/{shot}', '{Folder Path}')
+        with self.assertLogs('Sequencer', 'INFO') as cm:
+            s.ayon_data_assign()
+        self.assertIn('1 of 1', cm.output[0])
+        self.assertTrue(s.ayon_data[0].get('_matched'))
+        self.assertFalse(s.ayon_data[1].get('_matched'))
+        self.assertEqual(s.merged_list[0]['ayon_Task Name'], 'comp')
+        self.assertNotIn('ayon__folder_id', s.merged_list[0])

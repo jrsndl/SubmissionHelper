@@ -3690,29 +3690,75 @@ class Sequencer(object):
         if filters is None or len(filters) == 0:
             return
 
+        def expand(template, first, second):
+            try:
+                out = template.format_map(Default(first))
+                return out.format_map(Default(second))
+            except (ValueError, IndexError, AttributeError):
+                return template
+
+        def compare(item, one_data_line):
+            """:return: list of (package value, list value, equal) per rule"""
+            out = []
+            for one_filter in filters:
+                pkg = expand(one_filter['pkg'] or '', item, one_data_line)
+                data = expand(one_filter['data'] or '', one_data_line, item)
+                out.append((str(pkg), str(data), str(pkg) == str(data)))
+            return out
+
+        matched_items = 0
+        best = None  # closest miss, for the log: (rules equal, item, row, compare result)
         for item in self.merged_list:
+            item_matched = False
             for one_data_line in self.ayon_data:
-                matched_filters = 0
-                for one_filter in filters:
-                    pkg = one_filter['pkg'].format_map(Default(item))
-                    pkg = pkg.format_map(Default(one_data_line))
-                    data = one_filter['data'].format_map(Default(one_data_line))
-                    data = data.format_map(Default(item))
-                    if pkg is None or data is None:
-                        continue
-                    if str(pkg) == str(data):
-                        matched_filters += 1
+                result = compare(item, one_data_line)
+                equal = sum(1 for r in result if r[2])
 
                 # skip item if not matching
-                if matched_filters != len(filters):
+                if equal != len(filters):
+                    if best is None or equal > best[0]:
+                        best = (equal, item, one_data_line, result)
                     continue
 
-                # merge data lines
+                # merge data lines (not the internal _ columns)
                 prefixed_line = {}
                 for k, v in one_data_line.items():
+                    if str(k).startswith('_'):
+                        continue
                     prefixed_line[f"{self.ayon_gui['prefix']}{k}"] = v
                 item.update(prefixed_line)
                 one_data_line["_matched"] = True
+                item_matched = True
+            if item_matched:
+                matched_items += 1
+
+        self._log_ayon_matching(matched_items, len(self.merged_list), filters, best)
+
+    def _log_ayon_matching(self, matched, total, filters, best):
+        """
+        Summary of the Ayon matching. When nothing matched, show what the
+        rules compared for the closest row, so a wrong rule is easy to spot.
+        Logged only when the result changes (refreshes run on every edit).
+        """
+        if matched:
+            msg = f"Ayon matching: {matched} of {total} file item(s) matched Ayon rows"
+            level = logging.INFO
+        else:
+            lines = [f"Ayon matching: none of {total} file item(s) matched an Ayon row "
+                     f"(all enabled rules must be equal)."]
+            if best is not None:
+                _, item, row, result = best
+                name = item.get('name') or item.get('full_path') or ''
+                where = row.get('Folder Path', '') + (f" / {row.get('Task Name')}" if row.get('Task Name') else '')
+                lines.append(f"  closest: file '{name}' vs Ayon '{where}'")
+                for n_rule, (one_filter, (pkg, data, equal)) in enumerate(zip(filters, result), 1):
+                    lines.append(f"  rule {n_rule}: package {one_filter['pkg']!r} -> {pkg!r}  "
+                                 f"{'==' if equal else '!='}  list {one_filter['data']!r} -> {data!r}")
+            msg = "\n".join(lines)
+            level = logging.WARNING
+        if msg != getattr(self, '_last_ayon_match_msg', None):
+            self._last_ayon_match_msg = msg
+            self.log.log(level, msg)
 
     def display_ayon_table(self):
         """
