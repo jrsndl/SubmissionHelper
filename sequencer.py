@@ -59,6 +59,8 @@ class Sequencer(object):
         self.paths = {}
         self._prep_paths_vars()
 
+        self.my_ayon = None
+
         self.renames = []
         self.output = {}
 
@@ -3508,6 +3510,9 @@ class Sequencer(object):
         self.ayon_data = self.my_ayon.get_shotlist()
 
     def ayon_data_filter(self):
+        if self.my_ayon is None or getattr(self.my_ayon, 'error', None):
+            self.log.warning("Ayon shot list is not available (shotlist disabled, no project, or connection failed).")
+            return
         self.ayon_collect_gui()
         self.my_ayon.ayon_gui = self.ayon_gui
         self.my_ayon.filter_shotlist()
@@ -3515,7 +3520,7 @@ class Sequencer(object):
         self.display_ayon_table()
 
     def ayon_data_write(self):
-        if self.my_ayon is not None:
+        if self.my_ayon is not None and not getattr(self.my_ayon, 'error', None):
             self.my_ayon.write_csv()
 
     def ayon_data_assign(self):
