@@ -75,6 +75,23 @@ ffprobe and oiiotool are external tools. They are found on `PATH`, through
 `install.json`, or through the `SH_FFPROBE` / `SH_OIIOTOOL` / `SH_FFMPEG`
 environment variables. oiiotool for Windows is included in `oiio/win`.
 
+## Building the exe
+
+Run `build_exe.bat` (needs [uv](https://docs.astral.sh/uv/)). It creates
+`.venv` if needed, installs the requirements and PyInstaller, and builds
+`dist\SubmissionHelper\`:
+
+| File | Use |
+|---|---|
+| `SubmissionHelper.exe` | the GUI, no console window |
+| `SubmissionHelper-cli.exe` | the same app with a console: headless / command line runs and log output |
+
+The `oiio`, `ocio` and `ffmpeg` folders and `install.json` / `default.json`
+are copied next to the exes, where the app looks for them. Zip the whole
+`dist\SubmissionHelper` folder to share it; check `install.json` for API keys
+first. Console tools the app runs (ffprobe, oiiotool, converts, ayon) don't
+open console windows.
+
 ## Command line
 
 Without arguments Submission Helper opens the GUI. Given both `-i` and `-p`
@@ -87,8 +104,9 @@ python submission_helper.py [-h] [-i PATH] [-p PRESET] [--actions LETTERS]
                             [--settings KEY=VALUE[,KEY=VALUE...]]
 ```
 
-With the built executable use `submission_helper.exe` instead of
-`python submission_helper.py`. Run with `-h` to print the help.
+With the built executable use `SubmissionHelper-cli.exe` instead of
+`python submission_helper.py` (the windowed `SubmissionHelper.exe` has no
+console to print to). Run with `-h` to print the help.
 
 | Option | Meaning |
 |---|---|

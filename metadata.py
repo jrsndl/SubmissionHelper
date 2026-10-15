@@ -590,7 +590,7 @@ class MetaData(object):
                    'is_log': False, }
 
         args = [ppth, '-i', filename]
-        process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **helpers.no_window())
 
         # outputs error with file description including metadata        
         out, err = process.communicate()
@@ -1262,6 +1262,7 @@ class MetaData(object):
             kwargs["stdout"] = subprocess.PIPE
             kwargs["stderr"] = subprocess.PIPE
             kwargs["stdin"] = subprocess.PIPE
+            kwargs.update(helpers.no_window())
             proc = subprocess.Popen(*args, **kwargs)
             full_output = ""
             _stdout, _stderr = proc.communicate()

@@ -4,6 +4,8 @@ import os
 import platform
 import subprocess
 
+import helpers
+
 class AyonPublish(object):
 
     def __init__(self, gui, pths):
@@ -97,7 +99,7 @@ class AyonPublish(object):
         self.log.debug(f"Command: {self.ayon_csv}")
         popen = subprocess.Popen(self.ayon_csv, env=my_env,
                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                 text=True, errors='replace')
+                                 text=True, errors='replace', **helpers.no_window())
         popen_stdout, popen_stderr = popen.communicate()
         ret_code = popen.returncode
         for line in (popen_stdout or '').splitlines():

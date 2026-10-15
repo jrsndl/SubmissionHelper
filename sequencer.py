@@ -5020,16 +5020,19 @@ class Sequencer(object):
                     process = subprocess.Popen(one_command, shell=True,
                                                stdout=subprocess.PIPE,
                                                stderr=subprocess.PIPE,
-                                               bufsize=-1)
+                                               bufsize=-1,
+                                               **helpers.no_window())
                     out, err = process.communicate()
-                    if process.returncode != 0:
+                    # was inverted: 0 logged as failure
+                    if process.returncode == 0:
                         self.log.debug(
                             "Convert of item {} OK".format(
                                 item_label))
                     else:
-                        self.log.debug(
-                            "Convert of item {} return code is not zero".format(
-                                item_label))
+                        _err = (err or b'').decode('utf-8', errors='replace').strip()
+                        self.log.warning(
+                            "Convert of item {} failed (return code {}): {}".format(
+                                item_label, process.returncode, _err[-500:]))
 
                     # if command didn't produce desired output, clear convert path to indicate so
                     if not os.path.exists(_pth):

@@ -2193,7 +2193,7 @@ examples:
   # override preset values for this run only
   python submission_helper.py -i D:/out/pkg_v001 -p clientX --settings name_rename_auto=false,prefs_counter_start=5
 
-  (with the built exe, use submission_helper.exe instead of python submission_helper.py)
+  (with the built exe, use SubmissionHelper-cli.exe instead of python submission_helper.py)
 
 exit codes:
   0  finished
@@ -2319,6 +2319,12 @@ def check_cli_args(args):
 
 
 if __name__ == "__main__":
+    # the windowed exe has no console: stdout / stderr are None there, a
+    # stray print or argparse message must not crash the app
+    if sys.stdout is None:
+        sys.stdout = open(os.devnull, 'w')
+    if sys.stderr is None:
+        sys.stderr = open(os.devnull, 'w')
     args = vars(get_args())
     input_path = args['i']
     input_preset = args['p']
