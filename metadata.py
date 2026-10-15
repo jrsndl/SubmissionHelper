@@ -405,8 +405,26 @@ class MetaData(object):
                    }
 
         args = [self.ffprobe_path, '-show_streams', '-print_format', 'xml', '-i', filename]
-        process = subprocess.Popen(args, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=-1)
-        out, err = process.communicate()
+        # no shell=True: with a list on POSIX it drops all arguments, and on
+        # Windows cmd.exe misreads file names containing & ^ % ( )
+        if not self.ffprobe_path:
+            outdata['error'] = "Ffprobe not found, can't probe " + str(filename)
+            return outdata
+        try:
+            extra = {}
+            if sys.platform == 'win32':
+                # shell=True used to hide the console window, keep it hidden
+                extra['creationflags'] = getattr(subprocess, 'CREATE_NO_WINDOW', 0)
+            process = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=-1, **extra)
+            out, err = process.communicate(timeout=120)
+        except subprocess.TimeoutExpired:
+            process.kill()
+            process.communicate()
+            outdata['error'] = "Probing file " + str(filename) + " timed out"
+            return outdata
+        except OSError as e:
+            outdata['error'] = "Probing file " + str(filename) + " failed to start ffprobe: " + str(e)
+            return outdata
 
         if process.returncode != 0:
             outdata['error'] = "Probing file " + str(filename) + "  failed with error " + str(err)

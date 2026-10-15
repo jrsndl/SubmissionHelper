@@ -12,12 +12,16 @@ class AyonPublish(object):
         self.paths = pths
         self.ayon_csv = None
 
-        if not self.are_paths_ok():
-            return
-
-    def are_paths_ok(self):
-
-        to_check = ['ayon', 'deadline', 'AYON_SERVER_URL', 'AYON_USERNAME', 'AYON_API_KEY', 'FTRACK_SERVER', 'FTRACK_API_KEY', 'FTRACK_API_USER']
+    def are_paths_ok(self, mode="local"):
+        """
+        Check that the executables needed for the publish mode exist.
+        Missing environment variables are only reported, they don't block.
+        :param mode: "local" needs ayon, "farm" needs ayon and deadline
+        :return: True if all required executables are set
+        """
+        to_check = ['ayon', 'AYON_SERVER_URL', 'AYON_USERNAME', 'AYON_API_KEY', 'FTRACK_SERVER', 'FTRACK_API_KEY', 'FTRACK_API_USER']
+        if mode == "farm":
+            to_check.insert(1, 'deadline')
         errors = 0
         for k in to_check:
             value = self.paths.get(k)
@@ -27,8 +31,8 @@ class AyonPublish(object):
                     errors += 1
             else:
                 if value is None or value == "":
-                    self.log.error(f"Can't find valid environment variable {k}")
-        return True
+                    self.log.warning(f"Can't find valid environment variable {k}")
+        return errors == 0
 
     def external_execute(self, args):
         kwargs = {
@@ -55,7 +59,7 @@ class AyonPublish(object):
 
     def build_ayon_csv_command(self, csv_path, project, folder='', task=''):
         self.csv_path = csv_path
-        self.csv_name = os.path.basename(csv_path).strip(".csv")
+        self.csv_name = os.path.splitext(os.path.basename(csv_path))[0]
         self.ayon_csv = [
             self.paths['ayon'],
             'addon',

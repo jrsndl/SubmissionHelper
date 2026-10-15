@@ -110,8 +110,9 @@ class Sequencer(object):
                     f"Running {action_lenght} headless actions: {actions_arg}")
                 for action in actions:
                     action_count += 1
+                    action_name = action_names.get(action, f"Unknown ({action})")
                     self.log.info(
-                        f"Running headless action {action_count}/{action_lenght}: {action_names[action]}")
+                        f"Running headless action {action_count}/{action_lenght}: {action_name}")
                     if action == "g":
                         # GO
                         self.export_all()
@@ -147,15 +148,17 @@ class Sequencer(object):
                         self.ayon_data_write()
                     elif action == "x":
                         # Export Ftrack Shotlist
-                        # TODO make proper output
                         f = FtrackHelper(self.settings, self.paths)
-                        if f is not None:
+                        if f.is_session_ok():
                             f.get_ftrack_info()
-                            f.ftrack_info_to_csv("D:/ftrack_shotlist.csv")
+                            out_dir = self.in_path if os.path.isdir(self.in_path) else os.path.dirname(self.in_path)
+                            f.ftrack_info_to_csv(os.path.join(out_dir, "ftrack_shotlist.csv"))
+                        else:
+                            self.log.warning("Ftrack session is not available, shotlist not exported.")
                     else:
                         self.log.warning(f"Unknown action: {action}")
                     self.log.info(
-                        f"Headless action {action_count}/{action_lenght}: {action_names[action]} finished")
+                        f"Headless action {action_count}/{action_lenght}: {action_name} finished")
                 self.log.info(
                     'Finished at: ' + time.strftime("%Y-%m-%d, %H:%M"))
                 self.log.info(
@@ -191,11 +194,11 @@ class Sequencer(object):
         if sys.platform == 'win32':
             usr = envs.get('USERNAME', '')
             deadline_command += '.exe'
-            executables = ['ayon.exe', 'ffprobe.exe', 'ffplay.exe', 'oiiotool.exe', deadline_command]
+            executables = ['ayon.exe', 'ffmpeg.exe', 'ffprobe.exe', 'ffplay.exe', 'oiiotool.exe', deadline_command]
 
         else:
             usr = envs.get('USER', '')
-            executables = ['ayon', 'ffprobe', 'ffplay', 'oiiotool', deadline_command]
+            executables = ['ayon', 'ffmpeg', 'ffprobe', 'ffplay', 'oiiotool', deadline_command]
 
         # paths are lowercase
         together = {
@@ -211,25 +214,28 @@ class Sequencer(object):
             'ffprobe': '',
             'oiiotool': '',
             'ocio': envs.get('OCIO', ''),
-            'deadline': ''
+            'deadline': '',
+            'vfx-transcode': ''
         }
 
-        # try to get deadline command from environment
+        # check if executables are available on path
+        for one_exec in executables:
+            exe_path = which(one_exec)
+            k = os.path.splitext(one_exec)[0]
+            if k == 'deadlinecommand':
+                k = 'deadline'
+            if exe_path:
+                together[k] = exe_path
+            elif k not in together:
+                together[k] = ''
+
+        # try to get deadline command from environment, overrides PATH
         dp = envs.get('DEADLINE_PATH', '')
         if dp != '':
             dp = dp.replace("\\", "/").rstrip('/')
             dp = f"{dp}/{deadline_command}"
             if os.path.exists(dp):
                 together['deadline'] = dp
-
-        # check if executables are available on path
-        for one_exec in executables:
-            exe_path = which(one_exec)
-            k = one_exec.strip('.exe')
-            if exe_path:
-                together[k] = exe_path
-            else:
-                together[k] = ''
 
         # override executable paths by Submission Helper specific environment variables
         if envs.get('SH_FFMPEG'):
@@ -279,7 +285,7 @@ class Sequencer(object):
         # OCIO path from gui overrides everything
         if self.settings is not None:
             gui_pth = self.settings.get('prefs_oiio_custom_ocio_path')
-            gui_pth_enabled = bool(self.settings.get('prefs_oiio_custom_ocio', False))
+            gui_pth_enabled = bool((self.settings.get('prefs_oiio_custom_ocio') or {}).get('value', False))
             if gui_pth and gui_pth['value'] and os.path.exists(gui_pth['value']) and gui_pth_enabled:
                 together['ocio'] = gui_pth['value']
 
@@ -372,19 +378,9 @@ class Sequencer(object):
             self.ui.statusBar.showMessage("Gathering Metadata", 3000)
         self.get_metadata()
 
-        if not self.headless:
-            self.ui.statusBar.showMessage("Reading data from Ftrack", 3000)
-        f = FtrackHelper(self.settings, self.paths)
-        if f is not None:
-            #print(f"Ftrack session is {f.is_session_ok()}")
-            f.get_ftrack_info()
-            # TODO make proper output from gui
-            f.ftrack_info_to_csv("D:/ftrack_shotlist.csv")
-            #f.get_ftrack_shots()
-            #f.get_ftrack_shot_links()
-            #f.get_ftrack_asset_links()
-        else:
-            print(f"Ftrack session bad")
+        # Ftrack shotlist export used to run here on every read and wrote to a
+        # hardcoded D:/ftrack_shotlist.csv. It is now only done by the
+        # headless 'x' action.
 
 
     def transform_data(self):
@@ -819,7 +815,8 @@ class Sequencer(object):
                                         one_row['vendor_row_errors'].append(
                                             "File extension {} doesn't match the representation extension(s) {} for output {}".format(
                                                 current_extension,
-                                                ', '.join(one_repre['extensions'])
+                                                ', '.join(one_repre['extensions']),
+                                                current_repre_name
                                             ))
                                 except Exception:
                                     pass
@@ -2856,7 +2853,7 @@ class Sequencer(object):
         print(f"Publishing {len(csv_file_paths)} files to Ayon...")
 
         a = AyonPublish(self.settings, self.paths)
-        if a.are_paths_ok:
+        if a.are_paths_ok(mode=mode):
             for one_csv_file_path in csv_file_paths:
                 a.build_ayon_csv_command(one_csv_file_path, ayon_project, ayon_folder, ayon_task)
                 if mode == "local":
