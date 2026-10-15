@@ -73,6 +73,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.setupUi(self)
         self.no_gui = no_gui
 
+        # top / bottom tab panels in a draggable splitter
+        self.panel_splitter = self._setup_panel_splitter()
+
         # Log tab: shows everything logged by any module
         self.log_view = None
         if not self.no_gui:
@@ -1731,6 +1734,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                                         'category': 'mainwindow_position',
                                         'position_x': x,
                                         'position_y': y}})
+        if getattr(self, 'panel_splitter', None) is not None:
+            self.settings.update({'panel_splitter': {
+                                        'category': 'splitter',
+                                        'sizes': [int(v) for v in self.panel_splitter.sizes()]}})
         for my_name, obj in inspect.getmembers(self.ui):
             name = my_name
             if name in self.NOT_SETTINGS:
@@ -1842,6 +1849,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.move(
                     int(setting_pos['position_x']),
                     int(setting_pos['position_y']))
+            setting_split = self.settings.get("panel_splitter")
+            if setting_split and getattr(self, 'panel_splitter', None) is not None:
+                try:
+                    sizes = [int(v) for v in setting_split.get('sizes', [])]
+                    if len(sizes) == 2 and min(sizes) > 0:
+                        self.panel_splitter.setSizes(sizes)
+                except (TypeError, ValueError):
+                    self.log.warning("Ignoring invalid saved panel sizes")
             self.ui_start = False
 
         for my_name, obj in inspect.getmembers(self.ui):
@@ -1971,6 +1986,65 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 continue
             one_setting['value'] = value
             log.info(f"Settings override: {key} = {value!r}")
+
+    # default height of the top tabs panel, it was fixed to this before
+    TOP_PANEL_DEFAULT = 350
+    TOP_PANEL_MIN = 350
+    BOTTOM_PANEL_MIN = 120
+
+    def _setup_panel_splitter(self):
+        """
+        Put TopTab and BottomTab into a vertical QSplitter, so the user can drag
+        the border between them. Done in code so ui_Submission.py can still be
+        regenerated from submission.ui.
+        Double click on the handle restores the default height.
+        :return: the splitter
+        """
+        top = self.ui.TopTab
+        bottom = self.ui.BottomTab
+        top_layout = self.ui.verticalLayout_15      # [TopTab, verticalLayout_10]
+        bottom_layout = self.ui.verticalLayout_10   # [BottomTab, buttons, progress]
+
+        top_layout.removeWidget(top)
+        bottom_layout.removeWidget(bottom)
+
+        splitter = QtWidgets.QSplitter(QtCore.Qt.Vertical, self.ui.centralwidget)
+        splitter.setObjectName("panel_splitter")
+        splitter.setChildrenCollapsible(False)
+        splitter.setHandleWidth(7)
+        splitter.addWidget(top)
+        splitter.addWidget(bottom)
+        # window resizing goes to the bottom panel, as before
+        splitter.setStretchFactor(0, 0)
+        splitter.setStretchFactor(1, 1)
+        splitter.setStyleSheet(
+            "QSplitter::handle:vertical { background: #3a3a3a; margin: 1px 40px; border-radius: 2px; }"
+            "QSplitter::handle:vertical:hover { background: #ffa02f; }")
+        handle = splitter.handle(1)
+        handle.setToolTip("Drag to resize the panels, double click to reset")
+        handle.installEventFilter(self)
+
+        # was a fixed 350 px, now 350 px minimum and free to grow
+        top.setMinimumHeight(self.TOP_PANEL_MIN)
+        top.setMaximumHeight(16777215)
+        bottom.setMinimumHeight(self.BOTTOM_PANEL_MIN)
+
+        top_layout.insertWidget(0, splitter, 1)
+        self._reset_panel_splitter(splitter)
+        return splitter
+
+    def _reset_panel_splitter(self, splitter=None):
+        splitter = splitter or self.panel_splitter
+        total = max(sum(splitter.sizes()), self.TOP_PANEL_DEFAULT + self.BOTTOM_PANEL_MIN)
+        splitter.setSizes([self.TOP_PANEL_DEFAULT, total - self.TOP_PANEL_DEFAULT])
+
+    def eventFilter(self, obj, event):
+        splitter = getattr(self, 'panel_splitter', None)
+        if splitter is not None and obj is splitter.handle(1) \
+                and event.type() == QtCore.QEvent.MouseButtonDblClick:
+            self._reset_panel_splitter()
+            return True
+        return super().eventFilter(obj, event)
 
     def get_user_name(self):
         return getpass.getuser()
