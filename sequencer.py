@@ -23,6 +23,12 @@ from metadata import MetaData
 from ayon_shotlist import AyonShotlist
 from ayon_publish import AyonPublish
 
+# number of rows on the Parsing tab (32 come from the .ui file, the rest are
+# added by MainWindow._add_parse_rows)
+PARSE_ROWS = 48
+PARSE_FIELDS = ('name', 'pattern', 'repl', 'source', 'filter')
+
+
 class Sequencer(object):
     def __init__(self, in_path, sequence_mode='to_subsequences', gui=None, more_settings=None, ui=None, headless=False):
 
@@ -2059,24 +2065,26 @@ class Sequencer(object):
 
         self.regexes = {}
         if self.settings:
-            indexes = [str(x).zfill(2) for x in range(1, 33)]
+            def _val(k):
+                # presets saved before the extra rows existed don't have them
+                return (self.settings.get(k) or {}).get("value") or ""
+
+            indexes = [str(x).zfill(2) for x in range(1, PARSE_ROWS + 1)]
             for one in indexes:
-                name_key = "parse_name_" + one
-                key = self.settings[name_key]["value"]
-                name_pat = "parse_pattern_" + one
-                pat = self.settings[name_pat]["value"]
-                name_filter = "parse_filter_" + one
-                fltr = self.settings[name_filter]["value"]
-                try:
-                    pat_compiled = re.compile(pat)
-                    pat_valid = True
-                except re.error:
-                    pat_compiled = None
-                    pat_valid = False
-                name_rep = "parse_repl_" + one
-                rep = self.settings[name_rep]["value"]
-                name_src = "parse_source_" + one
-                src = self.settings[name_src]["value"]
+                key = _val("parse_name_" + one)
+                pat = _val("parse_pattern_" + one)
+                fltr = _val("parse_filter_" + one)
+                pat_compiled = None
+                pat_valid = False
+                if pat:
+                    try:
+                        pat_compiled = re.compile(pat)
+                        pat_valid = True
+                    except re.error as e:
+                        # debug only: patterns are invalid while being typed
+                        self.log.debug(f"Parsing row {one}: invalid pattern '{pat}': {e}")
+                rep = _val("parse_repl_" + one)
+                src = _val("parse_source_" + one)
 
                 # only add regex if it is valid and not empty
                 if key and pat and src and pat_valid:

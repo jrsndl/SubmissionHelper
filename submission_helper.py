@@ -14,7 +14,7 @@ from PySide2 import QtCore, QtGui, QtWidgets
 
 from ui_Submission import Ui_submission
 
-from sequencer import Sequencer
+from sequencer import Sequencer, PARSE_ROWS, PARSE_FIELDS
 from settings import Settings
 import parse_file_name
 import sh_logging
@@ -76,6 +76,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         # top / bottom tab panels in a draggable splitter
         self.panel_splitter = self._setup_panel_splitter()
         self._tune_top_tab_layouts()
+        # Parsing tab rows beyond the 32 from the .ui file
+        self._add_parse_rows()
 
         # Log tab: shows everything logged by any module
         self.log_view = None
@@ -192,265 +194,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'name_rename_auto', 'package_rename'))
 
         # Parsing Tab
-        self.ui.parse_name_01.textChanged.connect(
-            partial(self.handler, 'parse_name_01', 'refresh_parsing'))
-        self.ui.parse_name_02.textChanged.connect(
-            partial(self.handler, 'parse_name_02', 'refresh_parsing'))
-        self.ui.parse_name_03.textChanged.connect(
-            partial(self.handler, 'parse_name_03', 'refresh_parsing'))
-        self.ui.parse_name_04.textChanged.connect(
-            partial(self.handler, 'parse_name_04', 'refresh_parsing'))
-        self.ui.parse_name_05.textChanged.connect(
-            partial(self.handler, 'parse_name_05', 'refresh_parsing'))
-        self.ui.parse_name_06.textChanged.connect(
-            partial(self.handler, 'parse_name_06', 'refresh_parsing'))
-        self.ui.parse_name_07.textChanged.connect(
-            partial(self.handler, 'parse_name_07', 'refresh_parsing'))
-        self.ui.parse_name_08.textChanged.connect(
-            partial(self.handler, 'parse_name_08', 'refresh_parsing'))
-        self.ui.parse_name_09.textChanged.connect(
-            partial(self.handler, 'parse_name_09', 'refresh_parsing'))
-        self.ui.parse_name_10.textChanged.connect(
-            partial(self.handler, 'parse_name_10', 'refresh_parsing'))
-        self.ui.parse_name_11.textChanged.connect(
-            partial(self.handler, 'parse_name_11', 'refresh_parsing'))
-        self.ui.parse_name_12.textChanged.connect(
-            partial(self.handler, 'parse_name_12', 'refresh_parsing'))
-        self.ui.parse_name_13.textChanged.connect(
-            partial(self.handler, 'parse_name_13', 'refresh_parsing'))
-        self.ui.parse_name_14.textChanged.connect(
-            partial(self.handler, 'parse_name_14', 'refresh_parsing'))
-        self.ui.parse_name_15.textChanged.connect(
-            partial(self.handler, 'parse_name_15', 'refresh_parsing'))
-        self.ui.parse_name_16.textChanged.connect(
-            partial(self.handler, 'parse_name_16', 'refresh_parsing'))
-        self.ui.parse_name_17.textChanged.connect(
-            partial(self.handler, 'parse_name_01', 'refresh_parsing'))
-        self.ui.parse_name_18.textChanged.connect(
-            partial(self.handler, 'parse_name_02', 'refresh_parsing'))
-        self.ui.parse_name_19.textChanged.connect(
-            partial(self.handler, 'parse_name_03', 'refresh_parsing'))
-        self.ui.parse_name_20.textChanged.connect(
-            partial(self.handler, 'parse_name_04', 'refresh_parsing'))
-        self.ui.parse_name_21.textChanged.connect(
-            partial(self.handler, 'parse_name_05', 'refresh_parsing'))
-        self.ui.parse_name_22.textChanged.connect(
-            partial(self.handler, 'parse_name_06', 'refresh_parsing'))
-        self.ui.parse_name_23.textChanged.connect(
-            partial(self.handler, 'parse_name_07', 'refresh_parsing'))
-        self.ui.parse_name_24.textChanged.connect(
-            partial(self.handler, 'parse_name_08', 'refresh_parsing'))
-        self.ui.parse_name_25.textChanged.connect(
-            partial(self.handler, 'parse_name_09', 'refresh_parsing'))
-        self.ui.parse_name_26.textChanged.connect(
-            partial(self.handler, 'parse_name_10', 'refresh_parsing'))
-        self.ui.parse_name_27.textChanged.connect(
-            partial(self.handler, 'parse_name_11', 'refresh_parsing'))
-        self.ui.parse_name_28.textChanged.connect(
-            partial(self.handler, 'parse_name_12', 'refresh_parsing'))
-        self.ui.parse_name_29.textChanged.connect(
-            partial(self.handler, 'parse_name_13', 'refresh_parsing'))
-        self.ui.parse_name_30.textChanged.connect(
-            partial(self.handler, 'parse_name_14', 'refresh_parsing'))
-        self.ui.parse_name_31.textChanged.connect(
-            partial(self.handler, 'parse_name_15', 'refresh_parsing'))
-        self.ui.parse_name_32.textChanged.connect(
-            partial(self.handler, 'parse_name_16', 'refresh_parsing'))
-
-        self.ui.parse_pattern_01.textChanged.connect(
-            partial(self.handler, 'parse_pattern_01', 'refresh_parsing'))
-        self.ui.parse_pattern_02.textChanged.connect(
-            partial(self.handler, 'parse_pattern_02', 'refresh_parsing'))
-        self.ui.parse_pattern_03.textChanged.connect(
-            partial(self.handler, 'parse_pattern_03', 'refresh_parsing'))
-        self.ui.parse_pattern_04.textChanged.connect(
-            partial(self.handler, 'parse_pattern_04', 'refresh_parsing'))
-        self.ui.parse_pattern_05.textChanged.connect(
-            partial(self.handler, 'parse_pattern_05', 'refresh_parsing'))
-        self.ui.parse_pattern_06.textChanged.connect(
-            partial(self.handler, 'parse_pattern_06', 'refresh_parsing'))
-        self.ui.parse_pattern_07.textChanged.connect(
-            partial(self.handler, 'parse_pattern_07', 'refresh_parsing'))
-        self.ui.parse_pattern_08.textChanged.connect(
-            partial(self.handler, 'parse_pattern_08', 'refresh_parsing'))
-        self.ui.parse_pattern_09.textChanged.connect(
-            partial(self.handler, 'parse_pattern_09', 'refresh_parsing'))
-        self.ui.parse_pattern_10.textChanged.connect(
-            partial(self.handler, 'parse_pattern_10', 'refresh_parsing'))
-        self.ui.parse_pattern_11.textChanged.connect(
-            partial(self.handler, 'parse_pattern_11', 'refresh_parsing'))
-        self.ui.parse_pattern_12.textChanged.connect(
-            partial(self.handler, 'parse_pattern_12', 'refresh_parsing'))
-        self.ui.parse_pattern_13.textChanged.connect(
-            partial(self.handler, 'parse_pattern_13', 'refresh_parsing'))
-        self.ui.parse_pattern_14.textChanged.connect(
-            partial(self.handler, 'parse_pattern_14', 'refresh_parsing'))
-        self.ui.parse_pattern_15.textChanged.connect(
-            partial(self.handler, 'parse_pattern_15', 'refresh_parsing'))
-        self.ui.parse_pattern_16.textChanged.connect(
-            partial(self.handler, 'parse_pattern_16', 'refresh_parsing'))
-        self.ui.parse_pattern_17.textChanged.connect(
-            partial(self.handler, 'parse_pattern_01', 'refresh_parsing'))
-        self.ui.parse_pattern_18.textChanged.connect(
-            partial(self.handler, 'parse_pattern_02', 'refresh_parsing'))
-        self.ui.parse_pattern_19.textChanged.connect(
-            partial(self.handler, 'parse_pattern_03', 'refresh_parsing'))
-        self.ui.parse_pattern_20.textChanged.connect(
-            partial(self.handler, 'parse_pattern_04', 'refresh_parsing'))
-        self.ui.parse_pattern_21.textChanged.connect(
-            partial(self.handler, 'parse_pattern_05', 'refresh_parsing'))
-        self.ui.parse_pattern_22.textChanged.connect(
-            partial(self.handler, 'parse_pattern_06', 'refresh_parsing'))
-        self.ui.parse_pattern_23.textChanged.connect(
-            partial(self.handler, 'parse_pattern_07', 'refresh_parsing'))
-        self.ui.parse_pattern_24.textChanged.connect(
-            partial(self.handler, 'parse_pattern_08', 'refresh_parsing'))
-        self.ui.parse_pattern_25.textChanged.connect(
-            partial(self.handler, 'parse_pattern_09', 'refresh_parsing'))
-        self.ui.parse_pattern_26.textChanged.connect(
-            partial(self.handler, 'parse_pattern_10', 'refresh_parsing'))
-        self.ui.parse_pattern_27.textChanged.connect(
-            partial(self.handler, 'parse_pattern_11', 'refresh_parsing'))
-        self.ui.parse_pattern_28.textChanged.connect(
-            partial(self.handler, 'parse_pattern_12', 'refresh_parsing'))
-        self.ui.parse_pattern_29.textChanged.connect(
-            partial(self.handler, 'parse_pattern_13', 'refresh_parsing'))
-        self.ui.parse_pattern_30.textChanged.connect(
-            partial(self.handler, 'parse_pattern_14', 'refresh_parsing'))
-        self.ui.parse_pattern_31.textChanged.connect(
-            partial(self.handler, 'parse_pattern_15', 'refresh_parsing'))
-        self.ui.parse_pattern_32.textChanged.connect(
-            partial(self.handler, 'parse_pattern_16', 'refresh_parsing'))
-
-        self.ui.parse_repl_01.textChanged.connect(
-            partial(self.handler, 'parse_repl_01', 'refresh_parsing'))
-        self.ui.parse_repl_02.textChanged.connect(
-            partial(self.handler, 'parse_repl_02', 'refresh_parsing'))
-        self.ui.parse_repl_03.textChanged.connect(
-            partial(self.handler, 'parse_repl_03', 'refresh_parsing'))
-        self.ui.parse_repl_04.textChanged.connect(
-            partial(self.handler, 'parse_repl_04', 'refresh_parsing'))
-        self.ui.parse_repl_05.textChanged.connect(
-            partial(self.handler, 'parse_repl_05', 'refresh_parsing'))
-        self.ui.parse_repl_06.textChanged.connect(
-            partial(self.handler, 'parse_repl_06', 'refresh_parsing'))
-        self.ui.parse_repl_07.textChanged.connect(
-            partial(self.handler, 'parse_repl_07', 'refresh_parsing'))
-        self.ui.parse_repl_08.textChanged.connect(
-            partial(self.handler, 'parse_repl_08', 'refresh_parsing'))
-        self.ui.parse_repl_09.textChanged.connect(
-            partial(self.handler, 'parse_repl_09', 'refresh_parsing'))
-        self.ui.parse_repl_10.textChanged.connect(
-            partial(self.handler, 'parse_repl_10', 'refresh_parsing'))
-        self.ui.parse_repl_11.textChanged.connect(
-            partial(self.handler, 'parse_repl_11', 'refresh_parsing'))
-        self.ui.parse_repl_12.textChanged.connect(
-            partial(self.handler, 'parse_repl_12', 'refresh_parsing'))
-        self.ui.parse_repl_13.textChanged.connect(
-            partial(self.handler, 'parse_repl_13', 'refresh_parsing'))
-        self.ui.parse_repl_14.textChanged.connect(
-            partial(self.handler, 'parse_repl_14', 'refresh_parsing'))
-        self.ui.parse_repl_15.textChanged.connect(
-            partial(self.handler, 'parse_repl_15', 'refresh_parsing'))
-        self.ui.parse_repl_16.textChanged.connect(
-            partial(self.handler, 'parse_repl_16', 'refresh_parsing'))
-        self.ui.parse_repl_17.textChanged.connect(
-            partial(self.handler, 'parse_repl_01', 'refresh_parsing'))
-        self.ui.parse_repl_18.textChanged.connect(
-            partial(self.handler, 'parse_repl_02', 'refresh_parsing'))
-        self.ui.parse_repl_19.textChanged.connect(
-            partial(self.handler, 'parse_repl_03', 'refresh_parsing'))
-        self.ui.parse_repl_20.textChanged.connect(
-            partial(self.handler, 'parse_repl_04', 'refresh_parsing'))
-        self.ui.parse_repl_21.textChanged.connect(
-            partial(self.handler, 'parse_repl_05', 'refresh_parsing'))
-        self.ui.parse_repl_22.textChanged.connect(
-            partial(self.handler, 'parse_repl_06', 'refresh_parsing'))
-        self.ui.parse_repl_23.textChanged.connect(
-            partial(self.handler, 'parse_repl_07', 'refresh_parsing'))
-        self.ui.parse_repl_24.textChanged.connect(
-            partial(self.handler, 'parse_repl_08', 'refresh_parsing'))
-        self.ui.parse_repl_25.textChanged.connect(
-            partial(self.handler, 'parse_repl_09', 'refresh_parsing'))
-        self.ui.parse_repl_26.textChanged.connect(
-            partial(self.handler, 'parse_repl_10', 'refresh_parsing'))
-        self.ui.parse_repl_27.textChanged.connect(
-            partial(self.handler, 'parse_repl_11', 'refresh_parsing'))
-        self.ui.parse_repl_28.textChanged.connect(
-            partial(self.handler, 'parse_repl_12', 'refresh_parsing'))
-        self.ui.parse_repl_29.textChanged.connect(
-            partial(self.handler, 'parse_repl_13', 'refresh_parsing'))
-        self.ui.parse_repl_30.textChanged.connect(
-            partial(self.handler, 'parse_repl_14', 'refresh_parsing'))
-        self.ui.parse_repl_31.textChanged.connect(
-            partial(self.handler, 'parse_repl_15', 'refresh_parsing'))
-        self.ui.parse_repl_32.textChanged.connect(
-            partial(self.handler, 'parse_repl_16', 'refresh_parsing'))
-
-        self.ui.parse_source_01.textChanged.connect(
-            partial(self.handler, 'parse_source_01', 'refresh_parsing'))
-        self.ui.parse_source_02.textChanged.connect(
-            partial(self.handler, 'parse_source_02', 'refresh_parsing'))
-        self.ui.parse_source_03.textChanged.connect(
-            partial(self.handler, 'parse_source_03', 'refresh_parsing'))
-        self.ui.parse_source_04.textChanged.connect(
-            partial(self.handler, 'parse_source_04', 'refresh_parsing'))
-        self.ui.parse_source_05.textChanged.connect(
-            partial(self.handler, 'parse_source_05', 'refresh_parsing'))
-        self.ui.parse_source_06.textChanged.connect(
-            partial(self.handler, 'parse_source_06', 'refresh_parsing'))
-        self.ui.parse_source_07.textChanged.connect(
-            partial(self.handler, 'parse_source_07', 'refresh_parsing'))
-        self.ui.parse_source_08.textChanged.connect(
-            partial(self.handler, 'parse_source_08', 'refresh_parsing'))
-        self.ui.parse_source_09.textChanged.connect(
-            partial(self.handler, 'parse_source_09', 'refresh_parsing'))
-        self.ui.parse_source_10.textChanged.connect(
-            partial(self.handler, 'parse_source_10', 'refresh_parsing'))
-        self.ui.parse_source_11.textChanged.connect(
-            partial(self.handler, 'parse_source_11', 'refresh_parsing'))
-        self.ui.parse_source_12.textChanged.connect(
-            partial(self.handler, 'parse_source_12', 'refresh_parsing'))
-        self.ui.parse_source_13.textChanged.connect(
-            partial(self.handler, 'parse_source_13', 'refresh_parsing'))
-        self.ui.parse_source_14.textChanged.connect(
-            partial(self.handler, 'parse_source_14', 'refresh_parsing'))
-        self.ui.parse_source_15.textChanged.connect(
-            partial(self.handler, 'parse_source_15', 'refresh_parsing'))
-        self.ui.parse_source_16.textChanged.connect(
-            partial(self.handler, 'parse_source_16', 'refresh_parsing'))
-        self.ui.parse_source_17.textChanged.connect(
-            partial(self.handler, 'parse_source_01', 'refresh_parsing'))
-        self.ui.parse_source_18.textChanged.connect(
-            partial(self.handler, 'parse_source_02', 'refresh_parsing'))
-        self.ui.parse_source_19.textChanged.connect(
-            partial(self.handler, 'parse_source_03', 'refresh_parsing'))
-        self.ui.parse_source_20.textChanged.connect(
-            partial(self.handler, 'parse_source_04', 'refresh_parsing'))
-        self.ui.parse_source_21.textChanged.connect(
-            partial(self.handler, 'parse_source_05', 'refresh_parsing'))
-        self.ui.parse_source_22.textChanged.connect(
-            partial(self.handler, 'parse_source_06', 'refresh_parsing'))
-        self.ui.parse_source_23.textChanged.connect(
-            partial(self.handler, 'parse_source_07', 'refresh_parsing'))
-        self.ui.parse_source_24.textChanged.connect(
-            partial(self.handler, 'parse_source_08', 'refresh_parsing'))
-        self.ui.parse_source_25.textChanged.connect(
-            partial(self.handler, 'parse_source_09', 'refresh_parsing'))
-        self.ui.parse_source_26.textChanged.connect(
-            partial(self.handler, 'parse_source_10', 'refresh_parsing'))
-        self.ui.parse_source_27.textChanged.connect(
-            partial(self.handler, 'parse_source_11', 'refresh_parsing'))
-        self.ui.parse_source_28.textChanged.connect(
-            partial(self.handler, 'parse_source_12', 'refresh_parsing'))
-        self.ui.parse_source_29.textChanged.connect(
-            partial(self.handler, 'parse_source_13', 'refresh_parsing'))
-        self.ui.parse_source_30.textChanged.connect(
-            partial(self.handler, 'parse_source_14', 'refresh_parsing'))
-        self.ui.parse_source_31.textChanged.connect(
-            partial(self.handler, 'parse_source_15', 'refresh_parsing'))
-        self.ui.parse_source_32.textChanged.connect(
-            partial(self.handler, 'parse_source_16', 'refresh_parsing'))
+        # every field of every row refreshes the parsing
+        for row in range(1, PARSE_ROWS + 1):
+            for field in PARSE_FIELDS:
+                name = f"parse_{field}_{row:02d}"
+                getattr(self.ui, name).textChanged.connect(
+                    partial(self.handler, name, 'refresh_parsing'))
 
         # Sidecar Tab
         self.ui.side_folder.textChanged.connect(
@@ -2081,6 +1830,56 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         # Spreadsheet: the column editors (were max 300 px) use the full height
         for edit in (ui.sub_columns, ui.log_columns, ui.txt_columns):
             edit.setMaximumHeight(no_limit)
+
+    def _add_parse_rows(self):
+        """
+        Add Parsing tab rows up to PARSE_ROWS, copying the look of the last
+        row from the .ui file. The new fields are set on self.ui with the same
+        naming (parse_name_33 ...), so they are saved in presets like the others.
+        """
+        ui = self.ui
+        labels = {'name': "Name:", 'pattern': "Pattern:", 'repl': "Repl:",
+                  'source': "Source:", 'filter': "Filter:"}
+        # last row that exists in the ui file
+        last = 0
+        while hasattr(ui, f"parse_name_{last + 1:02d}"):
+            last += 1
+        if last == 0 or last >= PARSE_ROWS:
+            return
+        template_row = ui.hl_parse032 if hasattr(ui, 'hl_parse032') else None
+        template_labels = []
+        if template_row is not None:
+            for i in range(template_row.count()):
+                w = template_row.itemAt(i).widget()
+                if isinstance(w, QtWidgets.QLabel):
+                    template_labels.append(w)
+        parent = ui.scrollAreaWidgetContents
+
+        def copy_look(dst, src):
+            dst.setSizePolicy(src.sizePolicy())
+            dst.setMinimumSize(src.minimumSize())
+            dst.setMaximumSize(src.maximumSize())
+            dst.setToolTip(src.toolTip())
+
+        for row in range(last + 1, PARSE_ROWS + 1):
+            hl = QtWidgets.QHBoxLayout()
+            hl.setObjectName(f"hl_parse{row:03d}")
+            for idx, field in enumerate(PARSE_FIELDS):
+                label = QtWidgets.QLabel(labels[field], parent)
+                if idx < len(template_labels):
+                    copy_look(label, template_labels[idx])
+                hl.addWidget(label)
+                edit = QtWidgets.QLineEdit(parent)
+                name = f"parse_{field}_{row:02d}"
+                edit.setObjectName(name)
+                src = getattr(ui, f"parse_{field}_{last:02d}", None)
+                if src is not None:
+                    copy_look(edit, src)
+                    edit.setPlaceholderText(src.placeholderText())
+                setattr(ui, name, edit)
+                hl.addWidget(edit)
+            setattr(ui, hl.objectName(), hl)
+            ui.verticalLayout_30.addLayout(hl)
 
     def _reset_panel_splitter(self, splitter=None):
         splitter = splitter or self.panel_splitter
