@@ -757,13 +757,18 @@ class AyonShotlist(object):
                     data.append(shot_task_attr)
         self.data = sorted(data, key=lambda d: d['Folder Path'])
 
-    def write_csv(self):
+    def write_csv(self, rows=None):
+        """
+        :param rows: rows to write (what the table shows), default: rows not
+                     hidden by the list filters
+        """
         if not self.data:
             self.log.warning("Ayon shot list is empty, nothing written")
             return
         if not self.do_output:
             return
-        rows = [r for r in self.data if not r.get('_hide')]
+        if rows is None:
+            rows = [r for r in self.data if not r.get('_hide')]
         self._write_rows(self.output_csv_path, self.columns, rows, "Ayon shot list")
 
     def write_versions_csv(self, rows):

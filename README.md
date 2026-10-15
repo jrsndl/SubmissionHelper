@@ -250,6 +250,14 @@ Ayon is asked again only when the matched folders or the product filters
 change, not on every edit. Turn on **Versions CSV** to also write the list to
 `ayon-list-versions.csv` with **Export Shot List**.
 
+**Show matched only** (above the table) shows just the versions a package
+file matched (teal, see Match version). The list filters apply here too:
+versions of folders hidden in the Shot List are not shown.
+
+Both csv files contain exactly what the tables show: `ayon-list.csv` follows
+the list filters and **Matched Only**, `ayon-list-versions.csv` follows the
+list filters and **Show matched only**.
+
 ### Matching a version to each file
 
 **Match version** (second row of the Versions group) finds, for every file

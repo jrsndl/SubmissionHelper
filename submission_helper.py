@@ -845,6 +845,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'ayon_export_butt', 'ayon_export_butt'))
         self.ui.ayon_scan_butt.clicked.connect(
             partial(self.handler, 'ayon_scan_butt', 'ayon_scan'))
+        self.ui.ayon_versions_matched_only.clicked.connect(
+            partial(self.handler, 'ayon_versions_matched_only', 'ayon_changed_filter'))
         # Match version uses the cached Matched Versions: no Ayon query, just refresh
         self.ui.ayon_version_match_chbx.clicked.connect(
             partial(self.handler, 'ayon_version_match_chbx', 'refresh_spreadsheets'))
@@ -2076,6 +2078,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         vtable.setToolTip("All versions of the configured products (Product filters) of the Ayon folders "
                           "matched to the package files, sorted by folder path and version "
                           "(needs Pull versions). Preferred = picked by the product filters.")
+        vbar = QtWidgets.QHBoxLayout()
+        vmatched = QtWidgets.QCheckBox("Show matched only", versions_page)
+        vmatched.setObjectName("ayon_versions_matched_only")
+        vmatched.setToolTip("Only the versions a package file matched (teal, Match version). "
+                            "Versions CSV exports what is shown.")
+        ui.ayon_versions_matched_only = vmatched
+        vbar.addWidget(vmatched)
+        vbar.addStretch(1)
+        versions_layout.addLayout(vbar)
         versions_layout.addWidget(vtable)
         tabs.addTab(versions_page, "Matched Versions")
         ui.ayon_versions_table = vtable

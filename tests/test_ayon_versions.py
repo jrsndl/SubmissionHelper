@@ -226,6 +226,7 @@ class AyonOnlySequencerTest(unittest.TestCase):
         fake.data = fake.get_shotlist.return_value
         with mock.patch.object(sequencer, 'AyonShotlist', return_value=fake):
             s.display_ayon_table = mock.Mock()
+            s.display_ayon_versions_table = mock.Mock()
             s.ayon_scan()
         fake.get_shotlist.assert_called_once()
         s.display_ayon_table.assert_called()
@@ -615,12 +616,16 @@ class MatchedVersionsBandingTest(unittest.TestCase):
         s = sequencer.Sequencer.__new__(sequencer.Sequencer)
         s.ui = mock.Mock()
         s.ui.ayon_tables_tab.indexOf.return_value = 1
+        s.settings = {}
+        s.ayon_data = [{'_folder_id': f} for f in ('/a', '/b', '/c')]
         s.fit_ayon_columns = mock.Mock()
         s.single_line_rows = mock.Mock()
         s.ayon_matched_versions = [
-            {'Folder Path': '/a', 'Version': '1'}, {'Folder Path': '/a', 'Version': '2'},
-            {'Folder Path': '/b', 'Version': '1'},
-            {'Folder Path': '/c', 'Version': '1', 'Preferred': 'yes'}, {'Folder Path': '/c', 'Version': '2'},
+            {'Folder Path': '/a', 'Version': '1', '_folder_id': '/a'},
+            {'Folder Path': '/a', 'Version': '2', '_folder_id': '/a'},
+            {'Folder Path': '/b', 'Version': '1', '_folder_id': '/b'},
+            {'Folder Path': '/c', 'Version': '1', 'Preferred': 'yes', '_folder_id': '/c'},
+            {'Folder Path': '/c', 'Version': '2', '_folder_id': '/c'},
         ]
         colors = []
         items = []
@@ -705,3 +710,49 @@ class VersionExistsTest(unittest.TestCase):
         self.s.ayon_versions_assign()
         self.assertNotIn('ayon_Matched Version Exists', self.s.merged_list[1])
         self.assertEqual(by[('renderCompMain', '6')]['Version Exists'], 'False')
+
+
+class ShownEqualsExportedTest(unittest.TestCase):
+    def bare(self, **settings):
+        import logging
+        import sequencer
+        s = sequencer.Sequencer.__new__(sequencer.Sequencer)
+        s.log = logging.getLogger('Sequencer')
+        s.settings = {k: {'value': v} for k, v in settings.items()}
+        s.ayon_data = [
+            {'Folder Path': '/a', '_folder_id': 'a', '_matched': True},
+            {'Folder Path': '/b', '_folder_id': 'b'},
+            {'Folder Path': '/c', '_folder_id': 'c', '_hide': True},      # hidden by list filters
+        ]
+        s.ayon_matched_versions = [
+            {'_folder_id': 'a', 'Version': '1', 'Matched Files': '1'},
+            {'_folder_id': 'a', 'Version': '2', 'Matched Files': ''},
+            {'_folder_id': 'b', 'Version': '1', 'Matched Files': ''},
+            {'_folder_id': 'c', 'Version': '1', 'Matched Files': '2'},
+        ]
+        return s
+
+    def test_list_filters_apply_to_versions(self):
+        s = self.bare()
+        self.assertEqual([r['Folder Path'] for r in s.ayon_visible_list()], ['/a', '/b'])
+        self.assertEqual([(r['_folder_id'], r['Version']) for r in s.ayon_visible_versions()],
+                         [('a', '1'), ('a', '2'), ('b', '1')])
+
+    def test_show_matched_only(self):
+        s = self.bare(ayon_versions_matched_only=True)
+        self.assertEqual([(r['_folder_id'], r['Version']) for r in s.ayon_visible_versions()], [('a', '1')])
+
+    def test_shot_list_matched_only(self):
+        s = self.bare(ayon_filter_matched=True)
+        self.assertEqual([r['Folder Path'] for r in s.ayon_visible_list()], ['/a'])
+        self.assertEqual({r['_folder_id'] for r in s.ayon_visible_versions()}, {'a'})
+
+    def test_export_writes_what_is_shown(self):
+        s = self.bare(ayon_versions_matched_only=True)
+        s.my_ayon = mock.Mock(error=None)
+        s.ayon_gui = {'do_versions_csv': True}
+        s.ayon_data_write()
+        written_list = s.my_ayon.write_csv.call_args[0][0]
+        written_versions = s.my_ayon.write_versions_csv.call_args[0][0]
+        self.assertEqual([r['Folder Path'] for r in written_list], ['/a', '/b'])
+        self.assertEqual([(r['_folder_id'], r['Version']) for r in written_versions], [('a', '1')])

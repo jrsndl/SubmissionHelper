@@ -3716,11 +3716,35 @@ class Sequencer(object):
             self._last_version_match_msg = msg
             self.log.log(level, msg)
 
+    def _setting_on(self, key):
+        settings = getattr(self, 'settings', None)
+        return bool((settings.get(key) or {}).get('value')) if settings else False
+
+    def ayon_visible_list(self):
+        """
+        Shot list rows as shown and exported: list filters, and Matched Only
+        """
+        matched_only = self._setting_on('ayon_filter_matched')
+        return [r for r in self.ayon_data or []
+                if not r.get('_hide') and (not matched_only or r.get('_matched'))]
+
+    def ayon_visible_versions(self):
+        """
+        Matched Versions rows as shown and exported: only folders still shown
+        in the shot list (list filters apply), and with "Show matched only"
+        only the versions a file matched (teal)
+        """
+        visible_folders = {r.get('_folder_id') for r in self.ayon_visible_list()}
+        rows = [r for r in self.ayon_matched_versions or [] if r.get('_folder_id') in visible_folders]
+        if self._setting_on('ayon_versions_matched_only'):
+            rows = [r for r in rows if r.get('Matched Files')]
+        return rows
+
     def display_ayon_versions_table(self):
         table_ui = getattr(self.ui, 'ayon_versions_table', None)
         if table_ui is None:
             return
-        rows = self.ayon_matched_versions or []
+        rows = self.ayon_visible_versions()
         from ayon_shotlist import MATCHED_VERSION_COLUMNS
         titles = list(MATCHED_VERSION_COLUMNS)
         table_ui.setSortingEnabled(False)
@@ -3759,7 +3783,14 @@ class Sequencer(object):
         if tabs is not None:
             idx = tabs.indexOf(getattr(self.ui, 'ayon_versions_page', None))
             if idx >= 0:
-                tabs.setTabText(idx, f"Matched Versions ({len(rows)})" if rows else "Matched Versions")
+                total = len(self.ayon_matched_versions or [])
+                if not total:
+                    text = "Matched Versions"
+                elif len(rows) == total:
+                    text = f"Matched Versions ({total})"
+                else:
+                    text = f"Matched Versions ({len(rows)} of {total})"
+                tabs.setTabText(idx, text)
 
     def ayon_data_filter(self):
         if self.my_ayon is None or getattr(self.my_ayon, 'error', None):
@@ -3770,12 +3801,15 @@ class Sequencer(object):
         self.my_ayon.filter_shotlist()
         self.ayon_data = self.my_ayon.data
         self.display_ayon_table()
+        # list filters also limit Matched Versions
+        self.display_ayon_versions_table()
 
     def ayon_data_write(self):
         if self.my_ayon is not None and not getattr(self.my_ayon, 'error', None):
-            self.my_ayon.write_csv()
+            # export what is shown
+            self.my_ayon.write_csv(self.ayon_visible_list())
             if self.ayon_gui and self.ayon_gui.get('do_versions_csv'):
-                self.my_ayon.write_versions_csv(self.ayon_matched_versions)
+                self.my_ayon.write_versions_csv(self.ayon_visible_versions())
 
     def ayon_data_assign(self):
         class Default(dict):
@@ -3913,7 +3947,8 @@ class Sequencer(object):
             table_ui.setRowCount(len(table))
 
             row = -1
-            for line in table:
+            # only the rows that pass the list filters / Matched Only
+            for line in self.ayon_visible_list():
                 # skip displaying filtered out lines
                 if line.get('_hide', False):
                     continue
