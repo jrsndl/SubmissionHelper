@@ -28,7 +28,12 @@ class _Anything(types.ModuleType):
         return _Anything(self.__name__ + "()")
 
     def __mro_entries__(self, bases):
-        return (object,)
+        # used as a base class (e.g. QtWidgets.QMainWindow): give a plain class
+        cls = self.__dict__.get('_as_class')
+        if cls is None:
+            cls = type(self.__name__.split('.')[-1], (), {})
+            self.__dict__['_as_class'] = cls
+        return (cls,)
 
 
 def _ensure(name, submodules=()):
