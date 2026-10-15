@@ -1,5 +1,6 @@
 import csv
 import fnmatch
+import json
 import logging
 import os
 
@@ -19,7 +20,59 @@ VERSION_COLUMNS = [
     "Representation",
     "Repre Path",
     "Version Filter",
+    # version attrib
+    "Version Frame Start",
+    "Version Frame End",
+    "Version Handle Start",
+    "Version Handle End",
+    "Version FPS",
+    "Version Width",
+    "Version Height",
+    "Version Pixel Aspect",
+    # version data
+    "Version Step",
+    "Version Host",
+    "Version Colorspace",
 ]
+
+# version attrib -> column
+VERSION_ATTRIBS = {
+    "frameStart": "Version Frame Start",
+    "frameEnd": "Version Frame End",
+    "handleStart": "Version Handle Start",
+    "handleEnd": "Version Handle End",
+    "fps": "Version FPS",
+    "resolutionWidth": "Version Width",
+    "resolutionHeight": "Version Height",
+    "pixelAspect": "Version Pixel Aspect",
+}
+# version data -> column
+VERSION_DATA = {
+    "step": "Version Step",
+    "host_name": "Version Host",
+    "colorspace": "Version Colorspace",
+}
+
+
+def _as_dict(value):
+    """entity 'data' may come as a dict or as a json string"""
+    if isinstance(value, dict):
+        return value
+    if isinstance(value, str) and value.strip():
+        try:
+            data = json.loads(value)
+            return data if isinstance(data, dict) else {}
+        except ValueError:
+            return {}
+    return {}
+
+
+def _cell(value):
+    if value is None:
+        return ''
+    if isinstance(value, float) and value.is_integer():
+        return str(int(value))
+    return str(value)
 
 
 def parse_product_filters(text):
@@ -140,6 +193,17 @@ def pick_versions(folder_ids, products, last_versions, repres, task_names, filte
             "Repre Path": repre_path,
             "Version Filter": flt['text'],
         }
+        info = result[folder_id]
+        for key, column in VERSION_ATTRIBS.items():
+            info[column] = _cell(attrib.get(key))
+        data = _as_dict(ver.get('data'))
+        for key, column in VERSION_DATA.items():
+            info[column] = _cell(data.get(key))
+        if not info["Version Colorspace"] and repre:
+            # newer publishes keep the colorspace on the representation
+            repre_data = _as_dict(repre.get('data'))
+            cs = repre_data.get('colorspaceData') or {}
+            info["Version Colorspace"] = _cell(cs.get('colorspace') if isinstance(cs, dict) else '')
     return result
 
 class AyonShotlist(object):
@@ -425,7 +489,8 @@ class AyonShotlist(object):
                 last_versions = self._query(
                     'get_last_versions', self.project, product_ids,
                     fields={"id", "version", "productId", "taskId", "author", "status",
-                            "createdAt", "attrib.comment"}) or {}
+                            "createdAt", "data", "attrib.comment"}
+                    | {f"attrib.{k}" for k in VERSION_ATTRIBS}) or {}
             version_ids = {v['id'] for v in last_versions.values() if v}
             repres = []
             if version_ids:
@@ -433,7 +498,7 @@ class AyonShotlist(object):
                 if repre_names:
                     kwargs['representation_names'] = repre_names
                 repres = list(self._query('get_representations', self.project,
-                                          fields={"id", "name", "versionId", "attrib.path"}, **kwargs))
+                                          fields={"id", "name", "versionId", "attrib.path", "data"}, **kwargs))
         except Exception as e:
             self.log.error(f"Reading versions from Ayon failed: {e}")
             self.log.debug("Ayon versions traceback", exc_info=True)

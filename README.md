@@ -214,8 +214,13 @@ doesn't have the representation, that filter doesn't match.
 
 Added columns: `Product`, `Product Type`, `Version`, `Version Name` (`v007`),
 `Version Status`, `Version Author`, `Version Date`, `Version Comment`,
-`Version Task`, `Representation`, `Repre Path`, `Version Filter`. With the
-default prefix they are available as `{ayon_Version}`, `{ayon_Version Name}`...
+`Version Task`, `Representation`, `Repre Path`, `Version Filter`, and from
+the version's attributes and data: `Version Frame Start`, `Version Frame End`,
+`Version Handle Start`, `Version Handle End`, `Version FPS`, `Version Width`,
+`Version Height`, `Version Pixel Aspect`, `Version Step`, `Version Host`,
+`Version Colorspace` (taken from the representation when the version doesn't
+have it). With the default prefix they are available as `{ayon_Version}`,
+`{ayon_Version FPS}`...
 
 Versions are read with three queries for the whole project. Changing the
 filters takes effect with the next **Scan** or package load.

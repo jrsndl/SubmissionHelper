@@ -1955,7 +1955,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             "Wildcards * ? are allowed, names are not case sensitive.</p>"
             "<p>Columns added: Product, Product Type, Version, Version Name, Version Status, "
             "Version Author, Version Date, Version Comment, Version Task, Representation, "
-            "Repre Path, Version Filter (keywords with the Ayon prefix, e.g. {ayon_Version}).</p>")
+            "Repre Path, Version Filter, Version Frame Start / End, Version Handle Start / End, "
+            "Version FPS, Version Width / Height, Version Pixel Aspect, Version Step, Version Host, "
+            "Version Colorspace (keywords with the Ayon prefix, e.g. {ayon_Version}).</p>")
         ui.ayon_product_filters = filters
         row.addWidget(filters, 1)
 

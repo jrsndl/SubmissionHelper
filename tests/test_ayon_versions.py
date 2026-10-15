@@ -268,3 +268,43 @@ class AttribColumnsTest(unittest.TestCase):
         self.assertEqual(task_row['End Date'], '')
         self.assertIn('Start Date', a.columns)
         self.assertLess(a.columns.index('Start Date'), a.columns.index('_hide'))
+
+
+class VersionAttribDataTest(unittest.TestCase):
+    def test_attrib_and_data_columns(self):
+        products = [{'id': 'p', 'name': 'renderCompMain', 'folderId': 'f'}]
+        versions = {'p': {'id': 'v', 'version': 5, 'taskId': 't',
+                          'attrib': {'frameStart': 1001, 'frameEnd': 1100, 'handleStart': 8,
+                                     'handleEnd': 8, 'fps': 23.976, 'resolutionWidth': 4096,
+                                     'resolutionHeight': 2160, 'pixelAspect': 1.0},
+                          'data': {'step': 1, 'host_name': 'nuke', 'colorspace': 'ACES - ACEScg'}}}
+        repres = [{'id': 'r', 'name': 'exr', 'versionId': 'v'}]
+        got = pick_versions(['f'], products, versions, repres, {'t': 'comp'},
+                            parse_product_filters('comp:renderCompMain:exr'))['f']
+        self.assertEqual(got['Version Frame Start'], '1001')
+        self.assertEqual(got['Version Frame End'], '1100')
+        self.assertEqual(got['Version Handle Start'], '8')
+        self.assertEqual(got['Version Handle End'], '8')
+        self.assertEqual(got['Version FPS'], '23.976')
+        self.assertEqual(got['Version Width'], '4096')
+        self.assertEqual(got['Version Height'], '2160')
+        self.assertEqual(got['Version Pixel Aspect'], '1')
+        self.assertEqual(got['Version Step'], '1')
+        self.assertEqual(got['Version Host'], 'nuke')
+        self.assertEqual(got['Version Colorspace'], 'ACES - ACEScg')
+
+    def test_data_as_json_and_repre_colorspace_fallback(self):
+        products = [{'id': 'p', 'name': 'plate', 'folderId': 'f'}]
+        versions = {'p': {'id': 'v', 'version': 1, 'data': '{"host_name": "traypublisher"}'}}
+        repres = [{'id': 'r', 'name': 'exr', 'versionId': 'v',
+                   'data': {'colorspaceData': {'colorspace': 'ARRI LogC4'}}}]
+        got = pick_versions(['f'], products, versions, repres, {},
+                            parse_product_filters(':plate:exr'))['f']
+        self.assertEqual(got['Version Host'], 'traypublisher')
+        self.assertEqual(got['Version Colorspace'], 'ARRI LogC4')
+        self.assertEqual(got['Version Step'], '')
+        self.assertEqual(got['Version Frame Start'], '')
+
+    def test_columns_listed(self):
+        for c in ('Version FPS', 'Version Step', 'Version Host', 'Version Colorspace'):
+            self.assertIn(c, ayon_shotlist.VERSION_COLUMNS)
