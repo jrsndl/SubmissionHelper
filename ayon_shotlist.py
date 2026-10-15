@@ -500,12 +500,15 @@ class AyonShotlist(object):
             if self.ayon_gui['filter_tasks']:
                 if is_task:
                     hide = False
-                    # only check task types if tasks are allowed
+                    # only check task types / names if tasks are allowed
                     if self.ayon_gui['filter_tasktype']:
                         if one["Task Type"].lower() in self.ayon_gui['filter_tasktypes']:
                             hide = False
                         else:
                             hide = True
+                    if self.ayon_gui.get('filter_taskname') and not any(
+                            _match(p, one["Task Name"]) for p in self.ayon_gui.get('filter_tasknames', [])):
+                        hide = True
                 else:
                     # it is not a task
                     if self.ayon_gui['filter_assets'] and "asset" in one[
@@ -535,9 +538,10 @@ class AyonShotlist(object):
                     hide = True
 
             if self.ayon_gui['filter_assignee']:
-                if one["Task Assignees"].lower() in self.ayon_gui['filter_assignees']:
-                    hide = False
-                else:
+                # narrows only (it used to show rows hidden by the other
+                # filters again); any of the row's assignees may match
+                assignees = one["Task Assignees"].lower().split()
+                if not any(a in self.ayon_gui['filter_assignees'] for a in assignees):
                     hide = True
 
             one["_hide"] = hide

@@ -183,6 +183,9 @@ their values become keywords with the Ayon prefix, e.g. `{ayon_Folder Path}`.
 
 * **Scan** reads the list now. It works without a loaded package, and also
   when *Enable* is off (that checkbox controls reading on package load).
+* **List Filters** limit the list: Assets / Shots / Tasks / Other, task types,
+  **Task Names** (comma separated, wildcards `*` `?`, e.g. `comp*`) and
+  assignees. A task row must pass every enabled filter.
 * **Export Shot List** writes `ayon-list.csv` (visible rows only) to the output
   folder, and with **Versions CSV** also `ayon-list-versions.csv` (see below).
 

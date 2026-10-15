@@ -567,3 +567,43 @@ class VersionMatchTest(unittest.TestCase):
         self.assertTrue(sv(' v007', 'v007'))
         self.assertFalse(sv('v007', 'v7'))
         self.assertFalse(sv('7', '8'))
+
+
+class TaskFilterTest(unittest.TestCase):
+    def rows(self):
+        def r(name, ttype, who):
+            return {'Folder Type': 'Shot/Task', 'Task Name': name, 'Task Type': ttype,
+                    'Task Assignees': who}
+        return [r('comp', 'Compositing', 'ann'), r('compFinal', 'Compositing', 'bob ann'),
+                r('dmp', 'Compositing', 'ann'), r('light', 'Lighting', 'ann'),
+                {'Folder Type': 'Shot', 'Task Name': '', 'Task Type': '', 'Task Assignees': ''}]
+
+    def visible(self, **kw):
+        a = AyonShotlist.__new__(AyonShotlist)
+        a.data = self.rows()
+        g = {'filter_assets': False, 'filter_shots': True, 'filter_tasks': True, 'filter_other': False,
+             'filter_tasktype': False, 'filter_tasktypes': [], 'filter_assignee': False,
+             'filter_assignees': [], 'filter_taskname': False, 'filter_tasknames': []}
+        g.update(kw)
+        a.ayon_gui = g
+        a.filter_shotlist()
+        return [r['Task Name'] or 'SHOT' for r in a.data if not r['_hide']]
+
+    def test_task_names_with_wildcards(self):
+        self.assertEqual(self.visible(filter_taskname=True, filter_tasknames=['comp*']),
+                         ['comp', 'compFinal', 'SHOT'])
+        # not case sensitive
+        self.assertEqual(self.visible(filter_taskname=True, filter_tasknames=['COMP']),
+                         ['comp', 'SHOT'])
+
+    def test_names_and_types_combine(self):
+        self.assertEqual(self.visible(filter_tasktype=True, filter_tasktypes=['compositing'],
+                                      filter_taskname=True, filter_tasknames=['dmp', 'light']),
+                         ['dmp', 'SHOT'])
+
+    def test_assignee_narrows_and_multiple_assignees(self):
+        # used to show 'light' again although the type filter hid it, and to
+        # miss "bob ann"
+        got = self.visible(filter_tasktype=True, filter_tasktypes=['compositing'],
+                           filter_assignee=True, filter_assignees=['bob'])
+        self.assertEqual(got, ['compFinal'])

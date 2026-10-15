@@ -3531,6 +3531,8 @@ class Sequencer(object):
                 self.settings['ayon_filter_tasktype_chbx']['value']) or False,
             'filter_tasktypes': split_itms(self.settings['ayon_filter_tasktypes'][
                                     'value'] or ""),
+            'filter_taskname': bool((self.settings.get('ayon_filter_taskname_chbx') or {}).get('value')),
+            'filter_tasknames': split_itms((self.settings.get('ayon_filter_tasknames') or {}).get('value') or ""),
             'filter_assignee': bool(
                 self.settings['ayon_filter_assignee_chbx']['value']) or False,
             'filter_assignees': split_itms(self.settings['ayon_filter_assignees'][
@@ -3549,6 +3551,8 @@ class Sequencer(object):
             self.ayon_gui['filter_tasktype'] = False
         if self.ayon_gui['filter_assignees'] is None or len(self.ayon_gui['filter_assignees']) == 0:
             self.ayon_gui['filter_assignee'] = False
+        if not self.ayon_gui['filter_tasknames']:
+            self.ayon_gui['filter_taskname'] = False
 
 
     def ayon_data_read(self, force=False):

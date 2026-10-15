@@ -810,6 +810,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'ayon_filter_assignee_chbx', 'ayon_changed_filter'))
         self.ui.ayon_filter_tasktypes.textChanged.connect(
             partial(self.handler, 'ayon_filter_tasktypes', 'ayon_changed_filter'))
+        self.ui.ayon_filter_taskname_chbx.clicked.connect(
+            partial(self.handler, 'ayon_filter_taskname_chbx', 'ayon_changed_filter'))
+        self.ui.ayon_filter_tasknames.textChanged.connect(
+            partial(self.handler, 'ayon_filter_tasknames', 'ayon_changed_filter'))
         self.ui.ayon_filter_assignees.textChanged.connect(
             partial(self.handler, 'ayon_filter_assignees', 'ayon_changed_filter'))
 
@@ -2008,6 +2012,31 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         idx = ui.verticalLayout_116.indexOf(ui.groupBox_33)
         ui.verticalLayout_116.insertWidget(idx + 1 if idx >= 0 else -1, group)
+
+        # List Filters: Task Names row, below Task Types, same look
+        name_row = QtWidgets.QHBoxLayout()
+        tn_chbx = QtWidgets.QCheckBox("Task Names:", ui.groupBox_34)
+        tn_chbx.setObjectName("ayon_filter_taskname_chbx")
+        tn_chbx.setSizePolicy(ui.ayon_filter_tasktype_chbx.sizePolicy())
+        tn_chbx.setMinimumSize(ui.ayon_filter_tasktype_chbx.minimumSize())
+        tn_chbx.setMaximumSize(ui.ayon_filter_tasktype_chbx.maximumSize())
+        tn_tip = ("Show only tasks with these names, separated by commas, e.g. comp, compFinal. "
+                  "Wildcards * ? allowed, not case sensitive. Works together with Task Types "
+                  "and Assignees: a task must pass all enabled filters.")
+        tn_chbx.setToolTip(tn_tip)
+        ui.ayon_filter_taskname_chbx = tn_chbx
+        name_row.addWidget(tn_chbx)
+        tn_edit = QtWidgets.QLineEdit(ui.groupBox_34)
+        tn_edit.setObjectName("ayon_filter_tasknames")
+        tn_edit.setSizePolicy(ui.ayon_filter_tasktypes.sizePolicy())
+        tn_edit.setMinimumSize(ui.ayon_filter_tasktypes.minimumSize())
+        tn_edit.setMaximumSize(ui.ayon_filter_tasktypes.maximumSize())
+        tn_edit.setPlaceholderText("comp, compFinal")
+        tn_edit.setToolTip(tn_tip)
+        ui.ayon_filter_tasknames = tn_edit
+        name_row.addWidget(tn_edit)
+        pos = ui.verticalLayout_114.indexOf(ui.horizontalLayout_208)
+        ui.verticalLayout_114.insertLayout(pos + 1 if pos >= 0 else -1, name_row)
 
         ui.ayon_output_folder.setToolTip(
             "<p>Folder where <b>Export Shot List</b> saves ayon-list.csv, ayon-list-versions.csv "
