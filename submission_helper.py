@@ -78,6 +78,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self._tune_top_tab_layouts()
         # Parsing tab rows beyond the 32 from the .ui file
         self._add_parse_rows()
+        # Ayon tab: Scan button, version / product filter controls
+        self._add_ayon_controls()
+        # Sequencer used by the Ayon tab when no package is loaded
+        self.ayon_only = None
 
         # Log tab: shows everything logged by any module
         self.log_view = None
@@ -835,6 +839,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                     'ayon_changed_filter'))
         self.ui.ayon_export_butt.clicked.connect(
             partial(self.handler, 'ayon_export_butt', 'ayon_export_butt'))
+        self.ui.ayon_scan_butt.clicked.connect(
+            partial(self.handler, 'ayon_scan_butt', 'ayon_scan'))
 
 
         self.ui.tree_filter_value.textChanged.connect(
@@ -1085,10 +1091,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.data.export_all(column_widths_sub, column_widths_log)
 
         if sender == 'ayon_export_butt':
-            if self.data is not None:
-                self.data.ayon_data_read()
-                self.data.ayon_data_filter()
-                self.data.ayon_data_write()
+            target = self._ayon_target()
+
+            def _export():
+                target.ayon_data_read(force=True)
+                target.ayon_data_filter()
+                target.ayon_data_write()
+            self._ayon_busy(_export, "Reading Ayon shot list...")
+
+        if group == 'ayon_scan':
+            target = self._ayon_target()
+            self._ayon_busy(target.ayon_scan, "Scanning Ayon...")
+            if target is self.data and self.data.merged_list:
+                self.data.prepare_all_columns()
+                self.data.prepare_tables()
+                self.show_all()
 
         if sender == 'preset_explore':
             self.expore_local_presets()
@@ -1151,6 +1168,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         if group == "ayon_changed_filter":
             if self.data is not None:
                 self.data.ayon_data_filter()
+            elif self.ayon_only is not None:
+                self.ayon_only.settings = self.settings
+                self.ayon_only.ayon_data_filter()
 
         if group == "tab_pairs":
             self.gui_show_hide_modules()
@@ -1880,6 +1900,91 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 hl.addWidget(edit)
             setattr(ui, hl.objectName(), hl)
             ui.verticalLayout_30.addLayout(hl)
+
+    def _add_ayon_controls(self):
+        """
+        Ayon tab additions, built in code so ui_Submission.py can be regenerated:
+        - Scan button: read the Ayon list now, also without a package
+        - Versions group: Pull versions checkbox and Product filters
+        New widgets are set on self.ui, so they are saved in presets.
+        """
+        ui = self.ui
+        parent = ui.tab_25
+
+        scan = QtWidgets.QPushButton("Scan", parent)
+        scan.setObjectName("ayon_scan_butt")
+        scan.setMinimumSize(QtCore.QSize(120, ui.ayon_export_butt.minimumHeight() or 35))
+        scan.setMaximumHeight(ui.ayon_export_butt.maximumHeight())
+        scan.setToolTip("Read the Ayon list now (also without a loaded package) "
+                        "and match it to the files, if any.")
+        ui.ayon_scan_butt = scan
+        ui.horizontalLayout_212.insertWidget(0, scan)
+
+        group = QtWidgets.QGroupBox("Versions", parent)
+        group.setObjectName("ayon_versions_group")
+        group.setMinimumSize(QtCore.QSize(350, 50))
+        group.setMaximumHeight(50)
+        pol = group.sizePolicy()
+        pol.setVerticalPolicy(QtWidgets.QSizePolicy.Fixed)
+        group.setSizePolicy(pol)
+        row = QtWidgets.QHBoxLayout(group)
+        row.setContentsMargins(6, 2, 6, 2)
+
+        chbx = QtWidgets.QCheckBox("Pull versions", group)
+        chbx.setObjectName("ayon_versions_chbx")
+        chbx.setMinimumSize(QtCore.QSize(110, 25))
+        chbx.setToolTip("Add version info of the preferred product to every Ayon shot / asset row "
+                        "(and its task rows). Used with the next Scan or package load.")
+        ui.ayon_versions_chbx = chbx
+        row.addWidget(chbx)
+
+        label = QtWidgets.QLabel("Product filters:", group)
+        row.addWidget(label)
+
+        filters = QtWidgets.QLineEdit(group)
+        filters.setObjectName("ayon_product_filters")
+        filters.setMinimumSize(QtCore.QSize(100, 25))
+        filters.setPlaceholderText("comp:renderCompMain:exr, :platePl01:exr")
+        filters.setToolTip(
+            "<p>task:product:representation, separated by commas. The task is optional.</p>"
+            "<p><b>comp:renderCompMain:exr</b> - representation exr of product renderCompMain "
+            "published from task comp<br>"
+            "<b>:platePl01:exr</b> - any task</p>"
+            "<p>Filters are tried in order, the first one with a match is used, so list the "
+            "preferred product first. The latest version of the product is used. "
+            "Wildcards * ? are allowed, names are not case sensitive.</p>"
+            "<p>Columns added: Product, Product Type, Version, Version Name, Version Status, "
+            "Version Author, Version Date, Version Comment, Version Task, Representation, "
+            "Repre Path, Version Filter (keywords with the Ayon prefix, e.g. {ayon_Version}).</p>")
+        ui.ayon_product_filters = filters
+        row.addWidget(filters, 1)
+
+        idx = ui.verticalLayout_116.indexOf(ui.groupBox_33)
+        ui.verticalLayout_116.insertWidget(idx + 1 if idx >= 0 else -1, group)
+
+    def _ayon_target(self):
+        """
+        Sequencer for Ayon operations: the loaded package, or an Ayon only
+        one when no package is loaded
+        """
+        if self.data is not None:
+            return self.data
+        if self.ayon_only is None:
+            self.ayon_only = Sequencer(None, sequence_mode='holes_allowed', gui=self.settings,
+                                       more_settings=self.settings_obj, ui=self.ui,
+                                       headless=self.no_gui)
+        self.ayon_only.settings = self.settings
+        return self.ayon_only
+
+    def _ayon_busy(self, fn, message):
+        """run fn with a wait cursor and a status bar message"""
+        self.ui.statusBar.showMessage(message)
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        try:
+            return fn()
+        finally:
+            QtWidgets.QApplication.restoreOverrideCursor()
+            self.ui.statusBar.clearMessage()
 
     def _reset_panel_splitter(self, splitter=None):
         splitter = splitter or self.panel_splitter

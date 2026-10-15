@@ -20,7 +20,7 @@ import helpers
 import parse_file_name
 from ftrack import FtrackHelper
 from metadata import MetaData
-from ayon_shotlist import AyonShotlist
+from ayon_shotlist import AyonShotlist, parse_product_filters
 from ayon_publish import AyonPublish
 
 # number of rows on the Parsing tab (32 come from the .ui file, the rest are
@@ -66,6 +66,8 @@ class Sequencer(object):
         self._prep_paths_vars()
 
         self.my_ayon = None
+        self.ayon_data = []
+        self.ayon_gui = None
 
         self.renames = []
         self.output = {}
@@ -75,6 +77,11 @@ class Sequencer(object):
         self.vendor_csv_prefs_spreadsheet = {}
         self.vendor_csv_prefs_repres = {}
 
+        if in_path is None:
+            # Ayon only: used by the Ayon tab Scan button before a package
+            # is loaded, no files are read
+            self.in_path = ''
+            return
         if not os.path.exists(in_path):
             self.log.error(f"Package path '{in_path}' does not exist.")
         else:
@@ -3522,7 +3529,11 @@ class Sequencer(object):
             'filter_assignee': bool(
                 self.settings['ayon_filter_assignee_chbx']['value']) or False,
             'filter_assignees': split_itms(self.settings['ayon_filter_assignees'][
-                                    'value'] or "")
+                                    'value'] or ""),
+            # added later, missing in older presets
+            'do_versions': bool((self.settings.get('ayon_versions_chbx') or {}).get('value')),
+            'product_filters': parse_product_filters(
+                (self.settings.get('ayon_product_filters') or {}).get('value') or ""),
         }
         # turn off multi filter if no filter provided
         if self.ayon_gui['filter_tasktypes'] is None or len(self.ayon_gui['filter_tasktypes']) == 0:
@@ -3531,13 +3542,19 @@ class Sequencer(object):
             self.ayon_gui['filter_assignee'] = False
 
 
-    def ayon_data_read(self):
+    def ayon_data_read(self, force=False):
         """
-
+        Read the shot list (and versions, if enabled) from Ayon
+        :param force: read even when the Ayon "Enable" checkbox is off (Scan button)
         """
         self.ayon_collect_gui()
 
-        if not self.ayon_gui['do_shotlist'] or self.ayon_gui['project'] == "":
+        if self.ayon_gui['project'] == "":
+            if force:
+                self.log.warning("Ayon scan: set the Ayon project first")
+            self.ayon_data = []
+            return self.ayon_data
+        if not self.ayon_gui['do_shotlist'] and not force:
             self.ayon_data = []
             return self.ayon_data
 
@@ -3546,7 +3563,25 @@ class Sequencer(object):
             self.ui,
             self.paths
         )
-        self.ayon_data = self.my_ayon.get_shotlist()
+        self.ayon_data = self.my_ayon.get_shotlist() or []
+        if self.my_ayon.error:
+            self.log.error(f"Ayon: {self.my_ayon.error}")
+        else:
+            self.log.info(f"Ayon: {len(self.ayon_data)} row(s) read from project {self.ayon_gui['project']}")
+        return self.ayon_data
+
+    def ayon_scan(self):
+        """
+        Scan button: read the Ayon list now, match it to the files (if any)
+        and show it
+        """
+        self.ayon_data_read(force=True)
+        if self.my_ayon is None or self.my_ayon.error:
+            return
+        self.ayon_data_filter()
+        if self.merged_list:
+            self.ayon_data_assign()
+            self.display_ayon_table()
 
     def ayon_data_filter(self):
         if self.my_ayon is None or getattr(self.my_ayon, 'error', None):
@@ -3632,7 +3667,8 @@ class Sequencer(object):
 
         table = self.ayon_data
         table_ui = self.ui.ayon_table
-        titles = table[0].keys()
+        # internal columns (_hide, _folder_id, _matched) are not shown
+        titles = [t for t in table[0].keys() if not str(t).startswith('_')]
 
         # display table
         table_ui.clear()
@@ -3658,12 +3694,12 @@ class Sequencer(object):
                     continue
                 row += 1
                 for column_number, one_column in enumerate(titles):
-                    if line[one_column] is None:
-                        line[one_column] = ''
+                    value = line.get(one_column)
+                    if value is None:
+                        value = ''
                     table_ui.setItem(row,
                                      column_number,
-                                     QtWidgets.QTableWidgetItem(
-                                         line[one_column])
+                                     QtWidgets.QTableWidgetItem(str(value))
                                      )
                     # colorize
                     itm = table_ui.item(row, column_number)

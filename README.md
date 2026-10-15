@@ -175,6 +175,47 @@ don't stop the run, so check the log output, not only the exit code.
 On Linux without a display (render nodes), headless mode switches Qt to
 the `offscreen` platform automatically.
 
+## Ayon shot list and versions
+
+The **Ayon** tab reads the folders (shots, assets) and tasks of an Ayon
+project. Rows are matched to the package files with the matching rules, and
+their values become keywords with the Ayon prefix, e.g. `{ayon_Folder Path}`.
+
+* **Scan** reads the list now. It works without a loaded package, and also
+  when *Enable* is off (that checkbox controls reading on package load).
+* **Export Shot List** writes `list.csv` (visible rows only) to the output folder.
+
+### Pulling versions
+
+Turn on **Pull versions** and set **Product filters** to add version info of
+the preferred product to every shot / asset row and its task rows:
+
+```
+comp:renderCompMain:exr, :platePl01:exr
+```
+
+Each filter is `task:product:representation`:
+
+| Filter | Means |
+|---|---|
+| `comp:renderCompMain:exr` | representation `exr` of product `renderCompMain`, published from task `comp` |
+| `:platePl01:exr` | the same, from any task |
+| `platePl01:exr` | the same as above |
+| `:platePl01` | any representation |
+| `render*:exr` | wildcards `*` `?` in any part, names are not case sensitive |
+
+Filters are tried in order and the first one with a match is used, so put the
+preferred product first. The **latest version** of the product is used; if it
+doesn't have the representation, that filter doesn't match.
+
+Added columns: `Product`, `Product Type`, `Version`, `Version Name` (`v007`),
+`Version Status`, `Version Author`, `Version Date`, `Version Comment`,
+`Version Task`, `Representation`, `Repre Path`, `Version Filter`. With the
+default prefix they are available as `{ayon_Version}`, `{ayon_Version Name}`...
+
+Versions are read with three queries for the whole project. Changing the
+filters takes effect with the next **Scan** or package load.
+
 ## Logging
 
 Everything Submission Helper does is logged with a level:

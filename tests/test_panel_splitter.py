@@ -46,6 +46,8 @@ class LayoutTuningNamesTest(unittest.TestCase):
         ui = open(os.path.join(here, 'ui_Submission.py'), encoding='utf-8').read()
         body = src[src.index('def _setup_panel_splitter'):src.index('def _reset_panel_splitter')]
         names = set(re.findall(r'(?:ui|self\.ui)\.(\w+)', body))
+        # widgets the code creates itself
+        names -= set(re.findall(r'(?:ui|self\.ui)\.(\w+) = ', body))
         self.assertTrue(names)
         missing = sorted(n for n in names if f'self.{n} = ' not in ui)
         self.assertEqual(missing, [])
