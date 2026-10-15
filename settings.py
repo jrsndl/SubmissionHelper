@@ -45,7 +45,7 @@ class Settings(object):
 
         install_path = self._get_script_path() + '/install.json'
         if not os.path.exists(install_path):
-            self.log.warning("-> No install prefs file {}, using defaults".format(install_path))
+            self.log.info("No install prefs file {}, using defaults".format(install_path))
             return
         try:
             self.install_settings = self._load_json(install_path)

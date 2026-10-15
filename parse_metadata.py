@@ -45,7 +45,7 @@ def read_until_null(filebuffer, maxbytes=1024):
         current_byte = struct.unpack('c', filebuffer.read(1))[0]
 
         if bytes_read > maxbytes:
-            print('exiting due to infinite loop')
+            log.warning('EXR header string too long, stopped reading (corrupt file?)')
             break
 
     return current_string, bytes_read

@@ -236,7 +236,7 @@ class AyonShotlist(object):
             asset_entities = {f["name"]: f for f in asset_entities}
         except Exception as e:
             error = f"Error getting assets from Ayon: {e}"
-            print(error)
+            self.log.error(error)
             self.error = error
             return
 

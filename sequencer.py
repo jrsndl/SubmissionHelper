@@ -330,6 +330,13 @@ class Sequencer(object):
         # other (audio, office, graphics, other)
         self.merged_list.extend(self.other_files_from_file_list(file_list))
 
+        _cats = {}
+        for one_item in self.merged_list:
+            _c = one_item.get('category', 'other')
+            _cats[_c] = _cats.get(_c, 0) + 1
+        self.log.info(f"Scanned {self.in_path}: {len(file_list)} file(s) in {len(self.merged_list)} item(s)"
+                      + (" (" + ", ".join(f"{v} {k}" for k, v in sorted(_cats.items())) + ")" if _cats else ""))
+
         # make paths relative
         self.get_relative_paths(parse_file_name.parse(self.in_path))
 
@@ -462,13 +469,8 @@ class Sequencer(object):
     def get_metadata(self):
 
         def _get_one_meta(one):
+            # runs in a worker thread: no gui calls here
             one.meta_get()
-            if not self.headless:
-                _p = self.ui.progressBar.value()
-                self.ui.progressBar.setValue(_p + progress_step)
-                self.ui.statusBar.showMessage("Gathering Metadata: {} done.".format(one.item.get('part1')), 3000)
-            else:
-                self.log.info("Gathering Metadata: {} done.".format(one.item.get('part1')))
             return [one.item, one.meta_data]
 
         self.output['status'] = "Getting meta data"
@@ -493,11 +495,20 @@ class Sequencer(object):
             # run threaded metadata load
             if not self.headless:
                 self.ui.progressBar.setValue(0)
+            done = 0
             with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                 for result in executor.map(_get_one_meta, meta_objs):
                     itm = result[0]
                     meta = result[1]
                     itm.update(meta)
+                    done += 1
+                    _name = itm.get('full_path') or itm.get('name', '')
+                    self.log.debug(f"Metadata read: {_name}")
+                    # gui updates in the gui thread
+                    if not self.headless:
+                        self.ui.progressBar.setValue(int(min(100, done * progress_step)))
+                        self.ui.statusBar.showMessage(f"Gathering Metadata: {_name} done.", 3000)
+            self.log.info(f"Metadata read for {done} item(s)")
 
             if not self.headless:
                 self.ui.progressBar.setValue(100)
@@ -2832,7 +2843,7 @@ class Sequencer(object):
         if self.settings and self.static_keywords:
             self.prepare_export_file_names()
         else:
-            print("Can't export Csv!")
+            self.log.error("Ayon publish: no data, load a package first.")
             return
 
         # Ayon Publish
@@ -2841,18 +2852,21 @@ class Sequencer(object):
         ayon_folder = self.settings['dead_ayon_folder']['value'] or ""
         ayon_task = self.settings['dead_ayon_task']['value'] or ""
         if ayon_project == "" or ayon_folder == "" or ayon_task == "":
-            print("Can't publish to Ayon!")
+            self.log.error("Ayon publish: Ayon project, folder and task must be set (Ayon / Deadline tab).")
             return
 
         if csv_pth is None:
-            print("Can't export Csv file!")
+            self.log.error("Ayon publish: submission csv file name is not set, check the Exports tab.")
             return
 
         # export the sub csv spreadsheet(s) now
         # the exports is a dict where keys are file names (excluding extension), and values are list
         exports = self.export_spreadsheet('sub', self.table_sub, self.column_titles_sub, None, dry_run=False)
+        if not exports:
+            self.log.error("Ayon publish: submission spreadsheet is empty, nothing to publish.")
+            return
         csv_file_paths =  [s + '.csv' for s in list(exports.keys())]
-        print(f"Publishing {len(csv_file_paths)} files to Ayon...")
+        self.log.info(f"Publishing {len(csv_file_paths)} csv file(s) to Ayon ({mode})")
 
         a = AyonPublish(self.settings, self.paths)
         if a.are_paths_ok(mode=mode):
@@ -2860,10 +2874,12 @@ class Sequencer(object):
                 a.build_ayon_csv_command(one_csv_file_path, ayon_project, ayon_folder, ayon_task)
                 if mode == "local":
                     ret = a.publish_local()
-                    print(f"Publish result: {ret}")
+                    self.log.info(f"Publish result for {one_csv_file_path}: return code {ret}")
                 elif mode == "farm":
                     ret = a.publish_deadline()
-                    print(f"Publish result: {ret}")
+                    self.log.info(f"Deadline submission for {one_csv_file_path}: return code {ret}")
+        else:
+            self.log.error(f"Ayon publish ({mode}) cancelled, required tools are missing (see errors above).")
 
     def export_all(self, column_width_sub=None, column_width_log=None):
 
@@ -2885,10 +2901,11 @@ class Sequencer(object):
             # text
             if self.table_txt is not None and self.export_file_names['t_do_txt']:
                 try:
-                    with open(self.export_file_names['t_export_name'], 'w') as f:
+                    with open(self.export_file_names['t_export_name'], 'w', encoding='utf-8') as f:
                         f.write(self.table_txt)
-                except(FileNotFoundError, PermissionError, IOError) as e:
-                    print(f"Error exporting text file: {e}")
+                    self.log.info(f"Text exported: {self.export_file_names['t_export_name']}")
+                except (OSError, UnicodeError) as e:
+                    self.log.error(f"Error exporting text file {self.export_file_names['t_export_name']}: {e}")
 
         # rename if autorename is ON
         if self.settings and\
@@ -2909,9 +2926,13 @@ class Sequencer(object):
             pth = self.static_keywords['package_name_root'] + '/'
             src = self.static_keywords['package_name_from_folder']
             dst = self.static_keywords['package_name']
+            if src == dst:
+                self.log.debug(f"Package folder already named {dst}")
+                return None
             os.rename(pth + src, pth + dst)
-        except:
-            logging.error('Renaming {} {} -> {} failed'.format(pth, src, dst))
+            self.log.info(f"Package folder renamed: {src} -> {dst}")
+        except Exception as e:
+            self.log.error(f"Renaming package folder failed: {e}")
 
     def export_spreadsheet(self, mode, table, titles, column_widths=None, dry_run=False):
         """
@@ -2919,6 +2940,7 @@ class Sequencer(object):
         """
 
         def write_csv(file_name, table, titles):
+            self.log.info(f"Writing {mode} csv: {file_name}.csv ({len(table)} rows)")
             with open(file_name + '.csv', 'w', newline='', encoding='utf-8') as f:
                 writer = csv.writer(f)
                 writer.writerow(titles)
@@ -2929,6 +2951,7 @@ class Sequencer(object):
             _excel = 0.15
             # Excel
             if do_excel:
+                self.log.info(f"Writing {mode} excel: {file_name}.xlsx ({len(table)} rows)")
                 workbook = xlsxwriter.Workbook(file_name + '.xlsx')
                 worksheet = workbook.add_worksheet()
                 cnt = -1
@@ -3025,7 +3048,7 @@ class Sequencer(object):
                 if _src and _dst:
                     if not os.path.exists(os.path.dirname(_dst)):
                         os.makedirs(os.path.dirname(_dst))
-                    print("Sidecar file copy {} -> {}".format(_src, _dst))
+                    self.log.info(f"Sidecar copy {_src} -> {_dst}")
                     shutil.copy(_src, _dst)
 
     def sidecar_files_find(self):
@@ -3398,17 +3421,25 @@ class Sequencer(object):
             if not os.path.exists(_dst_dir):
                 os.makedirs(_dst_dir)
 
+            done = 0
             for one_file in pairs:
                 try:
                     if not os.path.exists(one_file[0]):
                         # skip rename if source doesn't exist
+                        self.log.debug(f"Rename skipped, source missing: {one_file[0]}")
                         continue
                     if os.path.exists(one_file[1]):
                         # skip rename if destination exist
+                        self.log.warning(f"Rename skipped, destination exists: {one_file[1]}")
                         continue
                     os.replace(one_file[0], one_file[1])
-                except Exception:
-                    print("Failed to rename:\n{}\n{}".format(one_file[0], one_file[1]))
+                    done += 1
+                    self.log.debug(f"Renamed {one_file[0]} -> {one_file[1]}")
+                except OSError as e:
+                    self.log.error(f"Failed to rename {one_file[0]} -> {one_file[1]}: {e}")
+            if done:
+                self.log.info(f"Renamed {done} file(s): {pairs[0][0]} -> {pairs[0][1]}"
+                              + (" ..." if len(pairs) > 1 else ""))
 
         for item in self.merged_list:
             _r = item.get('rename')
@@ -4046,8 +4077,7 @@ class Sequencer(object):
                             if p["full_name"] == self.ftrack['project']:
                                 self.ftrack['project_id'] = p["id"]
                     except ftrack_api.exception.NoResultFoundError:
-                        print('FTRACK failed')
-                        pass
+                        self.log.error("Ftrack project query failed")
 
                 if self.ftrack['label'] != '' and self.ftrack['do_label']:
                     try:
@@ -4182,15 +4212,18 @@ class Sequencer(object):
             return
 
         if self.ftrack is None:
-            print("Ftrack cancelled (1)")
+            self.log.debug("Ftrack query skipped: no ftrack session")
             return
         if self.merged_list is None:
-            print("Ftrack cancelled (3)")
+            self.log.debug("Ftrack query skipped: no files")
             return
         _validate = [self.ftrack.get('project'), self.ftrack.get('project_id'), self.ftrack.get('shot'),
                      self.ftrack.get('task'), self.ftrack.get('session')]
         if None in _validate:
-            print("Ftrack cancelled")
+            # refreshes run on every edit, warn once per loaded package
+            if not getattr(self, '_warned_ftrack_incomplete', False):
+                self.log.warning("Ftrack query skipped: ftrack project, shot, task or session missing")
+                self._warned_ftrack_incomplete = True
             return
 
         for item in self.merged_list:

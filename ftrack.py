@@ -1,6 +1,8 @@
-import pprint
 import csv
+import logging
 import ftrack_api
+
+log = logging.getLogger("Ftrack")
 
 class FtrackHelper(object):
 
@@ -126,20 +128,24 @@ class FtrackHelper(object):
 
         ftrack_table_sorted = sorted(ftrack_table, key=lambda d: d['Folder Path'])
 
-        pprint.pprint(ftrack_table_sorted)
+        log.debug(f"Ftrack shot list: {len(ftrack_table_sorted)} rows")
 
-        with open(csv_path, 'w', newline='') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=ftrack_table_sorted[0].keys())
-            writer.writeheader()
-            for row in ftrack_table_sorted:
-                writer.writerow(row)
+        try:
+            with open(csv_path, 'w', newline='', encoding='utf-8') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=ftrack_table_sorted[0].keys())
+                writer.writeheader()
+                for row in ftrack_table_sorted:
+                    writer.writerow(row)
+            log.info(f"Ftrack shot list written to {csv_path} ({len(ftrack_table_sorted)} rows)")
+        except OSError as e:
+            log.error(f"Writing ftrack shot list {csv_path} failed: {e}")
 
     def _get_ftrack_assets_simple(self):
         assets = self.ftrack['session'].query(
             'AssetBuild where project.id is "{0}"'.format(self.ftrack['project_id'])
         ).all()
         for asset in assets:
-            print(asset['name'])
+            log.debug(asset['name'])
         self.ftrack['assets'] = assets
 
     def _get_ftrack_shots_simple(self):
@@ -147,26 +153,26 @@ class FtrackHelper(object):
             'Shot where project.id is "{0}"'.format(self.ftrack['project_id'])
         ).all()
         for shot in shots:
-            print(shot['name'])
+            log.debug(shot['name'])
         self.ftrack['shots'] = shots
 
     def _get_ftrack_shot_links_simple(self):
         shots = self.ftrack['shots']
         for shot in shots:
-            print(f"--- Shot: {shot['name']}")
+            log.debug(f"--- Shot: {shot['name']}")
             for link in shot['incoming_links']:
                 from_link = link.get('from')
                 if from_link is not None:
-                    print(f"--- Incoming: {from_link['name']}")
+                    log.debug(f"--- Incoming: {from_link['name']}")
 
     def _get_ftrack_asset_links_simple(self):
         assets = self.ftrack['assets']
         for asset in assets:
-            print(f"--- Asset: {asset['name']}")
+            log.debug(f"--- Asset: {asset['name']}")
             for link in asset['outgoing_links']:
                 from_link = link.get('to')
                 if from_link is not None:
-                    print(f"--- Outgoing: {from_link['name']}")
+                    log.debug(f"--- Outgoing: {from_link['name']}")
 
     def is_session_ok(self):
         if self.ftrack is None:
@@ -215,5 +221,4 @@ class FtrackHelper(object):
                             if p["full_name"] == self.ftrack['project']:
                                 self.ftrack['project_id'] = p["id"]
                     except ftrack_api.exception.NoResultFoundError:
-                        print('FTRACK failed')
-                        pass
+                        log.error("Ftrack project query failed")

@@ -17,6 +17,8 @@ from ui_Submission import Ui_submission
 from sequencer import Sequencer
 from settings import Settings
 import parse_file_name
+import sh_logging
+from log_view import LogView
 
 
 class ImgWidget1(QtWidgets.QLabel):
@@ -47,6 +49,9 @@ class ImgWidget2(QtWidgets.QWidget):
 
 class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
+    # widgets that hold output, not settings: never saved to / loaded from presets
+    NOT_SETTINGS = ('log',)
+
     def dragEnterEvent(self, e):
         if e.mimeData().hasUrls():
             e.acceptProposedAction()
@@ -60,13 +65,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
     def __init__(self, no_gui=False, s=None, package_path=None, args=None):
         super().__init__()
 
-        self.log = logging.getLogger("Submission Helper Main Window")
+        self.log = logging.getLogger("MainWindow")
         self.bare_title = "Submission Helper"
         self.package_path = package_path
 
         self.ui = Ui_submission()
         self.ui.setupUi(self)
         self.no_gui = no_gui
+
+        # Log tab: shows everything logged by any module
+        self.log_view = None
+        if not self.no_gui:
+            self.log_view = LogView(self.ui, self.ui.TopTab, self.ui.tab_21, parent=self)
 
         # Settings to gui
         # Top Tabs show / hide: Presets checkbox name: [tab index, tab name]
@@ -107,6 +117,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         if not self.no_gui:
             self.apply_settings_overrides(self.args.get('settings', ''))
             self.settings_to_gui()
+            self.log_view.rerender()
             # fill keys missing from an old / partial preset with the gui defaults
             self.settings_from_gui()
             self.settings_update_app_title()
@@ -1109,7 +1120,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                                   more_settings=self.settings_obj, ui=self.ui, headless=self.no_gui)
             # the --actions string (default "ftg") already ran inside Sequencer,
             # including export ("g"), so don't export a second time here
-            self.log.debug("Headless operation finished.")
+            _c = sh_logging.LOG_BUFFER.counts
+            self.log.info(f"Headless run finished: {_c.get('error', 0)} error(s), "
+                          f"{_c.get('warning', 0)} warning(s).")
             # exit properly after headless go
             sys.exit()
 
@@ -1117,7 +1130,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         """
 
         """
-        log.debug("-> handler sender: {}, group: {}".format(
+        # every keystroke lands here: TRACE, so it doesn't flood the log buffer
+        log.log(sh_logging.TRACE, "-> handler sender: {}, group: {}".format(
             str(sender), str(group)))
 
         # refresh self.settings
@@ -1361,6 +1375,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             self.settings_obj.read(preset_to_load)
             self.settings = self.settings_obj.settings
             self.settings_to_gui()
+            if self.log_view is not None:
+                self.log_view.rerender()
             self.settings_update_app_title()
             self.settings_update_dropbox()
             self.gui_show_hide_modules()
@@ -1717,6 +1733,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                                         'position_y': y}})
         for my_name, obj in inspect.getmembers(self.ui):
             name = my_name
+            if name in self.NOT_SETTINGS:
+                continue
             if isinstance(obj, QtWidgets.QComboBox):
                 all_items = [obj.itemText(i) for i in range(obj.count())]
                 # get current index from combobox
@@ -1808,7 +1826,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             'global_prefs_enabled',
             'ffprobe_path',
             'vendor_csv_path'
-        ]
+        ] + list(self.NOT_SETTINGS)
         # indicate to user that reload or browse for package folder is needed
         self.clear_all_tables()
 
@@ -1848,13 +1866,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                     else:
                         obj.setCurrentText(_index)
                 except:
-                    logging.error("Error restoring QComboBox {}".format(
+                    self.log.error("Error restoring QComboBox {}".format(
                         str(obj.objectName())))
             elif isinstance(obj, QtWidgets.QLineEdit):
                 try:
                     obj.setText(one_setting['value'])
                 except:
-                    logging.error("Error restoring QLineEdit {}".format(
+                    self.log.error("Error restoring QLineEdit {}".format(
                         str(obj.objectName())))
             elif isinstance(obj, QtWidgets.QCheckBox):
                 try:
@@ -1864,37 +1882,37 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                     else:
                         obj.setChecked(False)
                 except:
-                    logging.error("Error restoring QCheckBox {}".format(
+                    self.log.error("Error restoring QCheckBox {}".format(
                         str(obj.objectName())))
             elif isinstance(obj, QtWidgets.QRadioButton):
                 try:
                     if one_setting['value']:
                         obj.setChecked(str_to_bool(one_setting['value']))
                 except:
-                    logging.error("Error restoring QRadioButton {}".format(
+                    self.log.error("Error restoring QRadioButton {}".format(
                         str(obj.objectName())))
             elif isinstance(obj, QtWidgets.QSpinBox):
                 try:
                     if one_setting['value']:
                         obj.setValue(int(one_setting['value']))
                 except:
-                    logging.error("Error restoring QSpinBox {}".format(
+                    self.log.error("Error restoring QSpinBox {}".format(
                         str(obj.objectName())))
             elif isinstance(obj, QtWidgets.QSlider):
                 try:
                     if one_setting['value']:
                         obj.setValue(int(one_setting['value']))
                 except:
-                    logging.error("Error restoring QSlider {}".format(
+                    self.log.error("Error restoring QSlider {}".format(
                         str(obj.objectName())))
             elif isinstance(obj, QtWidgets.QPlainTextEdit):
                 try:
                     obj.setPlainText(one_setting['value'])
                 except:
-                    logging.error("Error restoring QPlainTextEdit {}".format(
+                    self.log.error("Error restoring QPlainTextEdit {}".format(
                         str(obj.objectName())))
             else:
-                logging.warning("Error restoring {} {}".format(
+                self.log.warning("Error restoring {} {}".format(
                     str(one_setting['category']), str(obj.objectName())))
             obj.blockSignals(False)
 
@@ -1958,12 +1976,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         return getpass.getuser()
 
     def closeEvent(self, event):
+        if self.log_view is not None:
+            self.log_view.detach()
         self.settings_from_gui()
         self.settings_obj.settings = self.settings
         _last_prefs = 'last_' + self.get_user_name()
         self.settings_obj.write(_last_prefs)
         log.info('Writing {}'.format(_last_prefs))
         log.info('Finished')
+        # Qt messages during teardown must not reach python logging
+        sh_logging.uninstall_qt_message_handler(QtCore)
         # prevents second call
         sys.exit()
 
@@ -2065,11 +2087,44 @@ def get_args(argv=None):
         type=str,
         default=""
     )
+    log_group = parser.add_argument_group(
+        'logging',
+        "Console output (stderr), in GUI and headless mode. The GUI Log tab "
+        "has its own level filter.")
+    log_group.add_argument(
+        '--log-level',
+        choices=['debug', 'info', 'warning', 'error', 'none'],
+        default='info',
+        help="Console log level, 'none' turns console output off. Default: %(default)s")
+    log_group.add_argument(
+        '-v', '--verbose',
+        action='store_true',
+        help="Same as --log-level debug")
+    log_group.add_argument(
+        '-q', '--quiet',
+        action='store_true',
+        help="Same as --log-level warning")
+    log_group.add_argument(
+        '--log-file',
+        metavar='PATH',
+        help="Also append the full log (all levels, with dates) to this file")
     return parser.parse_args(argv)
 
+
+def console_level_from_args(args):
+    """
+    :param args: dict from vars(get_args())
+    :return: logging level for the console, None for no console output
+    """
+    if args.get('verbose'):
+        return logging.DEBUG
+    if args.get('quiet'):
+        return logging.WARNING
+    return sh_logging.level_from_name(args.get('log_level', 'info'))
+
 # log
-logging.basicConfig(level="INFO")
-log = logging.getLogger("Submission Helper")
+# logging is configured in __main__ by sh_logging.setup_logging()
+log = logging.getLogger("SubmissionHelper")
 
 def check_cli_args(args):
     """
@@ -2108,6 +2163,15 @@ if __name__ == "__main__":
     input_path = args['i']
     input_preset = args['p']
 
+    try:
+        sh_logging.setup_logging(console_level_from_args(args), args.get('log_file'))
+    except OSError as e:
+        sh_logging.setup_logging(console_level_from_args(args))
+        log.error(f"Can't open log file '{args.get('log_file')}': {e}")
+    sh_logging.install_excepthook()
+    sh_logging.install_qt_message_handler(QtCore)
+    log.debug(f"Command line: {sys.argv}")
+
     headless, exit_code = check_cli_args(args)
     if exit_code is not None:
         sys.exit(exit_code)
@@ -2131,5 +2195,7 @@ if __name__ == "__main__":
         settings_obj = Settings('last_' + getpass.getuser(), args)
         main = MainWindow(no_gui=False, s=settings_obj, args=args)
         main.show()
-        app.exec_()
+        rc = app.exec_()
+        sh_logging.uninstall_qt_message_handler(QtCore)
+        sys.exit(rc)
 
