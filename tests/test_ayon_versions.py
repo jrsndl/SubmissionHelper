@@ -308,3 +308,28 @@ class VersionAttribDataTest(unittest.TestCase):
     def test_columns_listed(self):
         for c in ('Version FPS', 'Version Step', 'Version Host', 'Version Colorspace'):
             self.assertIn(c, ayon_shotlist.VERSION_COLUMNS)
+
+
+class AyonColumnWidthTest(unittest.TestCase):
+    def test_capped_width(self):
+        import sequencer
+        cw = sequencer.Sequencer.capped_width
+        # like the wider neighbour
+        self.assertEqual(cw([80, 900, 150], 1), 150)
+        # at least the minimum
+        self.assertEqual(cw([40, 900, 60], 1, 120), 120)
+        # never wider than its own content
+        self.assertEqual(cw([300, 90, 300], 1), 90)
+        # first / last column
+        self.assertEqual(cw([900, 200], 0), 200)
+
+    def test_fit_uses_all_rows_and_caps_repre_path(self):
+        import sequencer
+        widths = {0: 100, 1: 1200, 2: 140}
+        table = mock.Mock()
+        table.columnWidth.side_effect = lambda i: widths[i]
+        s = sequencer.Sequencer.__new__(sequencer.Sequencer)
+        s.fit_ayon_columns(table, ['Representation', 'Repre Path', 'Version Filter'])
+        table.horizontalHeader().setResizeContentsPrecision.assert_called_with(-1)
+        table.resizeColumnsToContents.assert_called_once()
+        table.setColumnWidth.assert_called_once_with(1, 140)

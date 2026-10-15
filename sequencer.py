@@ -3703,6 +3703,9 @@ class Sequencer(object):
                                      )
                     # colorize
                     itm = table_ui.item(row, column_number)
+                    if itm and one_column in self.AYON_CAPPED_COLUMNS:
+                        # capped column: full text in the tooltip
+                        itm.setToolTip(str(value))
                     if itm:
                         if color == 'green':
                             itm.setBackground(QtGui.QColor('darkgreen'))
@@ -3711,9 +3714,41 @@ class Sequencer(object):
                             itm.setBackground(QtGui.QColor("#4d4d4d"))
 
             table_ui.setRowCount(row+1)
-            table_ui.resizeColumnsToContents()
+            self.fit_ayon_columns(table_ui, titles)
             table_ui.resizeRowsToContents()
             table_ui.setSortingEnabled(True)
+
+    # columns that don't get their full text width, see fit_ayon_columns
+    AYON_CAPPED_COLUMNS = ('Repre Path',)
+    AYON_CAPPED_MIN = 120
+
+    @staticmethod
+    def capped_width(widths, index, minimum=120):
+        """
+        Width for a capped column: like the wider of its neighbours, at least
+        minimum, never wider than its own content
+        :param widths: content widths of all columns
+        """
+        neighbours = [widths[i] for i in (index - 1, index + 1) if 0 <= i < len(widths)]
+        target = max(neighbours + [minimum])
+        return min(widths[index], target)
+
+    def fit_ayon_columns(self, table_ui, titles):
+        """
+        Every column as wide as its widest text (all rows, not only the
+        visible ones, and the header), except the capped columns
+        """
+        header = table_ui.horizontalHeader()
+        # -1: measure all rows. The default only looks at the visible rows,
+        # so columns came out too narrow when the tab was not shown.
+        header.setResizeContentsPrecision(-1)
+        table_ui.resizeColumnsToContents()
+        widths = [table_ui.columnWidth(i) for i in range(len(titles))]
+        for i, title in enumerate(titles):
+            if title in self.AYON_CAPPED_COLUMNS:
+                table_ui.setColumnWidth(i, self.capped_width(widths, i, self.AYON_CAPPED_MIN))
+        # long paths keep their start and file name visible
+        table_ui.setTextElideMode(QtCore.Qt.ElideMiddle)
 
     def _get_latest_valid_csv_file(self, file_path, get_latest=False):
         """
