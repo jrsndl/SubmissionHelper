@@ -3653,6 +3653,7 @@ class Sequencer(object):
                 del item[k]
         for row in self.ayon_matched_versions or []:
             row["Matched Files"] = ''
+            row["Version Exists"] = "False"
 
         gui = self.ayon_gui or {}
         if not gui.get('version_match') or not self.ayon_matched_versions or not self.merged_list:
@@ -3681,15 +3682,25 @@ class Sequencer(object):
                 if example is None:
                     example = (item.get('name', ''), pkg,
                                sorted({expand(data_tpl, {**item, **r}) for r in candidates})[:6])
+                # the file's version is not in Ayon yet: still tell the
+                # checks so, and what the highest existing version is
+                # (of the preferred product, or of all listed products)
+                preferred = next((r for r in candidates if r.get('Preferred')), None)
+                same_product = [r for r in candidates
+                                if preferred is None or r.get('Product') == preferred.get('Product')]
+                item[key_start + "Version Exists"] = "False"
+                item[key_start + "Max Existing Version"] = str(
+                    max(int(r.get('Version') or 0) for r in same_product))
                 continue
+            for r in hits:
+                r["Matched Files"] = str(int(r["Matched Files"] or 0) + 1)
+                r["Version Exists"] = "True"
             # several products can have the same version number: prefer the
             # preferred one, then the first by sort order
             hit = next((r for r in hits if r.get('Preferred')), hits[0])
             for k, v in hit.items():
                 if not str(k).startswith('_') and k != "Matched Files":
                     item[key_start + k] = v
-            for r in hits:
-                r["Matched Files"] = str(int(r["Matched Files"] or 0) + 1)
             files_matched += 1
 
         if files_in_folders and files_matched < files_in_folders:

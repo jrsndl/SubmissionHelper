@@ -1989,7 +1989,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             "<p>The row's columns are added to the file with the Ayon prefix and "
             "<b>Matched</b>, e.g. {ayon_Matched Version}, {ayon_Matched Version Status}, "
             "{ayon_Matched Version Comment}, {ayon_Matched Repre Path}. "
-            "Matched rows are teal in Matched Versions.</p>")
+            "Matched rows are teal in Matched Versions.</p>"
+            "<p>For checks every file matched to an Ayon folder also gets "
+            "{ayon_Matched Version Exists} (True / False) and "
+            "{ayon_Matched Max Existing Version}, also when its version is not in Ayon yet.</p>")
         match.setToolTip(match_tip)
         ui.ayon_version_match_chbx = match
         row2.addWidget(match)

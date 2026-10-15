@@ -66,6 +66,10 @@ MATCHED_VERSION_COLUMNS = [
     "Product",
     "Product Type",
     "Version",
+    # "True" when a package file has this version (Match version)
+    "Version Exists",
+    # highest existing version of the same product in the folder
+    "Max Existing Version",
     "Version Name",
     "Preferred",
     "Version Status",
@@ -232,6 +236,14 @@ def matched_version_rows(folders, products, versions, repres, task_names, prefer
         }
         row.update(version_detail_columns(ver, ver_repres[0] if ver_repres else None))
         rows.append(row)
+    # highest version per folder + product
+    max_version = {}
+    for r in rows:
+        key = (r["_folder_id"], r["Product"])
+        max_version[key] = max(max_version.get(key, 0), int(r["Version"] or 0))
+    for r in rows:
+        r["Max Existing Version"] = str(max_version[(r["_folder_id"], r["Product"])])
+        r["Version Exists"] = "False"
     rows.sort(key=lambda r: (r["Folder Path"], int(r["Version"] or 0), r["Product"].lower()))
     return rows
 

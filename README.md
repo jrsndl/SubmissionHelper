@@ -239,7 +239,9 @@ path and then version. The version picked by the filters as the preferred one
 is marked `Preferred` and highlighted.
 
 Columns: `Folder Path`, `Folder Name`, `Folder Type`, `Product`,
-`Product Type`, `Version`, `Version Name`, `Preferred`, `Version Status`,
+`Product Type`, `Version`, `Version Exists` (`True` when a package file has
+this version, see Match version), `Max Existing Version` (highest version of
+the product in the folder), `Version Name`, `Preferred`, `Version Status`,
 `Version Author`, `Version Date`, `Version Comment`, `Version Task`,
 `Representations` (all representation names), and the version attribute /
 data columns listed above.
@@ -264,7 +266,12 @@ for example `{ayon_Matched Version}`, `{ayon_Matched Version Status}`,
 `{ayon_Matched Version Comment}`, `{ayon_Matched Repre Path}`. When several
 products have the same version number, the preferred product wins. Matched
 rows are teal in Matched Versions and the `Matched Files` column counts the
-files. Changing these keys doesn't query Ayon again. When some files don't
+files.
+
+For checks, every file matched to an Ayon folder also gets
+`{ayon_Matched Version Exists}` (`True` / `False`: is the file's version
+already in Ayon) and `{ayon_Matched Max Existing Version}` (highest existing
+version of the preferred product), also when its version is not in Ayon yet. Changing these keys doesn't query Ayon again. When some files don't
 find their version, the Log tab shows what was compared.
 
 ## Logging

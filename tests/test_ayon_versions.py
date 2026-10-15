@@ -652,3 +652,56 @@ class MatchedVersionsBandingTest(unittest.TestCase):
         self.assertEqual(color(3, cols.index('Product')), 'darkgreen')
         self.assertEqual(color(3, status_col), '#4d4d4d')
         self.assertEqual(color(4, version_col), '#4d4d4d')
+
+
+class VersionExistsTest(unittest.TestCase):
+    def setUp(self):
+        import logging
+        import sequencer
+        folders = {'f1': {'Folder Path': '/sh010'}}
+        products = [{'id': 'pr', 'name': 'renderCompMain', 'folderId': 'f1'},
+                    {'id': 'pp', 'name': 'platePl01', 'folderId': 'f1'}]
+        versions = [{'id': 'v6', 'version': 6, 'productId': 'pr'},
+                    {'id': 'v7', 'version': 7, 'productId': 'pr'},
+                    {'id': 'p3', 'version': 3, 'productId': 'pp'}]
+        self.rows = ayon_shotlist.matched_version_rows(folders, products, versions, [], {}, {'f1': 'v7'})
+        s = sequencer.Sequencer.__new__(sequencer.Sequencer)
+        s.log = logging.getLogger('Sequencer')
+        s.ayon_gui = {'prefix': 'ayon_', 'version_match': True,
+                      'version_match_pkg': '{version}', 'version_match_data': '{Version}'}
+        s.ayon_matched_versions = self.rows
+        s.merged_list = [
+            {'name': 'sh010_comp_v006', 'version': '006', '_ayon_folder_ids': {'f1'}},
+            {'name': 'sh010_comp_v009', 'version': '009', '_ayon_folder_ids': {'f1'}},
+        ]
+        self.s = s
+
+    def test_columns_in_order(self):
+        cols = ayon_shotlist.MATCHED_VERSION_COLUMNS
+        i = cols.index('Version')
+        self.assertEqual(cols[i:i + 4], ['Version', 'Version Exists', 'Max Existing Version', 'Version Name'])
+
+    def test_max_per_product(self):
+        by = {(r['Product'], r['Version']): r for r in self.rows}
+        self.assertEqual(by[('renderCompMain', '6')]['Max Existing Version'], '7')
+        self.assertEqual(by[('platePl01', '3')]['Max Existing Version'], '3')
+        self.assertEqual({r['Version Exists'] for r in self.rows}, {'False'})
+
+    def test_tokens_for_existing_and_new_versions(self):
+        with self.assertLogs('Sequencer', 'WARNING'):
+            self.s.ayon_versions_assign()
+        existing, new = self.s.merged_list
+        self.assertEqual(existing['ayon_Matched Version Exists'], 'True')
+        self.assertEqual(existing['ayon_Matched Max Existing Version'], '7')
+        # v009 is not in Ayon yet: exists False, max of the preferred product
+        self.assertEqual(new['ayon_Matched Version Exists'], 'False')
+        self.assertEqual(new['ayon_Matched Max Existing Version'], '7')
+        self.assertNotIn('ayon_Matched Version', new)
+        by = {(r['Product'], r['Version']): r for r in self.rows}
+        self.assertEqual(by[('renderCompMain', '6')]['Version Exists'], 'True')
+        self.assertEqual(by[('renderCompMain', '7')]['Version Exists'], 'False')
+        # re-run with match off: tokens and flags cleared
+        self.s.ayon_gui['version_match'] = False
+        self.s.ayon_versions_assign()
+        self.assertNotIn('ayon_Matched Version Exists', self.s.merged_list[1])
+        self.assertEqual(by[('renderCompMain', '6')]['Version Exists'], 'False')
