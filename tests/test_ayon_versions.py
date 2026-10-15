@@ -333,3 +333,14 @@ class AyonColumnWidthTest(unittest.TestCase):
         table.horizontalHeader().setResizeContentsPrecision.assert_called_with(-1)
         table.resizeColumnsToContents.assert_called_once()
         table.setColumnWidth.assert_called_once_with(1, 140)
+
+
+class AyonRowHeightTest(unittest.TestCase):
+    def test_single_line_rows(self):
+        import sequencer
+        table = mock.Mock()
+        table.fontMetrics().height.return_value = 14
+        sequencer.Sequencer.single_line_rows(table)
+        table.setWordWrap.assert_called_once_with(False)
+        table.verticalHeader().setDefaultSectionSize.assert_called_once_with(20)
+        table.verticalHeader().setSectionResizeMode.assert_called_once()

@@ -3697,15 +3697,18 @@ class Sequencer(object):
                     value = line.get(one_column)
                     if value is None:
                         value = ''
+                    value = str(value)
+                    # one line per row: multi line values (comments) are joined
+                    shown = ' '.join(value.split()) if '\n' in value else value
                     table_ui.setItem(row,
                                      column_number,
-                                     QtWidgets.QTableWidgetItem(str(value))
+                                     QtWidgets.QTableWidgetItem(shown)
                                      )
                     # colorize
                     itm = table_ui.item(row, column_number)
-                    if itm and one_column in self.AYON_CAPPED_COLUMNS:
-                        # capped column: full text in the tooltip
-                        itm.setToolTip(str(value))
+                    if itm and (one_column in self.AYON_CAPPED_COLUMNS or shown != value):
+                        # shortened text: full text in the tooltip
+                        itm.setToolTip(value)
                     if itm:
                         if color == 'green':
                             itm.setBackground(QtGui.QColor('darkgreen'))
@@ -3715,7 +3718,7 @@ class Sequencer(object):
 
             table_ui.setRowCount(row+1)
             self.fit_ayon_columns(table_ui, titles)
-            table_ui.resizeRowsToContents()
+            self.single_line_rows(table_ui)
             table_ui.setSortingEnabled(True)
 
     # columns that don't get their full text width, see fit_ayon_columns
@@ -3749,6 +3752,19 @@ class Sequencer(object):
                 table_ui.setColumnWidth(i, self.capped_width(widths, i, self.AYON_CAPPED_MIN))
         # long paths keep their start and file name visible
         table_ui.setTextElideMode(QtCore.Qt.ElideMiddle)
+
+    @staticmethod
+    def single_line_rows(table_ui):
+        """
+        Every row exactly one text line high: no word wrap (long Repre Path
+        values made rows several lines tall), fixed row height
+        """
+        table_ui.setWordWrap(False)
+        vh = table_ui.verticalHeader()
+        line = table_ui.fontMetrics().height()
+        vh.setMinimumSectionSize(1)
+        vh.setDefaultSectionSize(line + 6)
+        vh.setSectionResizeMode(QtWidgets.QHeaderView.Fixed)
 
     def _get_latest_valid_csv_file(self, file_path, get_latest=False):
         """
