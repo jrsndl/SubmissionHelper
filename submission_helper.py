@@ -376,6 +376,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'ftrack_shot', 'refresh_ftrack'))
         self.ui.ftrack_task.textChanged.connect(
             partial(self.handler, 'ftrack_task', 'refresh_ftrack'))
+        # Extensions (only these get ftrack notes); was never connected
+        self.ui.ftrack_include_2.textChanged.connect(
+            partial(self.handler, 'ftrack_include_2', 'refresh_ftrack'))
         self.ui.ftrack_label_use.clicked.connect(
             partial(self.handler, 'ftrack_label_use', 'refresh_ftrack'))
         self.ui.ftrack_label.textChanged.connect(

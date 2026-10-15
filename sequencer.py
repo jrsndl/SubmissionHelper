@@ -4403,33 +4403,32 @@ class Sequencer(object):
         """
 
         if self.settings:
-            self.ftrack['do_ftrack'] = bool(
-                self.settings['ftrack_use']['value'])
-            self.ftrack['include'] = str(
-                self.settings['ftrack_include']['value'])
-            self.ftrack['project'] = str(
-                self.settings['ftrack_project']['value'])
-            self.ftrack['shot'] = str(
-                self.settings['ftrack_shot']['value'])
-            self.ftrack['task'] = str(
-                self.settings['ftrack_task']['value'])
-            self.ftrack['do_label'] = bool(
-                self.settings['ftrack_label_use']['value'])
-            self.ftrack['label'] = str(
-                self.settings['ftrack_label']['value'])
-            self.ftrack['do_version'] = bool(
-                self.settings['ftrack_version_use']['value'])
-            self.ftrack['version'] = str(
-                self.settings['ftrack_version']['value'])
-            self.ftrack['note_pattern'] = str(
-                self.settings['ftrack_note_pattern']['value'])
-            self.ftrack['note_repl'] = str(
-                self.settings['ftrack_note_repl']['value'])
+            def _val(*keys, default=''):
+                # first key that exists; missing keys don't crash
+                for k in keys:
+                    one = self.settings.get(k)
+                    if one is not None and one.get('value') is not None:
+                        return one['value']
+                return default
 
-            if self.ftrack['include'] != None:
-                self.ftrack['include'] = self.ftrack['include'].split()
-            else:
-                self.ftrack['include'] = []
+            self.ftrack['do_ftrack'] = bool(_val('ftrack_use', default=False))
+            # the Extensions field is "ftrack_include_2" in the ui file;
+            # "ftrack_include" is its old name, still in older presets
+            self.ftrack['include'] = str(_val('ftrack_include_2', 'ftrack_include'))
+            self.ftrack['project'] = str(_val('ftrack_project'))
+            self.ftrack['shot'] = str(_val('ftrack_shot'))
+            self.ftrack['task'] = str(_val('ftrack_task'))
+            self.ftrack['do_label'] = bool(_val('ftrack_label_use', default=False))
+            self.ftrack['label'] = str(_val('ftrack_label'))
+            self.ftrack['do_version'] = bool(_val('ftrack_version_use', default=False))
+            self.ftrack['version'] = str(_val('ftrack_version'))
+            self.ftrack['note_pattern'] = str(_val('ftrack_note_pattern'))
+            self.ftrack['note_repl'] = str(_val('ftrack_note_repl'))
+
+            # extensions separated by spaces or commas, with or without dot
+            self.ftrack['include'] = [e.strip().lstrip('.').lower()
+                                      for e in self.ftrack['include'].replace(',', ' ').split()
+                                      if e.strip()]
 
             self.ftrack['session'] = None
             self.ftrack['project_id'] = None
@@ -4490,7 +4489,7 @@ class Sequencer(object):
             do_filter = True
         for item in self.merged_list:
             if do_filter:
-                e = item.get('extension', '')
+                e = str(item.get('extension', '')).lower()
                 if e in self.ftrack['include']:
                     self.assign_ftrack_notes(item)
             else:
