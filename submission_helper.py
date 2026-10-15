@@ -393,6 +393,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'ftrack_note_repl', 'select_ftrack'))
         self.ui.ftrack_do_op.clicked.connect(
             partial(self.handler, 'ftrack_do_op', 'refresh_ftrack'))
+        # Query Notes was never connected: toggling it did nothing until a re-read
+        self.ui.ftrack_do_notes.clicked.connect(
+            partial(self.handler, 'ftrack_do_notes', 'refresh_ftrack'))
+        self.ui.ftrack_export.clicked.connect(
+            partial(self.handler, 'ftrack_export', 'ftrack_export'))
 
         # vendor
         self.ui.vendor_csv_path.textChanged.connect(
@@ -1027,16 +1032,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         if group == 'refresh_ftrack':
             if self.data:
-                self.data.ftrack_query()
+                self._ayon_busy(self.data.ftrack_query, "Reading data from Ftrack...")
                 self.data.select_ftrack_note()
+                self.data.display_ftrack_table()
                 self.data.prepare_all_columns()
                 self.data.prepare_tables()
                 self.show_all()
+            else:
+                log.debug("Ftrack: load a package first, the ftrack tab queries the loaded files")
 
         if group == 'select_ftrack':
             # Skipping ftrack queries for speed
             if self.data:
                 self.data.select_ftrack_note()
+                self.data.display_ftrack_table()
                 self.data.prepare_all_columns()
                 self.data.prepare_tables()
                 self.show_all()
@@ -1105,6 +1114,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                         (float(self.ui.log_table.columnWidth(column_number))))
 
                 self.data.export_all(column_widths_sub, column_widths_log)
+
+        if group == 'ftrack_export':
+            target = self._ayon_target()
+            self._ayon_busy(target.ftrack_export, "Exporting Ftrack shot list...")
 
         if sender == 'ayon_export_butt':
             target = self._ayon_target()

@@ -305,6 +305,28 @@ already in Ayon) and `{ayon_Matched Max Existing Version}` (highest existing
 version of the preferred product), also when its version is not in Ayon yet. Changing these keys doesn't query Ayon again. When some files don't
 find their version, the Log tab shows what was compared.
 
+## Ftrack
+
+The ftrack tab reads notes and shot attributes for the loaded files. Server, user and api key come
+from `install.json` (`ftrack_server_url`, `ftrack_api_user`, `ftrack_api_key`).
+
+* **Use Ftrack** turns it on. **Project** is the full name of an *active* ftrack project.
+* **Shot** / **Task** are templates filled per file from the parsed keys (default `{shot}` / `{task}`).
+* **Extensions** limits the files that get notes (`exr, mov`, with or without dot; empty = all).
+* **Query Notes** reads the notes on the task, or with **Version** on, on that version of the task;
+  **Note Label** keeps only notes with that label. **Note pattern** / **repl** pick the text that goes to `{ftrack_note}`.
+* **Query OpenPype Attributes** reads frame range and handles of the shot (`{ftrack_op_range}` ...).
+* **Export** writes the ftrack shot list to the path next to it (a `.csv` file or a folder;
+  empty = the package folder). Same as the command line action `x`.
+
+The table on the tab has one row per file: the shot / task / version it looked up, a **Status**
+(`ok`, `task not found`, `version not found`, `template not resolved`, `skipped (extension)`, ...),
+how many notes were found and the selected note. When nothing was queried it says why.
+
+The log gets one summary line per change (INFO), for example
+`Ftrack: project 'MyProj'; 12 file(s); 9 with notes; status: ok 9, task not found 3`.
+Set the Log tab (or `-v` on the command line) to DEBUG to see the settings used and a line per file.
+
 ## Logging
 
 Everything Submission Helper does is logged with a level:
