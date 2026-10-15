@@ -2072,6 +2072,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         ui.vendor_csv_prefs_spreadsheet.setMaximumHeight(no_limit)
         ui.vendor_csv_prefs_repres.setMaximumHeight(no_limit)
 
+        # Convert: controls at the top, extra height below them
+        ui.verticalLayout_35.addStretch(1)
+
+        # Presets: the group boxes were vertically centered, keep them at the top
+        ui.verticalLayout_95.addStretch(1)
+
+        # Spreadsheet: the column editors (were max 300 px) use the full height
+        for edit in (ui.sub_columns, ui.log_columns, ui.txt_columns):
+            edit.setMaximumHeight(no_limit)
+
     def _reset_panel_splitter(self, splitter=None):
         splitter = splitter or self.panel_splitter
         total = max(sum(splitter.sizes()), self.TOP_PANEL_DEFAULT + self.BOTTOM_PANEL_MIN)
