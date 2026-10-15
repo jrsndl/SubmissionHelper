@@ -75,6 +75,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         # top / bottom tab panels in a draggable splitter
         self.panel_splitter = self._setup_panel_splitter()
+        self._tune_top_tab_layouts()
 
         # Log tab: shows everything logged by any module
         self.log_view = None
@@ -2032,6 +2033,44 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         top_layout.insertWidget(0, splitter, 1)
         self._reset_panel_splitter(splitter)
         return splitter
+
+    def _tune_top_tab_layouts(self):
+        """
+        Layout fixes for a top panel taller than the old fixed 350 px.
+        Done in code so ui_Submission.py can still be regenerated.
+        """
+        ui = self.ui
+        no_limit = 16777215
+        fixed_v = QtWidgets.QSizePolicy.Fixed
+
+        def keep_horizontal(widget, vertical):
+            pol = widget.sizePolicy()
+            pol.setVerticalPolicy(vertical)
+            widget.setSizePolicy(pol)
+
+        # Package: the file age group stays compact, extra height is empty
+        # space below all the controls
+        keep_horizontal(ui.groupBox_5, fixed_v)
+        ui.verticalLayout_128.addStretch(1)
+
+        # Parsing: the scroll area grows with the panel (was max 350 px),
+        # rows stay at the top
+        ui.scrollArea.setMaximumHeight(no_limit)
+        ui.verticalLayout_31.addStretch(1)
+
+        # Rename: Rename button as high as the Go button instead of
+        # stretching, extra height is empty space below
+        go_h = ui.write_button.minimumHeight() or 40
+        ui.Rename_go.setMinimumHeight(go_h)
+        ui.Rename_go.setMaximumHeight(go_h)
+        keep_horizontal(ui.Rename_go, fixed_v)
+        ui.verticalLayout_66.addStretch(1)
+
+        # Vendor: the scroll area (was max 450 px) and the two json editors
+        # (were max 400 px) grow with the panel
+        ui.scrollArea_4.setMaximumHeight(no_limit)
+        ui.vendor_csv_prefs_spreadsheet.setMaximumHeight(no_limit)
+        ui.vendor_csv_prefs_repres.setMaximumHeight(no_limit)
 
     def _reset_panel_splitter(self, splitter=None):
         splitter = splitter or self.panel_splitter

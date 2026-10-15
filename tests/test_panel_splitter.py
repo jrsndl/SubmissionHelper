@@ -1,3 +1,4 @@
+import os
 import unittest
 
 from tests import _stubs  # noqa: F401
@@ -34,3 +35,17 @@ class PanelSplitterResetTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class LayoutTuningNamesTest(unittest.TestCase):
+    def test_widgets_used_by_layout_code_exist_in_ui(self):
+        # guards against regenerating ui_Submission.py with renamed objects
+        import re
+        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        src = open(os.path.join(here, 'submission_helper.py'), encoding='utf-8').read()
+        ui = open(os.path.join(here, 'ui_Submission.py'), encoding='utf-8').read()
+        body = src[src.index('def _setup_panel_splitter'):src.index('def _reset_panel_splitter')]
+        names = set(re.findall(r'(?:ui|self\.ui)\.(\w+)', body))
+        self.assertTrue(names)
+        missing = sorted(n for n in names if f'self.{n} = ' not in ui)
+        self.assertEqual(missing, [])
