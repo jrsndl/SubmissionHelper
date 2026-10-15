@@ -504,3 +504,66 @@ class MatchedVersionsFilterTest(unittest.TestCase):
         self.assertEqual([(r['Folder Path'], r['Version'], r['Product']) for r in rows],
                          [('/a', '5', 'platePl01'), ('/b', '3', 'renderCompMain'),
                           ('/b', '10', 'platePl01')])
+
+
+class VersionMatchTest(unittest.TestCase):
+    def bare(self, pkg='{version}', data='{Version}', on=True):
+        import logging
+        import sequencer
+        s = sequencer.Sequencer.__new__(sequencer.Sequencer)
+        s.log = logging.getLogger('Sequencer')
+        s.ayon_gui = {'prefix': 'ayon_', 'version_match': on,
+                      'version_match_pkg': pkg, 'version_match_data': data}
+        s.ayon_matched_versions = [
+            {'_folder_id': 'f1', 'Product': 'renderCompMain', 'Version': '6', 'Version Status': 'Rejected',
+             'Preferred': '', 'Matched Files': ''},
+            {'_folder_id': 'f1', 'Product': 'renderCompMain', 'Version': '7', 'Version Status': 'Approved',
+             'Preferred': 'yes', 'Matched Files': ''},
+            {'_folder_id': 'f2', 'Product': 'renderCompMain', 'Version': '7', 'Version Status': 'WIP',
+             'Preferred': '', 'Matched Files': ''},
+        ]
+        s.merged_list = [
+            {'name': 'sh010_comp_v006', 'version': '006', '_ayon_folder_ids': {'f1'}},
+            {'name': 'sh010_comp_v009', 'version': '009', '_ayon_folder_ids': {'f1'}},
+            {'name': 'unmatched_folder', 'version': '7'},
+        ]
+        return s
+
+    def test_matches_version_in_same_folder(self):
+        s = self.bare()
+        with self.assertLogs('Sequencer', 'WARNING') as cm:
+            s.ayon_versions_assign()
+        a, b, c = s.merged_list
+        # 006 == 6, only rows of the file's own folder
+        self.assertEqual(a['ayon_Matched Version'], '6')
+        self.assertEqual(a['ayon_Matched Version Status'], 'Rejected')
+        self.assertNotIn('ayon_Matched _folder_id', a)
+        self.assertNotIn('ayon_Matched Version', b)          # v009 doesn't exist
+        self.assertNotIn('ayon_Matched Version', c)          # not matched to a folder
+        self.assertEqual(s.ayon_matched_versions[0]['Matched Files'], '1')
+        self.assertEqual(s.ayon_matched_versions[2]['Matched Files'], '')
+        self.assertIn("1 of 2", cm.output[0])
+        self.assertIn("'009'", cm.output[0])                  # shows what was compared
+
+    def test_off_clears_previous_values(self):
+        s = self.bare()
+        s.ayon_versions_assign()
+        s.ayon_gui['version_match'] = False
+        s.ayon_versions_assign()
+        self.assertNotIn('ayon_Matched Version', s.merged_list[0])
+        self.assertEqual(s.ayon_matched_versions[0]['Matched Files'], '')
+
+    def test_version_name_template(self):
+        s = self.bare(pkg='v{version}', data='{Version Name}')
+        for r in s.ayon_matched_versions:
+            r['Version Name'] = 'v' + r['Version'].zfill(3)
+        s.ayon_versions_assign()
+        self.assertEqual(s.merged_list[0]['ayon_Matched Version'], '6')
+
+    def test_same_value(self):
+        import sequencer
+        sv = sequencer.Sequencer._same_value
+        self.assertTrue(sv('007', '7'))
+        self.assertTrue(sv(' v007', 'v007'))
+        self.assertFalse(sv('v007', 'v7'))
+        self.assertFalse(sv('7', '8'))

@@ -245,6 +245,25 @@ Ayon is asked again only when the matched folders or the product filters
 change, not on every edit. Turn on **Versions CSV** to also write the list to
 `ayon-list-versions.csv` with **Export Shot List**.
 
+### Matching a version to each file
+
+**Match version** (second row of the Versions group) finds, for every file
+matched to an Ayon folder, the Matched Versions row of the same folder where
+the **Package** key equals the **Version** key:
+
+| Package | Version | Matches |
+|---|---|---|
+| `{version}` | `{Version}` | file version `007` to Ayon version `7` (numbers compare by value) |
+| `v{version}` | `{Version Name}` | `v007` to `v007` |
+
+The row's columns are added to the file with the Ayon prefix and `Matched`,
+for example `{ayon_Matched Version}`, `{ayon_Matched Version Status}`,
+`{ayon_Matched Version Comment}`, `{ayon_Matched Repre Path}`. When several
+products have the same version number, the preferred product wins. Matched
+rows are teal in Matched Versions and the `Matched Files` column counts the
+files. Changing these keys doesn't query Ayon again. When some files don't
+find their version, the Log tab shows what was compared.
+
 ## Logging
 
 Everything Submission Helper does is logged with a level:

@@ -841,6 +841,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'ayon_export_butt', 'ayon_export_butt'))
         self.ui.ayon_scan_butt.clicked.connect(
             partial(self.handler, 'ayon_scan_butt', 'ayon_scan'))
+        # Match version uses the cached Matched Versions: no Ayon query, just refresh
+        self.ui.ayon_version_match_chbx.clicked.connect(
+            partial(self.handler, 'ayon_version_match_chbx', 'refresh_spreadsheets'))
+        self.ui.ayon_version_match_pkg.textChanged.connect(
+            partial(self.handler, 'ayon_version_match_pkg', 'refresh_spreadsheets'))
+        self.ui.ayon_version_match_data.textChanged.connect(
+            partial(self.handler, 'ayon_version_match_data', 'refresh_spreadsheets'))
 
 
         self.ui.tree_filter_value.textChanged.connect(
@@ -1922,13 +1929,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         group = QtWidgets.QGroupBox("Versions", parent)
         group.setObjectName("ayon_versions_group")
-        group.setMinimumSize(QtCore.QSize(350, 50))
-        group.setMaximumHeight(50)
+        group.setMinimumSize(QtCore.QSize(350, 80))
+        group.setMaximumHeight(80)
         pol = group.sizePolicy()
         pol.setVerticalPolicy(QtWidgets.QSizePolicy.Fixed)
         group.setSizePolicy(pol)
-        row = QtWidgets.QHBoxLayout(group)
-        row.setContentsMargins(6, 2, 6, 2)
+        rows = QtWidgets.QVBoxLayout(group)
+        rows.setContentsMargins(6, 2, 6, 2)
+        rows.setSpacing(4)
+        row = QtWidgets.QHBoxLayout()
+        rows.addLayout(row)
 
         chbx = QtWidgets.QCheckBox("Pull versions", group)
         chbx.setObjectName("ayon_versions_chbx")
@@ -1960,6 +1970,41 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             "Version Colorspace (keywords with the Ayon prefix, e.g. {ayon_Version}).</p>")
         ui.ayon_product_filters = filters
         row.addWidget(filters, 1)
+
+        # second row: match a concrete version of Matched Versions to each file
+        row2 = QtWidgets.QHBoxLayout()
+        rows.addLayout(row2)
+        match = QtWidgets.QCheckBox("Match version", group)
+        match.setObjectName("ayon_version_match_chbx")
+        match.setMinimumSize(QtCore.QSize(110, 25))
+        match_tip = (
+            "<p>For every file matched to an Ayon folder, find the Matched Versions row "
+            "(same folder) whose <b>Version key</b> equals the file's <b>Package key</b>, "
+            "e.g. Package <b>{version}</b> and Version <b>{Version}</b>. Numbers compare by "
+            "value, so 007 equals 7.</p>"
+            "<p>The row's columns are added to the file with the Ayon prefix and "
+            "<b>Matched</b>, e.g. {ayon_Matched Version}, {ayon_Matched Version Status}, "
+            "{ayon_Matched Version Comment}, {ayon_Matched Repre Path}. "
+            "Matched rows are teal in Matched Versions.</p>")
+        match.setToolTip(match_tip)
+        ui.ayon_version_match_chbx = match
+        row2.addWidget(match)
+        row2.addWidget(QtWidgets.QLabel("Package:", group))
+        mpkg = QtWidgets.QLineEdit(group)
+        mpkg.setObjectName("ayon_version_match_pkg")
+        mpkg.setMinimumSize(QtCore.QSize(100, 25))
+        mpkg.setPlaceholderText("{version}")
+        mpkg.setToolTip(match_tip)
+        ui.ayon_version_match_pkg = mpkg
+        row2.addWidget(mpkg, 1)
+        row2.addWidget(QtWidgets.QLabel("Version:", group))
+        mdata = QtWidgets.QLineEdit(group)
+        mdata.setObjectName("ayon_version_match_data")
+        mdata.setMinimumSize(QtCore.QSize(100, 25))
+        mdata.setPlaceholderText("{Version}")
+        mdata.setToolTip(match_tip)
+        ui.ayon_version_match_data = mdata
+        row2.addWidget(mdata, 1)
 
         idx = ui.verticalLayout_116.indexOf(ui.groupBox_33)
         ui.verticalLayout_116.insertWidget(idx + 1 if idx >= 0 else -1, group)

@@ -74,7 +74,10 @@ MATCHED_VERSION_COLUMNS = [
     "Version Comment",
     "Version Task",
     "Representations",
-] + list(VERSION_ATTRIBS.values()) + list(VERSION_DATA.values())
+] + list(VERSION_ATTRIBS.values()) + list(VERSION_DATA.values()) + [
+    # number of package files whose version matched this row (Match version)
+    "Matched Files",
+]
 
 
 def _as_dict(value):

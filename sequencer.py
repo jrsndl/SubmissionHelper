@@ -446,8 +446,10 @@ class Sequencer(object):
 
         self.ayon_data_assign()
         self.ayon_versions_update()
+        self.ayon_versions_assign()
         if not self.headless:
             self.display_ayon_table()
+            self.display_ayon_versions_table()
 
         # sidecar files filter
         if not self.headless:
@@ -3536,6 +3538,9 @@ class Sequencer(object):
             # added later, missing in older presets
             'do_versions': bool((self.settings.get('ayon_versions_chbx') or {}).get('value')),
             'do_versions_csv': bool((self.settings.get('ayon_export_versions_csv') or {}).get('value')),
+            'version_match': bool((self.settings.get('ayon_version_match_chbx') or {}).get('value')),
+            'version_match_pkg': (self.settings.get('ayon_version_match_pkg') or {}).get('value') or '',
+            'version_match_data': (self.settings.get('ayon_version_match_data') or {}).get('value') or '',
             'product_filters': parse_product_filters(
                 (self.settings.get('ayon_product_filters') or {}).get('value') or ""),
         }
@@ -3586,7 +3591,9 @@ class Sequencer(object):
         if self.merged_list:
             self.ayon_data_assign()
             self.ayon_versions_update()
+            self.ayon_versions_assign()
             self.display_ayon_table()
+            self.display_ayon_versions_table()
 
     def ayon_versions_update(self):
         """
@@ -3601,8 +3608,93 @@ class Sequencer(object):
             if matched:
                 rows = self.my_ayon.get_matched_versions(matched)
         self.ayon_matched_versions = rows
-        if not self.headless:
-            self.display_ayon_versions_table()
+
+    # prefix + this + column, e.g. {ayon_Matched Version}
+    MATCHED_VERSION_KEY = "Matched "
+
+    @staticmethod
+    def _same_value(a, b):
+        """equal text, or equal numbers ("007" == "7", "v007" == "v7" is not)"""
+        a, b = str(a).strip(), str(b).strip()
+        if a == b:
+            return True
+        return a.isdigit() and b.isdigit() and int(a) == int(b)
+
+    def ayon_versions_assign(self):
+        """
+        Match version: for every file matched to an Ayon folder, find the row
+        of Matched Versions (same folder) where the package key equals the
+        list key, e.g. {version} == {Version}. Its columns are added to the
+        file as {<prefix>Matched <column>}, e.g. {ayon_Matched Version Status}.
+        """
+        class Default(dict):
+            def __missing__(self, key):
+                return '{' + key + '}'
+
+        def expand(template, values):
+            try:
+                return template.format_map(Default(values))
+            except (ValueError, IndexError, AttributeError):
+                return template
+
+        prefix = (self.ayon_gui or {}).get('prefix', '')
+        key_start = prefix + self.MATCHED_VERSION_KEY
+        for item in self.merged_list or []:
+            for k in [k for k in item if str(k).startswith(key_start)]:
+                del item[k]
+        for row in self.ayon_matched_versions or []:
+            row["Matched Files"] = ''
+
+        gui = self.ayon_gui or {}
+        if not gui.get('version_match') or not self.ayon_matched_versions or not self.merged_list:
+            return
+        pkg_tpl, data_tpl = gui.get('version_match_pkg', ''), gui.get('version_match_data', '')
+        if not pkg_tpl or not data_tpl:
+            self.log.warning("Match version is on, but its package or list key is empty")
+            return
+
+        rows_by_folder = {}
+        for row in self.ayon_matched_versions:
+            rows_by_folder.setdefault(row.get('_folder_id'), []).append(row)
+
+        files_matched = 0
+        files_in_folders = 0
+        example = None
+        for item in self.merged_list:
+            folder_ids = item.get('_ayon_folder_ids') or set()
+            candidates = [r for f in folder_ids for r in rows_by_folder.get(f, [])]
+            if not candidates:
+                continue
+            files_in_folders += 1
+            pkg = expand(pkg_tpl, item)
+            hits = [r for r in candidates if self._same_value(pkg, expand(data_tpl, {**item, **r}))]
+            if not hits:
+                if example is None:
+                    example = (item.get('name', ''), pkg,
+                               sorted({expand(data_tpl, {**item, **r}) for r in candidates})[:6])
+                continue
+            # several products can have the same version number: prefer the
+            # preferred one, then the first by sort order
+            hit = next((r for r in hits if r.get('Preferred')), hits[0])
+            for k, v in hit.items():
+                if not str(k).startswith('_') and k != "Matched Files":
+                    item[key_start + k] = v
+            for r in hits:
+                r["Matched Files"] = str(int(r["Matched Files"] or 0) + 1)
+            files_matched += 1
+
+        if files_in_folders and files_matched < files_in_folders:
+            msg = (f"Match version: {files_matched} of {files_in_folders} file item(s) matched a version")
+            if example:
+                msg += (f"; e.g. '{example[0]}': package {pkg_tpl!r} -> {example[1]!r}, "
+                        f"list {data_tpl!r} gives {example[2]}")
+            level = logging.WARNING
+        else:
+            msg = f"Match version: {files_matched} of {files_in_folders} file item(s) matched a version"
+            level = logging.INFO
+        if msg != getattr(self, '_last_version_match_msg', None):
+            self._last_version_match_msg = msg
+            self.log.log(level, msg)
 
     def display_ayon_versions_table(self):
         table_ui = getattr(self.ui, 'ayon_versions_table', None)
@@ -3618,13 +3710,16 @@ class Sequencer(object):
         table_ui.setRowCount(len(rows))
         for row, line in enumerate(rows):
             preferred = bool(line.get('Preferred'))
+            file_matched = bool(line.get('Matched Files'))
             for col, title in enumerate(titles):
                 value = str(line.get(title) or '')
                 shown = ' '.join(value.split()) if '\n' in value else value
                 itm = QtWidgets.QTableWidgetItem(shown)
                 if title in self.AYON_CAPPED_COLUMNS or shown != value:
                     itm.setToolTip(value)
-                itm.setBackground(QtGui.QColor('darkgreen' if preferred else '#4d4d4d'))
+                # file matched (Match version): teal, preferred: green
+                color = '#1f6f78' if file_matched else ('darkgreen' if preferred else '#4d4d4d')
+                itm.setBackground(QtGui.QColor(color))
                 table_ui.setItem(row, col, itm)
         self.fit_ayon_columns(table_ui, titles)
         self.single_line_rows(table_ui)
@@ -3662,6 +3757,8 @@ class Sequencer(object):
         # matches from an earlier assign are stale (files or rules changed)
         for one_data_line in self.ayon_data:
             one_data_line.pop("_matched", None)
+        for item in self.merged_list or []:
+            item.pop("_ayon_folder_ids", None)
         if self.merged_list is None or len(self.merged_list) == 0:
             return
         if self.settings is None:
@@ -3728,6 +3825,7 @@ class Sequencer(object):
                     prefixed_line[f"{self.ayon_gui['prefix']}{k}"] = v
                 item.update(prefixed_line)
                 one_data_line["_matched"] = True
+                item.setdefault("_ayon_folder_ids", set()).add(one_data_line.get("_folder_id"))
                 item_matched = True
             if item_matched:
                 matched_items += 1
