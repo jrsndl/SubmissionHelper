@@ -1,0 +1,35 @@
+{
+    "_readme": [
+        "Copy this file to install.json next to submission_helper.py / SubmissionHelper.exe and fill it in.",
+        "install.json is ignored by git: keep real API keys there, never in this example.",
+        "Empty values are not used: tools are then found on PATH or by the SH_FFPROBE, SH_FFMPEG,",
+        "SH_OIIOTOOL, SH_AYON, SH_OCIO, DEADLINE_PATH, FTRACK_* and AYON_* environment variables.",
+        "Paths starting with ./ are relative to the app folder; on Windows .exe is added to tool paths.",
+        "Keys starting with _ are ignored."
+    ],
+
+    "_comment_tools": "Executables. A path that doesn't exist is ignored.",
+    "ffprobe_path": "./ffmpeg/ffprobe",
+    "ffmpeg_path": "./ffmpeg/ffmpeg",
+    "oiio_path": "./oiio/win/oiiotool",
+    "vfx-transcode_path": "",
+    "ayon_path": "",
+    "deadline": "",
+
+    "_comment_ocio": "OCIO config for oiiotool; the GUI Preferences path overrides it when enabled.",
+    "ocio_path": "./ocio/config.ocio",
+
+    "_comment_presets": "Shared presets folder for the whole studio instead of the per user folder.",
+    "global_prefs_enabled": false,
+    "global_prefs_path": "",
+
+    "_comment_ftrack": "ftrack connection. Older install.json files may use server_url / api_user / api_key, those still work.",
+    "ftrack_server_url": "",
+    "ftrack_api_user": "",
+    "ftrack_api_key": "",
+
+    "_comment_ayon": "Ayon connection.",
+    "ayon_server_url": "",
+    "ayon_username": "",
+    "ayon_api_key": ""
+}
