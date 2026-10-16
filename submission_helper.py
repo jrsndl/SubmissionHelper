@@ -30,6 +30,7 @@ from log_view import LogView
 from sh_cli import (CLI_ACTIONS, CLI_DESCRIPTION, CLI_EPILOG, setting_to_bool,  # noqa: F401
                     get_args, console_level_from_args, check_cli_args)
 import sh_cli
+import credentials
 
 # bookkeeping keys of the Sequencer, not tokens: not shown in the Inspector
 INSPECTOR_HIDDEN_KEYS = ('_parse_orig', '_data_keys')
@@ -139,6 +140,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.settings = self.settings_obj.settings or {}
         self.settings_inst = self.settings_obj.install_settings
         self.args = args or {}
+
+        # personal ftrack / Ayon sign-in (credentials.py): the dialog asks when
+        # there are no credentials, headless runs never ask
+        self.accounts_group = None
+        if not self.no_gui:
+            self._setup_accounts()
 
         if not self.no_gui:
             self.apply_settings_overrides(self.args.get('settings', ''))
@@ -2310,6 +2317,34 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         finally:
             QtWidgets.QApplication.restoreOverrideCursor()
             self.ui.statusBar.clearMessage()
+
+    def _setup_accounts(self):
+        """sign-in dialog for credentials.prompt, Accounts group on the Preferences tab"""
+        import credentials_dialog
+        def ask(kind, url):
+            ok = credentials_dialog.ask_sign_in(kind, url, parent=self)
+            if self.accounts_group is not None:
+                self.accounts_group.refresh()
+            return ok
+        credentials.set_prompt_handler(ask)
+        self.accounts_group = credentials_dialog.AccountsGroup(
+            self._credential_paths, self._credentials_changed, parent=self.ui.tab_4)
+        row = QtWidgets.QHBoxLayout()
+        row.addWidget(self.accounts_group)
+        self.ui.verticalLayout_40.addLayout(row)
+
+    def _credential_paths(self):
+        """the credentials in use: of the loaded package, else resolved now"""
+        for target in (getattr(self, 'data', None), getattr(self, 'ayon_only', None)):
+            if target is not None and getattr(target, 'paths', None):
+                return target.paths
+        return credentials.resolve({}, credentials.startup_env(), self.settings_inst)
+
+    def _credentials_changed(self):
+        """after a sign-in / sign-out: use the new credentials from now on"""
+        for target in (getattr(self, 'data', None), getattr(self, 'ayon_only', None)):
+            if target is not None and getattr(target, 'paths', None) is not None:
+                credentials.resolve(target.paths, credentials.startup_env(), self.settings_inst)
 
     def _reset_panel_splitter(self, splitter=None):
         splitter = splitter or self.panel_splitter

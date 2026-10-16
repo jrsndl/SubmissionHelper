@@ -27,6 +27,7 @@ from metadata import MetaData
 from ayon_shotlist import AyonShotlist, parse_product_filters
 import ayon_packages
 from ayon_publish import AyonPublish
+import credentials
 
 # number of rows on the Parsing tab (32 come from the .ui file, the rest are
 # added by MainWindow._add_parse_rows)
@@ -369,6 +370,9 @@ class Sequencer(object):
             if gui_pth and gui_pth['value'] and os.path.exists(gui_pth['value']) and gui_pth_enabled:
                 together['ocio'] = gui_pth['value']
 
+        # ftrack / Ayon credentials: environment, then the user's own (keyring),
+        # then install.json (credentials.py)
+        credentials.resolve(together, credentials.startup_env(), self.settings_inst)
         self.paths = together
 
     def _prepare_in_path(self, in_path):
@@ -2968,6 +2972,8 @@ class Sequencer(object):
         csv_file_paths =  [s + '.csv' for s in list(exports.keys())]
         self.log.info(f"Publishing {len(csv_file_paths)} csv file(s) to Ayon ({mode})")
 
+        credentials.ensure_ayon(self.paths)
+        credentials.ensure_ftrack(self.paths, ask=False)
         a = AyonPublish(self.settings, self.paths)
         if a.are_paths_ok(mode=mode):
             for one_csv_file_path in csv_file_paths:
@@ -3646,6 +3652,8 @@ class Sequencer(object):
             self.ayon_data = []
             return self.ayon_data
 
+        # a working Ayon login: renewed when expired, the gui asks to sign in
+        credentials.ensure_ayon(self.paths)
         self.my_ayon = AyonShotlist(
             self.ayon_gui,
             self.ui,
@@ -4839,6 +4847,8 @@ class Sequencer(object):
             self.ftrack['project_id'] = None
             self.ftrack['label_obj'] = None
             if self.ftrack['do_ftrack']:
+                # no credentials: the gui asks the user to sign in (once)
+                credentials.ensure_ftrack(self.paths)
                 self.ftrack['url'] = self.paths.get('FTRACK_SERVER', '')
                 self.ftrack['key'] = self.paths.get('FTRACK_API_KEY', '')
                 self.ftrack['user'] = self.paths.get('FTRACK_API_USER', '')

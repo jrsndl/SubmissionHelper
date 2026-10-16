@@ -23,12 +23,12 @@
     "global_prefs_enabled": false,
     "global_prefs_path": "",
 
-    "_comment_ftrack": "ftrack connection. Older install.json files may use server_url / api_user / api_key, those still work.",
+    "_comment_ftrack": "ftrack server. Users sign in with their own account (stored in the Windows Credential Manager); api user / key here are only a fallback, leave them empty. Older files may use server_url / api_user / api_key.",
     "ftrack_server_url": "",
     "ftrack_api_user": "",
     "ftrack_api_key": "",
 
-    "_comment_ayon": "Ayon connection.",
+    "_comment_ayon": "Ayon server. Users sign in with their own account; ayon_api_key here is only a fallback, leave it empty.",
     "ayon_server_url": "",
     "ayon_username": "",
     "ayon_api_key": ""

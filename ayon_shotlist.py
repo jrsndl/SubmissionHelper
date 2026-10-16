@@ -345,6 +345,8 @@ class AyonShotlist(object):
         self.error = None
         try:
             self.log.info("Connecting to Ayon")
+            # the token may have been renewed since the last connection
+            ayon_api.change_token(paths['AYON_SERVER_URL'], paths['AYON_API_KEY'])
             self.ayon = ayon_api.get_server_api_connection()
             self.log.info("Connected to Ayon")
         except Exception as e:
