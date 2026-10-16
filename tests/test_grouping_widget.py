@@ -231,3 +231,23 @@ class GroupingTabTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class SlotsWithoutArguments(GroupingTabTest):
+    """PySide2 sometimes calls a slot without the signal's arguments: the
+    lambda with a default argument crashed ('missing ... _on')"""
+
+    def test_top_control_slots_accept_no_arguments(self):
+        for key, w in self.tab.settings_widgets.items():
+            sig = w.clicked if isinstance(w, QCheckBox) else w.textChanged
+            for slot in sig.slots:
+                slot()
+        self.assertEqual(sorted(self.now + self.later), sorted(grouping.DEFAULTS))
+
+    def test_definition_slots_accept_no_arguments(self):
+        w = self.tab.add_definition(grouping.new_definition('A'))
+        self.tab.add_definition(grouping.new_definition('B'))
+        for sig in (w.enabled.toggled, w.edits['always_repres'].textChanged, w.down.clicked):
+            for slot in sig.slots:
+                slot()
+        self.assertEqual([d['name'] for d in self.tab.definitions()], ['B', 'A'])

@@ -4582,6 +4582,13 @@ class Sequencer(object):
                 item['_data_keys'] = sorted(set(item.get('_data_keys', [])) | set(merged))
                 continue
 
+    def data_rows_to_show(self):
+        """Data tab rows for the table: only matched rows when Show Matched Only is on"""
+        rows = self.csv_data or []
+        if self._get('data_filter_matched', True):
+            rows = [r for r in rows if r.get('_matched')]
+        return rows
+
     def display_data_table(self):
         """
         table data to ui
@@ -4599,13 +4606,22 @@ class Sequencer(object):
 
         table = self.csv_data
         table_ui = self.ui.data_table
-        titles = table[0].keys()
+        # every key of every row, in order; _matched is the row color, not a
+        # column (rows that matched nothing have no _matched key: KeyError)
+        titles = []
+        for line in table:
+            for key in line:
+                if key != '_matched' and key not in titles:
+                    titles.append(key)
+
+        # Show Matched Only (on by default): only the rows paired with a file
+        table = self.data_rows_to_show()
 
         # display table
         table_ui.clear()
         table_ui.setColumnCount(0)
         table_ui.setRowCount(0)
-        if table and titles:
+        if titles:
             table_ui.setSortingEnabled(False)
             table_ui.setColumnCount(len(titles))
             table_ui.setHorizontalHeaderLabels(titles)
@@ -4613,18 +4629,17 @@ class Sequencer(object):
 
             for row, line in enumerate(table):
                 for column_number, one_column in enumerate(titles):
-                    if line[one_column] is None:
-                        line[one_column] = ''
+                    value = line.get(one_column)
                     table_ui.setItem(row,
                                      column_number,
                                      QtWidgets.QTableWidgetItem(
-                                         line[one_column])
+                                         '' if value is None else str(value))
                                      )
 
                     # colorize
                     itm = table_ui.item(row, column_number)
                     color = 'white'
-                    if bool(line['_matched']):
+                    if line.get('_matched'):
                         color = 'green'
                     if itm:
                         if color == 'green':

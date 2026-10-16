@@ -51,3 +51,26 @@ class LayoutTuningNamesTest(unittest.TestCase):
         self.assertTrue(names)
         missing = sorted(n for n in names if f'self.{n} = ' not in ui)
         self.assertEqual(missing, [])
+
+
+class PresetModulesTest(unittest.TestCase):
+    def test_widgets_used_exist_in_ui(self):
+        import re
+        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        src = open(os.path.join(here, 'submission_helper.py'), encoding='utf-8').read()
+        ui = open(os.path.join(here, 'ui_Submission.py'), encoding='utf-8').read()
+        start = src.index('def _arrange_preset_modules')
+        body = src[start:src.index('\n    def ', start)]
+        names = set(re.findall(r'(?:ui|self\.ui)\.(\w+)', body)) - {'groupBox_18'}
+        missing = sorted(n for n in names if f'self.{n} = ' not in ui)
+        self.assertEqual(missing, [])
+        self.assertIn('self.groupBox_18 = ', ui)
+
+    def test_every_module_checkbox_is_listed(self):
+        import re
+        here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        ui = open(os.path.join(here, 'ui_Submission.py'), encoding='utf-8').read()
+        in_ui = set(re.findall(r'self\.preset_mod_(\w+) = QCheckBox', ui)) | {'grouping'}
+        listed = set(sh.MainWindow.MODULES_TOP) | set(sh.MainWindow.MODULES_BOTTOM)
+        self.assertEqual(in_ui - listed, set())
+        self.assertEqual(listed - in_ui, set())

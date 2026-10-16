@@ -7,6 +7,8 @@ settings widgets (MainWindow puts them on self.ui, so presets save them like
 any other widget); the group definitions are saved as one setting,
 'group_definitions', a list of dicts.
 """
+from functools import partial
+
 from PySide2 import QtCore, QtWidgets
 
 import grouping
@@ -132,9 +134,9 @@ class GroupDefinitionWidget(QtWidgets.QFrame):
                                                "the first one that matches a group is used")
         self.down = self._small_button("▼", "Move down")
         self.delete = self._small_button("✕", "Remove this group definition")
-        self.up.clicked.connect(lambda _c=False: self.move_up.emit(self))
-        self.down.clicked.connect(lambda _c=False: self.move_down.emit(self))
-        self.delete.clicked.connect(lambda _c=False: self.remove.emit(self))
+        self.up.clicked.connect(lambda *_a: self.move_up.emit(self))
+        self.down.clicked.connect(lambda *_a: self.move_down.emit(self))
+        self.delete.clicked.connect(lambda *_a: self.remove.emit(self))
         for w in (self.toggle, self.enabled, self.title):
             hl.addWidget(w)
         hl.addStretch(1)
@@ -157,14 +159,14 @@ class GroupDefinitionWidget(QtWidgets.QFrame):
             lbl.setToolTip(DEF_TIPS[key])
             grid.addWidget(lbl, row, col * 2)
             grid.addWidget(edit, row, col * 2 + 1, 1, span * 2 - 1)
-            edit.textChanged.connect(lambda _t: self.changed.emit(True))
+            edit.textChanged.connect(lambda *_a: self.changed.emit(True))
             self.edits[key] = edit
         grid.setColumnStretch(1, 1)
         grid.setColumnStretch(3, 1)
         main.addWidget(self.body)
 
         self.edits['name'].textChanged.connect(self._update_title)
-        self.enabled.toggled.connect(lambda _on: self.changed.emit(False))
+        self.enabled.toggled.connect(lambda *_a: self.changed.emit(False))
         self.set_data(data or grouping.new_definition())
 
     def _small_button(self, text, tip):
@@ -282,6 +284,11 @@ class GroupingTab(QtWidgets.QWidget):
         outer.addWidget(scroll, 1)
 
     # ---------------------------------------------------------------- helpers
+    @staticmethod
+    def _emit(signal, key, *_args):
+        # Qt slots: PySide2 may call with or without the signal's arguments
+        signal.emit(key)
+
     def _label(self, text, key, width=110):
         lbl = QtWidgets.QLabel(text, self)
         if width:
@@ -295,7 +302,7 @@ class GroupingTab(QtWidgets.QWidget):
         e.setText(value)
         e.setMinimumHeight(25)
         e.setToolTip(TIPS[key])
-        e.textChanged.connect(lambda _t, k=key: self.changed_later.emit(k))
+        e.textChanged.connect(partial(self._emit, self.changed_later, key))
         self.settings_widgets[key] = e
         return e
 
@@ -305,7 +312,7 @@ class GroupingTab(QtWidgets.QWidget):
         c.setChecked(bool(value))
         c.setMinimumHeight(25)
         c.setToolTip(TIPS[key])
-        c.clicked.connect(lambda _on, k=key: self.changed_now.emit(k))
+        c.clicked.connect(partial(self._emit, self.changed_now, key))
         self.settings_widgets[key] = c
         return c
 
@@ -318,14 +325,14 @@ class GroupingTab(QtWidgets.QWidget):
     def add_definition(self, data=None):
         w = GroupDefinitionWidget(data, self)
         w.changed.connect(self._definition_changed)
-        w.move_up.connect(lambda x: self._move(x, -1))
-        w.move_down.connect(lambda x: self._move(x, 1))
+        w.move_up.connect(partial(self._move, step=-1))
+        w.move_down.connect(partial(self._move, step=1))
         w.remove.connect(self._remove)
         self.definition_widgets.append(w)
         self.list_layout.insertWidget(self.list_layout.count() - 1, w)
         return w
 
-    def _definition_changed(self, typed):
+    def _definition_changed(self, typed=False):
         if typed:
             self.changed_later.emit('group_definitions')
         else:

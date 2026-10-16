@@ -97,6 +97,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self._add_parse_rows()
         # Ayon tab: Scan button, version / product filter controls
         self._add_ayon_controls()
+        # Data tab: Show Matched Only
+        self._add_data_controls()
         # tooltips of the .ui widgets and the parse rows added above
         apply_tooltips(self.ui)
         # Sequencer used by the Ayon tab when no package is loaded
@@ -143,6 +145,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.tab_pages_bottom = {k: self.ui.BottomTab.widget(v[0]) for k, v in self.tab_pairs_bottom.items()}
         # Grouping tab after Spreadsheet, replaces Merge By (Preferences tab)
         self.grouping_tab = self._add_grouping_tab()
+        # Presets tab: Modules below the Presets group, full width
+        self._arrange_preset_modules()
         self.ui_start = True
         self.settings_obj = s
         self.settings = self.settings_obj.settings or {}
@@ -846,6 +850,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'data_csv_latest', 'refresh_data_csv'))
         self.ui.data_enable.clicked.connect(
             partial(self.handler, 'data_enable', 'refresh_data_csv'))
+        self.ui.data_filter_matched.clicked.connect(
+            partial(self.handler, 'data_filter_matched', 'data_matched_filter'))
 
         # Search and Replace CSV
         self.ui.data_csv_browse_2.clicked.connect(
@@ -1288,6 +1294,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         if group == "data_filter":
             self.show_data()
+
+        if group == "data_matched_filter":
+            # only the Data tab table changes, no new matching
+            if self.data is not None:
+                self.data.display_data_table()
 
         if group == "rename_display":
             if self.data:
@@ -2049,6 +2060,95 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         layout.insertWidget(layout.indexOf(ui.preset_mod_spreadsheet) + 1, mod)
         self.tab_pages['preset_mod_grouping'] = tab
         return tab
+
+    # Presets tab, Modules group: tabs in the order of the window
+    MODULES_TOP = ('package', 'parsing', 'sidecar', 'rename', 'data', 'ftrack', 'vendor',
+                   'replace', 'convert', 'spreadsheet', 'grouping', 'checks', 'publish',
+                   'ayon', 'preferences', 'exports', 'log', 'help')
+    MODULES_BOTTOM = ('submission', 'drivelog', 'text', 'inspector', 'files')
+    MODULES_COLUMNS = 6
+
+    def _arrange_preset_modules(self):
+        """
+        Presets tab: the Modules group (a narrow 3-column box next to the
+        Presets group, texts cut off) goes below the Presets group, full
+        width, with the checkboxes in a grid wide enough for their texts.
+        Top and bottom tabs are listed separately. Done in code so
+        ui_Submission.py can still be regenerated.
+        """
+        ui = self.ui
+        old = ui.groupBox_18
+        ui.horizontalLayout_67.removeWidget(old)
+
+        box = QtWidgets.QGroupBox("Modules", ui.tab_3)
+        box.setObjectName("groupBox_18")
+        box.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        outer = QtWidgets.QVBoxLayout(box)
+        outer.setContentsMargins(9, 6, 9, 9)
+        outer.setSpacing(2)
+
+        placed = set()
+
+        def section(title, keys):
+            boxes = []
+            for key in keys:
+                cb = getattr(ui, f"preset_mod_{key}", None)
+                if cb is not None and cb not in placed:
+                    boxes.append(cb)
+                    placed.add(cb)
+            if not boxes:
+                return
+            label = QtWidgets.QLabel(title, box)
+            label.setStyleSheet("color: #a0a0a0;")
+            outer.addWidget(label)
+            grid = QtWidgets.QGridLayout()
+            grid.setHorizontalSpacing(16)
+            grid.setVerticalSpacing(2)
+            for i, cb in enumerate(boxes):
+                cb.setParent(box)
+                cb.setMinimumSize(cb.sizeHint().width() + 8, 25)
+                cb.setMaximumSize(16777215, 25)
+                grid.addWidget(cb, i // self.MODULES_COLUMNS, i % self.MODULES_COLUMNS)
+            for c in range(self.MODULES_COLUMNS):
+                grid.setColumnMinimumWidth(c, 130)
+            grid.setColumnStretch(self.MODULES_COLUMNS, 1)
+            outer.addLayout(grid)
+
+        section("Top tabs", self.MODULES_TOP)
+        section("Bottom tabs", self.MODULES_BOTTOM)
+        # checkboxes added later that the lists above don't know yet
+        rest = sorted(n for n in dir(ui) if n.startswith("preset_mod_"))
+        section("Other", [n[len("preset_mod_"):] for n in rest])
+
+        old.setParent(None)
+        old.deleteLater()
+        ui.groupBox_18 = box
+
+        # the Presets group was 270 px high to match the old Modules box
+        presets = ui.groupBox_31
+        presets.setMinimumHeight(0)
+        presets.setMaximumHeight(16777215)
+        presets.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        layout = ui.verticalLayout_95
+        # right below the row with the Presets group (a stretch follows)
+        idx = 0
+        for i in range(layout.count()):
+            if layout.itemAt(i).layout() is ui.horizontalLayout_67:
+                idx = i
+                break
+        layout.insertWidget(idx + 1, box)
+
+    def _add_data_controls(self):
+        """Data tab: Show Matched Only checkbox after Latest in Folder"""
+        ui = self.ui
+        cb = QtWidgets.QCheckBox("Show Matched Only", ui.groupBox_25)
+        cb.setObjectName("data_filter_matched")
+        cb.setChecked(True)
+        cb.setMinimumSize(QtCore.QSize(cb.sizeHint().width() + 8, 25))
+        cb.setToolTip("Show only the Data CSV rows paired with a package file (green). "
+                      "Off: all rows of the csv. Only changes the table on this tab.")
+        ui.data_filter_matched = cb
+        ui.horizontalLayout_162.addWidget(cb)
 
     def _add_parse_rows(self):
         """
