@@ -19,7 +19,7 @@ from settings import Settings
 
 log = logging.getLogger("SubmissionHelper")
 
-CLI_ACTIONS = "ftdgsrcpPax"
+CLI_ACTIONS = "ftdgsrcpPakx"
 
 CLI_DESCRIPTION = """\
 Submission Helper - check, rename and document vfx packages.
@@ -45,6 +45,8 @@ actions (letters for --actions, run left to right):
   p  publish ayon    export submission csv and ingest it to Ayon locally
   P  publish farm    same as p, submitted as a Deadline job
   a  ayon shotlist   read, filter and write the Ayon shot list (Ayon tab)
+  k  record package  write to Ayon which versions / representations are in
+                     this package (needs Pull versions + Match version)
   x  ftrack list     write the ftrack shot list to the Ftrack tab Export path
 
 examples:

@@ -25,6 +25,7 @@ import parse_file_name
 from ftrack import FtrackHelper, open_session, find_project_id
 from metadata import MetaData
 from ayon_shotlist import AyonShotlist, parse_product_filters
+import ayon_packages
 from ayon_publish import AyonPublish
 
 # number of rows on the Parsing tab (32 come from the .ui file, the rest are
@@ -170,6 +171,7 @@ class Sequencer(object):
             "p": "Publish to Ayon - local",
             "P": "Publish to Ayon - Deadline",
             "a": "Export Ayon Shotlist",
+            "k": "Record Package to Ayon",
             "x": "Export Ftrack Shotlist"
         }
         if self.settings_args is not None:
@@ -219,6 +221,9 @@ class Sequencer(object):
                     elif action == "a":
                         # Export Ayon Shotlist
                         self.ayon_export()
+                    elif action == "k":
+                        # Record Package to Ayon
+                        self.ayon_record_packages()
                     elif action == "x":
                         # Export Ftrack Shotlist
                         self.ftrack_export()
@@ -3006,6 +3011,10 @@ class Sequencer(object):
         if self._setting_on('ayon_export_go'):
             self.ayon_export()
 
+        # Ayon tab: Record Package with Go
+        if self._setting_on('ayon_record_go'):
+            self.ayon_record_packages()
+
         # Ayon Publish tab: Send Submission CSV to Ayon on Go (local publish),
         # before the package folder is renamed
         if self._setting_on('dead_go_ayon'):
@@ -3723,6 +3732,8 @@ class Sequencer(object):
         for item in self.merged_list or []:
             for k in [k for k in item if str(k).startswith(key_start)]:
                 del item[k]
+            for k in ('_ayon_version_id', '_ayon_repre_id', '_ayon_repre_name'):
+                item.pop(k, None)
         for row in self.ayon_matched_versions or []:
             row["Matched Files"] = ''
             row["Version Exists"] = "False"
@@ -3742,6 +3753,8 @@ class Sequencer(object):
         files_matched = 0
         files_in_folders = 0
         example = None
+        repres_paired = 0
+        repre_example = None
         for item in self.merged_list:
             folder_ids = item.get('_ayon_folder_ids') or set()
             candidates = [r for f in folder_ids for r in rows_by_folder.get(f, [])]
@@ -3774,6 +3787,19 @@ class Sequencer(object):
                 if not str(k).startswith('_') and k != "Matched Files":
                     item[key_start + k] = v
             files_matched += 1
+            item['_ayon_version_id'] = hit.get('_version_id')
+            # which representation of the version this file is
+            repre, how = ayon_packages.pair_representation(
+                item.get('extension', ''), item.get('size_bytes'), hit.get('_repres') or [],
+                self._ayon_allowed_repres(hit.get('Product', '')))
+            item[key_start + "Representation"] = repre['name'] if repre else ''
+            item[key_start + "Representation By"] = how if repre else ''
+            if repre:
+                item['_ayon_repre_id'] = repre['id']
+                item['_ayon_repre_name'] = repre['name']
+                repres_paired += 1
+            elif repre_example is None:
+                repre_example = (item.get('name', ''), how)
 
         if files_in_folders and files_matched < files_in_folders:
             msg = (f"Match version: {files_matched} of {files_in_folders} file item(s) matched a version")
@@ -3787,6 +3813,84 @@ class Sequencer(object):
         if msg != getattr(self, '_last_version_match_msg', None):
             self._last_version_match_msg = msg
             self.log.log(level, msg)
+
+        if files_matched:
+            msg = f"Match representation: {repres_paired} of {files_matched} file item(s) paired"
+            if repre_example:
+                msg += f"; e.g. '{repre_example[0]}': {repre_example[1]}"
+            if msg != getattr(self, '_last_repre_match_msg', None):
+                self._last_repre_match_msg = msg
+                self.log.log(logging.WARNING if repres_paired < files_matched else logging.INFO, msg)
+
+    def _ayon_allowed_repres(self, product):
+        """
+        Representation names a file of this product may be paired with: the
+        representations of the product filters that match the product. Empty
+        list when any representation is allowed (a filter without one, such
+        as :renderCompMain: or :renderCompMain).
+        """
+        from ayon_shotlist import _match
+        patterns = []
+        for flt in (self.ayon_gui or {}).get('product_filters') or []:
+            if not _match(flt['product'], product):
+                continue
+            if not flt['repre']:
+                return []
+            patterns.append(flt['repre'])
+        return patterns
+
+    def ayon_record_packages(self, dry_run=False):
+        """
+        Record the package in Ayon: on every version with files in the package,
+        the package name and the representations in it; on every paired
+        representation, the package name. Uses the files of the Submission
+        (not the ones left out by filters or the vendor csv) that Match version
+        paired with a version.
+        """
+        if not self.merged_list:
+            self.log.error("Record package: no package loaded.")
+            return None
+        if self.my_ayon is None or self.my_ayon.error:
+            self.log.error("Record package: the Ayon list is not available, "
+                           "enable Ayon and set the project, then Scan.")
+            return None
+        if not (self.ayon_gui or {}).get('version_match'):
+            self.log.error("Record package: turn on Pull versions and Match version, "
+                           "files are recorded with the version they matched.")
+            return None
+        package = str((self.output or {}).get('package_name') or
+                      (self.static_keywords or {}).get('package_name') or '').strip()
+        if not package or unresolved_tokens(package):
+            self.log.error(f"Record package: no package name ({package!r}), check the Package tab.")
+            return None
+
+        in_package = [i for i in self.merged_list
+                      if not i.get('vendor_ignore_sub', i.get('hide_sub'))]
+        with_version = [i for i in in_package if i.get('_ayon_version_id')]
+        without_repre = [i for i in with_version if not i.get('_ayon_repre_id')]
+        if not with_version:
+            self.log.error(f"Record package {package}: none of the {len(in_package)} submission "
+                           f"file item(s) matched an Ayon version, nothing recorded.")
+            return None
+        if len(with_version) < len(in_package):
+            self.log.warning(f"Record package {package}: {len(in_package) - len(with_version)} of "
+                             f"{len(in_package)} submission file item(s) have no Ayon version, not recorded")
+        for item in without_repre[:10]:
+            self.log.warning(f"Record package {package}: '{item.get('name', '')}' has no representation "
+                             f"(version recorded without it)")
+        if len(without_repre) > 10:
+            self.log.warning(f"Record package {package}: ... {len(without_repre) - 10} more without representation")
+
+        records = ayon_packages.collect_package_records(with_version)
+        result = self.my_ayon.record_packages(records, package, dry_run=dry_run)
+        for error in result['errors']:
+            self.log.error(f"Record package {package}: {error}")
+        self.log.info(
+            f"Record package {package}{' (dry run)' if dry_run else ''}: "
+            f"{result['versions']} version(s) and {result['repres']} representation(s) updated, "
+            f"{result['versions_same']} version(s) and {result['repres_same']} representation(s) "
+            f"already had it")
+        return result
 
     def _setting_on(self, key):
         settings = getattr(self, 'settings', None)

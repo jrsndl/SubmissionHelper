@@ -6,6 +6,8 @@ import os
 
 import ayon_api
 
+import ayon_packages
+
 LIST_CSV_NAME = "ayon-list.csv"
 VERSIONS_CSV_NAME = "ayon-list-versions.csv"
 
@@ -193,7 +195,7 @@ def matched_version_rows(folders, products, versions, repres, task_names, prefer
     :param products: product dicts (id, name, folderId, productType)
     :param versions: version dicts (id, version, productId, taskId, author, status,
                      createdAt, attrib, data)
-    :param repres: representation dicts (id, name, versionId, data)
+    :param repres: representation dicts (id, name, versionId, data, files, context)
     :param task_names: task id -> name
     :param preferred: folder id -> version id picked by the product filters
     :param filters: product filters, versions not fitting any are left out;
@@ -233,6 +235,8 @@ def matched_version_rows(folders, products, versions, repres, task_names, prefer
             "Representations": " ".join(sorted(r.get('name', '') for r in ver_repres)),
             "_folder_id": folder_id,
             "_version_id": ver.get('id'),
+            # for pairing package files with a representation
+            "_repres": [ayon_packages.repre_summary(r) for r in ver_repres],
         }
         row.update(version_detail_columns(ver, ver_repres[0] if ver_repres else None))
         rows.append(row)
@@ -948,8 +952,11 @@ class AyonShotlist(object):
                 version_ids = {v['id'] for v in versions}
                 repres = []
                 if version_ids:
+                    # files (name, size) and context pair package files
+                    # with a representation (extension, then size)
                     repres = list(self._query('get_representations', self.project,
-                                              fields={"id", "name", "versionId", "data"},
+                                              fields={"id", "name", "versionId", "data",
+                                                      "context", "files"},
                                               version_ids=version_ids))
             except Exception as e:
                 self.log.error(f"Reading matched versions from Ayon failed: {e}")
@@ -971,4 +978,25 @@ class AyonShotlist(object):
         self._matched_cache_rows = rows
         return rows
 
-
+    def record_packages(self, records, package, dry_run=False):
+        """
+        Write to the version / representation data which package includes
+        them (see ayon_packages).
+        :param records: from ayon_packages.collect_package_records
+        :return: result dict of ayon_packages.write_package_records
+        """
+        if self.error is not None:
+            return {'versions': 0, 'repres': 0, 'versions_same': 0, 'repres_same': 0,
+                    'errors': [self.error]}
+        from datetime import datetime
+        user = os.environ.get('AYON_USERNAME') or ''
+        if not user:
+            try:
+                user = (self.ayon.get_user() or {}).get('name') or ''
+            except Exception:
+                user = ''
+        info = {'date': datetime.now().astimezone().isoformat(timespec='seconds')}
+        if user:
+            info['user'] = user
+        return ayon_packages.write_package_records(
+            self.ayon, self.project, records, package, info, log=self.log, dry_run=dry_run)
