@@ -570,7 +570,10 @@ class Sequencer(object):
             if not self.headless:
                 self.ui.progressBar.setValue(0)
             done = 0
-            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+            # ffprobe / oiiotool are separate processes: run a few at once
+            # (the workers make no gui calls, results are applied here in order)
+            workers = max(1, min(8, os.cpu_count() or 1))
+            with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
                 for result in executor.map(_get_one_meta, meta_objs):
                     itm = result[0]
                     meta = result[1]
@@ -614,12 +617,14 @@ class Sequencer(object):
 
         if pth and pth != '' and os.path.exists(pth):
             try:
-                with open(pth) as csvfile:
+                # utf-8-sig: Excel writes a BOM, which used to end up in the
+                # first column name
+                with open(pth, encoding='utf-8-sig', errors='replace', newline='') as csvfile:
                     reader = csv.DictReader(csvfile)
                     for row in reader:
                         vendor_csv.append(dict(row))
-            except IOError:
-                self.log.error('Error opening vendor csv file ' + pth)
+            except (OSError, csv.Error) as e:
+                self.log.error(f'Error opening vendor csv file {pth}: {e}')
         self.vendor_csv = vendor_csv
 
     def vendor_csv_prefs_spreadsheet_read(self):
@@ -635,10 +640,14 @@ class Sequencer(object):
             if self.settings['vendor_csv_prefs_spreadsheet']['value']:
                 prefs_spread = self.settings['vendor_csv_prefs_spreadsheet']['value']
 
-        try:
-            vendor_csv_prefs_spreadsheet = json.loads(prefs_spread)
-        except Exception:
-            self.log.error('Error opening Vendor spreadsheet Json')
+        if str(prefs_spread).strip():
+            try:
+                vendor_csv_prefs_spreadsheet = json.loads(prefs_spread)
+            except ValueError as e:
+                self.log.error(f'Error reading Vendor spreadsheet Json: {e}')
+        if not isinstance(vendor_csv_prefs_spreadsheet, dict):
+            self.log.error('Vendor spreadsheet Json must be an object {"column": {...}}')
+            vendor_csv_prefs_spreadsheet = {}
         self.vendor_csv_prefs_spreadsheet = vendor_csv_prefs_spreadsheet
 
     def vendor_csv_prefs_repre_read(self):
@@ -654,11 +663,16 @@ class Sequencer(object):
             if self.settings['vendor_csv_prefs_repres']['value']:
                 prefs_repre = self.settings['vendor_csv_prefs_repres']['value']
 
-        try:
-            vendor_csv_prefs_repre = json.loads(prefs_repre)
-            self.vendor_csv_prefs_repre = vendor_csv_prefs_repre
-        except Exception:
-            self.log.error('Error opening Vendor representation Json')
+        if str(prefs_repre).strip():
+            try:
+                vendor_csv_prefs_repre = json.loads(prefs_repre)
+            except ValueError as e:
+                self.log.error(f'Error reading Vendor representation Json: {e}')
+        if not isinstance(vendor_csv_prefs_repre, dict):
+            self.log.error('Vendor representation Json must be an object')
+            vendor_csv_prefs_repre = {}
+        # an old value must not stay when the json is now empty or invalid
+        self.vendor_csv_prefs_repre = vendor_csv_prefs_repre
 
     def vendor_csv_transform(self):
         """
@@ -674,36 +688,38 @@ class Sequencer(object):
         vendor_csv_transformed = []
         if self.vendor_csv and self.vendor_csv_prefs_spreadsheet:
 
-            for one_row in self.vendor_csv:
+            for row_index, one_row in enumerate(self.vendor_csv):
 
                 row_keys = one_row.keys()
                 trans_row = {}
                 row_errors = []
+                line = row_index + 2
                 for k, v in self.vendor_csv_prefs_spreadsheet.items():
+                    v = v if isinstance(v, dict) else {}
+                    column = v.get('column') or k
+                    default = v.get('default', '')
                     if k in row_keys:
-                        # prefs column present in csv
-
-                        if bool(re.match(v['validate'], one_row[k])):
-                            # store valid value to renamed column
-                            if one_row[k]:
-                                # store if not empty
-                                trans_row[v['column']] = one_row[k]
-                            else:
-                                # set to default if empty
-                                trans_row[v['column']] = v['default']
+                        # prefs column present in csv (a short row gives None)
+                        cell = one_row[k] if one_row[k] is not None else ''
+                        try:
+                            valid = bool(re.match(v.get('validate') or '', cell))
+                        except re.error as e:
+                            self.log.warning(f"Vendor Json: invalid validate regex of {k}: {e}")
+                            valid = True
+                        if valid:
+                            # store valid value to renamed column, default if empty
+                            trans_row[column] = cell if cell else default
                         else:
                             row_errors.append(
-                                "Row {} has invalid column {} = {}".format(
-                                    self.vendor_csv.index(one_row)+2, k, one_row[k]))
+                                "Row {} has invalid column {} = {}".format(line, k, cell))
                     else:
                         # prefs column NOT present in csv
-                        if bool(v['required']):
+                        if bool(v.get('required')):
                             row_errors.append(
-                                "Row {} has missing column {}".format(
-                                    self.vendor_csv.index(one_row)+2, k))
+                                "Row {} has missing column {}".format(line, k))
                         else:
                             # not required, let's fill with default
-                            trans_row[v['column']] = v['default']
+                            trans_row[column] = default
 
                 json_keys = self.vendor_csv_prefs_spreadsheet.keys()
                 for k, v in one_row.items():
@@ -794,7 +810,10 @@ class Sequencer(object):
                             # vendor csv row identification matches
                             # the package scan row identification
                             for k, v in one_row.items():
-                                # add key from csv to the item
+                                # add key from csv to the item; not the link
+                                # back to an item (it made the item contain itself)
+                                if k == 'merged_item':
+                                    continue
                                 one_item[k] = v
                             one_row['merged_item'] = one_item
 
@@ -832,14 +851,15 @@ class Sequencer(object):
 
 
         if self.vendor_csv_transformed and self.vendor_csv_prefs_repre:
+            prefs = self.vendor_csv_prefs_repre
             # find line merges
-            merge_key = self.vendor_csv_prefs_repre['merge_repres_by']
+            merge_key = prefs.get('merge_repres_by', '')
+            repres = prefs.get('repres') or []
             merge_groups = {}
-            for one_row in self.vendor_csv_transformed:
+            for current, one_row in enumerate(self.vendor_csv_transformed):
 
                 # add merge key to the transformed csv
                 # also keep track of grouped rows in merge_groups
-                current = int(self.vendor_csv_transformed.index(one_row))
                 #print('current {}'.format(current))
                 try:
                     #one_row['vendor_Merge_by'] = merge_key.format(**one_row)
@@ -865,18 +885,18 @@ class Sequencer(object):
                     current_repre_name = one_row.get('vendor_Output')
                     if current_repre_name is None:
                         continue
-                    current_line = self.vendor_csv_transformed.index(one_row)+2
+                    current_line = current + 2
 
                     # REPRES check
                     # check if output name exists in REPRES
                     # if repre exists, does the file extension match the allowed ones?
                     # check if metadata_check matches
-                    if not any(d['name'] == current_repre_name for d in self.vendor_csv_prefs_repre['repres']):
+                    if not any(d.get('name') == current_repre_name for d in repres):
                         # repre does not exist in repre json, skip
                         one_row['vendor_row_errors'].append("Output Type {} not found in preferences for line {}".format(current_repre_name, current_line))
                     else:
-                        for one_repre in self.vendor_csv_prefs_repre['repres']:
-                            if one_repre['name'] == current_repre_name:
+                        for one_repre in repres:
+                            if one_repre.get('name') == current_repre_name:
                                 try:
                                     # check extension
                                     current_extension = one_row['merged_item']['extension']
@@ -913,8 +933,9 @@ class Sequencer(object):
                                                 ', '.join(one_repre['extensions']),
                                                 current_repre_name
                                             ))
-                                except Exception:
-                                    pass
+                                except (KeyError, TypeError, AttributeError) as e:
+                                    # no file paired with the row, or incomplete repre Json
+                                    self.log.debug(f"Vendor csv line {current_line}: repre check skipped ({e!r})")
 
             # -------------------------------- CHECK task_intent_repres
             """
@@ -947,7 +968,8 @@ class Sequencer(object):
             """
 
             # get all tasks defined in json settings
-            all_tasks = self.vendor_csv_prefs_repre['task_intent_repres'].keys()
+            task_intent_repres = prefs.get('task_intent_repres') or {}
+            all_tasks = task_intent_repres.keys()
             for one_merge_key, merge_list in merge_groups.items():
                 task = self.vendor_csv_transformed[merge_list[0]].get(
                     'vendor_Task')
@@ -972,7 +994,7 @@ class Sequencer(object):
                 _optional = []
                 _always_and_optional = []
                 if task in all_tasks:
-                    json_task_defs = self.vendor_csv_prefs_repre['task_intent_repres'][task]
+                    json_task_defs = task_intent_repres[task]
                     task_found = True
                 else:
                     # error for all group items
@@ -985,7 +1007,7 @@ class Sequencer(object):
                 # find intent
                 if task_found and json_task_defs is not None:
                     for one_task_def in json_task_defs:
-                        if intent in one_task_def['intents']:
+                        if intent in one_task_def.get('intents', []):
                             # found the task & intent pair, we have output defs
                             intent_found = True
                             break
@@ -997,8 +1019,15 @@ class Sequencer(object):
                             "Intent {} was not found in Json task_intent_repres section for task: {}.".format(
                                 intent, task))
                 else:
-                    _always = one_task_def['always']
-                    _optional = one_task_def['optional']
+                    _always = one_task_def.get('always') or []
+                    _optional = one_task_def.get('optional') or []
+
+                # remember the required / optional outputs on every row of the
+                # group: the post-pass reads them (the key was never set, so
+                # the whole post-pass failed)
+                for one_index in merge_list:
+                    self.vendor_csv_transformed[one_index]['vendor_One_task_set'] = {
+                        'always': list(_always), 'optional': list(_optional)}
 
                 # we have all_merged_outputs (all outputs found in current merge group)
                 # and definition of _always and _optional outputs
@@ -1040,7 +1069,10 @@ class Sequencer(object):
                                   all_merged_outputs.count(number) > 1]
                     _remove_dupes = substract_list(all_merged_outputs, duplicates)
                     if _remove_dupes is not None and len(_remove_dupes) > 0:
-                        _udefined = substract_list(_always_and_optional, _remove_dupes)
+                        # outputs present in the group that the task / intent
+                        # doesn't define (the arguments were the wrong way round:
+                        # it listed defined outputs that are missing)
+                        _udefined = substract_list(_remove_dupes, _always_and_optional)
                         if _udefined is not None and len(
                                 _udefined) > 0:
                             undefined_count = len(_udefined)
@@ -1052,69 +1084,59 @@ class Sequencer(object):
                                         ' '.join(_udefined)))
 
             # ------------------------------------------------------------------------------------------------------
-            try:
-                for mrg_key in merge_groups.keys():
-
-                    # make dicts where each length / tc / range serves as key,
-                    # with value being a list of indexes for self.vendor_csv_transformed
-                    # _ranges_no_slate = {'1001-1010': [1, 2, 3], '1001-1001': [4]}
-
-                    _lengths = {}
-                    _ranges_no_slate = {}
-                    _tcs_no_slate = {}
-                    for one_index in merge_groups[mrg_key]:
-                        ln = self.vendor_csv_transformed[one_index]['vendor_frame_range']['length']
-
-                        fs = int(self.vendor_csv_transformed[one_index]['vendor_frame_range']['frame_start'])
-                        fe = int(self.vendor_csv_transformed[one_index]['vendor_frame_range']['frame_end'])
-                        tc = str(self.vendor_csv_transformed[one_index]['vendor_frame_range']['timecode'])
-                        fps = str(self.vendor_csv_transformed[one_index]['vendor_frame_range']['frame_rate'])
-                        slate = bool(self.vendor_csv_transformed[one_index]['vendor_frame_range']['slate_present'])
+            for mrg_key in merge_groups.keys():
+                # make dicts where each length / tc / range serves as key,
+                # with value being a list of indexes for self.vendor_csv_transformed
+                # _ranges_no_slate = {'1001-1010': [1, 2, 3], '1001-1001': [4]}
+                _lengths = {}
+                _ranges_no_slate = {}
+                _tcs_no_slate = {}
+                for one_index in merge_groups[mrg_key]:
+                    row = self.vendor_csv_transformed[one_index]
+                    rng = row.get('vendor_frame_range') or {}
+                    try:
+                        ln = rng['length']
+                        fs = int(rng['frame_start'])
+                        fe = int(rng['frame_end'])
+                        tc = str(rng['timecode'])
+                        fps = str(rng['frame_rate'])
+                        slate = bool(rng['slate_present'])
                         if tc and fps:
-                            tc_to_num = helpers.tc_to_frames(tc, fps, '1')
-                            tc_to_num += 1
-                            tc_no_slate = helpers.frames_to_tc(tc_to_num, int(fps), 1)
+                            # fps can be 23.976: not int()
+                            tc_to_num = helpers.tc_to_frames(tc, fps, '1') + 1
+                            tc_no_slate = helpers.frames_to_tc(tc_to_num, fps, '1')
                             if slate:
                                 tc = tc_no_slate
-                        if slate:
-                            fs += 1
-                        frame_range = '{}-{}'.format(fs, fe)
+                    except (KeyError, TypeError, ValueError) as e:
+                        self.log.debug(f"Vendor csv line {one_index + 2}: frame range not usable ({e!r})")
+                        continue
+                    if slate:
+                        fs += 1
+                    frame_range = '{}-{}'.format(fs, fe)
+                    _lengths.setdefault(ln, []).append(one_index)
+                    _ranges_no_slate.setdefault(frame_range, []).append(one_index)
+                    _tcs_no_slate.setdefault(tc, []).append(one_index)
 
-                        if ln in _lengths.keys():
-                            _lengths[ln].append(one_index)
-                        else:
-                            _lengths[ln] = [one_index]
+            # add errors to all rows in merged group if one or more output is required but have error(s)
+            for mrg_key in merge_groups.keys():
+                _failed_required_outputs = []
+                indexes = merge_groups[mrg_key]
+                for one_index in indexes:
+                    row = self.vendor_csv_transformed[one_index]
+                    required = (row.get('vendor_One_task_set') or {}).get('always') or []
+                    if row.get('vendor_row_errors') and row.get('vendor_Output') in required:
+                        _failed_required_outputs.append(row['vendor_Output'])
 
-                        if frame_range in _ranges_no_slate.keys():
-                            _ranges_no_slate[frame_range].append(one_index)
-                        else:
-                            _ranges_no_slate[frame_range] = [one_index]
+                if len(_failed_required_outputs) > 0:
+                    _err = "Required outputs: {} ;have error(s)".format(", ".join(_failed_required_outputs))
+                    for one_index in merge_groups[mrg_key]:
+                        self.vendor_csv_transformed[one_index]['vendor_row_errors'].append(_err)
 
-                        if tc in _tcs_no_slate.keys():
-                            _tcs_no_slate[tc].append(one_index)
-                        else:
-                            _tcs_no_slate[tc] = [one_index]
-
-                # add errors to all rows in merged group if one or more output is required but have error(s)
-                for mrg_key in merge_groups.keys():
-                    _failed_required_outputs = []
-                    indexes = merge_groups[mrg_key]
-                    for one_index in indexes:
-                        if self.vendor_csv_transformed[one_index]['vendor_row_errors']:
-                            if self.vendor_csv_transformed[one_index]['vendor_Output'] in self.vendor_csv_transformed[one_index]['vendor_One_task_set']['always']:
-                                _failed_required_outputs.append(self.vendor_csv_transformed[one_index]['vendor_Output'])
-
-                    if len(_failed_required_outputs) > 0:
-                        _err = "Required outputs: {} ;have error(s)".format(", ".join(_failed_required_outputs))
-                        for one_index in merge_groups[mrg_key]:
-                            self.vendor_csv_transformed[one_index]['vendor_row_errors'].append(_err)
-
-                # convert errors to string
-                for one_row in self.vendor_csv_transformed:
-                    _e = ', '.join(one_row['vendor_row_errors'])
-                    one_row['vendor_row_errors'] = _e
-            except Exception:
-                pass
+        # convert errors to string (also when the repre Json is not set)
+        for one_row in self.vendor_csv_transformed or []:
+            errors = one_row.get('vendor_row_errors')
+            if isinstance(errors, list):
+                one_row['vendor_row_errors'] = ', '.join(str(e) for e in errors)
 
     def get_relative_paths(self, parsed_in_path):
 
@@ -1395,8 +1417,9 @@ class Sequencer(object):
                                         one_item['size_warning'] = new_warn
                                     else:
                                         one_item['size_warning'] += ', ' + new_warn
-                            except:
-                                # TODO fix for very short sequences (ln=2, ifnofe frst 1 = fail)
+                            except (IndexError, ZeroDivisionError):
+                                # very short sequences (nothing left after Ignore First)
+                                # or all frames zero size: no consistency check
                                 pass
                 else:
                     # video (multiframe container)
@@ -1408,7 +1431,7 @@ class Sequencer(object):
                         one_item['size_human'] = helpers.humanize_file_size(my_size)
                         if my_size == 0:
                             one_item['size_warning'] = 'file has zero size'
-                    except:
+                    except OSError:
                         pass
 
     @staticmethod
@@ -1436,7 +1459,14 @@ class Sequencer(object):
         """
 
         self.output['status'] = "Walking directories."
-        my_dir = os.path.dirname(in_path)
+        if not in_path or not os.path.exists(in_path.rstrip('/\\') or in_path):
+            # a path that doesn't exist (yet, e.g. while typing it) must not
+            # scan its parent folder tree
+            return []
+        if os.path.isfile(in_path):
+            # one file: just that file, not the whole parent folder tree
+            return [in_path]
+        my_dir = in_path
         return_list = []
         for dir_path, dir_names, file_names in os.walk(my_dir):
             for one_file in file_names:
@@ -1555,7 +1585,7 @@ class Sequencer(object):
                     try:
                         numbered_parts['part' + str(-1 * one_dir)] = \
                         prs['parts'][one_dir]
-                    except:
+                    except Exception:
                         numbered_parts['part' + str(-1 * one_dir)] = ''
                 onedict.update(numbered_parts)
 
@@ -1605,22 +1635,14 @@ class Sequencer(object):
                 prs = parse_file_name.parse(temp_result[onekey][1])
                 patt = prs["name"] + '.' + prs["extension"]
 
-                if prs["extension"] in ext_grp['audio']:
-                    _cat = 'audio'
-                elif prs["extension"] in ext_grp['graphics']:
-                    _cat = 'graphics'
-                elif prs["extension"] in ext_grp['office']:
-                    _cat = 'office'
-                elif prs["extension"] in ext_grp['other']:
-                    _cat = 'other'
-                elif prs["extension"] in ext_grp['sequence']:
-                    _cat = 'sequence'
-                elif prs["extension"] in ext_grp['multiframe']:
-                    _cat = 'multiframe'
-                elif prs["extension"] in ext_grp['metadata']:
-                    _cat = 'metadata'
-                else:
-                    _cat = 'unknown'
+                # .WAV is audio like .wav
+                ext_low = str(prs["extension"]).lower()
+                _cat = 'unknown'
+                for _group in ('audio', 'graphics', 'office', 'other', 'sequence',
+                               'multiframe', 'metadata'):
+                    if ext_low in ext_grp[_group]:
+                        _cat = _group
+                        break
 
                 onedict = {'path': temp_result[onekey][1], 'missing_numbers': [], 'sub_ranges': subRanges,
                             'printf_pattern': patt,
@@ -1651,7 +1673,7 @@ class Sequencer(object):
                     try:
                         numbered_parts['part' + str(-1 * one_dir)] = \
                             prs['parts'][one_dir]
-                    except:
+                    except Exception:
                         numbered_parts['part' + str(-1 * one_dir)] = ''
                 onedict.update(numbered_parts)
 
@@ -1890,7 +1912,7 @@ class Sequencer(object):
                     for one_dir in range(-9, 0):
                         try:
                             numbered_parts['part' + str(-1 * one_dir)] = prs['parts'][one_dir]
-                        except:
+                        except Exception:
                             numbered_parts['part' + str(-1 * one_dir)] = ''
                     one_record.update(numbered_parts)
 
@@ -1913,12 +1935,15 @@ class Sequencer(object):
                         for one_subrange in sub_ranges:
                             sub_range_first_frame = prs['path_prs'] + '/' + prs['clean_name'] + parse_file_name.pad_frame(
                                 one_subrange['start'], prs['padding']) + '.' + prs['extension']
-                            one_record['path'] = sub_range_first_frame # may not be needed
-                            one_record['start_number'] = one_subrange['start']
-                            one_record['end_number'] = one_subrange['end']
-                            one_record['trim_in'] = one_subrange['start'] - frames[0]
-                            one_record['trim_out'] = frames[-1] - one_subrange['end']
-                            output_list.append(fix_seq(one_record, prs))
+                            # a copy per sub range: the same dict appended N
+                            # times made every sub sequence the last one
+                            sub_record = dict(one_record)
+                            sub_record['path'] = sub_range_first_frame
+                            sub_record['start_number'] = one_subrange['start']
+                            sub_record['end_number'] = one_subrange['end']
+                            sub_record['trim_in'] = one_subrange['start'] - frames[0]
+                            sub_record['trim_out'] = frames[-1] - one_subrange['end']
+                            output_list.append(fix_seq(sub_record, prs))
                     elif mode == 'skip_seq_with_holes':
                         if len(temp_result[one_key][2]) > 0:
                             pass
@@ -1956,67 +1981,37 @@ class Sequencer(object):
         counter_start = 1
         counter_step = 1
         counter_zeroes = 3
-        try:
-            if self.settings:
-                if self.settings['sub_exclude']['value']:
-                    sub_exclude_list = self.settings['sub_exclude']['value'].split()
-                if self.settings['sub_include']['value']:
-                    sub_include_list = self.settings['sub_include']['value'].split()
-                if self.settings['log_exclude']['value']:
-                    log_exclude_list = self.settings['log_exclude']['value'].split()
-                if self.settings['log_include']['value']:
-                    log_include_list = self.settings['log_include']['value'].split()
-                if self.settings['txt_exclude']['value']:
-                    txt_exclude_list = self.settings['txt_exclude']['value'].split()
-                if self.settings['txt_include']['value']:
-                    txt_include_list = self.settings['txt_include']['value'].split()
+        if self.settings:
+            sub_exclude_list = self._get_str('sub_exclude').split()
+            sub_include_list = self._get_str('sub_include').split()
+            log_exclude_list = self._get_str('log_exclude').split()
+            log_include_list = self._get_str('log_include').split()
+            txt_exclude_list = self._get_str('txt_exclude').split()
+            txt_include_list = self._get_str('txt_include').split()
 
-                if self.settings['prefs_counter_start']['value']:
-                    counter_start = int(self.settings['prefs_counter_start']['value'])
-                if self.settings['prefs_counter_step']['value']:
-                    counter_step = int(self.settings['prefs_counter_step']['value'])
-                if self.settings['prefs_counter_zeroes']['value']:
-                    counter_zeroes = int(self.settings['prefs_counter_zeroes']['value'])
+            # 0 is a valid counter start (it used to be ignored)
+            counter_start = self._get_int('prefs_counter_start', counter_start)
+            counter_step = self._get_int('prefs_counter_step', counter_step)
+            counter_zeroes = self._get_int('prefs_counter_zeroes', counter_zeroes)
 
-                # age
-                if self.settings['age_enabled']['value'] is not None:
-                    _age_enabled = bool(self.settings['age_enabled']['value'])
-                if self.settings['age_number']['value'] is not None:
-                    _age_number = float(self.settings['age_number']['value'])
-                if self.settings['age_unit']['value'] is not None:
-                    _age_unit = str(self.settings['age_unit']['value'])
-                if self.settings['age_type']['value'] is not None:
-                    _age_type = str(self.settings['age_type']['value'])
-                if self.settings['age_exclude']['value'] is not None:
-                    _age_exclude = self.settings['age_exclude']['value']
-                    if _age_exclude == '':
-                        age_exclude = []
-                    else:
-                        age_exclude = _age_exclude.split()
-                if self.settings['age_include']['value'] is not None:
-                    _age_include = self.settings['age_include']['value']
-                    if _age_include == '':
-                        age_include = []
-                    else:
-                        age_include = _age_include.split()
-        except:
-            pass
+            # age
+            _age_enabled = bool(self._get('age_enabled', _age_enabled))
+            try:
+                _age_number = float(self._get('age_number', _age_number))
+            except (TypeError, ValueError):
+                _age_number = 0.0
+            _age_unit = self._get_str('age_unit', _age_unit) or _age_unit
+            _age_type = self._get_str('age_type', _age_type) or _age_type
+            age_exclude = self._get_str('age_exclude').split()
+            age_include = self._get_str('age_include').split()
+
+        # totals are 0 for an empty package (they used to be unbound)
+        cnt_sub = cnt_log = cnt_txt = counter_start
+        total_sub = total_log = total_txt = 0
+        files_sub = files_log = files_txt = 0
+        total_size_sub = total_size_log = total_size_txt = 0
 
         if self.merged_list and len(self.merged_list) > 0:
-            cnt_sub = counter_start
-            cnt_log = counter_start
-            cnt_txt = counter_start
-            total_sub = 0
-            total_log = 0
-            total_txt = 0
-            files_sub = 0
-            files_log = 0
-            files_txt = 0
-            total_size_sub = 0
-            total_size_log = 0
-            total_size_txt = 0
-
-
             for one_item in self.merged_list:
                 one_item.update({"hide_sub": False})
                 one_item.update({"hide_log": False})
@@ -2062,7 +2057,7 @@ class Sequencer(object):
                 # hide by AGE, for submission Only
                 if _age_enabled and not one_item['hide_sub']:
                     age_key = 'age_' + _age_unit + '_' + _age_type
-                    item_age = one_item.get(age_key, 0)
+                    item_age = one_item.get(age_key) or 0
                     hide_item = False
                     if item_age > _age_number:
                         _full_path = one_item.get('full_path', one_item.get('path', ''))
@@ -2080,7 +2075,10 @@ class Sequencer(object):
                     bool(one_item.get('vendor_skip'))
 
                 # add counter to the items that are not hidden
-                _frames = int(one_item.get('meta_duration_frames', 0))
+                try:
+                    _frames = int(float(one_item.get('meta_duration_frames') or 0))
+                except (TypeError, ValueError):
+                    _frames = 0
                 if not one_item['vendor_ignore_sub']:
                     one_item.update({"cnt_sub": str(cnt_sub).zfill(counter_zeroes)})
                     cnt_sub += counter_step
@@ -2089,7 +2087,7 @@ class Sequencer(object):
                         files_sub += _frames
                     else:
                         files_sub += 1
-                    _bytes = one_item.get('size_bytes', 0)
+                    _bytes = one_item.get('size_bytes') or 0
                     total_size_sub += _bytes
 
                 if not one_item['hide_log']:
@@ -2100,7 +2098,7 @@ class Sequencer(object):
                         files_log += _frames
                     else:
                         files_log += 1
-                    _bytes = one_item.get('size_bytes', 0)
+                    _bytes = one_item.get('size_bytes') or 0
                     total_size_log += _bytes
 
                 if not one_item['hide_txt']:
@@ -2111,7 +2109,7 @@ class Sequencer(object):
                         files_txt += _frames
                     else:
                         files_txt += 1
-                    _bytes = one_item.get('size_bytes', 0)
+                    _bytes = one_item.get('size_bytes') or 0
                     total_size_txt += _bytes
 
         totals = {
@@ -2222,27 +2220,27 @@ class Sequencer(object):
                                     #LAMBDA!
                                     try:
                                         _eval = eval(str(one_regex["repl"]))
-                                    except:
+                                    except Exception as e:
+                                        self.log.debug(f"Parsing row {k}: invalid lambda: {e}")
                                         _eval = one_regex["repl"]
                                     try:
                                         result = re.sub(one_regex["compiled"], _eval, expanded)
-                                    except:
+                                    except Exception as e:
+                                        self.log.debug(f"Parsing row {k}: replace failed: {e}")
                                         result = ""
                                 else:
                                     try:
                                         result = re.sub(one_regex["compiled"], one_regex["repl"], expanded)
-                                    except:
+                                    except (re.error, IndexError) as e:
+                                        self.log.debug(f"Parsing row {k}: replace failed: {e}")
                                         result = ""
                             else:
                                 m = one_regex["compiled"].search(expanded)
                                 if m:
                                     # if user made a group, assign the group, otherwise use whole found string
-                                    try:
-                                        capture = m.group(1)
-                                        result = capture
-                                    except:
-                                        capture = None
-                                        #result = m.group(0)
+                                    result = m.group(1) if one_regex["compiled"].groups else m.group(0)
+                                    if result is None:
+                                        # optional group that took no part in the match
                                         result = ""
                                 else:
                                     # shot name exists but doesn't match the regex, so set shot name to empty string
@@ -2458,9 +2456,12 @@ class Sequencer(object):
 
         column_titles = []
         column_expressions = []
-        gui_columns.replace("\n", ",")
+        # one column per line works like comma separated (the result of
+        # replace() used to be thrown away)
+        gui_columns = str(gui_columns or '').replace("\r", "").replace("\n", ",")
 
-        NM_RE = re.compile(r"\s*(?P<column_title>.*)\s*=\s*(?P<column_expression>.*)\s*")
+        # title up to the first '=', spaces around both parts removed
+        NM_RE = re.compile(r"^\s*(?P<column_title>[^=]*?)\s*=\s*(?P<column_expression>.*?)\s*$")
         split_list = gui_columns.split(",")
         column_count = 0
         columns = []
@@ -2629,8 +2630,15 @@ class Sequencer(object):
         self.columns_side = ['match', 'destination', 'source']
         body_txt = ""
         txt_sep = " "
+        # defaults for settings missing from older presets (NameError before)
+        do_txt_titles = False
+        txt_header = ""
+        txt_footer = ""
+        side_sub_only = False
+        side_log_only = False
+        _merge_chbx = False
 
-        for one_item in self.merged_list:
+        for one_item in self.merged_list or []:
             # RENAMES
             _r = one_item.get('rename')
             _s = one_item.get('rename_source')
@@ -2638,22 +2646,14 @@ class Sequencer(object):
                 self.table_rename.append([_s, _r])
 
         if self.settings:
-            if self.settings['text_sep_tab']['value'] is not None:
-                if self.settings['text_sep_tab']['value']:
-                    txt_sep = "\t"
-            if self.settings['text_add_titles']['value'] is not None:
-                do_txt_titles = bool(self.settings['text_add_titles']['value'])
-            if self.settings['text_header']['value'] is not None:
-                txt_header = self.settings['text_header']['value']
-            if self.settings['text_footer']['value'] is not None:
-                txt_footer = self.settings['text_footer']['value']
+            if self._get('text_sep_tab', False):
+                txt_sep = "\t"
+            do_txt_titles = bool(self._get('text_add_titles', False))
+            txt_header = self._get_str('text_header')
+            txt_footer = self._get_str('text_footer')
 
-            side_sub_only = False
-            if self.settings['side_sub_only']['value'] is not None:
-                side_sub_only = bool(self.settings['side_sub_only']['value'])
-            side_log_only = False
-            if self.settings['side_log_only']['value'] is not None:
-                side_log_only = bool(self.settings['side_log_only']['value'])
+            side_sub_only = bool(self._get('side_sub_only', False))
+            side_log_only = bool(self._get('side_log_only', False))
 
             if self.settings['prefs_merge_chbx']['value'] is not None:
                 _merge_chbx = bool(self.settings['prefs_merge_chbx']['value'])
@@ -2816,59 +2816,51 @@ class Sequencer(object):
 
         self.export_file_names = {}
         if self.settings and self.static_keywords:
-            one_above = str(self.static_keywords['package_name_root']).replace('\\', '/') + '/'
-            export_root = one_above + self.static_keywords['package_name_from_folder'] + '/'
+            one_above = str(self.static_keywords.get('package_name_root', '')).replace('\\', '/') + '/'
+            export_root = one_above + str(self.static_keywords.get('package_name_from_folder', '')) + '/'
 
-            s_pth_above = bool(self.settings['export_sub_above']['value'])
-            s_pth_custom = bool(self.settings['export_sub_custom']['value'])
-            s_custom = str(self.settings['export_sub_custom_path']['value'])
-            s_suffix = str(self.settings['export_sub_custom_suffix']['value']) or ""
-            s_do_excel = bool(self.settings['export_sub_excel']['value'])
-            s_do_csv = bool(self.settings['export_sub_csv']['value'])
+            s_pth_above = bool(self._get('export_sub_above', False))
+            s_pth_custom = bool(self._get('export_sub_custom', False))
+            s_custom = self._get_str('export_sub_custom_path')
+            s_suffix = self._get_str('export_sub_custom_suffix')
+            s_do_excel = bool(self._get('export_sub_excel', False))
+            s_do_csv = bool(self._get('export_sub_csv', False))
             s_export_root = export_root
             if s_pth_custom:
                 s_export_root = s_custom.replace('\\', '/') + '/'
             elif s_pth_above:
                 s_export_root = one_above
 
-            s_nme = str(self.settings['export_sub_name']['value']) or ""
-            s_do_split = bool(self.settings['export_sub_split_on']['value']) or False
-            s_split = str(self.settings['export_sub_split']['value']) or ""
-            s_do_skip = bool(self.settings['export_sub_skip_on']['value']) or False
-            s_skip = str(self.settings['export_sub_skip']['value']) or ""
-            s_num = str(self.settings['export_sub_splitnum']['value'])
-            try:
-                s_num = int(s_num)
-            except ValueError:
-                s_num = 3
+            s_nme = self._get_str('export_sub_name')
+            s_do_split = bool(self._get('export_sub_split_on', False))
+            s_split = self._get_str('export_sub_split')
+            s_do_skip = bool(self._get('export_sub_skip_on', False))
+            s_skip = self._get_str('export_sub_skip')
+            s_num = self._get_int('export_sub_splitnum', 3)
             if s_nme != "":
                 s_export_root += s_nme + s_suffix
             else:
                 s_export_root += self.static_keywords['package_name'] + s_suffix
 
             # Drive Log
-            d_pth_above = bool(self.settings['export_log_above']['value'])
-            d_pth_custom = bool(self.settings['export_log_custom']['value'])
-            d_custom = str(self.settings['export_log_custom_path']['value'])
-            d_suffix = str(self.settings['export_log_custom_suffix']['value']) or ""
-            d_do_excel = bool(self.settings['export_log_excel']['value'])
-            d_do_csv = bool(self.settings['export_log_csv']['value'])
+            d_pth_above = bool(self._get('export_log_above', False))
+            d_pth_custom = bool(self._get('export_log_custom', False))
+            d_custom = self._get_str('export_log_custom_path')
+            d_suffix = self._get_str('export_log_custom_suffix')
+            d_do_excel = bool(self._get('export_log_excel', False))
+            d_do_csv = bool(self._get('export_log_csv', False))
             d_export_root = export_root
             if d_pth_custom:
                 d_export_root = d_custom.replace('\\', '/') + '/'
             elif d_pth_above:
                 d_export_root = one_above
 
-            d_nme = str(self.settings['export_log_name']['value']) or ""
-            d_do_split = bool(self.settings['export_log_split_on']['value']) or False
-            d_split = str(self.settings['export_log_split']['value']) or ""
-            d_do_skip = bool(self.settings['export_log_skip_on']['value']) or False
-            d_skip = str(self.settings['export_log_skip']['value']) or ""
-            d_num = str(self.settings['export_log_splitnum']['value'])
-            try:
-                d_num = int(d_num)
-            except ValueError:
-                d_num = 3
+            d_nme = self._get_str('export_log_name')
+            d_do_split = bool(self._get('export_log_split_on', False))
+            d_split = self._get_str('export_log_split')
+            d_do_skip = bool(self._get('export_log_skip_on', False))
+            d_skip = self._get_str('export_log_skip')
+            d_num = self._get_int('export_log_splitnum', 3)
             # if exporting both sub and log, and using just package name (name is empty),
             # add suffix to avoid overwriting
             if d_suffix == "" and d_nme == "" and (s_do_excel or s_do_csv):
@@ -2879,10 +2871,10 @@ class Sequencer(object):
                 d_export_root += self.static_keywords['package_name'] + d_suffix
 
             # Text
-            t_pth_above = bool(self.settings['text_above']['value'])
-            t_pth_custom = bool(self.settings['text_custom']['value'])
-            t_custom = str(self.settings['text_custom_path']['value'])
-            t_do_txt = bool(self.settings['text_txt']['value'])
+            t_pth_above = bool(self._get('text_above', False))
+            t_pth_custom = bool(self._get('text_custom', False))
+            t_custom = self._get_str('text_custom_path')
+            t_do_txt = bool(self._get('text_txt', False))
             t_export_root = export_root
             if t_pth_custom:
                 t_export_root = t_custom.replace('\\', '/') + '/'
@@ -3044,35 +3036,44 @@ class Sequencer(object):
 
         def write_csv(file_name, table, titles):
             self.log.info(f"Writing {mode} csv: {file_name}.csv ({len(table)} rows)")
-            with open(file_name + '.csv', 'w', newline='', encoding='utf-8') as f:
-                writer = csv.writer(f)
-                writer.writerow(titles)
-                for row, line in enumerate(table):
-                    writer.writerow(line[:len(titles)])
+            try:
+                with open(file_name + '.csv', 'w', newline='', encoding='utf-8') as f:
+                    writer = csv.writer(f)
+                    writer.writerow(titles)
+                    for row, line in enumerate(table):
+                        writer.writerow(line[:len(titles)])
+            except (OSError, csv.Error) as e:
+                # e.g. the file is open in Excel: the other exports still run
+                self.log.error(f"Writing {file_name}.csv failed: {e}")
 
         def write_excel(file_name, table, titles):
             _excel = 0.15
             # Excel
             if do_excel:
                 self.log.info(f"Writing {mode} excel: {file_name}.xlsx ({len(table)} rows)")
-                workbook = xlsxwriter.Workbook(file_name + '.xlsx')
-                worksheet = workbook.add_worksheet()
-                cnt = -1
-                for column_number, one_column in enumerate(titles):
-                    cnt += 1
-                    if column_widths:
-                        worksheet.set_column(
-                            column_number,
-                            column_number,
-                            column_widths[cnt] * _excel
-                        )
-                    else:
-                        worksheet.set_column(column_number, column_number)
-                    worksheet.write(0, column_number, one_column)
-                for row, line in enumerate(table):
+                try:
+                    # values are text: '=...' must not become a formula
+                    workbook = xlsxwriter.Workbook(file_name + '.xlsx', {'strings_to_formulas': False})
+                    worksheet = workbook.add_worksheet()
                     for column_number, one_column in enumerate(titles):
-                        worksheet.write(row + 1, column_number,line[column_number])
-                workbook.close()
+                        if column_widths and column_number < len(column_widths):
+                            worksheet.set_column(
+                                column_number,
+                                column_number,
+                                column_widths[column_number] * _excel
+                            )
+                        else:
+                            worksheet.set_column(column_number, column_number)
+                        worksheet.write(0, column_number, one_column)
+                    for row, line in enumerate(table):
+                        for column_number, one_column in enumerate(titles):
+                            value = line[column_number] if column_number < len(line) else ''
+                            if isinstance(value, dict):
+                                value = ''
+                            worksheet.write(row + 1, column_number, value)
+                    workbook.close()
+                except Exception as e:      # xlsxwriter raises its own errors, e.g. file open in Excel
+                    self.log.error(f"Writing {file_name}.xlsx failed: {e}")
 
         spec = self.export_file_names.get(mode) or {}
         if not (spec.get('do_excel') or spec.get('do_csv')):
@@ -3150,14 +3151,27 @@ class Sequencer(object):
         self.output['status'] = "Copying sidecar files."
 
         if self.table_side is not None and len(self.table_side) > 0:
+            copied = 0
             for one_item in self.table_side:
                 _src = one_item[2]
                 _dst = one_item[1]
-                if _src and _dst:
-                    if not os.path.exists(os.path.dirname(_dst)):
-                        os.makedirs(os.path.dirname(_dst))
+                if not (_src and _dst):
+                    continue
+                if os.path.normcase(os.path.abspath(_src)) == os.path.normcase(os.path.abspath(_dst)):
+                    self.log.warning(f"Sidecar copy skipped, source and destination are the same: {_src}")
+                    continue
+                try:
+                    _dir = os.path.dirname(_dst)
+                    if _dir:
+                        os.makedirs(_dir, exist_ok=True)
+                    if os.path.exists(_dst):
+                        self.log.warning(f"Sidecar copy overwrites {_dst}")
                     self.log.info(f"Sidecar copy {_src} -> {_dst}")
                     shutil.copy(_src, _dst)
+                    copied += 1
+                except OSError as e:
+                    self.log.error(f"Sidecar copy {_src} -> {_dst} failed: {e}")
+            self.log.info(f"Sidecar files copied: {copied} of {len(self.table_side)}")
 
     def sidecar_files_find(self):
 
@@ -3304,10 +3318,7 @@ class Sequencer(object):
                     if m:
                         # if user made a group, assign the group,
                         # otherwise use whole found string
-                        try:
-                            result = m.group(1)
-                        except:
-                            result = None
+                        result = m.group(1) if one_regex['compiled'].groups else m.group(0)
                     else:
                         # shot name exists but doesn't match the regex,
                         # so set shot name to empty string
@@ -3351,10 +3362,10 @@ class Sequencer(object):
             # read checks from gui, save to self.checks
             indexes = [str(x).zfill(2) for x in range(1, 9)]
             for one in indexes:
-                _filter = str(self.settings["rename_filter_" + one]["value"])
-                src = int(self.settings["rename_source_" + one]["value"])
-                pat = str(self.settings["rename_pattern_" + one]["value"])
-                repl = str(self.settings["rename_repl_" + one]["value"])
+                _filter = self._get_str("rename_filter_" + one)
+                src = self._get_int("rename_source_" + one, 0)
+                pat = self._get_str("rename_pattern_" + one)
+                repl = self._get_str("rename_repl_" + one)
                 if pat != '' and repl != '':
                     one_ren = {
                         "filter": _filter,
@@ -3439,16 +3450,16 @@ class Sequencer(object):
                     # LAMBDA!
                     try:
                         _eval = eval(str(_r))
-                    except:
+                    except Exception:
                         _eval = _r
                     try:
                         result = re.sub(_p_comp, _eval, one_src)
-                    except:
+                    except Exception:
                         result = None
                 else:
                     try:
                         result = re.sub(_p_comp, _r, one_src)
-                    except:
+                    except Exception:
                         result = None
                 if not result:
                     continue
@@ -3480,8 +3491,12 @@ class Sequencer(object):
                 return
 
             _dst_dir = os.path.dirname(pairs[0][1])
-            if not os.path.exists(_dst_dir):
-                os.makedirs(_dst_dir)
+            try:
+                if _dst_dir:
+                    os.makedirs(_dst_dir, exist_ok=True)
+            except OSError as e:
+                self.log.error(f"Rename: can't create folder {_dst_dir}: {e}")
+                return
 
             done = 0
             for one_file in pairs:
@@ -3503,7 +3518,7 @@ class Sequencer(object):
                 self.log.info(f"Renamed {done} file(s): {pairs[0][0]} -> {pairs[0][1]}"
                               + (" ..." if len(pairs) > 1 else ""))
 
-        for item in self.merged_list:
+        for item in self.merged_list or []:
             _r = item.get('rename')
             _s = item.get('rename_source')
             _c = item.get('category')
@@ -3664,6 +3679,12 @@ class Sequencer(object):
     MATCHED_VERSION_KEY = "Matched "
 
     @staticmethod
+    def _version_number(value):
+        """version as int, "v007" -> 7, not a number -> 0"""
+        digits = re.sub(r'\D', '', str(value or ''))
+        return int(digits) if digits else 0
+
+    @staticmethod
     def _same_value(a, b):
         """equal text, or equal numbers ("007" == "7", "v007" == "v7" is not)"""
         a, b = str(a).strip(), str(b).strip()
@@ -3732,10 +3753,10 @@ class Sequencer(object):
                                 if preferred is None or r.get('Product') == preferred.get('Product')]
                 item[key_start + "Version Exists"] = "False"
                 item[key_start + "Max Existing Version"] = str(
-                    max(int(r.get('Version') or 0) for r in same_product))
+                    max((self._version_number(r.get('Version')) for r in same_product), default=0))
                 continue
             for r in hits:
-                r["Matched Files"] = str(int(r["Matched Files"] or 0) + 1)
+                r["Matched Files"] = str(self._version_number(r["Matched Files"]) + 1)
                 r["Version Exists"] = "True"
             # several products can have the same version number: prefer the
             # preferred one, then the first by sort order
@@ -3761,6 +3782,27 @@ class Sequencer(object):
     def _setting_on(self, key):
         settings = getattr(self, 'settings', None)
         return bool((settings.get(key) or {}).get('value')) if settings else False
+
+    def _get(self, key, default=None):
+        """
+        value of a setting, default when the setting or its value is missing.
+        Unchecked boxes and 0 are real values (tested with 'is None', not truth).
+        """
+        settings = getattr(self, 'settings', None) or {}
+        item = settings.get(key)
+        if not isinstance(item, dict) or item.get('value') is None:
+            return default
+        return item['value']
+
+    def _get_int(self, key, default):
+        try:
+            return int(float(self._get(key, default)))
+        except (TypeError, ValueError):
+            return default
+
+    def _get_str(self, key, default=''):
+        value = self._get(key, default)
+        return default if value is None else str(value)
 
     def ayon_visible_list(self):
         """
@@ -4103,7 +4145,7 @@ class Sequencer(object):
         def validate_csv(csv_file):
             is_valid = False
             try:
-                with open(csv_file, "r") as f:
+                with open(csv_file, "r", encoding='utf-8-sig', newline='') as f:
                     reader = csv.reader(f)
                     # Read the first row to validate
                     next(reader, None)
@@ -4116,6 +4158,9 @@ class Sequencer(object):
         csv_files = []
 
         # get list of csv files
+        file_path = str(file_path or '')
+        if not file_path:
+            return None
         if not get_latest and os.path.isfile(file_path):
             csv_files = [file_path]
         else:
@@ -4123,11 +4168,11 @@ class Sequencer(object):
                 folder_path = os.path.dirname(file_path)
             else:
                 folder_path = file_path
-            if os.path.exists(folder_path):
+            if folder_path and os.path.isdir(folder_path):
                 csv_files = [
                     os.path.join(folder_path, f) for f in
                     os.listdir(folder_path)
-                    if f.endswith(".csv")
+                    if f.lower().endswith(".csv")
                 ]
 
         if csv_files is None or len(csv_files) == 0:
@@ -4155,7 +4200,7 @@ class Sequencer(object):
 
         result = []
         try:
-            with open(csv_path, mode='r',
+            with open(csv_path, mode='r', newline='',
                       encoding='utf-8-sig') as csv_file:
                 reader = csv.DictReader(csv_file)
                 for row in reader:
@@ -4219,15 +4264,11 @@ class Sequencer(object):
             if file_path is None:
                 continue
             for one_rule in self.replace_data:
-                if one_rule['Extension'] == ext:
-                    #if one_rule['Pattern'] is None or one_rule['Pattern'] == '':
-                    pass
-                    pass
-                    existing = to_replace.get(file_path)
-                    if existing is None:
-                        to_replace[file_path] = [{'search': one_rule['Search'], 'replace': one_rule['Replace']}]
-                    else:
-                        to_replace[file_path] = existing.append({'search': one_rule['Search'], 'replace': one_rule['Replace']})
+                if str(one_rule.get('Extension') or '').lower().lstrip('.') == str(ext).lower():
+                    # every matching rule (append() returns None: only the
+                    # first rule used to survive)
+                    to_replace.setdefault(file_path, []).append(
+                        {'search': one_rule.get('Search', ''), 'replace': one_rule.get('Replace', '')})
         self.replace_prep = to_replace
 
 
@@ -5145,7 +5186,7 @@ class Sequencer(object):
     def note_regex(self, content, note_pattern, note_repl):
         try:
             compiled = re.compile(note_pattern, re.MULTILINE)
-        except:
+        except Exception:
             return None
         result = None
         if note_repl and note_repl != "":
@@ -5153,29 +5194,20 @@ class Sequencer(object):
             if note_repl.startswith("lambda "):
                 try:
                     _eval = eval(str(note_repl))
-                except:
+                except Exception:
                     _eval = note_repl
                 try:
                     result = re.sub(compiled, _eval, content)
-                except:
+                except Exception:
                     result = None
             else:
                 try:
                     result = compiled.match(content).expand(note_repl)
-                except:
+                except Exception:
                     result = None
         else:
-            try:
-                m = re.search(note_pattern, content)
-            except:
-                pass
-            if m:
-                try:
-                    result = content
-                except:
-                    result = None
-            else:
-                result = None
+            m = compiled.search(content)
+            result = content if m else None
         return result
 
     def run_checks(self):
@@ -5187,12 +5219,13 @@ class Sequencer(object):
         self.checks_init()
         if self.checks is None:
             return
+        self._check_errors_logged = set()
 
-        for item in self.merged_list:
+        for item in self.merged_list or []:
             item['warning'] = ''
             item['error'] = ''
 
-        for item in self.merged_list:
+        for item in self.merged_list or []:
             for one_check in self.checks:
                 # filter out first
                 _if_eval = False
@@ -5200,8 +5233,8 @@ class Sequencer(object):
                     try:
                         _if = format_keep(one_check['filter'], item)
                         _if_eval = bool(eval(_if))
-                    except:
-                        pass
+                    except Exception as e:
+                        self._log_check_error(one_check, 'If', e)
                 else:
                     # no filtering, so true for all
                     _if_eval = True
@@ -5212,8 +5245,8 @@ class Sequencer(object):
                     try:
                         _check = format_keep(one_check['check'], item)
                         _check_eval = bool(eval(_check))
-                    except:
-                        pass
+                    except Exception as e:
+                        self._log_check_error(one_check, 'Check', e)
                     if _check_eval:
                         # it is warning or error
                         m = format_keep(one_check['message'], item)
@@ -5236,6 +5269,15 @@ class Sequencer(object):
                 else:
                     item['warning'] = sw
 
+    def _log_check_error(self, one_check, field, error):
+        """a check expression that fails: logged once per refresh, not per file"""
+        seen = self.__dict__.setdefault('_check_errors_logged', set())
+        key = (field, one_check.get(field.lower() if field == 'Check' else 'filter'), type(error).__name__)
+        if key in seen:
+            return
+        seen.add(key)
+        self.log.debug(f"Checks: {field} expression {key[1]!r} failed: {error!r}")
+
     def prepare_converts(self):
         """
         Execute command lines for every media file
@@ -5247,15 +5289,16 @@ class Sequencer(object):
                 return '{' + key + '}'
 
         self.converts = []
+        _root = ''
         if self.settings:
             # read all the settings from ui
-            _root = str(self.settings['package_folder']['value'])
+            _root = self._get_str('package_folder')
             indexes = [str(x).zfill(2) for x in range(1, 9)]
             for one in indexes:
-                if_filter = str(self.settings["thumbs_if_" + one]["value"])
-                exe = str(self.settings["thumbs_exe_" + one]["value"])
-                args = str(self.settings["thumbs_args_" + one]["value"])
-                fn = str(self.settings["thumbs_name_" + one]["value"])
+                if_filter = self._get_str("thumbs_if_" + one)
+                exe = self._get_str("thumbs_exe_" + one)
+                args = self._get_str("thumbs_args_" + one)
+                fn = self._get_str("thumbs_name_" + one)
                 if args != '' and fn != '':
                     one_conv = {
                         "filter": if_filter,
@@ -5270,11 +5313,11 @@ class Sequencer(object):
             return
 
         _exes = {
-                'ffmpeg': self.paths['ffmpeg'],
-                'ffprobe': self.paths['ffprobe'],
-                'oiio': self.paths['oiiotool'],
-                'ocio': self.paths['ocio'],
-                'vfx-transcode': self.paths['vfx-transcode'],
+                'ffmpeg': self.paths.get('ffmpeg', ''),
+                'ffprobe': self.paths.get('ffprobe', ''),
+                'oiio': self.paths.get('oiiotool', ''),
+                'ocio': self.paths.get('ocio', ''),
+                'vfx-transcode': self.paths.get('vfx-transcode', ''),
         }
 
         for item in self.merged_list or []:
@@ -5321,10 +5364,8 @@ class Sequencer(object):
         Execute command lines for every media file
         :return: add vendor_Thumbs to media files
         """
-        _skip_existing = True
-        if self.settings:
-            _skip_existing = bool(self.settings['thumbs_skip_existing']['value'])
-        for item in self.merged_list:
+        _skip_existing = bool(self._get('thumbs_skip_existing', True))
+        for item in self.merged_list or []:
             commands = item.get("convert_cmd")
             if not isinstance(commands, dict) or not commands:
                 continue
@@ -5339,25 +5380,28 @@ class Sequencer(object):
                     # skip empty paths
                     continue
 
-                item_label = item.get('part2', '') + '/' + item.get('part1', '')
+                item_label = str(item.get('part2', '')) + '/' + str(item.get('part1', ''))
 
                 _run = True
                 if _skip_existing and os.path.exists(_pth):
                     _run = False
 
                 if _pth and one_command and _run:
-                    _d = os.path.dirname(os.path.abspath(_pth))
-                    if not os.path.exists(_d):
-                        os.makedirs(_d)
-
                     self.log.debug(
                         "Running Convert of item {}:\n{}".format(item_label, one_command))
-                    process = subprocess.Popen(one_command, shell=True,
-                                               stdout=subprocess.PIPE,
-                                               stderr=subprocess.PIPE,
-                                               bufsize=-1,
-                                               **helpers.no_window())
-                    out, err = process.communicate()
+                    try:
+                        os.makedirs(os.path.dirname(os.path.abspath(_pth)), exist_ok=True)
+                        # shell=True on purpose: Convert rows are command lines
+                        process = subprocess.Popen(one_command, shell=True,
+                                                   stdout=subprocess.PIPE,
+                                                   stderr=subprocess.PIPE,
+                                                   bufsize=-1,
+                                                   **helpers.no_window())
+                        out, err = process.communicate()
+                    except OSError as e:
+                        # one failing convert doesn't stop the others
+                        self.log.error(f"Convert of item {item_label} could not run: {e}")
+                        continue
                     # was inverted: 0 logged as failure
                     if process.returncode == 0:
                         self.log.debug(
@@ -5380,10 +5424,10 @@ class Sequencer(object):
             # read checks from gui, save to self.checks
             indexes = [str(x).zfill(2) for x in range(1, 22)]
             for one in indexes:
-                if_filter = str(self.settings["check_if_" + one]["value"])
-                check = str(self.settings["check_check_" + one]["value"])
-                is_error = bool(self.settings["check_error_" + one]["value"])
-                message = str(self.settings["check_message_" + one]["value"])
+                if_filter = self._get_str("check_if_" + one)
+                check = self._get_str("check_check_" + one)
+                is_error = bool(self._get("check_error_" + one, False))
+                message = self._get_str("check_message_" + one)
                 if message == '':
                     if is_error:
                         message = "Error check {}".format(one)

@@ -111,14 +111,12 @@ class FtrackHelper(object):
                 # shot or asset?
                 one['type'] = itm_type
 
-                # make path
+                # make path: ancestors come root first, sorting them
+                # alphabetically scrambled the folder path
                 anc = shot.get("ancestors")
                 if anc is not None:
-                    p = []
-                    for a in anc:
-                        p.append(a['name'])
-                    p = sorted(p)
-                    one['path'] = "/" + "/".join(p) + "/" + one['name']
+                    p = [a['name'] for a in anc]
+                    one['path'] = "/" + "/".join(p + [one['name']])
 
                 # desc name:desc type, another name: another type
                 dsc = shot.get("descendants")
@@ -148,7 +146,8 @@ class FtrackHelper(object):
                     self.ftrack['project_id'])
             ).all()
             s = traverse(shots, "Shot")
-        except:
+        except Exception as e:
+            log.error(f"Reading ftrack shots failed: {e}")
             s = []
 
         try:
@@ -157,7 +156,8 @@ class FtrackHelper(object):
                     self.ftrack['project_id'])
             ).all()
             a = traverse(assets, "Asset Build")
-        except:
+        except Exception as e:
+            log.error(f"Reading ftrack asset builds failed: {e}")
             a = []
 
         self.ftrack['info'] = a + s
@@ -184,7 +184,7 @@ class FtrackHelper(object):
             line = {
                 "Thumbnail": one.get('thumbnail_url', ''),
                 "Folder Name": one.get('name', ''),
-                "Folder Path": one.get('path', ''),
+                "Folder Path": one.get('path') or ('/' + str(one.get('name') or '')),
                 "Folder Type": one.get('type', ''),
                 "Tasks": one.get('desc', ''),
                 "Links In": one.get('links_in', ''),
@@ -194,7 +194,7 @@ class FtrackHelper(object):
         if len(ftrack_table) == 0:
             return
 
-        ftrack_table_sorted = sorted(ftrack_table, key=lambda d: d['Folder Path'])
+        ftrack_table_sorted = sorted(ftrack_table, key=lambda d: d['Folder Path'] or '')
 
         log.debug(f"Ftrack shot list: {len(ftrack_table_sorted)} rows")
 

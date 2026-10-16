@@ -33,7 +33,7 @@ def parse(file_name):
     fn = file_name.replace('\\', '/')
     try:
         filename = fn.decode("utf-8")
-    except:
+    except Exception:
         filename = fn
 
     seq = dict(full_path=filename, drive=u'', unc_host=u'', path=u'', name=u'', extension='', clean_name=u'',
@@ -91,7 +91,7 @@ def parse(file_name):
             seq["clean_name_sep_char"] = '_'
         if seq["clean_name"][-1] == '-':
             seq["clean_name_no_sep"] = seq["clean_name"][:-1]
-            seq["clean_name_sep_char"] = '-a'
+            seq["clean_name_sep_char"] = '-'
 
     return seq
 
@@ -121,10 +121,11 @@ def printf_pattern(full_path):
     r = prs['clean_name'] + '%0' + str(prs['padding']) + 'd.' + prs['extension']
     h = prs['clean_name'] + '#' * int(prs['padding']) + '.' + prs['extension']
 
-    # check if there are leading zeroes
+    # no leading zeroes (e.g. file1 .. file100): numbers are not padded, %d
+    # (it was %4d, which pads with spaces)
     # WARNING this will not work if it is not first frame of the sequence !!!
     if len(str(prs['number'])) == prs['padding']:
-        r = prs['clean_name'] + '%' + str(prs['padding']) + 'd.' + prs['extension']
+        r = prs['clean_name'] + '%d.' + prs['extension']
         h = prs['clean_name'] + '#' * int(prs['padding']) + '.' + prs['extension']
 
     # if no number (overwrites previous)
@@ -143,7 +144,7 @@ def path_from_path_and_number(some_path, number):
 
     prs = parse(some_path)
     numstr = pad_frame(number, prs['padding'])
-    return prs['paths'] + '/' + prs['clean_name'] + numstr + '.' + prs['extension']
+    return prs['path'] + '/' + prs['clean_name'] + numstr + '.' + prs['extension']
 
 
 if __name__ == "__main__":

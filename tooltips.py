@@ -656,12 +656,13 @@ ROW_TOOLTIPS = [
      "The row is skipped when Name, Pattern or Source is empty."),
     (r"parse_pattern_\d+$",
      "Regex run on Source. Case-sensitive.\n"
-     "Repl empty: the token is capture group 1 (empty if no match).\n"
+     "Repl empty: the token is capture group 1, or the whole match\n"
+     "when the pattern has no group (empty if no match).\n"
      "Repl set: every match in Source is replaced; a Source that\n"
      "doesn't match is used unchanged, so anchor with ^ and $.\n"
      "Example: ^([^_]+_[^_]+)_"),
     (r"parse_repl_\d+$",
-     "Replacement, e.g. \\1_\\2. Empty: use capture group 1.\n"
+     "Replacement, e.g. \\1_\\2. Empty: use capture group 1 (whole match without a group).\n"
      "Starting with lambda runs Python on the match:\n"
      "lambda m: m.group(1).upper()"),
     (r"parse_source_\d+$",
@@ -675,7 +676,8 @@ ROW_TOOLTIPS = [
     # Sidecar
     (r"side_pattern_\d+$",
      "Regex run on the sidecar file name (no folder).\n"
-     "Repl empty: the result is capture group 1 (no match: file ignored).\n"
+     "Repl empty: the result is capture group 1, or the whole match\n"
+     "without a group (no match: file ignored).\n"
      "Example: ^(\\w+_\\d+)\\.cdl$"),
     (r"side_repl_\d+$",
      "Optional replacement for the file name, e.g. \\1_\\2.\n"

@@ -48,7 +48,11 @@ class AyonPublish(object):
                     | getattr(subprocess, "DETACHED_PROCESS", 0)
                     | getattr(subprocess, "CREATE_NO_WINDOW", 0)
             )
-        popen = subprocess.Popen(args, **kwargs)
+        try:
+            popen = subprocess.Popen(args, **kwargs)
+        except OSError as e:
+            self.log.error(f"Could not start {args[0] if args else ''}: {e}")
+            return None
         popen_stdout, popen_stderr = popen.communicate()
         if popen_stdout:
             self.log.info(popen_stdout)
@@ -86,20 +90,24 @@ class AyonPublish(object):
         if self.ayon_csv is None:
             return
 
-        my_env = os.environ
-        # AYON FTRACK
-        my_env["FTRACK_SERVER"] = self.paths['FTRACK_SERVER']
-        my_env["FTRACK_API_KEY"] = self.paths['FTRACK_API_KEY']
-        my_env["FTRACK_API_USER"] = self.paths['FTRACK_API_USER']
-        # AYON SERVER
-        my_env["AYON_USERNAME"] = self.paths['AYON_USERNAME']
-        my_env["AYON_API_KEY"] = self.paths['AYON_API_KEY']
+        # a copy: writing to os.environ itself put the api keys into the
+        # environment of every later subprocess (converts, ffprobe...)
+        my_env = os.environ.copy()
+        for key in ("FTRACK_SERVER", "FTRACK_API_KEY", "FTRACK_API_USER",
+                    "AYON_USERNAME", "AYON_API_KEY"):
+            value = self.paths.get(key)
+            if value:
+                my_env[key] = str(value)
 
         self.log.info(f"Publishing {self.csv_path} to Ayon")
         self.log.debug(f"Command: {self.ayon_csv}")
-        popen = subprocess.Popen(self.ayon_csv, env=my_env,
-                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                                 text=True, errors='replace', **helpers.no_window())
+        try:
+            popen = subprocess.Popen(self.ayon_csv, env=my_env,
+                                     stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                     text=True, errors='replace', **helpers.no_window())
+        except OSError as e:
+            self.log.error(f"Ayon publish of {self.csv_name} could not start {self.ayon_csv[0]}: {e}")
+            return None
         popen_stdout, popen_stderr = popen.communicate()
         ret_code = popen.returncode
         for line in (popen_stdout or '').splitlines():
@@ -113,23 +121,42 @@ class AyonPublish(object):
 
         return ret_code
 
+    def _setting_text(self, key):
+        value = (self.settings.get(key) or {}).get('value')
+        return '' if value is None else str(value).strip()
+
+    @staticmethod
+    def deadline_arguments(args):
+        """
+        One command line string for Deadline's -arguments: every argument
+        quoted as the Windows worker splits it, so paths, project, folder and
+        task names with spaces stay one argument (a plain " ".join split them).
+        """
+        return subprocess.list2cmdline([str(a) for a in args])
+
     def publish_deadline(self):
+
+        if self.ayon_csv is None:
+            self.log.error("Deadline submission: no Ayon command prepared")
+            return None
 
         envs = ["FTRACK_SERVER", "FTRACK_API_KEY", "FTRACK_API_USER", "AYON_USERNAME", "AYON_API_KEY"]
         envs_list = []
         for i, one in enumerate(envs):
             val = self.paths.get(one)
-            if val is not None:
+            if val:
                 envs_list.append("-prop")
                 envs_list.append(f"EnvironmentKeyValue{str(i)}={one}={val}")
 
+        # deadlinecommand gets a list (no shell), so values with spaces are
+        # fine here; None values used to make Popen fail
         params_1 = [
-            self.paths['deadline'], '-SubmitCommandLineJob', '-executable', self.paths['ayon'].replace("/", "\\"),
-            '-pool', self.settings['dead_primpool']['value'],
-            '-group', self.settings['dead_group']['value'],
-            '-priority', str(self.settings['dead_priority']['value']),
-            '-department', self.settings['dead_department']['value'],
-            '-prop', f"LimitGroups={self.settings['dead_limits']['value']}",
+            self.paths['deadline'], '-SubmitCommandLineJob', '-executable', str(self.paths['ayon']).replace("/", "\\"),
+            '-pool', self._setting_text('dead_primpool'),
+            '-group', self._setting_text('dead_group'),
+            '-priority', self._setting_text('dead_priority'),
+            '-department', self._setting_text('dead_department'),
+            '-prop', f"LimitGroups={self._setting_text('dead_limits')}",
             "-prop", f"OutputDirectory0={self.csv_path}"
         ]
         params_1.extend(envs_list)
@@ -139,9 +166,8 @@ class AyonPublish(object):
             if value:
                 params_1.extend(['-prop', f"{job_key}={value}"])
 
-        # the deadline arguments have to be quoted, so pre-joining here
-        # since there is executable already in params_1, removing path to ayon
-        deadline_args = " ".join(self.ayon_csv[1:])
+        # the executable is already in params_1, so the ayon path is left out
+        deadline_args = self.deadline_arguments(self.ayon_csv[1:])
         params_2 = [
             '-name', self.csv_name,  # id
             '-arguments', deadline_args

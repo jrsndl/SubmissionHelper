@@ -156,7 +156,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         # Package Folder
         self.ui.package_folder.textChanged.connect(
-            partial(self.handler, 'package_folder', 'source_change'))
+            partial(self._handler_later, 'package_folder', 'source_change'))
         self.ui.package_browse.clicked.connect(
             partial(self.handler, 'package_browse', 'browse'))
         self.ui.package_explore.clicked.connect(
@@ -174,15 +174,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.age_type.currentIndexChanged.connect(
             partial(self.handler, 'age_type', 'refresh_spreadsheets_age'))
         self.ui.age_exclude.textChanged.connect(
-            partial(self.handler, 'age_exclude', 'refresh_spreadsheets_age'))
+            partial(self._handler_later, 'age_exclude', 'refresh_spreadsheets_age'))
         self.ui.age_include.textChanged.connect(
-            partial(self.handler, 'age_include', 'refresh_spreadsheets_age'))
+            partial(self._handler_later, 'age_include', 'refresh_spreadsheets_age'))
 
         # Rename Package
         self.ui.name_template.textChanged.connect(
-            partial(self.handler, 'name_template', 'package_rename'))
+            partial(self._handler_later, 'name_template', 'package_rename'))
         self.ui.name_date_regex.textChanged.connect(
-            partial(self.handler, 'name_date_regex', 'package_rename'))
+            partial(self._handler_later, 'name_date_regex', 'package_rename'))
         self.ui.name_version_per_date.clicked.connect(
             partial(self.handler, 'name_version_per_date', 'package_rename'))
         self.ui.name_version_zeroes.valueChanged.connect(
@@ -209,19 +209,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             for field in PARSE_FIELDS:
                 name = f"parse_{field}_{row:02d}"
                 getattr(self.ui, name).textChanged.connect(
-                    partial(self.handler, name, 'refresh_parsing'))
+                    partial(self._handler_later, name, 'refresh_parsing'))
 
         # Sidecar Tab
         self.ui.side_folder.textChanged.connect(
-            partial(self.handler, 'side_folder', 'refresh_side_files'))
+            partial(self._handler_later, 'side_folder', 'refresh_side_files'))
         self.ui.package_browse_2.clicked.connect(
             partial(self.browse_line_edit, self.ui.side_folder, 'dir', "Select Sidecar Search Folder"))
         self.ui.package_explore_2.clicked.connect(
             partial(self.explore_line_edit, self.ui.side_folder))
         self.ui.side_exclude.textChanged.connect(
-            partial(self.handler, 'side_exclude', 'refresh_side_files'))
+            partial(self._handler_later, 'side_exclude', 'refresh_side_files'))
         self.ui.side_include.textChanged.connect(
-            partial(self.handler, 'side_include', 'refresh_side_files'))
+            partial(self._handler_later, 'side_include', 'refresh_side_files'))
 
         self.ui.side_sub_only.clicked.connect(
             partial(self.handler, 'side_sub_only', 'refresh_side'))
@@ -231,65 +231,65 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'side_all', 'refresh_side'))
 
         self.ui.side_pattern_1.textChanged.connect(
-            partial(self.handler, 'side_pattern_1', 'refresh_side'))
+            partial(self._handler_later, 'side_pattern_1', 'refresh_side'))
         self.ui.side_repl_1.textChanged.connect(
-            partial(self.handler, 'side_repl_1', 'refresh_side'))
+            partial(self._handler_later, 'side_repl_1', 'refresh_side'))
         self.ui.side_match_1.textChanged.connect(
-            partial(self.handler, 'side_match_1', 'refresh_side'))
+            partial(self._handler_later, 'side_match_1', 'refresh_side'))
         self.ui.side_dest_1.textChanged.connect(
-            partial(self.handler, 'side_dest_1', 'refresh_side'))
+            partial(self._handler_later, 'side_dest_1', 'refresh_side'))
         self.ui.side_filter_1.textChanged.connect(
-            partial(self.handler, 'side_filter_1', 'refresh_side'))
+            partial(self._handler_later, 'side_filter_1', 'refresh_side'))
         self.ui.side_pattern_2.textChanged.connect(
-            partial(self.handler, 'side_pattern_2', 'refresh_side'))
+            partial(self._handler_later, 'side_pattern_2', 'refresh_side'))
         self.ui.side_repl_2.textChanged.connect(
-            partial(self.handler, 'side_repl_2', 'refresh_side'))
+            partial(self._handler_later, 'side_repl_2', 'refresh_side'))
         self.ui.side_match_2.textChanged.connect(
-            partial(self.handler, 'side_match_2', 'refresh_side'))
+            partial(self._handler_later, 'side_match_2', 'refresh_side'))
         self.ui.side_dest_2.textChanged.connect(
-            partial(self.handler, 'side_dest_2', 'refresh_side'))
+            partial(self._handler_later, 'side_dest_2', 'refresh_side'))
         self.ui.side_filter_2.textChanged.connect(
-            partial(self.handler, 'side_filter_2', 'refresh_side'))
+            partial(self._handler_later, 'side_filter_2', 'refresh_side'))
         self.ui.side_pattern_3.textChanged.connect(
-            partial(self.handler, 'side_pattern_3', 'refresh_side'))
+            partial(self._handler_later, 'side_pattern_3', 'refresh_side'))
         self.ui.side_repl_3.textChanged.connect(
-            partial(self.handler, 'side_repl_3', 'refresh_side'))
+            partial(self._handler_later, 'side_repl_3', 'refresh_side'))
         self.ui.side_match_3.textChanged.connect(
-            partial(self.handler, 'side_match_3', 'refresh_side'))
+            partial(self._handler_later, 'side_match_3', 'refresh_side'))
         self.ui.side_dest_3.textChanged.connect(
-            partial(self.handler, 'side_dest_3', 'refresh_side'))
+            partial(self._handler_later, 'side_dest_3', 'refresh_side'))
         self.ui.side_filter_3.textChanged.connect(
-            partial(self.handler, 'side_filter_3', 'refresh_side'))
+            partial(self._handler_later, 'side_filter_3', 'refresh_side'))
         self.ui.side_pattern_4.textChanged.connect(
-            partial(self.handler, 'side_pattern_4', 'refresh_side'))
+            partial(self._handler_later, 'side_pattern_4', 'refresh_side'))
         self.ui.side_repl_4.textChanged.connect(
-            partial(self.handler, 'side_repl_4', 'refresh_side'))
+            partial(self._handler_later, 'side_repl_4', 'refresh_side'))
         self.ui.side_match_4.textChanged.connect(
-            partial(self.handler, 'side_match_4', 'refresh_side'))
+            partial(self._handler_later, 'side_match_4', 'refresh_side'))
         self.ui.side_dest_4.textChanged.connect(
-            partial(self.handler, 'side_dest_4', 'refresh_side'))
+            partial(self._handler_later, 'side_dest_4', 'refresh_side'))
         self.ui.side_filter_4.textChanged.connect(
-            partial(self.handler, 'side_filter_4', 'refresh_side'))
+            partial(self._handler_later, 'side_filter_4', 'refresh_side'))
         self.ui.side_pattern_5.textChanged.connect(
-            partial(self.handler, 'side_pattern_5', 'refresh_side'))
+            partial(self._handler_later, 'side_pattern_5', 'refresh_side'))
         self.ui.side_repl_5.textChanged.connect(
-            partial(self.handler, 'side_repl_5', 'refresh_side'))
+            partial(self._handler_later, 'side_repl_5', 'refresh_side'))
         self.ui.side_match_5.textChanged.connect(
-            partial(self.handler, 'side_match_5', 'refresh_side'))
+            partial(self._handler_later, 'side_match_5', 'refresh_side'))
         self.ui.side_dest_5.textChanged.connect(
-            partial(self.handler, 'side_dest_5', 'refresh_side'))
+            partial(self._handler_later, 'side_dest_5', 'refresh_side'))
         self.ui.side_filter_5.textChanged.connect(
-            partial(self.handler, 'side_filter_5', 'refresh_side'))
+            partial(self._handler_later, 'side_filter_5', 'refresh_side'))
         self.ui.side_pattern_6.textChanged.connect(
-            partial(self.handler, 'side_pattern_6', 'refresh_side'))
+            partial(self._handler_later, 'side_pattern_6', 'refresh_side'))
         self.ui.side_repl_6.textChanged.connect(
-            partial(self.handler, 'side_repl_6', 'refresh_side'))
+            partial(self._handler_later, 'side_repl_6', 'refresh_side'))
         self.ui.side_match_6.textChanged.connect(
-            partial(self.handler, 'side_match_6', 'refresh_side'))
+            partial(self._handler_later, 'side_match_6', 'refresh_side'))
         self.ui.side_dest_6.textChanged.connect(
-            partial(self.handler, 'side_dest_6', 'refresh_side'))
+            partial(self._handler_later, 'side_dest_6', 'refresh_side'))
         self.ui.side_filter_6.textChanged.connect(
-            partial(self.handler, 'side_filter_6', 'refresh_side'))
+            partial(self._handler_later, 'side_filter_6', 'refresh_side'))
 
         # copy files button
         self.ui.side_copy.clicked.connect(
@@ -306,74 +306,74 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 partial(self.handler, _radio, 'rename_display'))
 
         self.ui.rename_filter_01.textChanged.connect(
-            partial(self.handler, 'rename_filter_01', 'refresh_rename'))
+            partial(self._handler_later, 'rename_filter_01', 'refresh_rename'))
         self.ui.rename_pattern_01.textChanged.connect(
-            partial(self.handler, 'rename_pattern_01', 'refresh_rename'))
+            partial(self._handler_later, 'rename_pattern_01', 'refresh_rename'))
         self.ui.rename_repl_01.textChanged.connect(
-            partial(self.handler, 'rename_repl_01', 'refresh_rename'))
+            partial(self._handler_later, 'rename_repl_01', 'refresh_rename'))
         self.ui.rename_source_01.valueChanged.connect(
             partial(self.handler, 'rename_source_01', 'refresh_rename'))
 
         self.ui.rename_filter_02.textChanged.connect(
-            partial(self.handler, 'rename_filter_02', 'refresh_rename'))
+            partial(self._handler_later, 'rename_filter_02', 'refresh_rename'))
         self.ui.rename_pattern_02.textChanged.connect(
-            partial(self.handler, 'rename_pattern_02', 'refresh_rename'))
+            partial(self._handler_later, 'rename_pattern_02', 'refresh_rename'))
         self.ui.rename_repl_02.textChanged.connect(
-            partial(self.handler, 'rename_repl_02', 'refresh_rename'))
+            partial(self._handler_later, 'rename_repl_02', 'refresh_rename'))
         self.ui.rename_source_02.valueChanged.connect(
             partial(self.handler, 'rename_source_02', 'refresh_rename'))
 
         self.ui.rename_filter_03.textChanged.connect(
-            partial(self.handler, 'rename_filter_03', 'refresh_rename'))
+            partial(self._handler_later, 'rename_filter_03', 'refresh_rename'))
         self.ui.rename_pattern_03.textChanged.connect(
-            partial(self.handler, 'rename_pattern_03', 'refresh_rename'))
+            partial(self._handler_later, 'rename_pattern_03', 'refresh_rename'))
         self.ui.rename_repl_03.textChanged.connect(
-            partial(self.handler, 'rename_repl_03', 'refresh_rename'))
+            partial(self._handler_later, 'rename_repl_03', 'refresh_rename'))
         self.ui.rename_source_03.valueChanged.connect(
             partial(self.handler, 'rename_source_03', 'refresh_rename'))
 
         self.ui.rename_filter_04.textChanged.connect(
-            partial(self.handler, 'rename_filter_04', 'refresh_rename'))
+            partial(self._handler_later, 'rename_filter_04', 'refresh_rename'))
         self.ui.rename_pattern_04.textChanged.connect(
-            partial(self.handler, 'rename_pattern_04', 'refresh_rename'))
+            partial(self._handler_later, 'rename_pattern_04', 'refresh_rename'))
         self.ui.rename_repl_04.textChanged.connect(
-            partial(self.handler, 'rename_repl_04', 'refresh_rename'))
+            partial(self._handler_later, 'rename_repl_04', 'refresh_rename'))
         self.ui.rename_source_04.valueChanged.connect(
             partial(self.handler, 'rename_source_04', 'refresh_rename'))
 
         self.ui.rename_filter_05.textChanged.connect(
-            partial(self.handler, 'rename_filter_05', 'refresh_rename'))
+            partial(self._handler_later, 'rename_filter_05', 'refresh_rename'))
         self.ui.rename_pattern_05.textChanged.connect(
-            partial(self.handler, 'rename_pattern_05', 'refresh_rename'))
+            partial(self._handler_later, 'rename_pattern_05', 'refresh_rename'))
         self.ui.rename_repl_05.textChanged.connect(
-            partial(self.handler, 'rename_repl_05', 'refresh_rename'))
+            partial(self._handler_later, 'rename_repl_05', 'refresh_rename'))
         self.ui.rename_source_05.valueChanged.connect(
             partial(self.handler, 'rename_source_05', 'refresh_rename'))
 
         self.ui.rename_filter_06.textChanged.connect(
-            partial(self.handler, 'rename_filter_06', 'refresh_rename'))
+            partial(self._handler_later, 'rename_filter_06', 'refresh_rename'))
         self.ui.rename_pattern_06.textChanged.connect(
-            partial(self.handler, 'rename_pattern_06', 'refresh_rename'))
+            partial(self._handler_later, 'rename_pattern_06', 'refresh_rename'))
         self.ui.rename_repl_06.textChanged.connect(
-            partial(self.handler, 'rename_repl_06', 'refresh_rename'))
+            partial(self._handler_later, 'rename_repl_06', 'refresh_rename'))
         self.ui.rename_source_06.valueChanged.connect(
             partial(self.handler, 'rename_source_06', 'refresh_rename'))
 
         self.ui.rename_filter_07.textChanged.connect(
-            partial(self.handler, 'rename_filter_07', 'refresh_rename'))
+            partial(self._handler_later, 'rename_filter_07', 'refresh_rename'))
         self.ui.rename_pattern_07.textChanged.connect(
-            partial(self.handler, 'rename_pattern_07', 'refresh_rename'))
+            partial(self._handler_later, 'rename_pattern_07', 'refresh_rename'))
         self.ui.rename_repl_07.textChanged.connect(
-            partial(self.handler, 'rename_repl_07', 'refresh_rename'))
+            partial(self._handler_later, 'rename_repl_07', 'refresh_rename'))
         self.ui.rename_source_07.valueChanged.connect(
             partial(self.handler, 'rename_source_07', 'refresh_rename'))
 
         self.ui.rename_filter_08.textChanged.connect(
-            partial(self.handler, 'rename_filter_08', 'refresh_rename'))
+            partial(self._handler_later, 'rename_filter_08', 'refresh_rename'))
         self.ui.rename_pattern_08.textChanged.connect(
-            partial(self.handler, 'rename_pattern_08', 'refresh_rename'))
+            partial(self._handler_later, 'rename_pattern_08', 'refresh_rename'))
         self.ui.rename_repl_08.textChanged.connect(
-            partial(self.handler, 'rename_repl_08', 'refresh_rename'))
+            partial(self._handler_later, 'rename_repl_08', 'refresh_rename'))
         self.ui.rename_source_08.valueChanged.connect(
             partial(self.handler, 'rename_source_08', 'refresh_rename'))
 
@@ -381,26 +381,26 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.ftrack_use.clicked.connect(
             partial(self.handler, 'ftrack_use', 'refresh_ftrack'))
         self.ui.ftrack_project.textChanged.connect(
-            partial(self.handler, 'ftrack_project', 'refresh_ftrack'))
+            partial(self._handler_later, 'ftrack_project', 'refresh_ftrack'))
         self.ui.ftrack_shot.textChanged.connect(
-            partial(self.handler, 'ftrack_shot', 'refresh_ftrack'))
+            partial(self._handler_later, 'ftrack_shot', 'refresh_ftrack'))
         self.ui.ftrack_task.textChanged.connect(
-            partial(self.handler, 'ftrack_task', 'refresh_ftrack'))
+            partial(self._handler_later, 'ftrack_task', 'refresh_ftrack'))
         # Extensions (only these get ftrack notes); was never connected
         self.ui.ftrack_include_2.textChanged.connect(
-            partial(self.handler, 'ftrack_include_2', 'refresh_ftrack'))
+            partial(self._handler_later, 'ftrack_include_2', 'refresh_ftrack'))
         self.ui.ftrack_label_use.clicked.connect(
             partial(self.handler, 'ftrack_label_use', 'refresh_ftrack'))
         self.ui.ftrack_label.textChanged.connect(
-            partial(self.handler, 'ftrack_label', 'refresh_ftrack'))
+            partial(self._handler_later, 'ftrack_label', 'refresh_ftrack'))
         self.ui.ftrack_version_use.clicked.connect(
             partial(self.handler, 'ftrack_version_use', 'refresh_ftrack'))
         self.ui.ftrack_version.textChanged.connect(
-            partial(self.handler, 'ftrack_version', 'refresh_ftrack'))
+            partial(self._handler_later, 'ftrack_version', 'refresh_ftrack'))
         self.ui.ftrack_note_pattern.textChanged.connect(
-            partial(self.handler, 'ftrack_note_pattern', 'select_ftrack'))
+            partial(self._handler_later, 'ftrack_note_pattern', 'select_ftrack'))
         self.ui.ftrack_note_repl.textChanged.connect(
-            partial(self.handler, 'ftrack_note_repl', 'select_ftrack'))
+            partial(self._handler_later, 'ftrack_note_repl', 'select_ftrack'))
         self.ui.ftrack_do_op.clicked.connect(
             partial(self.handler, 'ftrack_do_op', 'refresh_ftrack'))
         # Query Notes was never connected: toggling it did nothing until a re-read
@@ -411,16 +411,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         # vendor
         self.ui.vendor_csv_path.textChanged.connect(
-            partial(self.handler, 'vendor_csv_path', 'refresh_vendor'))
+            partial(self._handler_later, 'vendor_csv_path', 'refresh_vendor'))
         self.ui.vendor_csv_explore.clicked.connect(
             partial(self.explore_line_edit, self.ui.vendor_csv_path))
         self.ui.vendor_csv_browse.clicked.connect(
             partial(self.browse_line_edit, self.ui.vendor_csv_path, 'csv', "Select Vendor CSV"))
 
         self.ui.vendor_csv_package_key.textChanged.connect(
-            partial(self.handler, 'vendor_csv_package_key', 'refresh_vendor'))
+            partial(self._handler_later, 'vendor_csv_package_key', 'refresh_vendor'))
         self.ui.vendor_csv_vendor_key.textChanged.connect(
-            partial(self.handler, 'vendor_csv_vendor_key', 'refresh_vendor'))
+            partial(self._handler_later, 'vendor_csv_vendor_key', 'refresh_vendor'))
 
         self.ui.vendor_csv_ignore.clicked.connect(
             partial(self.handler, 'vendor_csv_ignore', 'refresh_vendor'))
@@ -429,15 +429,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.vendor_csv_skip.clicked.connect(
             partial(self.handler, 'vendor_csv_skip', 'refresh_vendor'))
         self.ui.vendor_csv_skip_by.textChanged.connect(
-            partial(self.handler, 'vendor_csv_skip_by', 'refresh_vendor'))
+            partial(self._handler_later, 'vendor_csv_skip_by', 'refresh_vendor'))
         self.ui.vendor_csv_skip_what.textChanged.connect(
-            partial(self.handler, 'vendor_csv_skip_what', 'refresh_vendor'))
+            partial(self._handler_later, 'vendor_csv_skip_what', 'refresh_vendor'))
 
         self.ui.vendor_csv_prefs_spreadsheet.textChanged.connect(
-            partial(self.handler, 'vendor_csv_prefs_spreadsheet',
+            partial(self._handler_later, 'vendor_csv_prefs_spreadsheet',
                     'refresh_vendor'))
         self.ui.vendor_csv_prefs_repres.textChanged.connect(
-            partial(self.handler, 'vendor_csv_prefs_repres',
+            partial(self._handler_later, 'vendor_csv_prefs_repres',
                     'refresh_vendor'))
 
         # Convert
@@ -447,25 +447,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         # Spreadsheet
         self.ui.sub_columns.textChanged.connect(
-            partial(self.handler, 'sub_columns', 'refresh_spreadsheets'))
+            partial(self._handler_later, 'sub_columns', 'refresh_spreadsheets'))
         self.ui.sub_exclude.textChanged.connect(
-            partial(self.handler, 'sub_exclude', 'refresh_spreadsheets'))
+            partial(self._handler_later, 'sub_exclude', 'refresh_spreadsheets'))
         self.ui.sub_include.textChanged.connect(
-            partial(self.handler, 'sub_include', 'refresh_spreadsheets'))
+            partial(self._handler_later, 'sub_include', 'refresh_spreadsheets'))
 
         self.ui.log_columns.textChanged.connect(
-            partial(self.handler, 'log_columns', 'refresh_spreadsheets'))
+            partial(self._handler_later, 'log_columns', 'refresh_spreadsheets'))
         self.ui.log_exclude.textChanged.connect(
-            partial(self.handler, 'log_exclude', 'refresh_spreadsheets'))
+            partial(self._handler_later, 'log_exclude', 'refresh_spreadsheets'))
         self.ui.log_include.textChanged.connect(
-            partial(self.handler, 'log_include', 'refresh_spreadsheets'))
+            partial(self._handler_later, 'log_include', 'refresh_spreadsheets'))
 
         self.ui.txt_columns.textChanged.connect(
-            partial(self.handler, 'txt_columns', 'refresh_spreadsheets'))
+            partial(self._handler_later, 'txt_columns', 'refresh_spreadsheets'))
         self.ui.txt_exclude.textChanged.connect(
-            partial(self.handler, 'txt_exclude', 'refresh_spreadsheets'))
+            partial(self._handler_later, 'txt_exclude', 'refresh_spreadsheets'))
         self.ui.txt_include.textChanged.connect(
-            partial(self.handler, 'txt_include', 'refresh_spreadsheets'))
+            partial(self._handler_later, 'txt_include', 'refresh_spreadsheets'))
 
         # Checks Tab
         # the size checks need the sizes read again
@@ -476,147 +476,147 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'check_sequence_holes', 'refresh_size_checks'))
 
         self.ui.check_if_01.textChanged.connect(
-            partial(self.handler, 'check_if_01', 'refresh_checks'))
+            partial(self._handler_later, 'check_if_01', 'refresh_checks'))
         self.ui.check_check_01.textChanged.connect(
-            partial(self.handler, 'check_check_01', 'refresh_checks'))
+            partial(self._handler_later, 'check_check_01', 'refresh_checks'))
         self.ui.check_warning_01.clicked.connect(
             partial(self.handler, 'check_warning_01', 'refresh_checks'))
         self.ui.check_error_01.clicked.connect(
             partial(self.handler, 'check_error_01', 'refresh_checks'))
         self.ui.check_message_01.textChanged.connect(
-            partial(self.handler, 'check_message_01', 'refresh_checks'))
+            partial(self._handler_later, 'check_message_01', 'refresh_checks'))
 
         self.ui.check_if_02.textChanged.connect(
-            partial(self.handler, 'check_if_02', 'refresh_checks'))
+            partial(self._handler_later, 'check_if_02', 'refresh_checks'))
         self.ui.check_check_02.textChanged.connect(
-            partial(self.handler, 'check_check_02', 'refresh_checks'))
+            partial(self._handler_later, 'check_check_02', 'refresh_checks'))
         self.ui.check_warning_02.clicked.connect(
             partial(self.handler, 'check_warning_02', 'refresh_checks'))
         self.ui.check_error_02.clicked.connect(
             partial(self.handler, 'check_error_02', 'refresh_checks'))
         self.ui.check_message_02.textChanged.connect(
-            partial(self.handler, 'check_message_02', 'refresh_checks'))
+            partial(self._handler_later, 'check_message_02', 'refresh_checks'))
 
         self.ui.check_if_03.textChanged.connect(
-            partial(self.handler, 'check_if_03', 'refresh_checks'))
+            partial(self._handler_later, 'check_if_03', 'refresh_checks'))
         self.ui.check_check_03.textChanged.connect(
-            partial(self.handler, 'check_check_03', 'refresh_checks'))
+            partial(self._handler_later, 'check_check_03', 'refresh_checks'))
         self.ui.check_warning_03.clicked.connect(
             partial(self.handler, 'check_warning_03', 'refresh_checks'))
         self.ui.check_error_03.clicked.connect(
             partial(self.handler, 'check_error_03', 'refresh_checks'))
         self.ui.check_message_03.textChanged.connect(
-            partial(self.handler, 'check_message_03', 'refresh_checks'))
+            partial(self._handler_later, 'check_message_03', 'refresh_checks'))
 
         self.ui.check_if_04.textChanged.connect(
-            partial(self.handler, 'check_if_04', 'refresh_checks'))
+            partial(self._handler_later, 'check_if_04', 'refresh_checks'))
         self.ui.check_check_04.textChanged.connect(
-            partial(self.handler, 'check_check_04', 'refresh_checks'))
+            partial(self._handler_later, 'check_check_04', 'refresh_checks'))
         self.ui.check_warning_04.clicked.connect(
             partial(self.handler, 'check_warning_04', 'refresh_checks'))
         self.ui.check_error_04.clicked.connect(
             partial(self.handler, 'check_error_04', 'refresh_checks'))
         self.ui.check_message_04.textChanged.connect(
-            partial(self.handler, 'check_message_04', 'refresh_checks'))
+            partial(self._handler_later, 'check_message_04', 'refresh_checks'))
 
         self.ui.check_if_05.textChanged.connect(
-            partial(self.handler, 'check_if_05', 'refresh_checks'))
+            partial(self._handler_later, 'check_if_05', 'refresh_checks'))
         self.ui.check_check_05.textChanged.connect(
-            partial(self.handler, 'check_check_05', 'refresh_checks'))
+            partial(self._handler_later, 'check_check_05', 'refresh_checks'))
         self.ui.check_warning_05.clicked.connect(
             partial(self.handler, 'check_warning_05', 'refresh_checks'))
         self.ui.check_error_05.clicked.connect(
             partial(self.handler, 'check_error_05', 'refresh_checks'))
         self.ui.check_message_05.textChanged.connect(
-            partial(self.handler, 'check_message_05', 'refresh_checks'))
+            partial(self._handler_later, 'check_message_05', 'refresh_checks'))
 
         self.ui.check_if_06.textChanged.connect(
-            partial(self.handler, 'check_if_06', 'refresh_checks'))
+            partial(self._handler_later, 'check_if_06', 'refresh_checks'))
         self.ui.check_check_06.textChanged.connect(
-            partial(self.handler, 'check_check_06', 'refresh_checks'))
+            partial(self._handler_later, 'check_check_06', 'refresh_checks'))
         self.ui.check_warning_06.clicked.connect(
             partial(self.handler, 'check_warning_06', 'refresh_checks'))
         self.ui.check_error_06.clicked.connect(
             partial(self.handler, 'check_error_06', 'refresh_checks'))
         self.ui.check_message_06.textChanged.connect(
-            partial(self.handler, 'check_message_06', 'refresh_checks'))
+            partial(self._handler_later, 'check_message_06', 'refresh_checks'))
 
         self.ui.check_if_07.textChanged.connect(
-            partial(self.handler, 'check_if_07', 'refresh_checks'))
+            partial(self._handler_later, 'check_if_07', 'refresh_checks'))
         self.ui.check_check_07.textChanged.connect(
-            partial(self.handler, 'check_check_07', 'refresh_checks'))
+            partial(self._handler_later, 'check_check_07', 'refresh_checks'))
         self.ui.check_warning_07.clicked.connect(
             partial(self.handler, 'check_warning_07', 'refresh_checks'))
         self.ui.check_error_07.clicked.connect(
             partial(self.handler, 'check_error_07', 'refresh_checks'))
         self.ui.check_message_07.textChanged.connect(
-            partial(self.handler, 'check_message_07', 'refresh_checks'))
+            partial(self._handler_later, 'check_message_07', 'refresh_checks'))
 
         self.ui.check_if_08.textChanged.connect(
-            partial(self.handler, 'check_if_08', 'refresh_checks'))
+            partial(self._handler_later, 'check_if_08', 'refresh_checks'))
         self.ui.check_check_08.textChanged.connect(
-            partial(self.handler, 'check_check_08', 'refresh_checks'))
+            partial(self._handler_later, 'check_check_08', 'refresh_checks'))
         self.ui.check_warning_08.clicked.connect(
             partial(self.handler, 'check_warning_08', 'refresh_checks'))
         self.ui.check_error_08.clicked.connect(
             partial(self.handler, 'check_error_08', 'refresh_checks'))
         self.ui.check_message_08.textChanged.connect(
-            partial(self.handler, 'check_message_08', 'refresh_checks'))
+            partial(self._handler_later, 'check_message_08', 'refresh_checks'))
 
         self.ui.check_if_09.textChanged.connect(
-            partial(self.handler, 'check_if_09', 'refresh_checks'))
+            partial(self._handler_later, 'check_if_09', 'refresh_checks'))
         self.ui.check_check_09.textChanged.connect(
-            partial(self.handler, 'check_check_09', 'refresh_checks'))
+            partial(self._handler_later, 'check_check_09', 'refresh_checks'))
         self.ui.check_warning_09.clicked.connect(
             partial(self.handler, 'check_warning_09', 'refresh_checks'))
         self.ui.check_error_09.clicked.connect(
             partial(self.handler, 'check_error_09', 'refresh_checks'))
         self.ui.check_message_09.textChanged.connect(
-            partial(self.handler, 'check_message_09', 'refresh_checks'))
+            partial(self._handler_later, 'check_message_09', 'refresh_checks'))
 
         self.ui.check_if_10.textChanged.connect(
-            partial(self.handler, 'check_if_10', 'refresh_checks'))
+            partial(self._handler_later, 'check_if_10', 'refresh_checks'))
         self.ui.check_check_10.textChanged.connect(
-            partial(self.handler, 'check_check_10', 'refresh_checks'))
+            partial(self._handler_later, 'check_check_10', 'refresh_checks'))
         self.ui.check_warning_10.clicked.connect(
             partial(self.handler, 'check_warning_10', 'refresh_checks'))
         self.ui.check_error_10.clicked.connect(
             partial(self.handler, 'check_error_10', 'refresh_checks'))
         self.ui.check_message_10.textChanged.connect(
-            partial(self.handler, 'check_message_10', 'refresh_checks'))
+            partial(self._handler_later, 'check_message_10', 'refresh_checks'))
 
         self.ui.check_if_11.textChanged.connect(
-            partial(self.handler, 'check_if_11', 'refresh_checks'))
+            partial(self._handler_later, 'check_if_11', 'refresh_checks'))
         self.ui.check_check_11.textChanged.connect(
-            partial(self.handler, 'check_check_11', 'refresh_checks'))
+            partial(self._handler_later, 'check_check_11', 'refresh_checks'))
         self.ui.check_warning_11.clicked.connect(
             partial(self.handler, 'check_warning_11', 'refresh_checks'))
         self.ui.check_error_11.clicked.connect(
             partial(self.handler, 'check_error_11', 'refresh_checks'))
         self.ui.check_message_11.textChanged.connect(
-            partial(self.handler, 'check_message_11', 'refresh_checks'))
+            partial(self._handler_later, 'check_message_11', 'refresh_checks'))
 
         self.ui.check_if_12.textChanged.connect(
-            partial(self.handler, 'check_if_12', 'refresh_checks'))
+            partial(self._handler_later, 'check_if_12', 'refresh_checks'))
         self.ui.check_check_12.textChanged.connect(
-            partial(self.handler, 'check_check_12', 'refresh_checks'))
+            partial(self._handler_later, 'check_check_12', 'refresh_checks'))
         self.ui.check_warning_12.clicked.connect(
             partial(self.handler, 'check_warning_12', 'refresh_checks'))
         self.ui.check_error_12.clicked.connect(
             partial(self.handler, 'check_error_12', 'refresh_checks'))
         self.ui.check_message_12.textChanged.connect(
-            partial(self.handler, 'check_message_12', 'refresh_checks'))
+            partial(self._handler_later, 'check_message_12', 'refresh_checks'))
 
         self.ui.check_if_13.textChanged.connect(
-            partial(self.handler, 'check_if_13', 'refresh_checks'))
+            partial(self._handler_later, 'check_if_13', 'refresh_checks'))
         self.ui.check_check_13.textChanged.connect(
-            partial(self.handler, 'check_check_13', 'refresh_checks'))
+            partial(self._handler_later, 'check_check_13', 'refresh_checks'))
         self.ui.check_warning_13.clicked.connect(
             partial(self.handler, 'check_warning_13', 'refresh_checks'))
         self.ui.check_error_13.clicked.connect(
             partial(self.handler, 'check_error_13', 'refresh_checks'))
         self.ui.check_message_13.textChanged.connect(
-            partial(self.handler, 'check_message_13', 'refresh_checks'))
+            partial(self._handler_later, 'check_message_13', 'refresh_checks'))
 
         # check rows 14-21 (rows 1-13 are connected one by one above)
         for _row in range(14, 22):
@@ -625,32 +625,33 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                                     ('error', 'clicked')):
                 _name = f"check_{_field}_{_row:02d}"
                 getattr(getattr(self.ui, _name), _signal).connect(
-                    partial(self.handler, _name, 'refresh_checks'))
+                    partial(self._handler_later if _signal == 'textChanged' else self.handler,
+                            _name, 'refresh_checks'))
 
         # Package name: Version Regex
         self.ui.name_version_regex.textChanged.connect(
-            partial(self.handler, 'name_version_regex', 'package_rename'))
+            partial(self._handler_later, 'name_version_regex', 'package_rename'))
 
         # Data tab: Column Prefix and the match rules
         self.ui.name_date_prefix.textChanged.connect(
-            partial(self.handler, 'name_date_prefix', 'refresh_data_csv'))
+            partial(self._handler_later, 'name_date_prefix', 'refresh_data_csv'))
         for _n in (1, 2, 3):
             for _name in (f"data_package{_n}", f"data_data{_n}"):
                 getattr(self.ui, _name).textChanged.connect(
-                    partial(self.handler, _name, 'refresh_data_csv'))
+                    partial(self._handler_later, _name, 'refresh_data_csv'))
             getattr(self.ui, f"data_package{_n}_chbx").clicked.connect(
                 partial(self.handler, f"data_package{_n}_chbx", 'refresh_data_csv'))
 
         # Merge by
         self.ui.prefs_merge_by.textChanged.connect(
-            partial(self.handler, 'prefs_merge_by', 'refresh_merge'))
+            partial(self._handler_later, 'prefs_merge_by', 'refresh_merge'))
 
         # Convert rows: the convert_pathNN keys in the spreadsheets
         for _row in range(1, 9):
             for _field in ('if', 'exe', 'args', 'name'):
                 _name = f"thumbs_{_field}_{_row:02d}"
                 getattr(self.ui, _name).textChanged.connect(
-                    partial(self.handler, _name, 'refresh_spreadsheets'))
+                    partial(self._handler_later, _name, 'refresh_spreadsheets'))
 
 
 
@@ -670,7 +671,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.prefs_tc_from_counter.clicked.connect(
             partial(self.handler, 'prefs_tc_from_counter', 'refresh_parsing'))
         self.ui.prefs_tc_default.textChanged.connect(
-            partial(self.handler, 'prefs_tc_default', 'refresh_parsing'))
+            partial(self._handler_later, 'prefs_tc_default', 'refresh_parsing'))
 
         self.ui.prefs_counter_start.valueChanged.connect(
             partial(self.handler, 'prefs_counter_start', 'refresh_parsing'))
@@ -684,11 +685,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.prefs_merge_collapse.clicked.connect(
             partial(self.handler, 'prefs_merge_collapse', 'refresh_merge'))
         self.ui.prefs_merge_sep.textChanged.connect(
-            partial(self.handler, 'prefs_merge_sep', 'refresh_merge'))
+            partial(self._handler_later, 'prefs_merge_sep', 'refresh_merge'))
         self.ui.prefs_merge_sort.textChanged.connect(
-            partial(self.handler, 'prefs_merge_sort', 'refresh_merge'))
+            partial(self._handler_later, 'prefs_merge_sort', 'refresh_merge'))
         self.ui.prefs_merge_order.textChanged.connect(
-            partial(self.handler, 'prefs_merge_order', 'refresh_merge'))
+            partial(self._handler_later, 'prefs_merge_order', 'refresh_merge'))
         self.ui.prefs_merge_hide.clicked.connect(
             partial(self.handler, 'prefs_merge_hide', 'refresh_merge'))
 
@@ -705,7 +706,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.export_sub_custom.clicked.connect(
             partial(self.handler, 'export_sub_custom', 'refresh_export_prep'))
         self.ui.export_sub_custom_path.textChanged.connect(
-            partial(self.handler,
+            partial(self._handler_later,
                     'export_sub_custom_path', 'refresh_export_prep'))
 
         self.ui.export_log_excel.clicked.connect(
@@ -719,7 +720,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.export_log_custom.clicked.connect(
             partial(self.handler, 'export_log_custom', 'refresh_export_prep'))
         self.ui.export_log_custom_path.textChanged.connect(
-            partial(self.handler,
+            partial(self._handler_later,
                     'export_log_custom_path', 'refresh_export_prep'))
 
         # Text Tab
@@ -732,7 +733,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.text_custom.clicked.connect(
             partial(self.handler, 'text_custom', 'refresh_text'))
         self.ui.text_custom_path.textChanged.connect(
-            partial(self.handler, 'text_custom_path', 'refresh_text'))
+            partial(self._handler_later, 'text_custom_path', 'refresh_text'))
 
         self.ui.text_add_titles.clicked.connect(
             partial(self.handler, 'text_add_titles', 'refresh_text'))
@@ -742,15 +743,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'text_sep_fixed', 'refresh_text'))
 
         self.ui.text_header.textChanged.connect(
-            partial(self.handler, 'text_header', 'refresh_text'))
+            partial(self._handler_later, 'text_header', 'refresh_text'))
         self.ui.text_footer.textChanged.connect(
-            partial(self.handler, 'text_footer', 'refresh_text'))
+            partial(self._handler_later, 'text_footer', 'refresh_text'))
 
         # Presets Tab
         self.ui.load_preset_button.clicked.connect(
             partial(self.handler, 'load_preset_button', 'load_preset'))
         self.ui.save_preset_name.textChanged.connect(
-            partial(self.handler, 'save_preset_text', 'save_presets'))
+            partial(self._handler_later, 'save_preset_text', 'save_presets'))
         self.ui.save_preset_button.clicked.connect(
             partial(self.handler, 'save_preset_button', 'save_presets'))
         self.ui.preset_explore.clicked.connect(
@@ -804,27 +805,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         # Data Tab
         self.ui.tree_filter_file.textChanged.connect(
-            partial(self.handler, 'tree_filter_file', 'data_filter'))
+            partial(self._handler_later, 'tree_filter_file', 'data_filter'))
         self.ui.tree_filter_key.textChanged.connect(
-            partial(self.handler, 'tree_filter_key', 'data_filter'))
+            partial(self._handler_later, 'tree_filter_key', 'data_filter'))
         self.ui.tree_filter_value.textChanged.connect(
-            partial(self.handler, 'tree_filter_value', 'data_filter'))
+            partial(self._handler_later, 'tree_filter_value', 'data_filter'))
 
 
         # Ayon Tab
         self.ui.ayon_project.textChanged.connect(
-            partial(self.handler, 'ayon_project', 'ayon_changed'))
+            partial(self._handler_later, 'ayon_project', 'ayon_changed'))
         self.ui.ayon_prefix.textChanged.connect(
-            partial(self.handler, 'ayon_prefix', 'ayon_rematch'))
+            partial(self._handler_later, 'ayon_prefix', 'ayon_rematch'))
         self.ui.ayon_output_folder.textChanged.connect(
-            partial(self.handler, 'ayon_output_folder', 'ayon_changed'))
+            partial(self._handler_later, 'ayon_output_folder', 'ayon_changed'))
         self.ui.ayon_path_browse_2.clicked.connect(
             partial(self.browse_line_edit, self.ui.ayon_output_folder, 'dir', "Select Ayon List Output Folder"))
 
         # Data CSV (Data tab)
         self.ui.data_csv_browse.clicked.connect(self.browse_data_csv)
         self.ui.data_csv_path.textChanged.connect(
-            partial(self.handler, 'data_csv_path', 'refresh_data_csv'))
+            partial(self._handler_later, 'data_csv_path', 'refresh_data_csv'))
         self.ui.data_csv_latest.clicked.connect(
             partial(self.handler, 'data_csv_latest', 'refresh_data_csv'))
         self.ui.data_enable.clicked.connect(
@@ -834,7 +835,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.data_csv_browse_2.clicked.connect(
             partial(self.browse_line_edit, self.ui.replace_csv_path, 'csv', "Select Search and Replace CSV"))
         self.ui.replace_csv_path.textChanged.connect(
-            partial(self.handler, 'replace_csv_path', 'refresh_replace_csv'))
+            partial(self._handler_later, 'replace_csv_path', 'refresh_replace_csv'))
         self.ui.replace_enable.clicked.connect(
             partial(self.handler, 'replace_enable', 'refresh_replace_csv'))
 
@@ -862,13 +863,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.ayon_filter_assignee_chbx.clicked.connect(
             partial(self.handler, 'ayon_filter_assignee_chbx', 'ayon_changed_filter'))
         self.ui.ayon_filter_tasktypes.textChanged.connect(
-            partial(self.handler, 'ayon_filter_tasktypes', 'ayon_changed_filter'))
+            partial(self._handler_later, 'ayon_filter_tasktypes', 'ayon_changed_filter'))
         self.ui.ayon_filter_taskname_chbx.clicked.connect(
             partial(self.handler, 'ayon_filter_taskname_chbx', 'ayon_changed_filter'))
         self.ui.ayon_filter_tasknames.textChanged.connect(
-            partial(self.handler, 'ayon_filter_tasknames', 'ayon_changed_filter'))
+            partial(self._handler_later, 'ayon_filter_tasknames', 'ayon_changed_filter'))
         self.ui.ayon_filter_assignees.textChanged.connect(
-            partial(self.handler, 'ayon_filter_assignees', 'ayon_changed_filter'))
+            partial(self._handler_later, 'ayon_filter_assignees', 'ayon_changed_filter'))
 
         self.ui.ayon_package1_chbx.clicked.connect(
             partial(self.handler, 'ayon_package1_chbx', 'ayon_rematch'))
@@ -877,22 +878,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.ayon_package3_chbx.clicked.connect(
             partial(self.handler, 'ayon_package3_chbx', 'ayon_rematch'))
         self.ui.ayon_package1.textChanged.connect(
-            partial(self.handler, 'ayon_package1',
+            partial(self._handler_later, 'ayon_package1',
                     'ayon_rematch'))
         self.ui.ayon_list1.textChanged.connect(
-            partial(self.handler, 'ayon_list1',
+            partial(self._handler_later, 'ayon_list1',
                     'ayon_rematch'))
         self.ui.ayon_package2.textChanged.connect(
-            partial(self.handler, 'ayon_package2',
+            partial(self._handler_later, 'ayon_package2',
                     'ayon_rematch'))
         self.ui.ayon_list2.textChanged.connect(
-            partial(self.handler, 'ayon_list2',
+            partial(self._handler_later, 'ayon_list2',
                     'ayon_rematch'))
         self.ui.ayon_package3.textChanged.connect(
-            partial(self.handler, 'ayon_package3',
+            partial(self._handler_later, 'ayon_package3',
                     'ayon_rematch'))
         self.ui.ayon_list3.textChanged.connect(
-            partial(self.handler, 'ayon_list3',
+            partial(self._handler_later, 'ayon_list3',
                     'ayon_rematch'))
         self.ui.ayon_export_butt.clicked.connect(
             partial(self.handler, 'ayon_export_butt', 'ayon_export_butt'))
@@ -904,9 +905,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.ayon_version_match_chbx.clicked.connect(
             partial(self.handler, 'ayon_version_match_chbx', 'refresh_spreadsheets'))
         self.ui.ayon_version_match_pkg.textChanged.connect(
-            partial(self.handler, 'ayon_version_match_pkg', 'refresh_spreadsheets'))
+            partial(self._handler_later, 'ayon_version_match_pkg', 'refresh_spreadsheets'))
         self.ui.ayon_version_match_data.textChanged.connect(
-            partial(self.handler, 'ayon_version_match_data', 'refresh_spreadsheets'))
+            partial(self._handler_later, 'ayon_version_match_data', 'refresh_spreadsheets'))
 
         # preset name is empty, disable save button
         #self.ui.save_preset_button.setEnabled(False)
@@ -955,6 +956,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         log.log(sh_logging.TRACE, "-> handler sender: {}, group: {}".format(
             str(sender), str(group)))
 
+        # this refresh runs now with the current values: a deferred one of
+        # the same kind would only repeat it
+        self._cancel_later(group)
+
         # refresh self.settings
         self.settings_from_gui()
 
@@ -990,12 +995,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 renamed = (pth + dst).replace('\\', '/')
                 self.data.manual_rename()
                 if os.path.isdir(renamed):
+                    # signals blocked: the text change would scan the folder
+                    # again (it was scanned three times after a rename)
+                    self.ui.package_folder.blockSignals(True)
                     self.ui.package_folder.setText(renamed)
+                    self.ui.package_folder.blockSignals(False)
                     self.settings_from_gui()
                     self.data = Sequencer(renamed, sequence_mode='holes_allowed',
                                           gui=self.settings,
                                           more_settings=self.settings_obj, ui=self.ui, headless=self.no_gui)
                     self.show_all()
+                    return
 
         if group == 'package_rename':
             if self.data:
@@ -1099,15 +1109,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         if group == 'refresh_vendor':
             if self.data:
-
-                self.data.vendor_csv_all()
-                self.data.vendor_csv_all()
+                # transform_data reads the vendor csv and builds the tables
+                # (the vendor csv was processed three times per edit)
                 self.data.transform_data()
-
-                # parse table headers
-                self.data.prepare_all_columns()
-                # fill tables for export and display
-                self.data.prepare_tables()
                 self.show_all()
 
         if group == 'refresh_data_csv':
@@ -1198,8 +1202,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
                             self.settings_update_app_title()
                             self.settings_update_dropbox()
-                        except:
-                            log.error('Error saving preset {}'.format(preset_name))
+                        except Exception as e:
+                            log.error('Error saving preset {}: {}'.format(preset_name, e))
             else:
                 #self.ui.save_preset_button.setEnabled(False)
                 pass
@@ -1226,12 +1230,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             self.settings_update("save_preset_name",
                                  self.ui.save_preset_name,
                                  value=preset_to_load)
+            # edits made before the load are superseded by the preset
+            self._cancel_later()
             # the tables were cleared: build them again with the new preset,
             # so Go doesn't export the data of the previous one
             if self.data is not None:
                 self._reload_package()
             """
-            except:
+            except Exception:
                 log.error('Error reading preset {}'.format(preset_to_load))
             """
 
@@ -1276,6 +1282,43 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         if group == "tab_pairs":
             self.gui_show_hide_modules()
+
+    # typing pause before a text field refreshes the tables (ms)
+    TYPING_DELAY_MS = 350
+
+    def _handler_later(self, sender, group, *more):
+        """
+        Text fields: refresh once typing pauses instead of on every keystroke
+        (every keystroke used to read all ~1000 widgets and rebuild the data).
+        Different refresh kinds typed one after the other all run, in order.
+        """
+        pending = self.__dict__.setdefault('_pending_refresh', {})
+        pending.pop(group, None)
+        pending[group] = (sender, more)
+        timer = self.__dict__.get('_refresh_timer')
+        if timer is None:
+            timer = QtCore.QTimer(self)
+            timer.setSingleShot(True)
+            timer.timeout.connect(self._run_pending)
+            self._refresh_timer = timer
+        timer.start(self.TYPING_DELAY_MS)
+
+    def _run_pending(self):
+        pending = self.__dict__.get('_pending_refresh') or {}
+        while pending:
+            group = next(iter(pending))
+            sender, more = pending.pop(group)
+            self.handler(sender, group, *more)
+
+    def _cancel_later(self, group=None):
+        """forget deferred refreshes: of one group, or all (group None)"""
+        pending = self.__dict__.get('_pending_refresh')
+        if not pending:
+            return
+        if group is None:
+            pending.clear()
+        else:
+            pending.pop(group, None)
 
     def show_data(self):
 
@@ -1517,7 +1560,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             if pth is not None and pth != "":
                 prs = parse_file_name.parse(pth)
                 last_dir = prs["parts"][-1]
-        except:
+        except Exception:
             pass
 
         return last_dir
@@ -1553,7 +1596,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                                          column_number,
                                          QtWidgets.QTableWidgetItem(str(line[column_number]))
                                          )
-                    except:
+                    except Exception:
                         log.error("can't display table row")
 
                     if one_item:
@@ -1616,7 +1659,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 else:
                     # preselect a combobox value by index
                     self.ui.load_preset_combobox.setCurrentIndex(index)
-            except:
+            except Exception:
                 log.error("Failed to set settings dropbox index.")
 
             self.ui.load_preset_combobox.blockSignals(False)
@@ -1721,18 +1764,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         """
         Applies values from self.settings to gui
         """
-        def str_to_bool(my_str):
-            if my_str == "True":
-                _b = True
-            elif my_str == "False":
-                _b = False
-            if my_str == "true":
-                _b = True
-            elif my_str == "false":
-                _b = False
-            else:
-                _b = bool(my_str)
-            return _b
+        str_to_bool = setting_to_bool
 
         self.log.debug('-> settings_to_gui')
         skip_names = [
@@ -1782,59 +1814,57 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 obj.clear()
                 try:
                     obj.addItems(one_setting['all_items'])
-                    _index = one_setting['value']
-                    if _index.isdigit():
-                        if _index <= -1 or _index > len(one_setting['all_items']):
-                            pass
-                        else:
-                            # preselect a combobox value by index
-                            obj.setCurrentIndex(_index)
+                    _index = str(one_setting['value'])
+                    if _index in one_setting['all_items']:
+                        # the saved value is the item text (also when it is a number)
+                        obj.setCurrentText(_index)
+                    elif _index.isdigit() and int(_index) < len(one_setting['all_items']):
+                        # preselect a combobox value by index
+                        obj.setCurrentIndex(int(_index))
                     else:
                         obj.setCurrentText(_index)
-                except:
+                except Exception:
                     self.log.error("Error restoring QComboBox {}".format(
                         str(obj.objectName())))
             elif isinstance(obj, QtWidgets.QLineEdit):
                 try:
                     obj.setText(one_setting['value'])
-                except:
+                except Exception:
                     self.log.error("Error restoring QLineEdit {}".format(
                         str(obj.objectName())))
             elif isinstance(obj, QtWidgets.QCheckBox):
                 try:
-                    if one_setting['value']:
-                        # restore checkbox
-                        obj.setChecked(True)
-                    else:
-                        obj.setChecked(False)
-                except:
+                    # "False" saved as text is unchecked
+                    obj.setChecked(str_to_bool(one_setting['value']))
+                except Exception:
                     self.log.error("Error restoring QCheckBox {}".format(
                         str(obj.objectName())))
             elif isinstance(obj, QtWidgets.QRadioButton):
                 try:
                     if one_setting['value']:
                         obj.setChecked(str_to_bool(one_setting['value']))
-                except:
+                except Exception:
                     self.log.error("Error restoring QRadioButton {}".format(
                         str(obj.objectName())))
             elif isinstance(obj, QtWidgets.QSpinBox):
                 try:
-                    if one_setting['value']:
-                        obj.setValue(int(one_setting['value']))
-                except:
+                    # 0 is a value too
+                    if one_setting['value'] is not None and one_setting['value'] != '':
+                        obj.setValue(int(float(one_setting['value'])))
+                except Exception:
                     self.log.error("Error restoring QSpinBox {}".format(
                         str(obj.objectName())))
             elif isinstance(obj, QtWidgets.QSlider):
                 try:
-                    if one_setting['value']:
-                        obj.setValue(int(one_setting['value']))
-                except:
+                    if one_setting['value'] is not None and one_setting['value'] != '':
+                        obj.setValue(int(float(one_setting['value'])))
+                except Exception:
                     self.log.error("Error restoring QSlider {}".format(
                         str(obj.objectName())))
             elif isinstance(obj, QtWidgets.QPlainTextEdit):
                 try:
                     obj.setPlainText(one_setting['value'])
-                except:
+                except Exception:
                     self.log.error("Error restoring QPlainTextEdit {}".format(
                         str(obj.objectName())))
             else:
@@ -1846,7 +1876,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         one_setting = self.settings.get(knob_name)
         if one_setting:
             if one_setting["category"]:
-                one_setting["value"] = str(value)
+                # keep the type of the category: str(False) is "False", which
+                # every later bool() check read as on
+                if one_setting["category"] in ("checkbox", "radiobutton"):
+                    one_setting["value"] = setting_to_bool(value)
+                elif one_setting["category"] == "spinbox":
+                    try:
+                        one_setting["value"] = int(value)
+                    except (TypeError, ValueError):
+                        one_setting["value"] = value
+                else:
+                    one_setting["value"] = str(value)
                 if one_setting["category"] == "lineedit" or\
                         one_setting["category"] == "plaintextedit":
                     if not self.no_gui:
@@ -1857,7 +1897,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                         one_setting["category"] == "radiobutton":
                     if not self.no_gui:
                         ui.blockSignals(True)
-                        ui.setChecked(bool(value))
+                        ui.setChecked(setting_to_bool(value))
                         ui.blockSignals(False)
                 elif one_setting["category"] == "spinbox":
                     if not self.no_gui:
@@ -2329,6 +2369,16 @@ exit codes:
      (many problems are only logged, check the log output)
   2  bad arguments (only one of -i/-p, unknown action letter)
 """
+
+
+def setting_to_bool(value):
+    """
+    bool of a saved setting: "False" / "false" / "0" / "off" / "no" / "" are
+    False (bool("False") is True, which turned unchecked boxes on)
+    """
+    if isinstance(value, str):
+        return value.strip().lower() not in ('', 'false', '0', 'off', 'no', 'none')
+    return bool(value)
 
 
 def get_args(argv=None):

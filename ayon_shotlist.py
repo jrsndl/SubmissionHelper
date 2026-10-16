@@ -327,8 +327,16 @@ class AyonShotlist(object):
     def __init__(self, ayon_gui, settings, paths):
         self.error = None
         self.log = logging.getLogger("AyonShotlist")
-        os.environ["AYON_SERVER_URL"] = paths['AYON_SERVER_URL']
-        os.environ["AYON_API_KEY"] = paths['AYON_API_KEY']
+        # set before connecting: with a failed connection callers still read
+        # these (AttributeError before)
+        self.data = []
+        self.task_names = {}
+        self.product_filters = ayon_gui.get('product_filters') or []
+        self._matched_cache_key = None
+        self._matched_cache_rows = []
+        # ayon_api reads the server and key from the environment
+        os.environ["AYON_SERVER_URL"] = paths.get('AYON_SERVER_URL', '') or ''
+        os.environ["AYON_API_KEY"] = paths.get('AYON_API_KEY', '') or ''
 
         self.error = None
         try:
@@ -361,17 +369,12 @@ class AyonShotlist(object):
         self.do_output_versions_csv = bool(ayon_gui.get('do_versions_csv'))
         self.do_output_excel = ayon_gui['do_excel']
         self.output_excel_path = f"{self.output_folder}/ayon-list.xlsx"
-        # Matched Versions cache: (folder ids, filters) -> rows
-        self._matched_cache_key = None
-        self._matched_cache_rows = []
         self.do_output = True
         self.do_versions = bool(ayon_gui.get('do_versions'))
         self.product_filters = ayon_gui.get('product_filters') or []
         self.prep_paths()
 
-        self.data = []
         # task id -> task name, filled by get_full_shotlist
-        self.task_names = {}
         self._thumb_stats = {'ok': 0, 'failed': 0}
 
         self.columns = [
@@ -503,13 +506,9 @@ class AyonShotlist(object):
 
         for one in self.data:
 
-            is_task = False
-            if "task" in one['Folder Type'].lower():
-                is_task = True
-            folder_type = ''
-            if len(one['Folder Type']) > 0:
-                _s = one['Folder Type'].lower().split('/')
-                folder_type = _s[0]
+            folder_type_full = str(one.get('Folder Type') or '')
+            is_task = "task" in folder_type_full.lower()
+            folder_type = folder_type_full.lower().split('/')[0]
 
             hide = True
             asset_or_shot = False
@@ -519,7 +518,7 @@ class AyonShotlist(object):
                     hide = False
                     # only check task types / names if tasks are allowed
                     if self.ayon_gui['filter_tasktype']:
-                        if one["Task Type"].lower() in self.ayon_gui['filter_tasktypes']:
+                        if str(one.get("Task Type") or '').lower() in self.ayon_gui['filter_tasktypes']:
                             hide = False
                         else:
                             hide = True
@@ -528,12 +527,10 @@ class AyonShotlist(object):
                         hide = True
                 else:
                     # it is not a task
-                    if self.ayon_gui['filter_assets'] and "asset" in one[
-                        'Folder Type'].lower():
+                    if self.ayon_gui['filter_assets'] and "asset" in folder_type_full.lower():
                         hide = False
                         asset_or_shot = True
-                    if self.ayon_gui['filter_shots'] and "shot" in one[
-                        'Folder Type'].lower():
+                    if self.ayon_gui['filter_shots'] and "shot" in folder_type_full.lower():
                         hide = False
                         asset_or_shot = True
                     # if hide is true, it is not asset or shot, so it IS "other"
@@ -557,7 +554,7 @@ class AyonShotlist(object):
             if self.ayon_gui['filter_assignee']:
                 # narrows only (it used to show rows hidden by the other
                 # filters again); any of the row's assignees may match
-                assignees = one["Task Assignees"].lower().split()
+                assignees = str(one.get("Task Assignees") or '').lower().split()
                 if not any(a in self.ayon_gui['filter_assignees'] for a in assignees):
                     hide = True
 
@@ -696,108 +693,132 @@ class AyonShotlist(object):
                     f"set log level DEBUG for details)")
         self.log.log(logging.WARNING if failed and not ok else logging.INFO, msg)
 
+    def _links_by_folder(self, folder_ids):
+        """
+        folder id -> names of the folders linked in. One query for the whole
+        project when the installed ayon_api has get_folders_links, otherwise
+        one query per folder (as before).
+        """
+        links = {}
+        folder_ids = list(folder_ids)
+        batch = getattr(self.ayon, 'get_folders_links', None)
+        if batch is not None:
+            try:
+                links = dict(batch(self.project, folder_ids=folder_ids, link_direction="in") or {})
+            except Exception as e:
+                self.log.debug(f"Ayon get_folders_links failed ({e}), reading links per folder")
+                links = {}
+                batch = None
+        if batch is None:
+            for folder_id in folder_ids:
+                try:
+                    links[folder_id] = list(self.ayon.get_folder_links(
+                        self.project, folder_id, link_direction="in") or [])
+                except Exception as e:
+                    self.log.warning(f"Reading Ayon links of folder {folder_id} failed: {e}")
+                    links[folder_id] = []
+
+        linked_ids = {link["entityId"] for one in links.values() for link in one or []
+                      if link.get("entityType") == "folder"}
+        names = {}
+        if linked_ids:
+            try:
+                for f in self.ayon.get_folders(self.project, folder_ids=linked_ids, fields={"id", "name"}):
+                    names[f["id"]] = f["name"]
+            except Exception as e:
+                self.log.warning(f"Reading names of linked Ayon folders failed: {e}")
+        out = {}
+        for folder_id, one in links.items():
+            out[folder_id] = [names[link["entityId"]] for link in one or []
+                              if link.get("entityType") == "folder" and link.get("entityId") in names]
+        return out
+
+    def _tasks_by_folder(self, folder_ids):
+        """folder id -> task entities, one query for all folders with tasks"""
+        tasks = {}
+        if not folder_ids:
+            return tasks
+        for task_info in self.ayon.get_tasks(self.project, folder_ids=set(folder_ids),
+                                             fields={"name", "id", "type", "label", "assignees",
+                                                     "status", "attrib", "thumbnailId", "folderId"}):
+            tasks.setdefault(task_info.get("folderId"), []).append(task_info)
+        return tasks
+
     def get_full_shotlist(self):
 
-        def get_links(folder_id):
-            links = self.ayon.get_folder_links(
-                self.project, folder_id, link_direction="in"
-            )
-            linked_folder_ids = {
-                link["entityId"]
-                for link in links
-                if link["entityType"] == "folder"
-            }
-            if not linked_folder_ids:
-                return []
-            return list(self.ayon.get_folders(
-                self.project, folder_ids=linked_folder_ids
-            ))
-
-        # get folders
-        asset_entities = self.ayon.get_folders(self.project,
-                                               fields={
-                                                   "name",
-                                                   "id",
-                                                   "path",
-                                                   "type",
-                                                   "label",
-                                                   "status",
-                                                   "hasTasks",
-                                                   "attrib",
-                                                   "thumbnailId"})
-
         try:
+            # get folders
+            asset_entities = self.ayon.get_folders(self.project,
+                                                   fields={
+                                                       "name",
+                                                       "id",
+                                                       "path",
+                                                       "type",
+                                                       "label",
+                                                       "status",
+                                                       "hasTasks",
+                                                       "attrib",
+                                                       "thumbnailId"})
             # keyed by path: folder names are only unique per parent
             asset_entities = {f["path"]: f for f in asset_entities}
+            # links and tasks of all folders at once, not two queries per folder
+            links = self._links_by_folder(f["id"] for f in asset_entities.values())
+            tasks = self._tasks_by_folder(
+                [f["id"] for f in asset_entities.values() if f.get("hasTasks")])
         except Exception as e:
-            error = f"Error getting assets from Ayon: {e}"
+            error = f"Error getting folders from Ayon: {e}"
             self.log.error(error)
             self.error = error
             return
-
 
         # get folders + tasks and their attribs
         data = []
         for _path, asset in asset_entities.items():
             asset_name = asset["name"]
-            link_list = get_links(asset["id"])
-            if link_list is not None and len(link_list) > 0:
-                #print(f"{asset_name} Link List:")
-                #pprint.pprint(link_list)
-                pass
+            link_names = links.get(asset["id"], [])
 
             thumb_name_folder = asset["path"].replace("/", "-").strip("-")
             thumbnail_path = None
-            if asset["thumbnailId"] is not None and self.do_thumbs:
+            if asset.get("thumbnailId") is not None and self.do_thumbs:
                 thumbnail_path = self._download_thumbnail(
                     "folder", asset["id"], asset["thumbnailId"], f"{self.thumbs_dir}/{thumb_name_folder}")
 
             base = {
                 "Thumbnail": thumbnail_path,
-                "Folder Type": asset["type"],
+                "Folder Type": asset.get("type") or "",
                 "Folder Name": asset_name,
                 "Folder Path": asset["path"],
-                "Folder Label": asset["label"],
+                "Folder Label": asset.get("label") or "",
                 "Folder Status": asset.get("status", ""),
-                "Links": " ".join([link["name"] for link in link_list]),
+                "Links": " ".join(link_names),
                 "_folder_id": asset["id"],
             }
-            attrs = self.attribs_to_columns(asset["attrib"])
+            attrs = self.attribs_to_columns(asset.get("attrib"))
             shot_clean = {**base, **attrs}
             shot_only = {**shot_clean, **self.task_empty}
             data.append(shot_only)
 
-            if asset["hasTasks"]:
-                task_entities = self.ayon.get_tasks(self.project, folder_ids={asset["id"]},
-                                                   fields={"name",
-                                                           "id",
-                                                           "type",
-                                                           "label",
-                                                           "assignees",
-                                                           "status",
-                                                           "attrib",
-                                                           'thumbnailId'})
-                for task_info in task_entities:
-                    task_name = task_info["name"]
-                    self.task_names[task_info["id"]] = task_name
-                    thumb_name_task = thumb_name_folder + "-task-" + task_name
-                    thumbnail_path = None
-                    if task_info["thumbnailId"] is not None and self.do_thumbs:
-                        thumbnail_path = self._download_thumbnail(
-                            "task", task_info["id"], task_info["thumbnailId"],
-                            f"{self.thumbs_dir}/{thumb_name_task}")
-                    tsk = {
-                        "Task Type": task_info["type"],
-                        "Task Name": task_info["name"],
-                        "Task Label": task_info["label"],
-                        "Task Status": task_info["status"],
-                        "Task Assignees": " ".join(task_info["assignees"])
-                    }
-                    shot_task = {**shot_clean, **tsk}
-                    shot_task["Thumbnail"] = thumbnail_path or shot_clean["Thumbnail"]
-                    shot_task["Folder Type"] = f'{shot_task["Folder Type"]}/Task'
-                    shot_task_attr = {**shot_task, **self.attribs_to_columns(task_info["attrib"])}
-                    data.append(shot_task_attr)
+            for task_info in tasks.get(asset["id"], []):
+                task_name = task_info["name"]
+                self.task_names[task_info["id"]] = task_name
+                thumb_name_task = thumb_name_folder + "-task-" + task_name
+                thumbnail_path = None
+                if task_info.get("thumbnailId") is not None and self.do_thumbs:
+                    thumbnail_path = self._download_thumbnail(
+                        "task", task_info["id"], task_info["thumbnailId"],
+                        f"{self.thumbs_dir}/{thumb_name_task}")
+                tsk = {
+                    "Task Type": task_info.get("type") or "",
+                    "Task Name": task_info["name"],
+                    "Task Label": task_info.get("label") or "",
+                    "Task Status": task_info.get("status") or "",
+                    "Task Assignees": " ".join(task_info.get("assignees") or [])
+                }
+                shot_task = {**shot_clean, **tsk}
+                shot_task["Thumbnail"] = thumbnail_path or shot_clean["Thumbnail"]
+                shot_task["Folder Type"] = f'{shot_task["Folder Type"]}/Task'
+                shot_task_attr = {**shot_task, **self.attribs_to_columns(task_info.get("attrib"))}
+                data.append(shot_task_attr)
         self.data = sorted(data, key=lambda d: d['Folder Path'])
         self._log_thumbnail_stats()
 

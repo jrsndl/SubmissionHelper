@@ -28,8 +28,8 @@ class FfprobeArgsTest(unittest.TestCase):
             m.ffprobe_path = exe
             out = m.probe_ffprobe()
         self.assertEqual(out['error'], '')
-        # ffprobe -show_streams -print_format xml -i <file> = 5 args
-        self.assertEqual(out['width'], 5)
+        # ffprobe -show_streams -show_format -print_format xml -i <file> = 6 args
+        self.assertEqual(out["width"], 6)
 
     def test_missing_ffprobe_reports_error(self):
         m = metadata.MetaData.__new__(metadata.MetaData)

@@ -1,19 +1,16 @@
 # -*- coding: utf-8 -*-
 import os
-import pprint
 import sys
 import re
 import subprocess
 import struct
 import json
 import logging
+from fractions import Fraction
 
 import xml.etree.ElementTree
 
-from PyTimeCode import PyTimeCode
 import helpers
-import inspect
-import logging
 
 from nukery.parser import NukeScriptParser
 
@@ -69,6 +66,7 @@ class MetaData(object):
 
         self.meta_exr = {}
         self.meta_nk = {}
+        self.meta_maya = {}
 
         self.platform, self.platform_extension = self.__get_platform()
         self.ffmpeg_path = self.paths['ffmpeg']
@@ -134,11 +132,8 @@ class MetaData(object):
             self.log.warning(f"Reading EXR metadata failed for {self.meta.get('file')}", exc_info=True)
 
         # add nuke and maya metadata
-        try:
-            meta_data.update(self.meta_nk)
-            meta_data.update(self.meta_maya)
-        except:
-            pass
+        meta_data.update(self.meta_nk or {})
+        meta_data.update(self.meta_maya or {})
 
         return meta_data
 
@@ -147,7 +142,7 @@ class MetaData(object):
 
         platform = 'win'
         platform_exe_extension = '.exe'
-        if sys.platform.startswith('darvin'):
+        if sys.platform.startswith('darwin'):
             platform = 'mac'
             platform_exe_extension = ''
         if str(os.name).startswith('posix'):
@@ -226,14 +221,14 @@ class MetaData(object):
                 self.meta['time_code'] = self.meta_exr.get(
                     'metaExr_time_code', self.meta['time_code'])
 
-                self.meta['fps'] = str(self.meta_exr.get(
-                    'metaExr_fps', self.meta['fps']))
-                self.meta['fps_a'] = str(self.meta_exr.get(
-                    'metaExr_fps_a', self.meta['fps_a']))
-                self.meta['fps_b'] = str(self.meta_exr.get(
-                    'metaExr_fps_b', self.meta['fps_b']))
+                # numbers stay numbers: fps_b > 0 and the timecode maths need them
+                self.meta['fps'] = self.meta_exr.get('metaExr_fps', self.meta['fps'])
+                self.meta['fps_a'] = self.meta_exr.get('metaExr_fps_a', self.meta['fps_a'])
+                self.meta['fps_b'] = self.meta_exr.get('metaExr_fps_b', self.meta['fps_b'])
                 self.meta['fps_raw'] = self.meta_exr.get(
                     'metaExr_fps_raw', self.meta['fps_raw'])
+                # {meta_fps} used to stay empty for EXRs with a frame rate
+                self.meta['fps_str'] = self.meta_exr.get('metaExr_fps_str') or self.meta['fps_str']
 
                 self.meta['width'] = str(
                     self.meta_exr.get('metaExr_width', self.meta['width']))
@@ -309,15 +304,17 @@ class MetaData(object):
         if self.meta['file'] and self.meta['file'] != '':
             if self.item['category'] == 'video':
 
-                if self.meta['fps_b'] > 0 and self.meta['time_code']:
-                    start_tc_frames = helpers.tc_to_frames(self.meta['time_code'], self.meta['fps_a'], self.meta['fps_b'])
-                else:
-                    start_tc_frames = 0
+                start_tc_frames = 0
+                try:
+                    if float(self.meta['fps_b'] or 0) > 0 and self.meta['time_code']:
+                        start_tc_frames = helpers.tc_to_frames(self.meta['time_code'], self.meta['fps_a'], self.meta['fps_b'])
+                except (TypeError, ValueError) as e:
+                    self.log.debug(f"Timecode {self.meta['time_code']!r} of {self.meta['file']} not usable: {e}")
 
                 self.meta['frame_start_from_tc'] = str(start_tc_frames)
                 self.meta['frame_start_from_tc_slate'] = str(start_tc_frames+1)
                 if self.meta['duration_frames']:
-                    _dur = int(self.meta['duration_frames'])
+                    _dur = int(float(self.meta['duration_frames']))
                     self.meta['frame_end_from_tc'] = str(start_tc_frames + _dur - 1)
                     self.meta['frame_end_from_tc_slate'] = str(start_tc_frames + _dur - 2)
 
@@ -343,13 +340,16 @@ class MetaData(object):
                 else:
                     self.meta['fps_str'] = ''
 
-            # if fps was not read from metadata
-            if self.gui_force_fps and self.meta['fps_str'] == '':
-                # get fps from gui if meta not available
-                self.meta['fps_str'] = self.gui_fps
-            elif self.gui_force_fps:
-                # get fps from gui ALWAYS
-                self.meta['fps_str'] = self.gui_fps
+            # Preferences frame rate: always when forced, otherwise only when
+            # the file has none (it used to be applied only when forced)
+            if self.gui_force_fps or self.meta['fps_str'] == '':
+                self.meta['fps_str'] = str(self.gui_fps)
+                # the frame counter timecode needs fps_a / fps_b too
+                gui_fps = helpers._fps_value(self.gui_fps)
+                if gui_fps:
+                    a, b = helpers.get_fps_ratio(gui_fps)
+                    self.meta['fps_a'], self.meta['fps_b'] = a, b
+                    self.meta['fps'] = float(a) / float(b)
 
     @property
     def reel(self):
@@ -381,9 +381,10 @@ class MetaData(object):
             f_tc = self.meta['time_code']
         elif method == 'filename':
             if self.item['category'] in ['sequence'] and self.meta.get('fps_b'):
-                # get frame number
-                num = int(self.item['number'])
-                f_tc = helpers.frames_to_tc(num, self.meta['fps_a'], self.meta['fps_b'])
+                # first frame of the sequence (item 'number' is the first file's)
+                num = int(self.item.get('start_number', self.item['number']))
+                if num >= 0:
+                    f_tc = helpers.frames_to_tc(num, self.meta['fps_a'], self.meta['fps_b'])
         return f_tc or ''
 
     def pick_time_code(self):
@@ -427,7 +428,7 @@ class MetaData(object):
                    'is_log': False,
                    }
 
-        args = [self.ffprobe_path, '-show_streams', '-print_format', 'xml', '-i', filename]
+        args = [self.ffprobe_path, '-show_streams', '-show_format', '-print_format', 'xml', '-i', filename]
         # no shell=True: with a list on POSIX it drops all arguments, and on
         # Windows cmd.exe misreads file names containing & ^ % ( )
         if not self.ffprobe_path:
@@ -463,41 +464,49 @@ class MetaData(object):
                         outdata['video_present'] = 1
                         try:
                             outdata['width'] = int(onestr.attrib.get('width'))
-                        except:
+                        except Exception:
                             pass
 
                         try:
                             outdata['height'] = int(onestr.attrib.get('height'))
-                        except:
+                        except Exception:
                             pass
 
                         try:
                             rawfps = str(onestr.attrib['r_frame_rate'])  # "24/1"
                             outdata['fps_raw'] = rawfps
-                            outdata['fps'] = float(eval(rawfps))
+                            # Fraction, not eval(): the text comes from the file
+                            outdata['fps'] = float(Fraction(rawfps))
                             outdata['fps_str'] = helpers.get_fps_for_PyTimeCode(outdata['fps'])
                             outdata['fps_a'] = int(rawfps.split('/')[0])
                             outdata['fps_b'] = int(rawfps.split('/')[1])
-                        except:
+                        except Exception:
                             pass
 
                         try:
                             outdata['duration_frames'] = int(onestr.attrib['nb_frames'])
                             outdata['duration_frames_slate'] = int(
                                 onestr.attrib['nb_frames']) - 1
-                        except:
-                            if onestr.attrib.get('duration_ts') is not None:
-                                outdata['duration_frames'] = int(onestr.attrib['duration_ts'])
-                                outdata['duration_frames_slate'] = int(onestr.attrib['duration_ts']) - 1
+                        except (KeyError, TypeError, ValueError):
+                            # duration_ts is in time_base units, not frames:
+                            # frames = duration in seconds * fps
+                            try:
+                                _secs = float(onestr.attrib['duration'])
+                                _fps = float(Fraction(str(onestr.attrib['r_frame_rate'])))
+                                if _secs > 0 and _fps > 0:
+                                    outdata['duration_frames'] = int(round(_secs * _fps))
+                                    outdata['duration_frames_slate'] = outdata['duration_frames'] - 1
+                            except (KeyError, TypeError, ValueError, ZeroDivisionError):
+                                pass
 
                         try:
                             outdata['duration_secs'] = float(onestr.attrib['duration'])  # "38.333333" seconds
-                        except:
+                        except Exception:
                             pass
 
                         try:
                             outdata['bitrate_video'] = int(onestr.attrib['bit_rate'])  # "71376397"
-                        except:
+                        except Exception:
                             pass
 
                         try:
@@ -505,22 +514,22 @@ class MetaData(object):
                             outdata['aspect_x'] = int(rawsar.split('/')[0])
                             outdata['aspect_y'] = int(rawsar.split('/')[1])
                             outdata['aspect'] = float(outdata['aspect_x']) / float(outdata['aspect_y'])
-                        except:
+                        except Exception:
                             pass
 
                         try:
                             outdata['codec_name_video'] = str(onestr.attrib['codec_name'])
-                        except:
+                        except Exception:
                             pass
 
                         try:
                             outdata['codec_long_name_video'] = str(onestr.attrib['codec_long_name'])
-                        except:
+                        except Exception:
                             pass
 
                         try:
                             outdata['codec_profile_video'] = str(onestr.attrib['profile'])
-                        except:
+                        except Exception:
                             pass
 
                         try:
@@ -528,7 +537,7 @@ class MetaData(object):
                             for onetag in TagFind:
                                 if onetag.attrib['key'] == 'creation_time':
                                     outdata['time_stamp_video'] = onetag.attrib['value']  # "2012-04-25 15:45:12"
-                        except:
+                        except Exception:
                             pass
 
                     if streamType == 'data':
@@ -538,7 +547,7 @@ class MetaData(object):
                         for onetag in TagFind:
                             if onetag.attrib['key'] == 'timecode':
                                 outdata['time_code'] = onetag.attrib['value']
-                    except:
+                    except Exception:
                         pass
 
                     if streamType == 'audio':
@@ -546,46 +555,53 @@ class MetaData(object):
 
                         try:
                             outdata['sample_rate_audio'] = int(onestr.attrib['sample_rate'])  # "48000"
-                        except:
+                        except Exception:
                             pass
 
                         try:
                             outdata['channels_audio'] = int(onestr.attrib['channels'])  # '2'
-                        except:
+                        except Exception:
                             pass
 
                         try:
                             outdata['bits_per_sample_audio'] = int(onestr.attrib['bits_per_sample'])  # "16"
-                        except:
+                        except Exception:
                             pass
 
                         try:
                             outdata['duration_audio'] = float(onestr.attrib['duration'])
-                        except:
+                        except Exception:
                             pass
 
                         try:
                             outdata['bitrate_audio'] = int(onestr.attrib['bitrate'])  # "1536000"
-                        except:
+                        except Exception:
                             pass
 
                         try:
                             outdata['codec_name_audio'] = str(onestr.attrib['codec_name'])
-                        except:
+                        except Exception:
                             pass
 
                         try:
                             outdata['codec_long_name_audio'] = str(onestr.attrib['codec_long_name'])
-                        except:
+                        except Exception:
                             pass
                         try:
                             TagFind = onestr.findall("tag")
                             for onetag in TagFind:
                                 if onetag.attrib['key'] == 'creation_time':
                                     outdata['time_stamp_audio'] = onetag.attrib['value']  # "2012-04-25 15:45:12"
-                        except:
+                        except Exception:
                             pass
-            except:
+                # container timecode (mov / mxf often keep it in the format tags)
+                if not outdata['time_code']:
+                    fmt = tree.find("format")
+                    if fmt is not None:
+                        for onetag in fmt.findall("tag"):
+                            if onetag.attrib.get('key') == 'timecode':
+                                outdata['time_code'] = onetag.attrib.get('value', '')
+            except Exception:
                 outdata['error'] = "Probing file " + filename + " failed. Error parsing Xml output."
 
         return outdata
@@ -611,13 +627,13 @@ class MetaData(object):
         try:
             if "timecode: " in err:
                 outdata['time_code'] = err.split("timecode: ")[1].split('\r')[0]
-        except:
+        except Exception:
             outdata['error'] += 'Failed to parse time_code from file ' + filename + ' by ffmbc'
 
         try:
             if "reel_name(eng): " in err:
                 outdata['reel'] = err.split("reel_name(eng): ")[1].split('\r')[0]
-        except:
+        except Exception:
             outdata['error'] += 'Failed to parse reel from file ' + filename + ' by ffmbc'
 
         try:
@@ -626,7 +642,7 @@ class MetaData(object):
                 aa = err.split("com.apple.proapps.reel: ")[1]
                 bb = aa.split('\r')[0]
 
-        except:
+        except Exception:
             outdata['error'] += 'Failed to parse reel from file ' + filename + ' by ffmbc'
 
         try:
@@ -635,19 +651,19 @@ class MetaData(object):
                 a, b = helpers.get_fps_ratio(outdata['fps'])
                 outdata['fps_a'] = a
                 outdata['fps_b'] = b
-        except:
+        except Exception:
             outdata['error'] += 'Failed to parse fps from file ' + filename + ' by ffmbc'
 
         try:
             if "Duration: " in err:
                 outdata['duration_secs'] = err.split("Duration: ")[1].split(",")[0]
-        except:
+        except Exception:
             outdata['error'] += 'Failed to parse duration_secs from file ' + filename + ' by ffmbc'
 
         try:
             if "com.arri.camera.ColorGammaSxS: LOG-C" in err:
                 outdata['is_log'] = True
-        except:
+        except Exception:
             outdata['error'] += 'Failed to parse is_log from file ' + filename + ' by ffmbc'
 
         return outdata
@@ -666,7 +682,7 @@ class MetaData(object):
 
         result = []
         try:
-            with open(pth, 'r') as f:
+            with open(pth, 'r', encoding='utf-8', errors='replace') as f:
                 content = f.read()
 
             # Search for both regex patterns
@@ -782,82 +798,76 @@ class MetaData(object):
                     'is_log': False,
                     }
 
-        try:
-            fh = open(fn, "rb")
-            byte_array = fh.read(2048)  # reads first 2 kB from file
-            fh.close()
+        def _text(raw):
+            """null terminated header text"""
+            return raw.split(b'\x00', 1)[0].decode('latin-1').strip()
 
-            # get magic signature at the begining of file
-            m1, m2, m3, m4 = struct.unpack("cccc", byte_array[0:4])
-            magic = m1 + m2 + m3 + m4
+        try:
+            with open(fn, "rb") as fh:
+                byte_array = fh.read(2048)  # reads first 2 kB from file
+        except OSError as e:
+            metadict["error"] = "Can't open file " + str(fn) + ": " + str(e)
+            return metadict
+
+        try:
+            # magic signature at the beginning of the file (bytes, not str)
+            magic = byte_array[0:4]
 
             endian = ''
-            if magic == "SDPX":
+            if magic == b"SDPX":
                 # big endian
                 endian = '>'
-            elif magic == "XPDS":
+            elif magic == b"XPDS":
                 # little endian
                 endian = '<'
 
-            if endian != '':
+            if endian != '' and len(byte_array) >= 1924:
 
-                # creator
-                creator = byte_array[160:160 + byte_array[160:261].find('\x00')]
-                metadict['creator'] = creator
-
-                # project name
-                projectname = byte_array[260:260 + byte_array[260:461].find('\x00')]
-                metadict['project_name'] = projectname
+                metadict['creator'] = _text(byte_array[160:260])
+                metadict['project_name'] = _text(byte_array[260:460])
 
                 # x y in pixels
                 rx, ry = struct.unpack(endian + "II", byte_array[772:780])  # resolution x y
                 metadict['width'] = rx
                 metadict['height'] = ry
 
-                # reel id
-                inputdevice = byte_array[1556:1556 + byte_array[1556:1589].find('\x00')]  # reel
-                metadict['reel'] = inputdevice
+                # reel id (input device name)
+                metadict['reel'] = _text(byte_array[1556:1588])
 
-                # transfer characteristic
-                trch, = struct.unpack(endian + "B", byte_array[801:802])  # 0 user, 1 print dens, 2 linear
-                if trch == 1:
-                    metadict['is_log'] = True
-                else:
-                    metadict['is_log'] = False
+                # transfer characteristic: 0 user, 1 print density, 2 linear
+                trch, = struct.unpack(endian + "B", byte_array[801:802])
+                metadict['is_log'] = trch == 1
 
-                # TC
-                if magic == "SDPX":
-                    t1, t2, t3, t4 = struct.unpack("BBBB", byte_array[1920:1924])  # tc
-                else:
-                    t4, t3, t2, t1 = struct.unpack("BBBB", byte_array[1920:1924])  # tc
+                # TC, BCD packed hh mm ss ff
+                t1, t2, t3, t4 = struct.unpack(endian + "I", byte_array[1920:1924])[0].to_bytes(4, 'big')
                 timecode = "%(hh)02x:%(mm)02x:%(ss)02x:%(ff)02x" % {'hh': t1, 'mm': t2, 'ss': t3, 'ff': t4, }
                 if timecode == 'ff:ff:ff:ff':
-                    timecode = '00:00:00:00'
+                    timecode = ''
                 metadict["time_code"] = timecode
 
-                # pixel aspect ratio
+                # pixel aspect ratio, can be undefined (FFFFFFFF or 0): 1:1
                 ax, ay = struct.unpack(endian + "II", byte_array[1628:1636])
-                # can be undefined (FFFFFFFF), so reset to "default" 1:1
-                if ax > 4294967294:
+                if ax == 0 or ax > 4294967294:
                     ax = 1
-                if ay > 4294967294:
+                if ay == 0 or ay > 4294967294:
                     ay = 1
-
                 metadict['aspect_x'] = ax
                 metadict['aspect_y'] = ay
 
-                # fps
-                fpsf, = struct.unpack(endian + "f", byte_array[1724:1728])  # float number!!!
-                a, b = helpers.get_fps_ratio(fpsf)
-                metadict['fps_a'] = a
-                metadict['fps_b'] = b
-                metadict['fps'] = float(metadict['fps_a']) / float(metadict['fps_b'])
-                metadict['fps_str'] = helpers.get_fps_for_PyTimeCode(fpsf)
+                # fps (float), undefined is NaN / 0
+                fpsf, = struct.unpack(endian + "f", byte_array[1724:1728])
+                if fpsf == fpsf and 0 < fpsf < 1000:
+                    a, b = helpers.get_fps_ratio(fpsf)
+                    if a and b:
+                        metadict['fps_a'] = a
+                        metadict['fps_b'] = b
+                        metadict['fps'] = float(a) / float(b)
+                        metadict['fps_str'] = helpers.get_fps_for_PyTimeCode(fpsf)
             else:
                 metadict["error"] = "File " + str(fn) + " is not DPX file."
 
-        except:
-            metadict["error"] = "Can't open file " + str(fn)
+        except (struct.error, ValueError) as e:
+            metadict["error"] = "Can't read DPX header of " + str(fn) + ": " + str(e)
 
         return metadict
 
@@ -907,8 +917,12 @@ class MetaData(object):
                 exr_metadata['displayWindow_width'] = display_width
                 exr_metadata['displayWindow_height'] = display_height
 
-            # this updates tc and framerate from ffprobe
-            # to be taken from EX instead
+        except Exception:
+            pass
+
+        # frame rate and timecode are read separately: many EXRs have a
+        # timecode but no framesPerSecond, the timecode was then lost
+        try:
             fps_a = int(exr_metadata['framesPerSecond']['first_num'])
             fps_b = int(exr_metadata['framesPerSecond']['second_num'])
             exr_metadata['fps_a'] = fps_a
@@ -919,7 +933,10 @@ class MetaData(object):
             exr_metadata['fps'] = float(fps_a) / float(fps_b)
             exr_metadata['fps_str'] = helpers.get_fps_for_PyTimeCode(
                 exr_metadata['fps'])
+        except (KeyError, TypeError, ValueError, ZeroDivisionError):
+            pass
 
+        try:
             tc = int(exr_metadata['timeCode']['timeAndFlags'])
             _f = str((tc >> 4) & 3) + str(tc & 15)
             _s = str((tc >> 12) & 7) + str((tc >> 8) & 15)
@@ -927,7 +944,7 @@ class MetaData(object):
             _h = str((tc >> 28) & 3) + str((tc >> 24) & 15)
             _drop = ';' if bool((tc >> 6) & 1) else ':'
             exr_metadata['time_code'] = "{}:{}:{}{}{}".format(_h, _m, _s, _drop, _f)
-        except Exception:
+        except (KeyError, TypeError, ValueError):
             pass
         return exr_metadata
 
@@ -1127,7 +1144,6 @@ class MetaData(object):
         # - are returned as list of lists
         if value_type in ("matrix", "matrixd"):
             output = []
-            current_index = -1
             parts = value.split(",")
             parts_len = len(parts)
             if parts_len == 1:
@@ -1143,12 +1159,9 @@ class MetaData(object):
                     output.append(float(part))
                 return output
 
-            for idx, item in enumerate(parts):
-                list_index = idx % divisor
-                if list_index > current_index:
-                    current_index = list_index
-                    output.append([])
-                output[list_index].append(float(item))
+            # row by row: the values are listed row-major
+            for row in range(divisor):
+                output.append([float(item) for item in parts[row * divisor:(row + 1) * divisor]])
             return output
 
         if value_type == "rational2i":

@@ -106,7 +106,7 @@ class FakeAyon:
         return []
 
     def get_tasks(self, project, folder_ids=None, fields=None):
-        return [{'name': 'comp', 'id': 't_comp', 'type': 'Compositing', 'label': None,
+        return [{'name': 'comp', 'id': 't_comp', 'folderId': 'f1', 'type': 'Compositing', 'label': None,
                  'assignees': ['ann', 'bob'], 'status': 'WIP', 'attrib': attrib(), 'thumbnailId': None}]
 
     def _maybe_fail(self, fields):

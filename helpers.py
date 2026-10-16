@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import inspect
 import math
@@ -68,61 +69,44 @@ def get_fps_for_PyTimeCode(in_fps):
 
 
 def frames_to_ffmpeg_tc(frames, fps):
-    
+    """frames to an ffmpeg time "HH:MM:SS.mmm" (milliseconds zero padded)"""
     frames = int(frames)
     fps = float(fps)
+    total_ms = int(round(frames * 1000.0 / fps)) if fps else 0
+    hours, rest = divmod(total_ms, 3600 * 1000)
+    minutes, rest = divmod(rest, 60 * 1000)
+    seconds, miliseconds = divmod(rest, 1000)
+    return "{:02d}:{:02d}:{:02d}.{:03d}".format(hours, minutes, seconds, miliseconds)
 
-    hours = int(frames / 3600 / fps)
-    minutes = int((frames - hours * 3600 * fps) / 60 / fps)
-    seconds = int((frames - (hours * 3600 * fps) - (minutes * 60 * fps)) / fps)
-    frames = int(frames - (hours * 3600 * fps) - (minutes * 60 * fps) - (seconds * fps))
-    ms = int(1000 / fps)
-    miliseconds = frames * ms
-    __timecode = str(hours).zfill(2) + ':' + str(minutes).zfill(2) + ':' + str(seconds).zfill(2) + '.' + str(
-        miliseconds)
 
-    return __timecode
+def _fps_value(fps):
+    """fps as float from a number, "25", "23.976" or "24000/1001"; None if unknown"""
+    try:
+        return float(fps)
+    except (TypeError, ValueError):
+        pass
+    try:
+        a, b = str(fps).split('/')
+        return float(a) / float(b)
+    except (TypeError, ValueError, ZeroDivisionError):
+        return None
 
 
 def frames_to_seconds(frames, fps):
-
+    """seconds (as text, 3 decimals) of the frame count at the fps"""
     frames = int(frames)
-    try:
-        fps = float(fps)
-    except:
-        if '/' in fps:
-            a = float(fps.split('/')[0])
-            b = float(fps.split('/')[1])
-            fps = float(a) / float(b)
-        else:
-            fps = None
-
+    fps = _fps_value(fps)
     if fps:
-        hours = int(frames / 3600 / fps)
-        minutes = int((frames - hours * 3600 * fps) / 60 / fps)
-        seconds = int((frames - (hours * 3600 * fps) - (minutes * 60 * fps)) / fps)
-        frames = int(frames - (hours * 3600 * fps) - (minutes * 60 * fps) - (seconds * fps))
-        ms = int(1000 / fps)
-        miliseconds = frames * ms
-        total_seconds = float(hours * 3600 + minutes * 60 + seconds) + float(0.001 * miliseconds)
+        total_seconds = round(frames / fps, 3)
     else:
         total_seconds = 0
-
     return str(total_seconds)
+
 
 def seconds_to_frames(seconds, fps):
 
     seconds = float(seconds)
-    try:
-        fps = float(fps)
-    except:
-        if '/' in fps:
-            a = float(fps.split('/')[0])
-            b = float(fps.split('/')[1])
-            fps = float(a) / float(b)
-        else:
-            fps = None
-
+    fps = _fps_value(fps)
     if fps:
         total_frames = fps * seconds
     else:
@@ -130,26 +114,46 @@ def seconds_to_frames(seconds, fps):
 
     return str(total_frames)
 
+
+def _nominal_fps(fps_a, fps_b):
+    """whole frames per second used for timecode counting (23.976 -> 24)"""
+    fps = _fps_value(f"{fps_a}/{fps_b}") if str(fps_b) not in ('', '1', '1.0') else _fps_value(fps_a)
+    if not fps:
+        raise ValueError(f"invalid frame rate {fps_a}/{fps_b}")
+    return int(round(fps))
+
+
 def tc_to_frames(tc, fps_a, fps_b):
+    """
+    Timecode to a frame count. Fields can be separated by ':' ';' '.' or ',';
+    a ';' (or '.' / ',') before the frames means drop frame, which is counted
+    the SMPTE way for 29.97 and 59.94.
+    """
+    text = str(tc).strip()
+    parts = re.split(r'[:;.,]', text)
+    if len(parts) != 4:
+        raise ValueError(f"invalid timecode {tc!r}")
+    h, m, s, f = (int(p) for p in parts)
+    fps = _nominal_fps(fps_a, fps_b)
+    frames = ((h * 3600) + (m * 60) + s) * fps + f
+    drop = bool(re.search(r'[;.,]\d+$', text)) and fps in (30, 60)
+    if drop:
+        dropped = fps // 15     # 2 for 29.97, 4 for 59.94
+        total_minutes = 60 * h + m
+        frames -= dropped * (total_minutes - total_minutes // 10)
+    return frames
 
-    def _seconds(value, fr_int):
-        _zip_ft = zip((3600, 60, 1, 1 / fr_int), value.split(':'))
-        return sum(f * float(t) for f, t in _zip_ft)
-
-    def _frames(secs, fr_int):
-        return secs * fr_int
-
-    fr_int = int(round(float(float(fps_a) / float(fps_b))))
-    return round(_frames(_seconds(tc, fr_int), fr_int))
 
 def frames_to_tc(frames, fps_a, fps_b):
-
-    fps = int(round(float(float(fps_a) / float(fps_b))))
-    h = int(frames / (3600 * fps))
-    m = int(frames / (60 * fps)) % 60
-    s = int((frames % (60 * fps)) / fps)
-    f = frames % (60 * fps) % fps
+    """frame count to a non drop frame timecode HH:MM:SS:FF"""
+    frames = int(frames)
+    fps = _nominal_fps(fps_a, fps_b)
+    h = frames // (3600 * fps)
+    m = (frames // (60 * fps)) % 60
+    s = (frames % (60 * fps)) // fps
+    f = frames % fps
     return "{:02d}:{:02d}:{:02d}:{:02d}".format(h, m, s, f)
+
 
 def get_pixel_aspect_ratio(in_pa):
     # pal fha 1.4222222
@@ -185,7 +189,7 @@ def get_platform():
     platform = 'win'
     platform_exe_ext = '.exe'
 
-    if sys.platform.startswith('darvin'):
+    if sys.platform.startswith('darwin'):
         platform = 'mac'
         platform_exe_ext = ''
     if str(os.name).startswith('posix'):
@@ -208,13 +212,9 @@ def humanize_file_size(size, suffix="B"):
         rr = r.split('.')
         if int(rr[1]) == 0:
             r = rr[0]
-    except:
+    except Exception:
         pass
     return '{} {}{}'.format(r, unit, suffix)
-
-if __name__ == "__main__":
-    tc_to_frames('00:00:41:16', 24000, 1001)
-
 
 def no_window():
     """
@@ -226,3 +226,7 @@ def no_window():
         import subprocess
         return {'creationflags': getattr(subprocess, 'CREATE_NO_WINDOW', 0x08000000)}
     return {}
+
+
+if __name__ == "__main__":
+    print(tc_to_frames('00:00:41:16', 24000, 1001))
