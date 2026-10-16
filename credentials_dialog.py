@@ -149,22 +149,25 @@ class FtrackSignInDialog(_SignInDialog):
 
 
 class AyonSignInDialog(_SignInDialog):
-    """Ayon user name and password, logged in once, renewed when it expires"""
+    """Ayon user name and password; the password is never stored"""
 
     def __init__(self, url, parent=None):
         super().__init__(
             "Sign in to Ayon",
-            "Your Ayon login is stored in the Windows Credential Manager, only for your "
-            "Windows user. When the Ayon session expires, Submission Helper logs in again "
-            "by itself.",
+            "Your Ayon session is stored in the Windows Credential Manager, only for your "
+            "Windows user. Your password is not stored: when the session expires, "
+            "Submission Helper asks for it again.",
             url, parent)
-        user, _, _ = credentials.get_ayon(url) if url else (None, None, None)
+        user, _ = credentials.get_ayon(url) if url else (None, None)
         self.user_edit = QtWidgets.QLineEdit(user or credentials.windows_user())
         self.password_edit = QtWidgets.QLineEdit()
         self.password_edit.setEchoMode(QtWidgets.QLineEdit.Password)
         self.form.addRow("User name:", self.user_edit)
         self.form.addRow("Password:", self.password_edit)
         self.password_edit.setFocus()
+        if user:
+            self.show_message("Your Ayon session has expired or was signed out: "
+                              "enter your password to sign in again.")
 
         self.sign_in_button = self.buttons.addButton("Sign in", QtWidgets.QDialogButtonBox.AcceptRole)
         self.sign_in_button.clicked.connect(self._login)
@@ -182,7 +185,7 @@ class AyonSignInDialog(_SignInDialog):
         if token is None:
             self.show_message(f"Sign-in failed: {message}", error=True)
             return
-        if not credentials.save_ayon(url, user, password, token):
+        if not credentials.save_ayon(url, user, token):
             self.show_message("Signed in, but the credentials could not be stored "
                               "(see the Log tab).", error=True)
             return
@@ -251,7 +254,7 @@ class AccountsGroup(QtWidgets.QGroupBox):
                 stored = credentials.get_ftrack(url)[1] if url else None
             else:
                 user = paths.get("AYON_USERNAME")
-                stored = credentials.get_ayon(url)[1] if url else None
+                stored = any(credentials.get_ayon(url)) if url else None
             host = credentials.hostname(url) or "no server set"
             if source:
                 text = f"{user or 'signed in'} @ {host} (from the {source})"

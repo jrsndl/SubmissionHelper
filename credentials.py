@@ -21,9 +21,10 @@ AYON launcher's or anybody else's entries are never read or written.
 ftrack: personal API key, received from the ftrack web app in the browser
 (see FtrackBrowserLogin) or typed in. API keys don't expire.
 
-Ayon: user name and password, logged in once; the session token, the user
-name and the password are stored. The token is checked before use and
-renewed with the stored password when it has expired.
+Ayon: user name and password; only the user name and the session token are
+stored, never the password. The token is checked before use; when it has
+expired the GUI asks for the password again (user name pre-filled), headless
+runs log an error.
 
 This module has no Qt dependency; the dialogs are in credentials_dialog.py.
 """
@@ -280,23 +281,25 @@ class FtrackBrowserLogin(threading.Thread):
 # ---------------------------------------------------------------- Ayon
 
 def get_ayon(url):
-    """(username, password, token) stored for this Ayon server"""
-    return _get(AYON, url, "username"), _get(AYON, url, "password"), _get(AYON, url, "token")
+    """(username, token) stored for this Ayon server"""
+    return _get(AYON, url, "username"), _get(AYON, url, "token")
 
 
-def save_ayon(url, username, password, token):
+def save_ayon(url, username, token):
+    """store the user name and the session token (never the password)"""
     ok = _set(AYON, url, "username", username)
-    ok = _set(AYON, url, "password", password) and ok
     ok = _set(AYON, url, "token", token) and ok
+    # a password stored by an early test build of this feature
+    _delete(AYON, url, "password")
     if ok:
-        log.info(f"Ayon credentials of {username} stored for {hostname(url)}")
+        log.info(f"Ayon login of {username} stored for {hostname(url)}")
     return ok
 
 
 def clear_ayon(url):
-    for item in ("username", "password", "token"):
+    for item in ("username", "token", "password"):
         _delete(AYON, url, item)
-    log.info(f"Ayon credentials removed for {hostname(url)}")
+    log.info(f"Ayon login removed for {hostname(url)}")
 
 
 def ayon_login(url, username, password):
@@ -327,29 +330,24 @@ def ayon_token_valid(url, token):
         return False
 
 
-def renew_ayon_token(url):
+def valid_ayon_token(url):
     """
-    The stored token when it is still valid, else a new one from the stored
-    user name and password (stored again). None when there is nothing stored
-    or the login fails.
+    The stored token when the server still accepts it, else None. An expired
+    token is removed (the user name is kept, to pre-fill the next sign-in).
     """
-    username, password, token = get_ayon(url)
-    if token and ayon_token_valid(url, token):
+    username, token = get_ayon(url)
+    if not token:
+        return None
+    if ayon_token_valid(url, token):
         return token
-    if not username or not password:
-        return None
-    new_token, message = ayon_login(url, username, password)
-    if new_token is None:
-        log.warning(f"Renewing the Ayon login of {username} failed: {message}")
-        return None
-    _set(AYON, url, "token", new_token)
-    log.info(f"Ayon login of {username} renewed")
-    return new_token
+    _delete(AYON, url, "token")
+    log.info(f"The Ayon login of {username or 'the user'} has expired")
+    return None
 
 
 def ayon_logout(url):
     """end the stored session on the server and forget the credentials"""
-    _, _, token = get_ayon(url)
+    _, token = get_ayon(url)
     if token:
         try:
             import ayon_api
@@ -409,7 +407,7 @@ def resolve(paths, envs, settings_inst):
     if token:
         sources[AYON] = SOURCE_ENV
     else:
-        stored_user, _, token = get_ayon(url) if url else (None, None, None)
+        stored_user, token = get_ayon(url) if url else (None, None)
         if token:
             sources[AYON] = SOURCE_KEYRING
             username = stored_user or username
@@ -488,9 +486,9 @@ def ensure_ftrack(paths, ask=True):
 
 def ensure_ayon(paths, ask=True):
     """
-    A working Ayon token in paths: a keyring token is checked and renewed with
-    the stored password, without credentials the user is asked to sign in
-    (GUI). Tokens from the environment or install.json are used as they are.
+    A working Ayon token in paths: a keyring token is checked; when it has
+    expired or there is none, the user is asked to sign in (GUI, user name
+    pre-filled). Tokens from the environment or install.json are used as they are.
     :return: True when a token is set
     """
     url = paths.get("AYON_SERVER_URL")
@@ -499,9 +497,12 @@ def ensure_ayon(paths, ask=True):
         return True
     if not url:
         return False
-    token = renew_ayon_token(url)
+    token = valid_ayon_token(url)
     if token is None and ask and prompt(AYON, url):
-        token = renew_ayon_token(url)
+        token = valid_ayon_token(url)
+    if token is None and not can_prompt():
+        log.error("Ayon: no valid login. Sign in in the Submission Helper window "
+                  "(Preferences > Accounts), or set AYON_API_KEY.")
     if token:
         paths["AYON_API_KEY"] = token
         stored_user = get_ayon(url)[0]

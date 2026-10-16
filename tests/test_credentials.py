@@ -109,7 +109,7 @@ class Resolve(Base):
 
     def test_keyring_before_install_json(self):
         credentials.save_ftrack('https://f', 'jan', 'kr-key')
-        credentials.save_ayon('https://a', 'jan', 'secret', 'kr-token')
+        credentials.save_ayon('https://a', 'jan', 'kr-token')
         p = credentials.resolve({}, {}, self.INSTALL)
         self.assertEqual((p['FTRACK_API_USER'], p['FTRACK_API_KEY']), ('jan', 'kr-key'))
         self.assertEqual((p['AYON_API_KEY'], p['AYON_USERNAME']), ('kr-token', 'jan'))
@@ -148,18 +148,41 @@ class Ayon(Base):
     def _paths(self):
         return credentials.resolve({}, {'AYON_SERVER_URL': 'https://a'}, {})
 
-    def test_expired_token_is_renewed_with_the_stored_password(self):
-        token, _ = credentials.ayon_login('https://a', 'jan', 'secret')
-        credentials.save_ayon('https://a', 'jan', 'secret', token)
-        self.ayon.valid_tokens.clear()            # session expired
-        p = self._paths()
-        self.assertTrue(credentials.ensure_ayon(p, ask=False))
-        self.assertEqual(p['AYON_API_KEY'], 'token2')
-        self.assertEqual(credentials.get_ayon('https://a')[2], 'token2')
+    def _sign_in(self, url):
+        token, _ = credentials.ayon_login(url, 'jan', 'secret')
+        return credentials.save_ayon(url, 'jan', token)
 
-    def test_valid_token_is_not_renewed(self):
-        token, _ = credentials.ayon_login('https://a', 'jan', 'secret')
-        credentials.save_ayon('https://a', 'jan', 'secret', token)
+    def test_password_is_never_stored(self):
+        self._sign_in('https://a')
+        self.assertEqual(sorted(item for _, item in self.keyring.store), ['token', 'username'])
+        self.assertNotIn('secret', self.keyring.store.values())
+
+    def test_password_of_an_early_build_is_removed(self):
+        self.keyring.set_password('SubmissionHelper/ayon/a', 'password', 'secret')
+        self._sign_in('https://a')
+        self.assertNotIn('secret', self.keyring.store.values())
+
+    def test_expired_token_asks_for_the_password_again(self):
+        self._sign_in('https://a')
+        self.ayon.valid_tokens.clear()            # session expired
+        asked = []
+        credentials.set_prompt_handler(
+            lambda kind, url: asked.append(credentials.get_ayon(url)) or self._sign_in(url))
+        p = self._paths()
+        self.assertTrue(credentials.ensure_ayon(p))
+        # the expired token is gone, the user name is kept for the dialog
+        self.assertEqual(asked, [('jan', None)])
+        self.assertEqual(p['AYON_API_KEY'], 'token2')
+
+    def test_expired_token_headless_fails_with_an_error(self):
+        self._sign_in('https://a')
+        self.ayon.valid_tokens.clear()
+        with self.assertLogs('Credentials', level='ERROR'):
+            self.assertFalse(credentials.ensure_ayon(self._paths()))
+        self.assertEqual(self.ayon.logins, 1)     # no login without the user
+
+    def test_valid_token_is_used(self):
+        self._sign_in('https://a')
         p = self._paths()
         credentials.ensure_ayon(p, ask=False)
         self.assertEqual(self.ayon.logins, 1)
@@ -169,8 +192,7 @@ class Ayon(Base):
 
         def handler(kind, url):
             asked.append((kind, url))
-            token, _ = credentials.ayon_login(url, 'jan', 'secret')
-            return credentials.save_ayon(url, 'jan', 'secret', token)
+            return self._sign_in(url)
 
         credentials.set_prompt_handler(handler)
         p = self._paths()
@@ -189,7 +211,8 @@ class Ayon(Base):
         self.assertEqual(asked, ['ayon', 'ayon'])
 
     def test_headless_never_asks(self):
-        self.assertFalse(credentials.ensure_ayon(self._paths()))
+        with self.assertLogs('Credentials', level='ERROR'):
+            self.assertFalse(credentials.ensure_ayon(self._paths()))
 
     def test_environment_token_is_used_as_is(self):
         p = credentials.resolve({}, {'AYON_SERVER_URL': 'https://a', 'AYON_API_KEY': 'launcher'}, {})
@@ -202,10 +225,10 @@ class Ayon(Base):
         self.assertIn('wrong', message)
 
     def test_logout_forgets_everything(self):
-        token, _ = credentials.ayon_login('https://a', 'jan', 'secret')
-        credentials.save_ayon('https://a', 'jan', 'secret', token)
+        self._sign_in('https://a')
+        token = credentials.get_ayon('https://a')[1]
         credentials.ayon_logout('https://a')
-        self.assertEqual(credentials.get_ayon('https://a'), (None, None, None))
+        self.assertEqual(credentials.get_ayon('https://a'), (None, None))
         self.assertNotIn(token, self.ayon.valid_tokens)
 
 

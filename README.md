@@ -102,10 +102,11 @@ Credentials are taken from, first found wins:
   user is signed in there (or signs in), ftrack sends the user's personal API
   key back to Submission Helper. The key can also be typed in (ftrack: My
   Account > Security). Personal keys don't expire.
-* **Ayon**: user name (the Windows login is pre-filled) and password, once.
-  The server comes from `AYON_SERVER_URL` / `install.json`, or is typed in.
-  The Ayon session token is checked before use and renewed with the stored
-  password when it has expired.
+* **Ayon**: user name (the Windows login is pre-filled) and password. The
+  server comes from `AYON_SERVER_URL` / `install.json`, or is typed in. Only
+  the user name and the Ayon session token are stored, never the password:
+  the token is checked before use, and when it has expired Submission Helper
+  asks for the password again (headless runs log an error instead).
 * **Preferences > Accounts** shows who is signed in and where the
   credentials come from, with *Sign in...* and *Sign out*. A cancelled
   sign-in isn't asked again until the next start or *Sign in...*.
