@@ -32,9 +32,6 @@
    <iconset resource="ui_images.qrc">
     <normaloff>:/images/folder.png</normaloff>:/images/folder.png</iconset>
   </property>
-  <property name="toolTip">
-   <string/>
-  </property>
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
@@ -737,9 +734,6 @@ QCalendarWidget
           <height>350</height>
          </size>
         </property>
-        <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
         <property name="currentIndex">
          <number>0</number>
         </property>
@@ -776,13 +770,6 @@ QCalendarWidget
                 <height>70</height>
                </size>
               </property>
-              <property name="toolTip">
-               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:600; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
               <property name="title">
                <string>Package Folder:</string>
               </property>
@@ -815,9 +802,6 @@ p, li { white-space: pre-wrap; }
                      <height>16777215</height>
                     </size>
                    </property>
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder containing media files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -841,13 +825,6 @@ p, li { white-space: pre-wrap; }
                        <width>20</width>
                        <height>25</height>
                       </size>
-                     </property>
-                     <property name="toolTip">
-                      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Opens video directory with system file manager (Explorer, Finder...).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                      </property>
                      <property name="autoFillBackground">
                       <bool>false</bool>
@@ -886,13 +863,6 @@ p, li { white-space: pre-wrap; }
                        <width>60</width>
                        <height>24</height>
                       </size>
-                     </property>
-                     <property name="toolTip">
-                      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:11px; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Browse for video file.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                      </property>
                      <property name="autoFillBackground">
                       <bool>false</bool>
@@ -1111,9 +1081,6 @@ p, li { white-space: pre-wrap; }
                        <height>16777215</height>
                       </size>
                      </property>
-                     <property name="toolTip">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                     </property>
                      <property name="text">
                       <string/>
                      </property>
@@ -1173,9 +1140,6 @@ p, li { white-space: pre-wrap; }
                        <width>150</width>
                        <height>16777215</height>
                       </size>
-                     </property>
-                     <property name="toolTip">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                      </property>
                      <property name="text">
                       <string/>
@@ -1270,9 +1234,6 @@ p, li { white-space: pre-wrap; }
                          <height>25</height>
                         </size>
                        </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Template for naming the package. &lt;br/&gt;&lt;br/&gt;Keywords:&lt;br/&gt;{package_version} : detects consecutive versions one folder up from package folder&lt;br/&gt;{yy}: year&lt;br/&gt;{mm}: month&lt;br/&gt;{dd}: day&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
                        <property name="text">
                         <string>sub_{yy}{mm}{dd}_{package_version}</string>
                        </property>
@@ -1326,9 +1287,6 @@ p, li { white-space: pre-wrap; }
                          <width>200</width>
                          <height>16777215</height>
                         </size>
-                       </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects current date stamp in it by using Date Regex&lt;/p&gt;&lt;p&gt;&lt;br/&gt;Keywords:&lt;br/&gt;{yy}: year&lt;br/&gt;{mm}: month&lt;br/&gt;{dd}: day&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="text">
                         <string>sub_{yy}{mm}{dd}</string>
@@ -1384,9 +1342,6 @@ p, li { white-space: pre-wrap; }
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
                        <property name="text">
                         <string>_(\d{3})$</string>
                        </property>
@@ -1425,9 +1380,6 @@ p, li { white-space: pre-wrap; }
                             <width>80</width>
                             <height>25</height>
                            </size>
-                          </property>
-                          <property name="toolTip">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Each date, versions start from A or 1.&lt;br/&gt;If unchecked, package versions are contunuous, not depending on date.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
                           <property name="text">
                            <string>Per Date</string>
@@ -1472,9 +1424,6 @@ p, li { white-space: pre-wrap; }
                               <height>25</height>
                              </size>
                             </property>
-                            <property name="toolTip">
-                             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;For numbered versions, use leading zeroes&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                            </property>
                             <property name="value">
                              <number>3</number>
                             </property>
@@ -1495,9 +1444,6 @@ p, li { white-space: pre-wrap; }
                             <width>70</width>
                             <height>25</height>
                            </size>
-                          </property>
-                          <property name="toolTip">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use letters instead of numbers for versioning&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
                           <property name="text">
                            <string>Letter</string>
@@ -1520,9 +1466,6 @@ p, li { white-space: pre-wrap; }
                             <width>90</width>
                             <height>25</height>
                            </size>
-                          </property>
-                          <property name="toolTip">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If using letters for versioning, use upper case instead of lower case letters&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
                           <property name="text">
                            <string>Upper Case</string>
@@ -1707,9 +1650,6 @@ p, li { white-space: pre-wrap; }
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder.&lt;br/&gt;For every folder there, it tries to detect date stamp and version  by the regexes.&lt;br/&gt;Then it produces {package_version} keyword, depending on Version options.&lt;br/&gt;Finally, the package name is constructed by Template that contains {package_version} keyword.&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
                        <property name="text">
                         <string/>
                        </property>
@@ -1758,9 +1698,6 @@ p, li { white-space: pre-wrap; }
               <width>16777215</width>
               <height>350</height>
              </size>
-            </property>
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Creating new keys&lt;br/&gt;1. source is the text to be searched. For every file, the {keys} are replaced first&lt;/p&gt;&lt;p&gt;2. Pattern is used for Python re.sub regex&lt;/p&gt;&lt;p&gt;3. Repl is used for Python re.sub replace. If itr starts with lambda, the repl is evaluated as Python&lt;/p&gt;&lt;p&gt;4. Result (found group 1 or replace) is named by the name field&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="widgetResizable">
              <bool>true</bool>
@@ -8373,13 +8310,6 @@ p, li { white-space: pre-wrap; }
                         <height>25</height>
                        </size>
                       </property>
-                      <property name="toolTip">
-                       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Opens video directory with system file manager (Explorer, Finder...).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
                       <property name="autoFillBackground">
                        <bool>false</bool>
                       </property>
@@ -8417,13 +8347,6 @@ p, li { white-space: pre-wrap; }
                         <width>20</width>
                         <height>24</height>
                        </size>
-                      </property>
-                      <property name="toolTip">
-                       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:11px; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Browse for video file.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                       </property>
                       <property name="autoFillBackground">
                        <bool>false</bool>
@@ -11442,13 +11365,6 @@ p, li { white-space: pre-wrap; }
                   <height>70</height>
                  </size>
                 </property>
-                <property name="toolTip">
-                 <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:600; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
                 <property name="title">
                  <string>Data</string>
                 </property>
@@ -11528,9 +11444,6 @@ p, li { white-space: pre-wrap; }
                        <height>25</height>
                       </size>
                      </property>
-                     <property name="toolTip">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects current date stamp in it by using Date Regex&lt;/p&gt;&lt;p&gt;&lt;br/&gt;Keywords:&lt;br/&gt;{yy}: year&lt;br/&gt;{mm}: month&lt;br/&gt;{dd}: day&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                     </property>
                      <property name="text">
                       <string>data_</string>
                      </property>
@@ -11567,13 +11480,6 @@ p, li { white-space: pre-wrap; }
                   <height>70</height>
                  </size>
                 </property>
-                <property name="toolTip">
-                 <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:600; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
                 <property name="title">
                  <string>Data CSV:</string>
                 </property>
@@ -11603,9 +11509,6 @@ p, li { white-space: pre-wrap; }
                        <height>16777215</height>
                       </size>
                      </property>
-                     <property name="toolTip">
-                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder containing media files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                     </property>
                      <property name="text">
                       <string/>
                      </property>
@@ -11633,13 +11536,6 @@ p, li { white-space: pre-wrap; }
                        <width>60</width>
                        <height>25</height>
                       </size>
-                     </property>
-                     <property name="toolTip">
-                      <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:11px; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Browse for video file.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                      </property>
                      <property name="autoFillBackground">
                       <bool>false</bool>
@@ -11757,9 +11653,6 @@ p, li { white-space: pre-wrap; }
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
                        <property name="text">
                         <string>{shot}</string>
                        </property>
@@ -11820,9 +11713,6 @@ p, li { white-space: pre-wrap; }
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
                        <property name="text">
                         <string>{data_shot}</string>
                        </property>
@@ -11880,9 +11770,6 @@ p, li { white-space: pre-wrap; }
                          <width>400</width>
                          <height>16777215</height>
                         </size>
-                       </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -11944,9 +11831,6 @@ p, li { white-space: pre-wrap; }
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
                        <property name="text">
                         <string/>
                        </property>
@@ -12004,9 +11888,6 @@ p, li { white-space: pre-wrap; }
                          <width>400</width>
                          <height>16777215</height>
                         </size>
-                       </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -12067,9 +11948,6 @@ p, li { white-space: pre-wrap; }
                          <width>400</width>
                          <height>16777215</height>
                         </size>
-                       </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -12641,9 +12519,6 @@ p, li { white-space: pre-wrap; }
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Search for any note that containds word client:&lt;br/&gt;^(.*?client.*?)$&lt;br/&gt;&lt;br/&gt;(WIP|FINAL): (.*) together with repl \2 will match publish notes staht start with WIP or FINAL and show only second parethes, ie artist's note&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
                        <property name="text">
                         <string>4client v{version}(.*)</string>
                        </property>
@@ -12847,13 +12722,6 @@ p, li { white-space: pre-wrap; }
                       <height>70</height>
                      </size>
                     </property>
-                    <property name="toolTip">
-                     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:600; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                    </property>
                     <property name="title">
                      <string>Vendor CSV:</string>
                     </property>
@@ -12913,9 +12781,6 @@ p, li { white-space: pre-wrap; }
                              <height>16777215</height>
                             </size>
                            </property>
-                           <property name="toolTip">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder containing media files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                           </property>
                            <property name="text">
                             <string/>
                            </property>
@@ -12947,13 +12812,6 @@ p, li { white-space: pre-wrap; }
                              <width>25</width>
                              <height>25</height>
                             </size>
-                           </property>
-                           <property name="toolTip">
-                            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Opens video directory with system file manager (Explorer, Finder...).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                            </property>
                            <property name="autoFillBackground">
                             <bool>false</bool>
@@ -12992,13 +12850,6 @@ p, li { white-space: pre-wrap; }
                              <width>60</width>
                              <height>25</height>
                             </size>
-                           </property>
-                           <property name="toolTip">
-                            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:11px; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Browse for video file.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                            </property>
                            <property name="autoFillBackground">
                             <bool>false</bool>
@@ -13098,9 +12949,6 @@ p, li { white-space: pre-wrap; }
                              <height>16777215</height>
                             </size>
                            </property>
-                           <property name="toolTip">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                           </property>
                            <property name="text">
                             <string>_(\d{3})$</string>
                            </property>
@@ -13160,9 +13008,6 @@ p, li { white-space: pre-wrap; }
                              <width>400</width>
                              <height>16777215</height>
                             </size>
-                           </property>
-                           <property name="toolTip">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                            </property>
                            <property name="text">
                             <string>_(\d{3})$</string>
@@ -13293,9 +13138,6 @@ p, li { white-space: pre-wrap; }
                            <height>25</height>
                           </size>
                          </property>
-                         <property name="toolTip">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                         </property>
                          <property name="text">
                           <string>{shot}</string>
                          </property>
@@ -13351,9 +13193,6 @@ p, li { white-space: pre-wrap; }
                            <width>16000</width>
                            <height>16777215</height>
                           </size>
-                         </property>
-                         <property name="toolTip">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder containing media files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                          </property>
                          <property name="text">
                           <string/>
@@ -13419,9 +13258,6 @@ p, li { white-space: pre-wrap; }
                         <height>400</height>
                        </size>
                       </property>
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The columns are defines as &lt;br/&gt;column name = value,&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
                       <property name="plainText">
                        <string/>
                       </property>
@@ -13476,9 +13312,6 @@ p, li { white-space: pre-wrap; }
                         <height>400</height>
                        </size>
                       </property>
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The columns are defines as &lt;br/&gt;column name = value,&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
                       <property name="plainText">
                        <string/>
                       </property>
@@ -13528,13 +13361,6 @@ p, li { white-space: pre-wrap; }
                 <width>350</width>
                 <height>70</height>
                </size>
-              </property>
-              <property name="toolTip">
-               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:10pt; font-weight:600; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="title">
                <string>Search and Replace CSV</string>
@@ -13590,9 +13416,6 @@ p, li { white-space: pre-wrap; }
                      <height>16777215</height>
                     </size>
                    </property>
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Path to CSV file.&lt;/p&gt;&lt;p&gt;Parent Directory of the file will be used to search for all valid csv files. From list of sorted valid csv files the latest will be picked, regardless of the file name here.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;Required CSV Colums: &lt;span style=&quot; font-family:'JetBrains Mono','monospace'; font-size:9.8pt; color:#6aab73;&quot;&gt;'Extension'&lt;/span&gt;&lt;span style=&quot; font-family:'JetBrains Mono','monospace'; font-size:9.8pt; color:#bcbec4;&quot;&gt;, &lt;/span&gt;&lt;span style=&quot; font-family:'JetBrains Mono','monospace'; font-size:9.8pt; color:#6aab73;&quot;&gt;'Pattern'&lt;/span&gt;&lt;span style=&quot; font-family:'JetBrains Mono','monospace'; font-size:9.8pt; color:#bcbec4;&quot;&gt;, &lt;/span&gt;&lt;span style=&quot; font-family:'JetBrains Mono','monospace'; font-size:9.8pt; color:#6aab73;&quot;&gt;'Search'&lt;/span&gt;&lt;span style=&quot; font-family:'JetBrains Mono','monospace'; font-size:9.8pt; color:#bcbec4;&quot;&gt;, &lt;/span&gt;&lt;span style=&quot; font-family:'JetBrains Mono','monospace'; font-size:9.8pt; color:#6aab73;&quot;&gt;'Replace'&lt;br/&gt;&lt;/span&gt;Extension: Which files to process.&lt;br/&gt;Pattern: Regex pattern to match the file name&lt;/p&gt;&lt;p&gt;Search: search for string&lt;/p&gt;&lt;p&gt;Replace: replace with string.&lt;/p&gt;&lt;p&gt;Multiple Search and replace string for one file need to be on separfate lines.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
                    <property name="text">
                     <string/>
                    </property>
@@ -13620,13 +13443,6 @@ p, li { white-space: pre-wrap; }
                      <width>60</width>
                      <height>25</height>
                     </size>
-                   </property>
-                   <property name="toolTip">
-                    <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:11px; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Browse for video file.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
                    <property name="autoFillBackground">
                     <bool>false</bool>
@@ -15297,9 +15113,6 @@ p, li { white-space: pre-wrap; }
                 <height>16000</height>
                </size>
               </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Defines output columns for submission, drive log and text outputs.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
               <property name="widgetResizable">
                <bool>true</bool>
               </property>
@@ -15370,9 +15183,6 @@ p, li { white-space: pre-wrap; }
                           <height>300</height>
                          </size>
                         </property>
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The columns are defines as &lt;br/&gt;column name = value,&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
                         <property name="plainText">
                          <string>Shot = {printf_pattern},
 Vendor = AmazingVFX</string>
@@ -15424,9 +15234,6 @@ Vendor = AmazingVFX</string>
                             <height>25</height>
                            </size>
                           </property>
-                          <property name="toolTip">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Do not use files that contain this string in path or name.&lt;br/&gt;Can use more than one string, separated by space.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                          </property>
                          </widget>
                         </item>
                        </layout>
@@ -15471,9 +15278,6 @@ Vendor = AmazingVFX</string>
                             <width>80</width>
                             <height>25</height>
                            </size>
-                          </property>
-                          <property name="toolTip">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Only use files that contain this string in path or name.&lt;br/&gt;Can use more than one string, separated by space&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
                          </widget>
                         </item>
@@ -15532,9 +15336,6 @@ Vendor = AmazingVFX</string>
                           <height>300</height>
                          </size>
                         </property>
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The columns are defines as &lt;br/&gt;column name = value,&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
                         <property name="plainText">
                          <string>Shot = {printf_pattern},
 Vendor = AmazingVFX</string>
@@ -15586,9 +15387,6 @@ Vendor = AmazingVFX</string>
                             <height>25</height>
                            </size>
                           </property>
-                          <property name="toolTip">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Do not use files that contain this string in path or name.&lt;br/&gt;Can use more than one string, separated by space.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                          </property>
                          </widget>
                         </item>
                        </layout>
@@ -15633,9 +15431,6 @@ Vendor = AmazingVFX</string>
                             <width>80</width>
                             <height>25</height>
                            </size>
-                          </property>
-                          <property name="toolTip">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Only use files that contain this string in path or name.&lt;br/&gt;Can use more than one string, separated by space&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
                          </widget>
                         </item>
@@ -15694,9 +15489,6 @@ Vendor = AmazingVFX</string>
                           <height>300</height>
                          </size>
                         </property>
-                        <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The columns are defines as &lt;br/&gt;column name = value,&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                        </property>
                         <property name="plainText">
                          <string>File = {Shot = {printf_pattern}</string>
                         </property>
@@ -15747,9 +15539,6 @@ Vendor = AmazingVFX</string>
                             <height>25</height>
                            </size>
                           </property>
-                          <property name="toolTip">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Do not use files that contain this string in path or name.&lt;br/&gt;Can use more than one string, separated by space.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                          </property>
                          </widget>
                         </item>
                        </layout>
@@ -15794,9 +15583,6 @@ Vendor = AmazingVFX</string>
                             <width>80</width>
                             <height>25</height>
                            </size>
-                          </property>
-                          <property name="toolTip">
-                           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Only use files that contain this string in path or name.&lt;br/&gt;Can use more than one string, separated by space&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                           </property>
                          </widget>
                         </item>
@@ -19977,9 +19763,6 @@ Vendor = AmazingVFX</string>
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
                        <property name="text">
                         <string/>
                        </property>
@@ -20039,9 +19822,6 @@ Vendor = AmazingVFX</string>
                          <width>150</width>
                          <height>16777215</height>
                         </size>
-                       </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -20103,9 +19883,6 @@ Vendor = AmazingVFX</string>
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
                        <property name="text">
                         <string/>
                        </property>
@@ -20165,9 +19942,6 @@ Vendor = AmazingVFX</string>
                          <width>150</width>
                          <height>16777215</height>
                         </size>
-                       </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -20229,9 +20003,6 @@ Vendor = AmazingVFX</string>
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
                        <property name="text">
                         <string/>
                        </property>
@@ -20292,9 +20063,6 @@ Vendor = AmazingVFX</string>
                          <height>16777215</height>
                         </size>
                        </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
                        <property name="text">
                         <string/>
                        </property>
@@ -20354,9 +20122,6 @@ Vendor = AmazingVFX</string>
                          <width>150</width>
                          <height>16777215</height>
                         </size>
-                       </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -20494,9 +20259,6 @@ Vendor = AmazingVFX</string>
                          <height>25</height>
                         </size>
                        </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder containing media files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
                        <property name="text">
                         <string/>
                        </property>
@@ -20553,9 +20315,6 @@ Vendor = AmazingVFX</string>
                          <width>300</width>
                          <height>25</height>
                         </size>
-                       </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder containing media files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -20614,9 +20373,6 @@ Vendor = AmazingVFX</string>
                          <height>25</height>
                         </size>
                        </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder containing media files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
                        <property name="text">
                         <string/>
                        </property>
@@ -20673,9 +20429,6 @@ Vendor = AmazingVFX</string>
                          <width>300</width>
                          <height>25</height>
                         </size>
-                       </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder containing media files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="text">
                         <string/>
@@ -20867,9 +20620,6 @@ Vendor = AmazingVFX</string>
                              <height>25</height>
                             </size>
                            </property>
-                           <property name="toolTip">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder containing media files.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                           </property>
                            <property name="text">
                             <string/>
                            </property>
@@ -21017,9 +20767,6 @@ Vendor = AmazingVFX</string>
                                <height>25</height>
                               </size>
                              </property>
-                             <property name="toolTip">
-                              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects current date stamp in it by using Date Regex&lt;/p&gt;&lt;p&gt;&lt;br/&gt;Keywords:&lt;br/&gt;{yy}: year&lt;br/&gt;{mm}: month&lt;br/&gt;{dd}: day&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                             </property>
                              <property name="text">
                               <string>list_</string>
                              </property>
@@ -21076,9 +20823,6 @@ Vendor = AmazingVFX</string>
                              <height>16777215</height>
                             </size>
                            </property>
-                           <property name="toolTip">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder where list.csv and optionally thumbnails will be saved to by &lt;span style=&quot; font-weight:600;&quot;&gt;Export Shot List&lt;/span&gt; button.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                           </property>
                            <property name="text">
                             <string/>
                            </property>
@@ -21106,13 +20850,6 @@ Vendor = AmazingVFX</string>
                              <width>60</width>
                              <height>25</height>
                             </size>
-                           </property>
-                           <property name="toolTip">
-                            <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:11px; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Browse for video file.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                            </property>
                            <property name="autoFillBackground">
                             <bool>false</bool>
@@ -21213,9 +20950,6 @@ p, li { white-space: pre-wrap; }
                              <height>16777215</height>
                             </size>
                            </property>
-                           <property name="toolTip">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                           </property>
                            <property name="text">
                             <string>{shot}</string>
                            </property>
@@ -21276,9 +21010,6 @@ p, li { white-space: pre-wrap; }
                              <height>16777215</height>
                             </size>
                            </property>
-                           <property name="toolTip">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                           </property>
                            <property name="text">
                             <string>{Folder Name}</string>
                            </property>
@@ -21336,9 +21067,6 @@ p, li { white-space: pre-wrap; }
                              <width>400</width>
                              <height>16777215</height>
                             </size>
-                           </property>
-                           <property name="toolTip">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                            </property>
                            <property name="text">
                             <string/>
@@ -21400,9 +21128,6 @@ p, li { white-space: pre-wrap; }
                              <height>16777215</height>
                             </size>
                            </property>
-                           <property name="toolTip">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                           </property>
                            <property name="text">
                             <string/>
                            </property>
@@ -21460,9 +21185,6 @@ p, li { white-space: pre-wrap; }
                              <width>400</width>
                              <height>16777215</height>
                             </size>
-                           </property>
-                           <property name="toolTip">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                            </property>
                            <property name="text">
                             <string/>
@@ -21523,9 +21245,6 @@ p, li { white-space: pre-wrap; }
                              <width>400</width>
                              <height>16777215</height>
                             </size>
-                           </property>
-                           <property name="toolTip">
-                            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                            </property>
                            <property name="text">
                             <string/>
@@ -21709,9 +21428,6 @@ p, li { white-space: pre-wrap; }
                            <height>25</height>
                           </size>
                          </property>
-                         <property name="toolTip">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                         </property>
                          <property name="text">
                           <string/>
                          </property>
@@ -21774,9 +21490,6 @@ p, li { white-space: pre-wrap; }
                            <width>1000</width>
                            <height>25</height>
                           </size>
-                         </property>
-                         <property name="toolTip">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renamer checks all folders one folder above the package folder&lt;br/&gt;and detects version in it by using Version Regex&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                          </property>
                          <property name="text">
                           <string/>
@@ -23188,9 +22901,6 @@ p, li { white-space: pre-wrap; }
                          <height>25</height>
                         </size>
                        </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
                       </widget>
                      </item>
                     </layout>
@@ -23700,9 +23410,6 @@ p, li { white-space: pre-wrap; }
                          <width>180</width>
                          <height>25</height>
                         </size>
-                       </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Expects path to folder&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                       </widget>
                      </item>
@@ -25816,9 +25523,6 @@ p, li { white-space: pre-wrap; }
                     <height>25</height>
                    </size>
                   </property>
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Template for naming the package. &lt;br/&gt;&lt;br/&gt;Keywords:&lt;br/&gt;{package_version} : detects consecutive versions one folder up from package folder&lt;br/&gt;{yy}: year&lt;br/&gt;{mm}: month&lt;br/&gt;{dd}: day&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
                   <property name="text">
                    <string/>
                   </property>
@@ -25869,9 +25573,6 @@ p, li { white-space: pre-wrap; }
                     <height>25</height>
                    </size>
                   </property>
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Template for naming the package. &lt;br/&gt;&lt;br/&gt;Keywords:&lt;br/&gt;{package_version} : detects consecutive versions one folder up from package folder&lt;br/&gt;{yy}: year&lt;br/&gt;{mm}: month&lt;br/&gt;{dd}: day&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
                   <property name="text">
                    <string/>
                   </property>
@@ -25921,9 +25622,6 @@ p, li { white-space: pre-wrap; }
                     <width>16000</width>
                     <height>25</height>
                    </size>
-                  </property>
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Template for naming the package. &lt;br/&gt;&lt;br/&gt;Keywords:&lt;br/&gt;{package_version} : detects consecutive versions one folder up from package folder&lt;br/&gt;{yy}: year&lt;br/&gt;{mm}: month&lt;br/&gt;{dd}: day&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="text">
                    <string/>

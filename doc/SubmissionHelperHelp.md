@@ -6,6 +6,8 @@ Each sending usually consists of one or more files, together with a spreadsheet 
 
 This process doesn't seem to have an industry standard; Submission Helper has many options to help interface vendors and production with as little friction as possible.
 
+Every control in the window has a tooltip: hover over it for a short description. This document explains how the controls work together.
+
 # Intended use
 
 The Package starts with one or more files that you want to package and send. Submission Helper can check the files and helps to produce spreadsheet(s) and email summary that is easily ingested in the receiver's system, often automatically.
@@ -29,12 +31,31 @@ The Package starts with one or more files that you want to package and send. Sub
 
 Submission Helper assumes you put the file(s) in one folder \- the Package Folder.
 
-* Drag the package folder path anywhere to the Submission Helper window  
+* Drop the package folder on the Submission Helper window (on an empty area, not on a text field), or use the browse button on the Package tab  
 * Set the Package Name options, till the preview matches what you need  
 * Use Spreadsheet tab to define columns and their values  
-* Set the export options in Exports and text tabs  
+* Set the export options in the Exports tab  
 * Set conditions in Check tab to highlight the files that do not adhere to intended specs  
 * Press Go to export the spreadsheet
+
+# Tokens
+
+Most text fields accept tokens: names in braces, such as `{shot}` or `{meta_width}`, that are replaced by a value of each file. Tokens come from the file name and path, from the file metadata, from the Parsing tab, and from the Data, Vendor, ftrack and Ayon tabs.
+
+Use the **Inspector** tab at the bottom to see every token of every file with its value. Its three filter fields show only files, token names or values that contain the typed text.
+
+A few rules hold almost everywhere:
+
+* An unknown token is usually left in the text as it is, e.g. `{shoot}` stays `{shoot}`. That makes typos easy to spot in the tables.
+* Braces always mean a token. Regex counts like `\d{3}` don't work in fields that also expand tokens; write `\d\d\d` instead.
+* Fields named **If**, **Filter** (Rename tab) and **Check** are Python expressions. Tokens are pasted into them as plain text, so put quotes around text values: `'{extension}' == 'exr'`. Numbers need no quotes: `{meta_width} > 1920`.
+
+# Main window
+
+* **Go** exports the spreadsheets and the text file as set in the Exports tab. When the options are on, it also copies sidecar files (*Copy with Go*), runs converts (*Convert on Go*) and renames the package folder (*Auto Rename*). Go uses the data shown in the tables; press Reload first when files changed on disk.  
+* **Reload** rescans the package folder: files, sizes, metadata and CSV data. Use it after loading a preset, after files changed, and after changing Frame Rate or OCIO in Preferences.  
+* **Publish Ayon Local** / **Publish Ayon Deadline**: see Ayon Publish Tab.  
+* Drag the border between the top and the bottom panel to resize them; double click it to reset.
 
 # Package Name
 ![image1.png](rsrs/image1.png)
@@ -43,21 +64,31 @@ Assists with adhering to naming convention. Typically, coordinator gathers all t
 
 ![image8.png](rsrs/image8.png)
 
-SH checks the parent directory of the package ({show}/out/submissions) and detects previous sendings. If the Name from Template (4) is active, SH will rename the temp\_name according to template, with the next version available. Preview shows the package name to be used for rename.
+SH checks the folders next to the package (in {show}/out/submissions) and detects previous sendings. With Name From set to Template, Preview shows the next package name. The package folder is renamed to it when you press **Rename**, or after Go when **Auto Rename** is on.
 
-Using regular expressions allows for very flexible naming options. Some productions want to simply number the sendings from one up, but include the date in the name (the example shown). It is important to understand that Date Regex (2) and Version Regex (3) are used for detecting already used versions in the parent directory of the package, and Template is used to construct new names. The {package\_version} token in the template is replaced by the next available version.
+* **Template** builds the new name. It can only use the date tokens `{yy}` `{y}` `{mm}` `{m}` `{dd}` `{d}` and `{package_version}`, which is replaced by the next available version.  
+* **Date Regex** finds the date stamp: its first capture group is the date. It is run on the expanded template (to get today's stamp) and on every folder next to the package. Tokens are not expanded here, so write the date as a regex, e.g. `sub_(\d{6})`.  
+* **Version Regex** finds the version in the folders next to the package; its first capture group is the version, e.g. `_(\d{3})$` for numbers or `_([A-Z])$` for letters.  
+* **Per Date** restarts the versions every day; only folders with today's date are compared. With it off, versions continue across dates.  
+* **Leading Zeroes**, **Letter** and **Upper Case** set how the version is written.
 
-Editorial sometime prefers to send packages that are versioned per date:
+Some productions want to simply number the sendings from one up, but include the date in the name (the example shown). Editorial sometimes prefers to send packages that are versioned per date:
 
 * 20251224\_0001  
 * 20251224\_0002  
 * 20251225\_0001
 
-Or per date with letter:
+Or per date with letter (Letter on, Version Regex capturing one letter, e.g. `_([A-Z])$`):
 
 * 20251224\_A  
 * 20251224\_B  
 * 20251225\_A
+
+The name is available as `{package_name}`, the date as `{package_date}` (only with Per Date on), and the version as `{package_version}`.
+
+## Submission File Age
+
+**Only Last** keeps only recently written files in the Submission spreadsheet: files older than the set age (minutes, hours or days, by modified or created time) are hidden from the Submission. The Drive Log and Text keep them. A file sequence is as old as its newest frame. **Age Exclude** lists words (separated by spaces) of paths that are never hidden by age. Note that *created* is the creation time only on Windows.
 
 # Parsing Tab
 
@@ -65,15 +96,21 @@ Parsing Tab allows you to define custom, per file tokens. Those tokens can be de
 
 An easy way to learn what metadata is available is to use Inspector Tab.
 
-For every file (or file sequence) SH detects, it first scans for metadata, and then processes the Parsing Tab from top to bottom. Note that you can use the tokens defined in upper lines in lower lines, defining other tokens. For tokens with the same name, lower lines overwrite upper lines.
+For every file (or file sequence) SH detects, it first scans for metadata, and then processes the Parsing Tab from top to bottom (48 rows). Note that you can use the tokens defined in upper lines in lower lines, defining other tokens. For tokens with the same name, lower lines overwrite upper lines.
 
 There are five columns in the parsing tab:
 
 1. Name: The name of newly created token  
 2. Pattern: Regular expression to define the pattern  
 3. Repl: Replace expression. If empty, first matching group is used as an output  
-4. Source: The source string for the Pattern search (can use tokens)  
-5. Filter: Only process the line if part of the file name contains string in Filter
+4. Source: The source string for the Pattern search (can use tokens). If it uses a token that the file doesn't have, the result is empty.  
+5. Filter: Only process the line for files whose full path contains the Filter text (plain text, case sensitive). Empty means all files.
+
+A row is skipped when Name, Pattern or Source is empty. With Repl set, a Source that doesn't match the Pattern is used unchanged, so anchor such patterns with `^` and `$`.
+
+Useful Source tokens: `{name}` is the file name without extension, `{part1}` the file name with extension, `{part2}` the parent folder, `{part3}` the folder above it, and so on.
+
+Tokens from the Data, ftrack and Ayon tabs are added after parsing, so don't use them in Source.
 
 ## Example: Parsing Shot Name
 
@@ -86,14 +123,13 @@ Your package contains files like
 
 First line uses file name (001\_0010\_comp\_v001.mov, 001\_0010\_comp\_v001.1001.exr) with pattern ^(\[^\_\]\*)\_(\[^\_\]\*)\_(\[^\_\]\*).\*$ and Repl string outputs first two groups \- pattern parentheses separated by underscore: \\1\_\\2. This defines the short name for both files as 001\_0010.
 
-The second line uses {part2} token as a source, which is “one folder up from the detected file name. File sequences typically have a per sequence folder. This line forces SH to use the name not from the file name, but from its parent folder, with a filter to only do this for EXR files.  
+The second line uses {part2} token as a source, which is one folder up from the detected file name. File sequences typically have a per sequence folder. This line forces SH to use the name not from the file name, but from its parent folder, with a filter to only do this for EXR files.  
 {package\_root}/001\_0010\_comp\_v001/001\_0010\_comp\_v001.1001.exr  
 This shows how to overwrite the shot token for specific file formats.
 
 The third line is very similar to the first line, but only outputs the part of the file name before the first underscore as a sequence name.
 
-The fort line shows that Repl string can be also a Python code starting with lambda pattern:  
-This might be necessary for string manipulations not possible with bare regular expressions, like uppercase / lowercase, or calculations.
+The fourth line shows that Repl string can be also a Python code starting with lambda, for example `lambda m: m.group(1).upper()`. This might be necessary for string manipulations not possible with bare regular expressions, like uppercase / lowercase, or calculations.
 
 # Convert Tab
 
@@ -101,16 +137,28 @@ This might be necessary for string manipulations not possible with bare regular 
 
 Convert Tab allows you to run one or more external processes per file.
 
-The Convert on Go checkbox forces SH to do the processing when the Go button is pressed.
+The Convert on Go checkbox makes SH run the commands when the Go button is pressed, before the spreadsheets are written. Convert Now runs them right away. The commands run one after another and the window waits until all are done.
 
 The Skip Existing checkbox evaluates the expected output file name for each convert first, and only executes the process if the file doesn’t exist. One package can often include a bunch of outputs from the same shot/asset version \- exr sequence, mp4 preview, DNxHD mov for editorial… This option allows you to skip unnecessary processing. For example, if you define first convert to use mov file for converting to thumbnail with the name of the shot and version, and second line to do the same from EXR files, the thumbnail from EXRs processing will be skipped if the thumbnail from mov output already exists.
 
 There are four columns in the convert tab line:
 
-1. If: Python expression, only run the process if true  
-2. Executable: The executable used, some tokens are defined by SH installation.  
+1. If: Python expression, only run the process if true. Empty means all files.  
+2. Executable: The executable used.  
 3. Arguments: The command line  
-4. File Name: Expected output. Used for Skip Existing checkbox.
+4. File Name: Expected output. Required: a row without File Name is not run. Used for Skip Existing, and available in spreadsheets as `{convert_path01}` and `{convert_path_relative01}` (01 is the first row with Arguments and File Name filled, 02 the next one…).
+
+These tokens give the tools SH found, from `PATH`, the `SH_FFMPEG` / `SH_FFPROBE` / `SH_OIIOTOOL` environment variables or install.json:
+
+| Token | Tool |
+|---|---|
+| `{ffmpeg}` | ffmpeg |
+| `{ffprobe}` | ffprobe |
+| `{oiio}` | oiiotool |
+| `{vfx-transcode}` | vfx-transcode (install.json only) |
+| `{ocio}` | OCIO config file: Preferences Custom OCIO, install.json, or the `OCIO` environment variable |
+
+A plain `ffmpeg` without braces is looked up on the system PATH instead. Tool paths are inserted without quotes, so avoid spaces in them; quote file paths in Arguments yourself, e.g. `"{path}"`. For ffmpeg, add `-y` so it doesn't stop to ask before overwriting.
 
 ## Example: Creating Thumbnails from EXR files
 
@@ -134,7 +182,7 @@ Resize to the width of 1280 pixels, keep aspect ratio
 \-o {package\_name\_root}/{package\_name}/\_thumbs/{thumbname}.jpg  
 The {thumbname} token is set by Parsing Tab
 
-File name is a copy out output argument above:  
+File name is a copy of the output argument above:  
 {package\_name\_root}/{package\_name}/\_thumbs/{thumbname}.jpg
 
 # Sidecar Tab
@@ -143,23 +191,23 @@ File name is a copy out output argument above:
 
 Can be used to copy additional files from your project to the package. For example, some productions deliver per shot CDL files to vfx vendors, and require to forward the CDLs to the finishing vendor together with finals.
 
-The Search Folder (1) is the path where to search for files. Exclude field allows skip file names with particular strings. Include will only accept files with particular strings in the file name.
+The Search Folder (1) is the path where to search for files, including subfolders. Exclude skips files whose full path contains any of the words (separated by spaces). Include accepts only files whose full path contains one of the words, e.g. `.cdl .cc`.
 
-The Submission Only / Log Only / All options will only consider package files listed in Submission or Drive log tabs.
+The Submission Only / Log Only / All options are meant to consider only package files listed in the Submission or Drive Log tables (see Not working yet).
 
 There are five columns in the sidecar tab line:
 
-1. Pattern: Regex pattern to be applied to the found file  
-2. Repl:  Repl pattern to be applied to the found file  
-3. If match to: If Repl matches to this field  
-4. Dest: Path to where to copy (and maybe rename) the sidecar file.  
-5. Filter: Only consider found files that have this string in file name
+1. Pattern: Regex pattern applied to the found file name (without folder). With Repl empty, its first capture group is the result.  
+2. Repl: Optional replace pattern applied to the found file name.  
+3. If match to: Tokens of the package file, e.g. `{shot}`. The sidecar file is linked to every package file where this equals the result exactly.  
+4. Dest: Path to where to copy (and maybe rename) the sidecar file. Include the file name, e.g. `{package_name_root}/{package_name}/cdl/{sidecar_file}`. Sidecar tokens: `{sidecar_path}`, `{sidecar_file}`, `{sidecar_ext}`, `{sidecar_result}`; tokens of the package file work too.  
+5. Filter: Only consider found files that have this string in file name (see Not working yet).
 
 ## The process
 
 Find all sidecar files that match the Search folder, Exclude and Include conditions.  
-Get list of files detected by SH (use Submission only/Log Only/All to limit the list).  
-For every file in the detected list, for every sidecar file, for every sidecar line, find the destination. For all matching sidecar files, list the source and destination in the bottom Sidecar Tab (2).
+For every package file, for every sidecar file, for every sidecar line, find the destination. For all matching sidecar files, list the source and destination in the bottom Sidecar Tab (2).  
+Copy Sidecar Files (or Go with Copy with Go on) copies the listed files. Missing folders are created and existing files are overwritten.
 
 # Rename Tab
 ![image15.png](rsrs/image15.png)
@@ -168,51 +216,57 @@ Can be used for renaming the files by client requirements. For example, some pro
 
 Your temp\_folder has {package}/{shot}\_{task}\_v{version}/0x0/{shot}\_{task}\_v{version}.1001.exr
 
-The Rename tab allows you to rename the universal 0x0 folder by the EXR metadata to {width}x{height}.
+The Rename tab allows you to rename the universal 0x0 folder by the EXR metadata to {width}x{height}: Source `2`, Pattern `^0x0$`, Repl `{width}x{height}`.
 
-There are four columns in the sidecar tab line:
+There are four columns in the rename tab line:
 
-1. Filter: Only consider files that have this string in file name  
-2. Source: 0 corresponds to file name, 1 to one folder above file name…  
-3. Pattern: Regex to check  
-4. Repl: Replace string
+1. Filter: Python expression; the line is used only for files where it is true, e.g. `'{extension}' == 'exr'`. Empty means all files.  
+2. Source: Which part of the path to rename: 0 is the whole path, 1 the file name, 2 the folder of the file, 3 the folder above it… Extension and frame number are never renamed.  
+3. Pattern: Regex to check (tokens allowed)  
+4. Repl: Replace string (tokens allowed). A line with an empty Repl is off.
+
+Lines are applied in order; each line works on the result of the line above. The bottom Rename tab shows the planned renames. **Rename** renames and moves the files right away, with no undo; files whose destination exists are skipped. Press Reload afterwards: the tables still show the old paths, and emptied folders stay behind.
 
 # Data Tab
 ![image5.png](rsrs/image5.png)
 
 Sometimes the tokens parsed from file name or metadata are not enough for producing the outputs or checks required. Data Tab allows you to load arbitrary data from a CSV file, and pair it to the files detected by SH.
 
-Data CSV field points to the CSV file to be used. If the Latest in Folder option is checked, SH searches in the folder path, sorts all the valid CSV files alphabetically, and loads the “latest” csv file. For example, if data002.csv and data002b.csv exist in C:/SH/tests/\_data/, SH will load the data002b.csv. This allows coordinators to add updated csv data files to the folder, instead of overwriting. The {data\_file} token is filled with the file name actually used.
+Data CSV field points to the CSV file to be used. If the Latest in Folder option is checked, SH searches in the folder path, sorts all the CSV files by name, and loads the “latest” csv file. For example, if data002.csv and data002b.csv exist in C:/SH/tests/\_data/, SH will load the data002b.csv. This allows coordinators to add updated csv data files to the folder, instead of overwriting. The {csv\_data\_file} token is filled with the file name actually used.
 
 ## The Match Package Keys to Data Keys group
 
-For each file detected by SH, a row from Data CSV can be paired. You can use one to three conditions (Package1, Package2, Package3) and check if the value from the Data CSV column labeled Data N is equal to the string in PackageN. For Shot lists, this typically requires matching shot name or shot & task name.
+For each file detected by SH, a row from Data CSV can be paired. You can use one to three conditions (Package1, Package2, Package3) and check if the value from the Data CSV column labeled Data N is equal to the string in PackageN. All conditions that are on must match; the comparison is exact and case sensitive. For Shot lists, this typically requires matching shot name or shot & task name. Paired rows are green in the table.
 
 ## Column Prefix
 
-There can be arbitrary column names in the Data CSV. To avoid overwriting the tokens already parsed from the file name, metadata, or other sources, the prefix will be added to every token loaded and paired to the file. Please add the Column prefix also to the matching data keys.
+There can be arbitrary column names in the Data CSV. To avoid overwriting the tokens already parsed from the file name, metadata, or other sources, the prefix will be added to every token loaded and paired to the file: with the prefix `data_`, the column `shot` becomes `{data_shot}`. Please add the Column prefix also to the matching data keys.
+
+Changes to Column Prefix and to the match conditions take effect on the next Reload.
 
 # Ftrack Tab
 
 ![image17.png](rsrs/image17.png)
 
-Sometimes the tokens parsed from file name or metadata are not enough for producing the outputs or checks required. Ftrack Tab allows you to load data from a Ftrack and pair it to the files detected by SH.
+Sometimes the tokens parsed from file name or metadata are not enough for producing the outputs or checks required. Ftrack Tab allows you to load data from a Ftrack and pair it to the files detected by SH. Server, user and API key come from install.json.
 
-Note: querying Ftrack is not optimized, and slows down SH. Consider setting up the rest of SH with Use Ftrack checkbox off first.
+Note: querying Ftrack is slow, every change in the tab queries ftrack again. Consider setting up the rest of SH with Use Ftrack checkbox off first.
 
-For every file detected by SH, query Ftrack project name Project with shot and tack fields.
+For every file detected by SH, query the Ftrack project (its full name, active projects only) with the Shot and Task fields, which are filled per file (default `{shot}` and `{task}`). **Extensions** limits the files that get notes, e.g. `exr, mov`; empty means all files.
+
+The table on the tab has one row per file: what was looked up, a Status (`ok`, `task not found`, `version not found`, `template not resolved`, `skipped (extension)`…), the number of notes and the selected note.
 
 ## Query OpenPype Attributes
 
-For each matching shot and task, also query Ftrack hierarchical attributes (like frame range, resolution…) used by OpenPype.
+For each matching shot and task, also query Ftrack hierarchical attributes (frame range, handles) used by OpenPype. They become `{ftrack_op_frame_start}`, `{ftrack_op_frame_end}`, `{ftrack_op_range}`, `{ftrack_op_length}` and similar tokens.
 
 ## Match Notes
 
-If Query Notes is on, for each matching shot and task find Notes. You can further limit note search by version number, and only consider note with matching regex pattern. Output note text uses replace (Note Repl) string.
+If Query Notes is on, for each matching shot and task find Notes. With **Version** on, the notes of that version of the task are used instead. **Note Label** keeps only notes with that ftrack label. **Note Pattern** is a regex that picks the notes, and **Note Repl** builds the text from it (e.g. `\2`); with Note Repl empty, every note containing a match is used whole. The result is `{ftrack_note}`; several notes are joined with `;---;`.
 
 ## Shot List
 
-You can export the queried shot list from Ftrack to CSV file.
+**Export** writes the ftrack shot list to the path next to it: a .csv file, or a folder (ftrack\_shotlist.csv is written in it). Empty means the package folder. It is the same as the command line action `x`.
 
 # Vendor Tab
 
@@ -223,11 +277,17 @@ It expects a package folder with csv spreadsheet listing the files to be ingeste
 
 ## Vendor CSV
 
-The file to be used for ingest. If autodetect is on, dragging the folder name to the SH will take the csv file with the same name as folder name and load it to the Vendor CSV field. With auto Detect off, you can drag the CVS file anywhere to the SH interface.
+The file to be used for ingest. With **Auto Detect** on, drop (or browse to) the vendor's CSV file instead of the folder: the CSV becomes the Vendor CSV and its folder becomes the package folder. The same works on the command line with `-i path/to/delivery.csv`.
+
+Loading a preset in the GUI keeps the current Vendor CSV.
+
+**Package** and **Vendor** keys pair the package files with the CSV rows. Both are text with tokens (not regexes): a file and a row are paired when the Package key of the file equals the Vendor key of the row, e.g. Package `{name}` and Vendor `{vendor_Filename}`.
+
+**Ignore Items not in CSV** leaves files that are not listed in the CSV out of the Submission. **Skip by** / **To Skip** additionally leave out files whose Skip by value (e.g. `{shot}`) is one of the space separated values in To Skip.
 
 ## Spreadsheet Preferences
 
-Json text to add tokens by Vendor CSV column name. Every item allows for default value, regex to check if value supplied by vendor is valid, and if column name presence is required in the Vendor CSV file.
+Json text to add tokens by Vendor CSV column name. Every item allows for default value, regex to check if value supplied by vendor is valid, and if column name presence is required in the Vendor CSV file. Every item needs all four keys.
 
 ### Example Spreadsheet Preferences Item
 
@@ -244,11 +304,13 @@ Spreadsheet preferences serve multiple purposes:
 * Check if column value format matches validation regex (ie enforce naming convention)  
 * Can add default values.
 
+Columns not listed are available as `{vendor_<Column>}`. The representation checks below need the columns that become `{vendor_Output}`, `{vendor_Task}` and `{vendor_Intent}`.
+
 ## Representation Preferences
 
 One package can often include a bunch of representations from the same shot/asset version \- EXR sequence, mp4 preview, DNxHD mov for editorial, Nuke Script workfile…
 
-The purpose of Representation preferences Json is to define and check representations relationships.
+The purpose of Representation preferences Json is to define and check representations relationships. Problems are reported in `{vendor_row_errors}`.
 
 ### merge\_repres\_by
 
@@ -265,18 +327,14 @@ A list of  representations, where each representations has:
 "extensions": \["mp4"\],  
 "vendor\_Tags": \["Ftrack", "ShotGrid"\],  
 "frame\_range": {"frame\_rate": "{meta\_fps}", "length": "{meta\_duration\_frames}"},  
-"metadata\_check": { "meta\_codec\_name\_video": "h264", "meta\_fps": "25", "meta\_width": "1332","meta\_height": "720"},  
-"validate\_repre\_length\_match": true, "validate\_repre\_range\_match": false, "validate\_repre\_tc\_match": false  
+"metadata\_check": { "meta\_codec\_name\_video": "h264", "meta\_fps": "25", "meta\_width": "1332","meta\_height": "720"}  
 },
 
-name: How to name the representation  
-extension: list of file extensions allowed for the representation  
+name: How to name the representation; compared with the row's `{vendor_Output}`  
+extensions: list of file extensions allowed for the representation, without dot, case sensitive  
 vendor\_Tags: Special column to indicate if to send the representation to Ftrack, …  
 frame\_range: define frame\_rate and length by file tokens  
-metadata\_check: tokens and their expected values  
-validate\_repre\_length\_match: controls if checking the length is required  
-validate\_repre\_range\_match: controls if checking the frame range is required  
-validate\_repre\_tc\_match: controls if checking the timecode is required
+metadata\_check: tokens and their expected values
 
 ### task\_intent\_repres
 
@@ -299,23 +357,55 @@ For example, for compositing task with WIP intent, only preview mp4 is required.
 
 # Replace Tab
 
-Can be used to modify text files by searching and replacing the strings. Typically, this is used to modify the file paths when sending workfiles like Nuke scripts or Maya ascii files from one studio to another.  
-Expects a CSV file that defines the search and replace strings.
+Meant to modify text files by searching and replacing the strings. Typically, this is used to modify the file paths when sending workfiles like Nuke scripts or Maya ascii files from one studio to another.  
+Expects a CSV file that defines the search and replace strings, with the columns `Extension,Pattern,Search,Replace`, one rule per row:
+
+```
+Extension,Pattern,Search,Replace
+nk,,D:/projects/,/mnt/projects/
+```
+
+Extension is written without dot and must match the file extension exactly. The last CSV file (by name) in the folder of the given file is used.
+
+Currently the tab only shows which files the rules apply to; the Replace button and Replace with Go are not implemented yet.
 
 # Spreadsheet Tab
 
 ![image2.png](rsrs/image2.png)
 
 Defines column names and their value for every file detected by SH. There are three main spreadsheet outputs in SH, for historical reasons named Submission (1), Drive Log (2), and Text (3).  
-For each spreadsheet, you can specify space separated strings that are skipped (Exclude) or required (Include) in file names. This is often used to ignore file types by extension.
+For each spreadsheet, you can specify space separated strings that are skipped (Exclude) or required (Include) in the full file paths. This is often used to ignore file types by extension, e.g. Exclude `.mov`.
 
-The syntax is comma separated \<column name\>=\<column value\>
+The syntax is comma separated \<column title\>=\<column value\>, for example:
+
+```
+Shot={shot},
+Frames={range},
+Size={size_human},
+Vendor=MyStudio,
+```
+
+* Put a comma after every column, also at the end of a line: a line break alone doesn't separate columns.  
+* A value can't contain a comma or `=`.  
+* The value is text with tokens. Format specs work, e.g. `{cnt_sub:0>4}`.  
+* Spaces around `=` become part of the title (`Shot = {shot}` gives the title "Shot "); write `Shot={shot}` when you use the title in Exports Skip / Split.
+
+Counters and totals for each output: `{cnt_sub}` `{cnt_log}` `{cnt_txt}` number the rows (start, step and digits are set in Preferences); `{total_sub}` … is the number of rows (a sequence counts once), `{files_sub}` … the number of files (every frame counts), and `{total_size_sub_human}` … the total size.
 
 # Checks Tab
 
 ![image3.png](rsrs/image3.png)
 
-You can set up arbitrary checks that will fill the {warning} or {error} token for the file. Non-empty warning token will color the corresponding Spreadsheet lines orange, non-empty error token will color the line red.
+You can set up arbitrary checks that will fill the {warning} or {error} token for the file. Non-empty warning token will color the corresponding Spreadsheet lines orange, non-empty error token will color the line red. Both tokens can be used as spreadsheet columns.
+
+Each of the 21 check rows has:
+
+* **If**: optional Python expression; the check runs only on files where it is true. Empty means all files.  
+* **Check**: Python expression; when true, the message is added to the file. An empty Check turns the row off.  
+* **Warning** / **Error**: whether the message goes to `{warning}` or `{error}`.  
+* **Message**: the text to add, tokens allowed. Empty gives "Error check NN" / "Warning check NN".
+
+Examples: If `'{extension}' == 'exr'`, Check `{meta_width} != 4096`; or Check `'{meta_fps}' != '24'`. An expression that fails (a typo, a missing token) counts as false, so a check with a mistake never fires; test new checks on a file that should fail.
 
 ## File Sequence Size Consistency
 
@@ -325,37 +415,100 @@ If on, SH checks the size of every file in the detected file sequence. For every
 
 ## Check for File Sequence Holes
 
-Sets error if file sequence has missing files.
+Missing frames in file sequences are reported as a warning (orange). The bottom Files tab lists the missing frame numbers.
 
 # Ayon Publish Tab
 
 ![image16.png](rsrs/image16.png)
 
-This is used to run Ayon CSV Ingest on Deadline Farm.
+Settings for the **Publish Ayon Local** and **Publish Ayon Deadline** buttons. Both write the Submission spreadsheet as CSV (Exports > Submission > CSV must be on; with Split Column on, every split file is published) and ingest it with Ayon's tray publisher CSV ingest:
+
+* **Folder** and **Task** (this tab) and **Project** (Ayon tab) are required.  
+* **Publish Ayon Local** runs the ingest on this computer; the window waits until it finishes.  
+* **Publish Ayon Deadline** submits the ingest as a Deadline job with **Primary Pool**, **Group**, **Priority**, **Department** and **Limits** from this tab.
+
+The ayon (and for Deadline the deadlinecommand) executable and the Ayon / ftrack connection come from install.json. The buttons do nothing when no package is loaded.
 
 # Ayon Tab
 
 ![image11.png](rsrs/image11.png)
 
-Sometimes the tokens parsed from file name or metadata are not enough for producing the outputs or checks required. Ayon Tab allows you to load data from a Ayon database and pair it to the files detected by SH.
+Sometimes the tokens parsed from file name or metadata are not enough for producing the outputs or checks required. Ayon Tab reads the folders (shots, assets) and tasks of an Ayon project and pairs them to the files detected by SH.
+
+* **Enable** reads the list whenever the package is loaded or reloaded. **Scan** reads it right away, also without a package and with Enable off.  
+* **Match Package Keys to Shot List Keys** works like the Data tab: Package N (file tokens, e.g. `{shot}`) must equal Data N (shot list columns, e.g. `{Folder Name}`). Matched rows are green, and their columns become tokens with the **Column Prefix**, e.g. `{list_Folder Name}`, `{list_Range}`, `{list_Task Status}` with the prefix `list_`.  
+* **List Filters** limit the rows shown: Assets / Shots / Other pick folder rows, Tasks adds task rows, Task Types / Task Names / Assignees narrow the tasks, Matched Only keeps rows matched to package files.  
+* **Export Shot List** writes `ayon-list.csv` (the rows shown) to **Output**, and with **Versions CSV** also `ayon-list-versions.csv`. **Thumbnails** downloads folder and task thumbnails to Output/\_thumbsDownload when the list is read.  
+* **Versions**: with **Pull versions** and **Product filters** (e.g. `comp:renderCompMain:exr, :platePl01:exr`), every row gets the latest version of the preferred product. The **Matched Versions** sub-tab lists the versions of the matched folders, and **Match version** pairs each file with its version, e.g. Package `{version}` with Version `{Version}`.
+
+Changes to Project, Column Prefix, Output and the export options take effect on the next Scan or Reload. The README has the full description of the version columns and filters.
 
 # Preferences Tab
 
 ![image9.png](rsrs/image9.png)
 
+* **Frame Rate** is used for `{meta_fps}` when **Use Metadata FPS if Available** is off. It accepts `24`, `23.976` or `24000/1001`. Press Reload after changing it.  
+* **Scan Sizes** reads the file sizes (`{size_bytes}`, `{size_human}`) and checks sequences for empty, missing and inconsistent frames. **Ignore first frames** skips slates, **Neighborhood frames** is how many frames on each side each frame is compared to, and **Warning %** is how much its size may differ from their average.  
+* **Custom OCIO** sets the OCIO config used as `{ocio}` in Convert commands, instead of the one from install.json or the OCIO environment variable. Press Reload after changing it.  
+* **Counter**: start, step and digits of `{cnt_sub}`, `{cnt_log}` and `{cnt_txt}`.  
+* **Merge by** joins Submission rows with the same value of a token (e.g. `{shot}`) into one row; the values of each column are joined by **Separator**. **Collapse Values** drops repeated values in a cell, and **Hide Merged** shows only the merged rows. The Drive Log and Text are not merged.
+
 # Exports Tab
 
 ![image10.png](rsrs/image10.png)
 
-This tab controls if spreadsheets are exported, and to what path, name and file format.
+This tab controls if spreadsheets are exported, and to what path, name and file format. Files are written when Go is pressed.
+
+* **Excel** / **CSV**: the formats to write. CSV is UTF-8; the Publish Ayon buttons need the Submission CSV.  
+* **Root** saves into the package folder, **Above Root** next to it (in its parent folder), **Custom Location** into the given folder, which must exist. Files saved into the package folder show up in the package after the next Reload; use Above Root or an Exclude rule to avoid that.  
+* **Name** is the file name without extension; empty means the package name. **Suffix** is added after it.  
+* **Skip Column** leaves out rows that have any text in the named column. **Split Column** writes one file per value of the named column; the files are numbered (`name001.csv`, `name002.csv`…, digits set by Split Number). The column title must be written exactly as on the Spreadsheet tab.  
+* **Export Text**: **TXT** writes the Text preview to `{package_name}.txt`. **Header** and **Footer** are placed above and below the rows and can use package tokens such as `{package_name}`, `{total_txt}` or `{total_size_txt_human}`; write `{{` and `}}` for literal braces. **Add Column Titles** adds a title line, and the columns are separated by a tab or by one space.
 
 # Presets Tab
 
 ![image13.png](rsrs/image13.png)
 
-Allows to store and load the gui values for SH. Modules group can be used to hide the tabs not required for a particular preset.
+Allows to store and load the gui values for SH. Modules group can be used to hide the tabs not required for a particular preset. Hiding a tab doesn't switch its features off: for example a hidden Convert tab still converts on Go.
 
 The path to store preset Json files can be set up to network location for studio wide use.  
 Danger: if you press Save Preset and Preset name matches an already existing one, the preset will be overwritten with no further warning.
 
+Loading a preset keeps the current Package Folder and Vendor CSV and clears the tables: press Reload afterwards.
+
 SH automatically saves the current state to the last\_\<username\> preset, so users can easily return to the last preset with no need to explicitly load it via the Load Preset button.
+
+# Bottom Tabs
+
+* **Submission**, **Drive Log**, **Text**: previews of the exports. Red rows have an error, orange rows a warning. Edits made in the tables are not exported; the column widths are used for the Excel export.  
+* **Sidecar Files**: the sidecar files to copy.  
+* **Rename**: the planned renames.  
+* **Inspector**: every token of every file.  
+* **Files**: the files found, with size, category and missing frames.
+
+# Not working yet
+
+These controls are in the window but don't work yet, or work differently than their label says. Their tooltips say "Not implemented yet" where nothing happens at all.
+
+| Tab | Control | Status |
+|---|---|---|
+| Package | Age Include | No effect: the age filter applies to all files. |
+| Package | Date Regex default `sub_{yy}{mm}{dd}` | Doesn't work (tokens are not expanded, no capture group). Use e.g. `sub_(\d{6})`. |
+| Sidecar | Submission Only / Log Only | No effect: all files are used. |
+| Sidecar | 6th row, Filter column | Not used. |
+| Rename | Reload after Rename | Not implemented: press Reload. |
+| Rename (bottom) | Relative / Absolute / File Names Only | Not implemented. |
+| Replace | Replace, Replace with Go | Not implemented: the tab only previews the rules. |
+| Vendor | Cross Check with Ftrack | Not implemented. |
+| Convert | If | When an earlier row's If is false for a file, later rows may be skipped for that file. |
+| Convert | Convert Now | Uses the commands prepared at the last refresh: press Reload after editing convert rows. |
+| Checks | Check for File Sequence Holes, File Sequence Size consistency | Can't be turned off; missing frames are always reported. |
+| Checks | rows 14–21 | Work, but editing them doesn't refresh the tables until the next change elsewhere. |
+| Preferences | Scan Sizes | Can't be turned off. Size and counter settings of 0 are ignored. |
+| Preferences | Use Metadata FPS | Files without fps in the metadata get no fps (Frame Rate isn't used as a fallback). |
+| Preferences | TimeCode From Metadata / From Frame Counter, Default TC | Not implemented. |
+| Preferences | Sort By, Order (Merge) | Not implemented. |
+| Ayon Publish | Secondary Pool, Comment, Send Submission CSV to Ayon on Go | Not implemented. |
+| Ayon | Export CSV | Ignored: Export Shot List always writes the CSV. |
+| Ayon | Export Excel, Export with Go | Not implemented. |
+| Main | Go | Does nothing when the Submission has no columns. |

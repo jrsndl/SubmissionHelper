@@ -13,6 +13,7 @@ import getpass
 from PySide2 import QtCore, QtGui, QtWidgets
 
 from ui_Submission import Ui_submission
+from tooltips import apply_tooltips
 
 from sequencer import Sequencer, PARSE_ROWS, PARSE_FIELDS
 from settings import Settings
@@ -80,6 +81,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self._add_parse_rows()
         # Ayon tab: Scan button, version / product filter controls
         self._add_ayon_controls()
+        # tooltips of the .ui widgets and the parse rows added above
+        apply_tooltips(self.ui)
         # Sequencer used by the Ayon tab when no package is loaded
         self.ayon_only = None
 
@@ -1990,7 +1993,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             "Version Author, Version Date, Version Comment, Version Task, Representation, "
             "Repre Path, Version Filter, Version Frame Start / End, Version Handle Start / End, "
             "Version FPS, Version Width / Height, Version Pixel Aspect, Version Step, Version Host, "
-            "Version Colorspace (keywords with the Ayon prefix, e.g. {ayon_Version}).</p>")
+            "Version Colorspace (keywords with the Ayon Column Prefix, e.g. {list_Version} with the default list_).</p>")
         ui.ayon_product_filters = filters
         row.addWidget(filters, 1)
 
@@ -2005,13 +2008,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             "(same folder) whose <b>Version key</b> equals the file's <b>Package key</b>, "
             "e.g. Package <b>{version}</b> and Version <b>{Version}</b>. Numbers compare by "
             "value, so 007 equals 7.</p>"
-            "<p>The row's columns are added to the file with the Ayon prefix and "
-            "<b>Matched</b>, e.g. {ayon_Matched Version}, {ayon_Matched Version Status}, "
-            "{ayon_Matched Version Comment}, {ayon_Matched Repre Path}. "
+            "<p>The row's columns are added to the file with the Column Prefix and "
+            "<b>Matched</b>, e.g. {list_Matched Version}, {list_Matched Version Status}, "
+            "{list_Matched Version Comment}, {list_Matched Repre Path}. "
             "Matched rows are teal in Matched Versions.</p>"
             "<p>For checks every file matched to an Ayon folder also gets "
-            "{ayon_Matched Version Exists} (True / False) and "
-            "{ayon_Matched Max Existing Version}, also when its version is not in Ayon yet.</p>")
+            "{list_Matched Version Exists} (True / False) and "
+            "{list_Matched Max Existing Version}, also when its version is not in Ayon yet.</p>")
         match.setToolTip(match_tip)
         ui.ayon_version_match_chbx = match
         row2.addWidget(match)
@@ -2062,7 +2065,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         ui.ayon_output_folder.setToolTip(
             "<p>Folder where <b>Export Shot List</b> saves ayon-list.csv, ayon-list-versions.csv "
-            "(with Versions CSV) and optionally the thumbnails.</p>")
+            "(with Versions CSV). With Thumbnails on, the thumbnails are downloaded to "
+            "_thumbsDownload in it when the list is read (Scan or package load).</p>")
 
         # export checkbox for the Matched Versions csv, next to the CSV / Excel ones
         vcsv = QtWidgets.QCheckBox("Versions CSV", parent)
@@ -2191,7 +2195,7 @@ actions (letters for --actions, run left to right):
   p  publish ayon    export submission csv and ingest it to Ayon locally
   P  publish farm    same as p, submitted as a Deadline job
   a  ayon shotlist   read, filter and write the Ayon shot list (Ayon tab)
-  x  ftrack list     write ftrack_shotlist.csv next to the package
+  x  ftrack list     write the ftrack shot list to the Ftrack tab Export path
 
 examples:
   # GUI

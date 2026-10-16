@@ -57,7 +57,7 @@ Submission Helper assumes you put the file(s) in one folder - the Package Folder
 1. Drag the package folder path anywhere to the Submission Helper window
 2. Set the Package Name options, till the preview matches what you need
 3. Use Spreadsheet tab to define columns and their values
-4. Set the export options in Exports and text tabs
+4. Set the export options in the Exports tab
 5. Press Go to export
 
 ## Installation
@@ -97,6 +97,16 @@ are copied next to the exes, where the app looks for them. Zip the whole
 first. Console tools the app runs (ffprobe, oiiotool, converts, ayon) don't
 open console windows.
 
+## Tooltips
+
+Every control has a tooltip. They are kept in `tooltips.py` (keyed by the
+widget's objectName, one shared text for numbered rows) and applied when the
+window opens, not in Qt Designer: leave the toolTip property in
+`submission.ui` empty. `tests/test_tooltips.py` fails when a control has no
+tooltip or a tooltip names a widget that doesn't exist. Controls that are in
+the GUI but not working yet are listed in `doc/SubmissionHelperHelp.md`
+(Not working yet).
+
 ## Command line
 
 Without arguments Submission Helper opens the GUI. Given both `-i` and `-p`
@@ -135,7 +145,7 @@ console to print to). Run with `-h` to print the help.
 | `p` | Publish to Ayon | Export the submission csv and ingest it to Ayon locally |
 | `P` | Publish to Ayon (farm) | Same as `p`, submitted as a Deadline job |
 | `a` | Ayon shot list | Read, filter and write the Ayon shot list (Ayon tab) |
-| `x` | ftrack shot list | Write `ftrack_shotlist.csv` next to the package |
+| `x` | ftrack shot list | Write the ftrack shot list to the Ftrack tab's Export path (empty: `ftrack_shotlist.csv` in the package folder). Needs *Use Ftrack* in the preset |
 
 Most actions work on data prepared by `f` and `t`, so start with `ft`.
 Spreadsheets and text are **only** exported by `g`; a run without `g`
@@ -202,7 +212,8 @@ the `offscreen` platform automatically.
 
 The **Ayon** tab reads the folders (shots, assets) and tasks of an Ayon
 project. Rows are matched to the package files with the matching rules, and
-their values become keywords with the Ayon prefix, e.g. `{ayon_Folder Path}`.
+their values become keywords with the Ayon tab's *Column Prefix* (default
+`list_`), e.g. `{list_Folder Path}`.
 
 * **Scan** reads the list now. It works without a loaded package, and also
   when *Enable* is off (that checkbox controls reading on package load).
@@ -246,8 +257,8 @@ the version's attributes and data: `Version Frame Start`, `Version Frame End`,
 `Version Handle Start`, `Version Handle End`, `Version FPS`, `Version Width`,
 `Version Height`, `Version Pixel Aspect`, `Version Step`, `Version Host`,
 `Version Colorspace` (taken from the representation when the version doesn't
-have it). With the default prefix they are available as `{ayon_Version}`,
-`{ayon_Version FPS}`...
+have it). With the default prefix they are available as `{list_Version}`,
+`{list_Version FPS}`...
 
 Versions are read with three queries for the whole project. Changing the
 filters takes effect with the next **Scan** or package load.
@@ -292,16 +303,16 @@ the **Package** key equals the **Version** key:
 | `{version}` | `{Version}` | file version `007` to Ayon version `7` (numbers compare by value) |
 | `v{version}` | `{Version Name}` | `v007` to `v007` |
 
-The row's columns are added to the file with the Ayon prefix and `Matched`,
-for example `{ayon_Matched Version}`, `{ayon_Matched Version Status}`,
-`{ayon_Matched Version Comment}`, `{ayon_Matched Repre Path}`. When several
+The row's columns are added to the file with the Column Prefix and `Matched`,
+for example `{list_Matched Version}`, `{list_Matched Version Status}`,
+`{list_Matched Version Comment}`, `{list_Matched Repre Path}`. When several
 products have the same version number, the preferred product wins. Matched
 rows are teal in Matched Versions and the `Matched Files` column counts the
 files.
 
 For checks, every file matched to an Ayon folder also gets
-`{ayon_Matched Version Exists}` (`True` / `False`: is the file's version
-already in Ayon) and `{ayon_Matched Max Existing Version}` (highest existing
+`{list_Matched Version Exists}` (`True` / `False`: is the file's version
+already in Ayon) and `{list_Matched Max Existing Version}` (highest existing
 version of the preferred product), also when its version is not in Ayon yet. Changing these keys doesn't query Ayon again. When some files don't
 find their version, the Log tab shows what was compared.
 
@@ -408,7 +419,7 @@ extension: file extension, no dot
 
 path_prs: path, with no file, no trailing slash
 full_path: path to the file or first frame in file sequence
-relative_path: path to the file, minus the path start to the package. Starts with slash
+relative_path: path to the file, minus the path start to the package. No leading slash
 drive: drive letter (windows)
 
 size_bytes: file size in bytes, calculated as total for file sequence
@@ -417,11 +428,11 @@ size_human: same as size_bytes, rounded to one decimal, with units
 category: files are categorized by extension. still, sequence, video, audio, multiframe, other
 
 cnt_sub, cnt_log, cnt_txt: counter for each export
-total_sub, total_log, total_txt: total number of files for each export
+total_sub, total_log, total_txt: number of rows for each export (a file sequence counts once)
 files_sub, files_log, files_txt: total files for each export
 
 d, dd, y, yy, m, mm: today day, month and year
-package_date: package renaming date 
+package_date: package renaming date (only with Per Date on)
 package_name: package renaming name
 package_version: package renaming version
 package_name_from_folder: folder name initially provided by user

@@ -96,9 +96,12 @@ class LogView(QtCore.QObject):
         self.filter_edit = QtWidgets.QLineEdit()
         self.filter_edit.setPlaceholderText("Filter text...")
         self.filter_edit.setClearButtonEnabled(True)
+        self.filter_edit.setToolTip("Show only lines containing this text "
+                                    "(not case-sensitive)")
         bar.addWidget(self.filter_edit, 1)
 
         self.autoscroll = QtWidgets.QCheckBox("Auto-scroll")
+        self.autoscroll.setToolTip("Keep the newest line in view")
         self.autoscroll.setChecked(True)
         bar.addWidget(self.autoscroll)
 
