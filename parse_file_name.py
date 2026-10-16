@@ -121,12 +121,9 @@ def printf_pattern(full_path):
     r = prs['clean_name'] + '%0' + str(prs['padding']) + 'd.' + prs['extension']
     h = prs['clean_name'] + '#' * int(prs['padding']) + '.' + prs['extension']
 
-    # no leading zeroes (e.g. file1 .. file100): numbers are not padded, %d
-    # (it was %4d, which pads with spaces)
-    # WARNING this will not work if it is not first frame of the sequence !!!
-    if len(str(prs['number'])) == prs['padding']:
-        r = prs['clean_name'] + '%d.' + prs['extension']
-        h = prs['clean_name'] + '#' * int(prs['padding']) + '.' + prs['extension']
+    # %0Nd is right with or without leading zeroes: b.1001 -> %04d, and an
+    # unpadded file1 .. file100 gives %01d, which prints 100 as "100" (the
+    # old %4d padded with spaces)
 
     # if no number (overwrites previous)
     if prs['padding'] == -1:

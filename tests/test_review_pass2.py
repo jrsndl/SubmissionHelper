@@ -317,7 +317,8 @@ class Sequences(unittest.TestCase):
             open(f, 'w').close()
             os.makedirs(os.path.join(d, 'sub'))
             open(os.path.join(d, 'sub', 'other.mov'), 'w').close()
-            self.assertEqual(s.walk_dirs(f), [f])
+            # a file stands for its folder (vendor csv dropped on Package Folder)
+            self.assertEqual(len(s.walk_dirs(f)), 2)
             # a missing path doesn't scan its parent folder
             self.assertEqual(s.walk_dirs(os.path.join(d, 'sub', 'typo') + '/'), [])
             self.assertEqual(len(s.walk_dirs(d + '/')), 2)
@@ -431,7 +432,7 @@ class SmallFixes(unittest.TestCase):
     def test_parse_file_name(self):
         self.assertEqual(parse_file_name.parse('/a/shot-0001.exr')['clean_name_sep_char'], '-')
         self.assertEqual(parse_file_name.path_from_path_and_number('/a/b.0001.exr', 7), '/a/b.0007.exr')
-        self.assertEqual(parse_file_name.printf_pattern('/a/b.1001.exr')[0], 'b.%d.exr')
+        self.assertEqual(parse_file_name.printf_pattern('/a/b.1001.exr')[0], 'b.%04d.exr')
         self.assertEqual(parse_file_name.printf_pattern('/a/b.0001.exr')[0], 'b.%04d.exr')
 
     def test_ayon_max_version_with_text(self):

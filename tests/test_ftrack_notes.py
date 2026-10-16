@@ -195,7 +195,13 @@ class FtrackNotesTest(unittest.TestCase):
         it = s.merged_list[0]
         self.assertEqual(it['ftrack_shot_exists'], '1')
         self.assertEqual(it['ftrack_task_exists'], '1')
-        self.assertEqual(it['ftrack_op_range'], '992-1108')
+        # handles 8: 993-1108 without slate, the _slate tokens add the slate frame
+        self.assertEqual(it['ftrack_op_start'], '993')
+        self.assertEqual(it['ftrack_op_range'], '993-1108')
+        self.assertEqual(it['ftrack_op_length'], '116')
+        self.assertEqual(it['ftrack_op_start_slate'], '992')
+        self.assertEqual(it['ftrack_op_range_slate'], '992-1108')
+        self.assertEqual(it['ftrack_op_length_slate'], '117')
         self.assertEqual(s.ftrack_table_rows()[0]['Status'], 'ok')
 
 

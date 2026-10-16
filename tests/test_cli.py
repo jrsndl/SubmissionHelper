@@ -5,6 +5,7 @@ from unittest import mock
 
 from tests import _stubs  # noqa: F401
 import submission_helper as sh
+import sh_cli
 
 
 def args(*argv):
@@ -53,9 +54,9 @@ class CliCheckTest(unittest.TestCase):
     def test_preset_by_name(self):
         found = mock.Mock(current_settings_name='clientX')
         missing = mock.Mock(current_settings_name='default')
-        with mock.patch.object(sh, 'Settings', return_value=found):
+        with mock.patch.object(sh_cli, 'Settings', return_value=found):
             self.assertEqual(sh.check_cli_args(args('-i', self.tmp.name, '-p', 'clientX')), (True, None))
-        with mock.patch.object(sh, 'Settings', return_value=missing):
+        with mock.patch.object(sh_cli, 'Settings', return_value=missing):
             self.assertEqual(sh.check_cli_args(args('-i', self.tmp.name, '-p', 'clientX')), (True, 1))
 
 

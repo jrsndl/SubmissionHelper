@@ -15,7 +15,9 @@
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
 hiddenimports = collect_submodules('ftrack_api') + collect_submodules('ayon_api')
-datas = collect_data_files('ftrack_api')
+# submission.ui: the command line mode reads its default settings from it
+# (ui_defaults.py), without Qt
+datas = collect_data_files('ftrack_api') + [('submission.ui', '.')]
 
 a = Analysis(
     ['submission_helper.py'],

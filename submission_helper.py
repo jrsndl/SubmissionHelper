@@ -10,6 +10,13 @@ import logging
 import time
 import getpass
 
+if __name__ == "__main__":
+    # command line mode (-i / -p) runs without Qt: hand over to sh_cli before
+    # PySide2 is imported, so it works on machines without Qt or a display
+    import sh_cli as _sh_cli
+    if _sh_cli.wants_headless(sys.argv[1:]):
+        sys.exit(_sh_cli.main())
+
 from PySide2 import QtCore, QtGui, QtWidgets
 
 from ui_Submission import Ui_submission
@@ -20,6 +27,9 @@ from settings import Settings
 import parse_file_name
 import sh_logging
 from log_view import LogView
+from sh_cli import (CLI_ACTIONS, CLI_DESCRIPTION, CLI_EPILOG, setting_to_bool,  # noqa: F401
+                    get_args, console_level_from_args, check_cli_args)
+import sh_cli
 
 # bookkeeping keys of the Sequencer, not tokens: not shown in the Inspector
 INSPECTOR_HIDDEN_KEYS = ('_parse_orig', '_data_keys')
@@ -1912,31 +1922,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         Apply --settings overrides "key1=value1,key2=value2" to self.settings.
         Values are converted by the category of the existing setting.
         """
-        if not overrides:
-            return
-        for pair in overrides.split(','):
-            pair = pair.strip()
-            if not pair:
-                continue
-            if '=' not in pair:
-                log.warning(f"Ignoring settings override '{pair}', expected key=value")
-                continue
-            key, value = [x.strip() for x in pair.split('=', 1)]
-            one_setting = self.settings.get(key)
-            if one_setting is None:
-                log.warning(f"Ignoring settings override '{key}', unknown setting")
-                continue
-            category = one_setting.get('category', '')
-            try:
-                if category in ('checkbox', 'radiobutton'):
-                    value = value.lower() in ('1', 'true', 'yes', 'on')
-                elif category == 'spinbox':
-                    value = int(value)
-            except ValueError:
-                log.warning(f"Ignoring settings override '{key}={value}', bad value for {category}")
-                continue
-            one_setting['value'] = value
-            log.info(f"Settings override: {key} = {value!r}")
+        sh_cli.apply_settings_overrides(self.settings, overrides)
 
     # default height of the top tabs panel, it was fixed to this before
     TOP_PANEL_DEFAULT = 350
@@ -2317,183 +2303,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         # prevents second call
         sys.exit()
 
-CLI_ACTIONS = "ftdgsrcpPax"
-
-CLI_DESCRIPTION = """\
-Submission Helper - check, rename and document vfx packages.
-
-Without -i/-p the GUI starts. With both -i and -p it runs headless:
-the preset is loaded, the --actions are run in order, and the app exits.
-"""
-
-CLI_EPILOG = """\
-actions (letters for --actions, run left to right):
-  f  read files      scan the package folder, read metadata, csv/ayon/ftrack data
-  t  transform data  apply parsing, columns, naming and checks
-                     (most actions below need f and t to run first)
-  d  reload          same as f + t, use after r (rename) or c (convert)
-  g  go              same as the Go button: export submission, drive log and
-                     text as set in the preset. Also copies sidecars ("Copy
-                     with Go"), runs converts ("Convert on Go") and renames
-                     the package folder ("Auto Rename") when those are on.
-                     Nothing is exported without g.
-  s  sidecar files   copy sidecar files to their destinations
-  r  rename          rename / move files using the Rename tab rules
-  c  convert         run the Convert tab commands
-  p  publish ayon    export submission csv and ingest it to Ayon locally
-  P  publish farm    same as p, submitted as a Deadline job
-  a  ayon shotlist   read, filter and write the Ayon shot list (Ayon tab)
-  x  ftrack list     write the ftrack shot list to the Ftrack tab Export path
-
-examples:
-  # GUI
-  python submission_helper.py
-
-  # check a package and export spreadsheets with a preset file
-  python submission_helper.py -i D:/out/pkg_v001 -p D:/presets/clientX.json
-
-  # same, preset by name from the presets folder
-  python submission_helper.py -i D:/out/pkg_v001 -p clientX
-
-  # rename, reload, copy sidecars, export
-  python submission_helper.py -i D:/out/pkg_v001 -p clientX --actions ftrdsg
-
-  # override preset values for this run only
-  python submission_helper.py -i D:/out/pkg_v001 -p clientX --settings name_rename_auto=false,prefs_counter_start=5
-
-  (with the built exe, use SubmissionHelper-cli.exe instead of python submission_helper.py)
-
-exit codes:
-  0  finished
-  1  input or preset not found, or an action crashed
-     (many problems are only logged, check the log output)
-  2  bad arguments (only one of -i/-p, unknown action letter)
-"""
-
-
-def setting_to_bool(value):
-    """
-    bool of a saved setting: "False" / "false" / "0" / "off" / "no" / "" are
-    False (bool("False") is True, which turned unchecked boxes on)
-    """
-    if isinstance(value, str):
-        return value.strip().lower() not in ('', 'false', '0', 'off', 'no', 'none')
-    return bool(value)
-
-
-def get_args(argv=None):
-
-    parser = argparse.ArgumentParser(
-        prog="submission_helper",
-        description=CLI_DESCRIPTION,
-        epilog=CLI_EPILOG,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument(
-        '-i', '--input',
-        dest='i',
-        metavar='PATH',
-        help="Package folder, or a csv file inside it (with Vendor tab "
-             "'Auto Detect' on in the preset, the csv is used as the vendor csv). "
-             "Required for headless mode.",
-        type=str,
-        required=False
-    )
-    parser.add_argument(
-        '-p', '--preset',
-        dest='p',
-        metavar='PRESET',
-        help="Preset json file, or the name of a saved preset (without "
-             ".json). Required for headless mode.",
-        type=str,
-        required=False
-    )
-    parser.add_argument(
-        '--actions',
-        metavar='LETTERS',
-        help="Headless actions to run, in order. See the list below. "
-             "Default: %(default)s",
-        type=str,
-        default="ftg"
-    )
-    parser.add_argument(
-        '--settings',
-        metavar='KEY=VALUE[,KEY=VALUE...]',
-        help="Override preset values for this run. Keys are the setting names "
-             "used in the preset json. Checkboxes take true/false (1/0, yes/no, "
-             "on/off), number fields take integers, text fields take the text "
-             "as is. Values can't contain commas.",
-        type=str,
-        default=""
-    )
-    log_group = parser.add_argument_group(
-        'logging',
-        "Console output (stderr), in GUI and headless mode. The GUI Log tab "
-        "has its own level filter.")
-    log_group.add_argument(
-        '--log-level',
-        choices=['debug', 'info', 'warning', 'error', 'none'],
-        default='info',
-        help="Console log level, 'none' turns console output off. Default: %(default)s")
-    log_group.add_argument(
-        '-v', '--verbose',
-        action='store_true',
-        help="Same as --log-level debug")
-    log_group.add_argument(
-        '-q', '--quiet',
-        action='store_true',
-        help="Same as --log-level warning")
-    log_group.add_argument(
-        '--log-file',
-        metavar='PATH',
-        help="Also append the full log (all levels, with dates) to this file")
-    return parser.parse_args(argv)
-
-
-def console_level_from_args(args):
-    """
-    :param args: dict from vars(get_args())
-    :return: logging level for the console, None for no console output
-    """
-    if args.get('verbose'):
-        return logging.DEBUG
-    if args.get('quiet'):
-        return logging.WARNING
-    return sh_logging.level_from_name(args.get('log_level', 'info'))
-
 # log
 # logging is configured in __main__ by sh_logging.setup_logging()
 log = logging.getLogger("SubmissionHelper")
-
-def check_cli_args(args):
-    """
-    Validate command line arguments.
-    :param args: dict from vars(get_args())
-    :return: (headless, exit_code) - exit_code is None when the app should start
-    """
-    input_path = args.get('i')
-    input_preset = args.get('p')
-    if input_path is None and input_preset is None:
-        return False, None
-
-    # headless was requested, fail loudly instead of silently opening the gui
-    if input_path is None or input_preset is None:
-        log.error("Headless mode needs both -i and -p.")
-        return True, 2
-    bad = sorted(set(args.get('actions') or '') - set(CLI_ACTIONS))
-    if bad:
-        log.error(f"Unknown action letter(s) {', '.join(bad)} in --actions '{args['actions']}'. "
-                  f"Valid: {CLI_ACTIONS}")
-        return True, 2
-    if not os.path.exists(input_path):
-        log.error(f"Input path '{input_path}' does not exist.")
-        return True, 1
-    if not os.path.isfile(input_preset):
-        # allow a preset name, resolved like the gui's preset list
-        _probe = Settings(input_preset, args)
-        if _probe.current_settings_name != input_preset:
-            log.error(f"Preset '{input_preset}' not found (not a file, not a saved preset name).")
-            return True, 1
-    return True, None
 
 
 if __name__ == "__main__":
@@ -2520,26 +2332,17 @@ if __name__ == "__main__":
     if exit_code is not None:
         sys.exit(exit_code)
     if headless:
-        # allow running on linux render nodes / farm without a display
-        if sys.platform.startswith('linux') and not (os.environ.get('DISPLAY') or os.environ.get('WAYLAND_DISPLAY')):
-            os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
+        # -i / -p are normally handed to sh_cli at the top of this file
+        sys.exit(sh_cli.run_headless(args))
 
     app = QtWidgets.QApplication.instance()  # checks if QApplication already exists
     if not app:  # create QApplication if it doesn't exist
         app = QtWidgets.QApplication(sys.argv)
 
-    if headless:
-        log.debug('Starting headless')
-        settings_obj = Settings(input_preset, args)
-        main = MainWindow(no_gui=True, s=settings_obj, package_path=input_path, args=args)
-        #main.show()
-        app.exec_()
-    else:
-        log.debug('Starting GUI')
-        settings_obj = Settings('last_' + getpass.getuser(), args)
-        main = MainWindow(no_gui=False, s=settings_obj, args=args)
-        main.show()
-        rc = app.exec_()
-        sh_logging.uninstall_qt_message_handler(QtCore)
-        sys.exit(rc)
-
+    log.debug('Starting GUI')
+    settings_obj = Settings('last_' + getpass.getuser(), args)
+    main = MainWindow(no_gui=False, s=settings_obj, args=args)
+    main.show()
+    rc = app.exec_()
+    sh_logging.uninstall_qt_message_handler(QtCore)
+    sys.exit(rc)

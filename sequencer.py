@@ -13,7 +13,11 @@ from operator import itemgetter
 
 import ftrack_api
 import xlsxwriter
-from PySide2 import QtGui, QtWidgets, QtCore
+try:
+    # only the gui needs Qt; the command line mode runs without it
+    from PySide2 import QtGui, QtWidgets, QtCore
+except ImportError:
+    QtGui = QtWidgets = QtCore = None
 from unidecode import unidecode
 
 import helpers
@@ -1464,9 +1468,11 @@ class Sequencer(object):
             # scan its parent folder tree
             return []
         if os.path.isfile(in_path):
-            # one file: just that file, not the whole parent folder tree
-            return [in_path]
-        my_dir = in_path
+            # a file (e.g. the vendor csv dropped on Package Folder, or -i
+            # pointing at it) stands for its folder: scan the folder
+            my_dir = os.path.dirname(in_path)
+        else:
+            my_dir = in_path
         return_list = []
         for dir_path, dir_names, file_names in os.walk(my_dir):
             for one_file in file_names:
@@ -2507,6 +2513,9 @@ class Sequencer(object):
         """
         table data to ui
         """
+        if self.ui is None or QtWidgets is None:
+            # command line mode: no tables
+            return
         table = self.table_files
         table_ui = self.ui.file_table
         titles = self.columns_files
@@ -3825,6 +3834,9 @@ class Sequencer(object):
         return rows
 
     def display_ayon_versions_table(self):
+        if self.ui is None or QtWidgets is None:
+            # command line mode: no tables
+            return
         table_ui = getattr(self.ui, 'ayon_versions_table', None)
         if table_ui is None:
             return
@@ -4025,6 +4037,9 @@ class Sequencer(object):
         """
         table data to ui
         """
+        if self.ui is None or QtWidgets is None:
+            # command line mode: no tables
+            return
         if self.ayon_data is None or len(self.ayon_data) == 0:
             return
 
@@ -4276,6 +4291,9 @@ class Sequencer(object):
         """
         table data to ui
         """
+        if self.ui is None or QtWidgets is None:
+            # command line mode: no tables
+            return
         if self.replace_prep is None or self.replace_prep == {}:
             return
 
@@ -4419,6 +4437,9 @@ class Sequencer(object):
         """
         table data to ui
         """
+        if self.ui is None or QtWidgets is None:
+            # command line mode: no tables
+            return
         if self.csv_data is None or len(self.csv_data) == 0:
             # Data off or the csv is gone: don't keep showing the old rows
             if self.ui is not None and not self.headless:
@@ -5054,10 +5075,13 @@ class Sequencer(object):
             item['ftrack_op_frame_end'] = str(_fe)
             item['ftrack_op_handle_end'] = str(_he)
             item['ftrack_op_end'] = str(_fe + _he)
-            item['ftrack_op_range'] = "{}-{}".format(_fs - _hs - 1, _fe + _he)
-            item['ftrack_op_range_slate'] = "{}-{}".format(_fs - _hs, _fe + _he)
-            item['ftrack_op_length'] = str(1 + (_fe + _he) - (_fs - _hs) + 1)
-            item['ftrack_op_length_slate'] = str((_fe + _he) - (_fs - _hs) + 1)
+            # _slate tokens include one slate frame before the first frame,
+            # like ftrack_op_start_slate (range / length had it the other way)
+            _start, _end = _fs - _hs, _fe + _he
+            item['ftrack_op_range'] = "{}-{}".format(_start, _end)
+            item['ftrack_op_range_slate'] = "{}-{}".format(_start - 1, _end)
+            item['ftrack_op_length'] = str(_end - _start + 1)
+            item['ftrack_op_length_slate'] = str(_end - _start + 2)
             if not item.get('_ftrack_status'):
                 item['_ftrack_status'] = 'ok'
             details.append(f"{name}: shot '{current_shot}' {_fs}-{_fe}, handles {_hs}/{_he}, "

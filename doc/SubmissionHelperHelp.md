@@ -260,6 +260,8 @@ The table on the tab has one row per file: what was looked up, a Status (`ok`, `
 
 For each matching shot and task, also query Ftrack hierarchical attributes (frame range, handles) used by OpenPype. They become `{ftrack_op_frame_start}`, `{ftrack_op_frame_end}`, `{ftrack_op_range}`, `{ftrack_op_length}` and similar tokens.
 
+`{ftrack_op_start}`, `{ftrack_op_end}`, `{ftrack_op_range}` and `{ftrack_op_length}` include the handles. The `_slate` versions (`{ftrack_op_start_slate}`, `{ftrack_op_range_slate}`, `{ftrack_op_length_slate}`) add one slate frame before the first frame: with frames 1001-1100 and handles 8, `{ftrack_op_range}` is `993-1108` (116 frames) and `{ftrack_op_range_slate}` is `992-1108` (117 frames).
+
 ## Match Notes
 
 If Query Notes is on, for each matching shot and task find Notes. With **Version** on, the notes of that version of the task are used instead. **Note Label** keeps only notes with that ftrack label. **Note Pattern** is a regex that picks the notes, and **Note Repl** builds the text from it (e.g. `\2`); with Note Repl empty, every note containing a match is used whole. The result is `{ftrack_note}`; several notes are joined with `;---;`.

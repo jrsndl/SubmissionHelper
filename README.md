@@ -114,6 +114,13 @@ it runs **headless**: it loads the preset, runs the `--actions` in order,
 writes its log to the console and exits. This is meant for automation, for
 example a farm job or a watch-folder script.
 
+The headless mode doesn't use Qt: it works without PySide2 and without a
+display. `python sh_cli.py ...` takes the same arguments and never imports
+Qt; `python submission_helper.py -i ... -p ...` hands over to it before Qt is
+loaded. The default settings come from `submission.ui` (keep it next to the
+scripts or the exe), the preset is laid over them, then `--settings`.
+Requirements without the GUI: everything in requirements.txt except PySide2.
+
 ```
 python submission_helper.py [-h] [-i PATH] [-p PRESET] [--actions LETTERS]
                             [--settings KEY=VALUE[,KEY=VALUE...]]
