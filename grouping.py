@@ -26,10 +26,10 @@ from sh_tokens import format_keep, unresolved_tokens
 # settings (widget names on the Grouping tab)
 DEFAULTS = {
     'group_on': False,
-    'group_by': '{folder_name}{task_name}{variant}{version}',
+    'group_by': '{shot}{task}{version}',
     'group_repre': '{extension}',
     'group_task_type': '{task_type}',
-    'group_task_name': '{task_name}',
+    'group_task_name': '{task}',
     'group_no_export_missing': True,
     'group_together': True,
     'group_colors': True,

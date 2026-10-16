@@ -11,8 +11,8 @@ import sequencer
 
 
 def item(name, ext, shot='sh010', task='comp', task_type='Compositing', version='v003', **more):
-    it = {'name': name, 'extension': ext, 'folder_name': shot, 'task_name': task,
-          'task_type': task_type, 'variant': 'Main', 'version': version,
+    it = {'name': name, 'extension': ext, 'shot': shot, 'task': task,
+          'task_type': task_type, 'version': version,
           'error': '', 'warning': '', 'size_warning': ''}
     it.update(more)
     return it
@@ -43,6 +43,8 @@ class Basics(unittest.TestCase):
         self.assertFalse(c['group_on'])
         self.assertTrue(c['group_collapse_sub'])
         self.assertEqual(c['group_repre'], '{extension}')
+        self.assertEqual(c['group_by'], '{shot}{task}{version}')
+        self.assertEqual(c['group_task_name'], '{task}')
         self.assertEqual(c['definitions'], [])
 
     def test_clean_definitions_drops_junk_and_fills_fields(self):
@@ -65,14 +67,14 @@ class Assign(unittest.TestCase):
     def test_groups_by_key_in_order(self):
         items = [item('a', 'exr'), item('b', 'exr', shot='sh020'), item('c', 'mp4')]
         groups = grouping.assign(items, cfg())
-        self.assertEqual([g['key'] for g in groups], ['sh010compMainv003', 'sh020compMainv003'])
+        self.assertEqual([g['key'] for g in groups], ['sh010compv003', 'sh020compv003'])
         self.assertEqual(items[2]['group_number'], 1)
         self.assertEqual(items[0]['group_size'], 2)
         self.assertEqual(items[0]['group_repres'], 'exr, mp4')
 
     def test_unknown_token_means_no_group(self):
         a = item('a', 'exr')
-        del a['variant']
+        del a['shot']
         self.assertEqual(grouping.assign([a], cfg()), [])
         self.assertEqual(a['group_key'], '')
         self.assertEqual(a['_group_number'], 0)
@@ -187,9 +189,9 @@ class Rows(unittest.TestCase):
     def test_collapse(self):
         d = definition(always_repres='exr mp4 mov')
         a, b = item('a', 'exr'), item('b', 'mp4')
-        u = {'name': 'loose', 'folder_name': 'x'}
+        u = {'name': 'loose', 'shot': 'x'}
         grouping.assign([a, b, u], cfg([d]))
-        rows = rows_for([a, u, b], ['folder_name', 'extension'])
+        rows = rows_for([a, u, b], ['shot', 'extension'])
         out = grouping.collapse(rows, ' / ')
         self.assertEqual(len(out), 2)
         self.assertEqual(out[0][:2], ['sh010', 'exr / mp4'])

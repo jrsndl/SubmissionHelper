@@ -19,7 +19,7 @@ TIPS = {
         "thumbnail of one version. Replaces Merge By (Preferences tab).",
     'group_by':
         "Token template of the group key: files with the same key are one group, e.g. "
-        "{folder_name}{task_name}{variant}{version} or {shot}{task}{version}. "
+        "{shot}{task}{version} or {folder_name}{task_name}{variant}{version}. "
         "Files where a token is unknown are not in a group.",
     'group_repre':
         "Representation name of each file, compared (not case sensitive) with the Repres fields "

@@ -409,9 +409,9 @@ Counters and totals for each output: `{cnt_sub}` `{cnt_log}` `{cnt_txt}` number 
 Often more than one file of the same version goes to the client: the exr sequence, an mp4 review, a thumbnail. Grouping puts those files together, checks that the group has the representations the client needs, and shows the groups in the Submission and Drive Log tables. It replaces Merge By (formerly on the Preferences tab).
 
 * **Enable Grouping** switches the tab on. Off, nothing below has any effect.  
-* **Group by** is a token template; files with the same result are one group, e.g. `{folder_name}{task_name}{variant}{version}` or `{shot}{task}{version}`. A file where a token is unknown is in no group.  
+* **Group by** is a token template; files with the same result are one group, default `{shot}{task}{version}`, or e.g. `{folder_name}{task_name}{variant}{version}` with Ayon tokens. A file where a token is unknown is in no group.  
 * **Representation** is the representation name of each file, compared (not case sensitive, without a leading dot) with the Repres fields of the definitions. Default `{extension}`; with the Ayon tab matching versions, `{list_Matched Representation}` uses the Ayon representation.  
-* **Task Type** and **Task Name** give the task of each file, compared with the definitions.  
+* **Task Type** (default `{task_type}`) and **Task Name** (default `{task}`) give the task of each file, compared with the definitions.  
 * **Do not export items in group with missing Representations**: groups that miss a required representation are left out of the Submission export (Excel, CSV and so the Ayon publish CSV). They stay in the Submission table, in red, and the Drive Log is exported in full.  
 * **Keep Group Rows Together** lists the rows of a group one below the other, at the place of its first row.  
 * **Color Group Rows** gives the rows of each group the same muted background in the Submission and Drive Log tables. Error, warning and size warning colors win. **Color Rows in Excel** colors the Excel exports too (groups light, errors red, warnings orange); it is off by default because the Submission usually goes to the client.  
