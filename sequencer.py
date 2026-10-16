@@ -35,58 +35,8 @@ PARSE_ROWS = 48
 PARSE_FIELDS = ('name', 'pattern', 'repl', 'source', 'filter')
 
 
-class _KeepMissing(dict):
-    """format_map helper: unknown {keys} stay in the text"""
-    def __missing__(self, key):
-        return '{' + key + '}'
-
-
-# a {token} as SH users write it: any name without braces, colons or '!'
-_TOKEN_RE = re.compile(r'\{([^{}:!]+)\}')
-
-
-def expand_tokens(text, *mappings):
-    """
-    Replace {token} with its value for tokens found in mappings (first mapping
-    wins); everything else, e.g. regex counts like \\d{3}, stays as it is.
-    Never raises. Use for regexes and other text where braces can mean
-    something else than a token.
-    """
-    if not text:
-        return text
-
-    def repl(m):
-        key = m.group(1)
-        for mapping in mappings:
-            if mapping and key in mapping:
-                return str(mapping[key])
-        return m.group(0)
-    return _TOKEN_RE.sub(repl, text)
-
-
-def format_keep(text, *mappings):
-    """
-    str.format_map with unknown tokens kept as {token}, format specs like
-    {cnt_sub:0>4} supported. Text with stray braces ({}, {3}, a lone {) can't
-    go through str.format: it falls back to expand_tokens instead of raising.
-    """
-    if not text:
-        return text
-    merged = _KeepMissing()
-    for mapping in reversed(mappings):
-        if mapping:
-            merged.update(mapping)
-    try:
-        return text.format_map(merged)
-    except (ValueError, IndexError, AttributeError, TypeError, KeyError):
-        return expand_tokens(text, *mappings)
-
-
-def unresolved_tokens(text):
-    """names of {tokens} left in text (regex counts like {3} or {2,4} are not tokens)"""
-    if not text:
-        return []
-    return [n for n in _TOKEN_RE.findall(text) if not re.fullmatch(r'[\d,\s]*', n)]
+from sh_tokens import _KeepMissing, _TOKEN_RE, expand_tokens, format_keep, unresolved_tokens  # noqa: F401
+import grouping
 
 
 class Sequencer(object):
@@ -127,6 +77,8 @@ class Sequencer(object):
 
         self.my_ayon = None
         self.ayon_data = []
+        # Grouping tab: groups of the last refresh (grouping.assign)
+        self.groups = []
         self.ayon_gui = None
         # every version of the products of the Ayon folders matched to files
         self.ayon_matched_versions = []
@@ -538,6 +490,10 @@ class Sequencer(object):
         if not self.headless:
             self.ui.statusBar.showMessage("Preparing Converts", 3000)
         self.prepare_converts()
+
+        # Grouping tab: group tokens for the checks (grouped again with the
+        # check results when the tables are built)
+        self.group_items()
 
         #self.checks = []
         if not self.headless:
@@ -2606,44 +2562,6 @@ class Sequencer(object):
             def __missing__(self, key):
                 return '{' + key + '}'
 
-        def row_merge(rows, collapse, separator, sort, order):
-
-            # only one row, return as is
-            if rows and len(rows) == 1:
-                return rows[0]
-
-            columns = len(rows[0]) - 1
-
-            # vertically merge rows
-            merged = []
-            for one in rows[0]:
-                merged.append([])
-            for idx, one_row in enumerate(rows):
-                for idy, one_column in enumerate(one_row):
-                    if isinstance(one_column, dict):
-                        pass
-                        # skip last item that contains whole data record dict
-                    else:
-                        merged[idy].append(one_column)
-
-            merged_c = []
-            for one in merged:
-                if collapse:
-                    kill_dupes = (list(set(one)))
-                else:
-                    kill_dupes = one
-                # skip none
-                kill_dupes = [x for x in kill_dupes if x is not None]
-                # skip empty strings
-                kill_dupes = [x for x in kill_dupes if x != ""]
-                merged_c.append(kill_dupes)
-
-            merged_str = []
-            for one in merged_c:
-                merged_str.append(separator.join(map(str, one)))
-
-            return merged_str
-
         self.table_sub = []
         self.table_log = []
         self.table_txt = ""
@@ -2658,7 +2576,6 @@ class Sequencer(object):
         txt_footer = ""
         side_sub_only = False
         side_log_only = False
-        _merge_chbx = False
 
         for one_item in self.merged_list or []:
             # RENAMES
@@ -2677,26 +2594,12 @@ class Sequencer(object):
             side_sub_only = bool(self._get('side_sub_only', False))
             side_log_only = bool(self._get('side_log_only', False))
 
-            if self.settings['prefs_merge_chbx']['value'] is not None:
-                _merge_chbx = bool(self.settings['prefs_merge_chbx']['value'])
-            if self.settings['prefs_merge_by']['value']:
-                _merge_by = str(
-                    self.settings['prefs_merge_by']['value']).strip('{}')
-            if self.settings['prefs_merge_collapse']['value'] is not None:
-                _merge_collapse = bool(
-                    self.settings['prefs_merge_collapse']['value'])
-            if self.settings['prefs_merge_sep']['value']:
-                _merge_sep = str(self.settings['prefs_merge_sep']['value'])
-            if self.settings['prefs_merge_sort']['value']:
-                _merge_sort = str(self.settings['prefs_merge_sort']['value'])
-            if self.settings['prefs_merge_order']['value']:
-                _merge_order = str(self.settings['prefs_merge_order']['value'])
-            if self.settings['prefs_merge_hide']['value'] is not None:
-                _merge_hide = bool(self.settings['prefs_merge_hide']['value'])
         else:
             return
 
-        sub_merges = {}
+        # Grouping tab: group tokens, errors and warnings before the rows are
+        # built, so {group_...} tokens and {error} include them
+        groups = self.group_items()
         if self.merged_list and len(self.merged_list) > 0:
 
             for one_item in self.merged_list:
@@ -2721,22 +2624,6 @@ class Sequencer(object):
                     #  add item to the end of the row, so we can later
                     #  on easily reference all the data for the row
                     one_row_sub.append(one_item)
-
-                    # make sub_merges dict, where key is the merged item,
-                    # and value is how many times the key exist
-                    if _merge_chbx:
-                        key = one_item.get(_merge_by, None)
-                        if not key:
-                            # add None as last row item -> flag as non-merge-able
-                            one_row_sub.append(None)
-                        else:
-                            # add key as last row item
-                            one_row_sub.append(key)
-                            cnt = sub_merges.get(key, None)
-                            if cnt:
-                                sub_merges[key] += 1
-                            else:
-                                sub_merges[key] = 1
 
                     # add to table
                     self.table_sub.append(one_row_sub)
@@ -2791,32 +2678,9 @@ class Sequencer(object):
                             ]
                             self.table_side.append(one_row_side)
 
-            # merging
-            if _merge_chbx:
-                _rows_merged = []
-                for one_merge_key, count in sub_merges.items():
-                    if count >= 1:
-                        _all_merged = []
-                        for one_row in self.table_sub:
-                            merge_key = one_row[-1]
-                            if merge_key and merge_key == one_merge_key:
-                                _all_merged.append(one_row[:-1])
-                                if not _merge_hide:
-                                    one_row[-1] = None
-                        if len(_all_merged) > 0:
-                            # there is something to merge
-                            merged_row = row_merge(rows=_all_merged,
-                                                   collapse=_merge_collapse,
-                                                   separator=_merge_sep,
-                                                   sort=_merge_sort,
-                                                   order=_merge_order)
-                            _rows_merged.append(merged_row)
-
-                for one_row in self.table_sub:
-                    merge_key = one_row[-1]
-                    if not merge_key:
-                        _rows_merged.append(one_row[:-1])
-                self.table_sub = _rows_merged
+            # Grouping tab: inherit columns, keep groups together, collapse
+            self.table_sub = self.group_rows(self.table_sub, self.column_titles_sub, groups, 'sub')
+            self.table_log = self.group_rows(self.table_log, self.column_titles_log, groups, 'log')
 
         try:
             #_header = txt_header.format(**self.static_keywords)
@@ -2833,6 +2697,74 @@ class Sequencer(object):
         except KeyError:
             _footer = txt_footer
         self.table_txt = _header + '\n' + _titles + body_txt + '\n' + _footer
+
+    # ------------------------------------------------------------ Grouping tab
+    def group_config(self):
+        """Grouping tab settings (grouping.config), defaults for missing keys"""
+        def get(key, default):
+            one = (self.settings or {}).get(key)
+            if not isinstance(one, dict) or one.get('value') is None:
+                return default
+            return one['value']
+        return grouping.config(get)
+
+    def group_items(self):
+        """
+        Group the files (Grouping tab): group tokens, missing representation
+        errors and warnings on every file. Runs on every refresh.
+        :return: list of groups (grouping.assign)
+        """
+        cfg = self.group_config()
+        try:
+            self.groups = grouping.assign(self.merged_list or [], cfg)
+        except Exception as e:      # grouping must never stop the tables
+            self.log.error(f"Grouping failed: {e!r}")
+            self.groups = []
+        if self.groups:
+            missing = [g for g in self.groups if g['missing']]
+            msg = f"Grouping: {len(self.groups)} group(s)"
+            if missing:
+                msg += f", {len(missing)} with missing representations"
+            self.log.debug(msg)
+        return self.groups
+
+    def group_rows(self, table, titles, groups, mode):
+        """
+        Grouping tab on a built table (mode 'sub' or 'log'): Inherit Columns
+        (Submission only), keep the rows of a group together, Collapse.
+        """
+        cfg = self.group_config()
+        if not cfg['group_on'] or not groups or not table:
+            return table
+        try:
+            if mode == 'sub':
+                filled = grouping.inherit(table, titles, groups)
+                if filled:
+                    self.log.debug(f"Grouping: {filled} Submission cell(s) inherited")
+            if cfg['group_together']:
+                table = grouping.keep_together(table)
+            if cfg['group_collapse_' + mode]:
+                table = grouping.collapse(table, cfg['group_collapse_sep'])
+        except Exception as e:
+            self.log.error(f"Grouping of the {mode} table failed: {e!r}")
+        return table
+
+    def submission_rows_for_export(self):
+        """
+        Submission rows to export: without the groups that miss a required
+        representation when "Do not export items in group with missing
+        Representations" is on
+        """
+        table = self.table_sub
+        cfg = self.group_config()
+        if cfg['group_on'] and cfg['group_no_export_missing']:
+            kept = grouping.exportable(table)
+            if len(kept) != len(table or []):
+                self.log.warning(
+                    f"Grouping: {len(table) - len(kept)} Submission row(s) of groups with missing "
+                    "representations are not exported")
+            table = kept
+        return table
 
     def prepare_export_file_names(self):
 
@@ -2969,7 +2901,7 @@ class Sequencer(object):
 
         # export the sub csv spreadsheet(s) now
         # the exports is a dict where keys are file names (excluding extension), and values are list
-        exports = self.export_spreadsheet('sub', self.table_sub, self.column_titles_sub, None, dry_run=False)
+        exports = self.export_spreadsheet('sub', self.submission_rows_for_export(), self.column_titles_sub, None, dry_run=False)
         if not exports:
             self.log.error("Ayon publish: submission spreadsheet is empty, nothing to publish.")
             return
@@ -3009,7 +2941,7 @@ class Sequencer(object):
             self.prepare_export_file_names()
 
             # submission
-            self.export_spreadsheet('sub', self.table_sub, self.column_titles_sub, column_width_sub)
+            self.export_spreadsheet('sub', self.submission_rows_for_export(), self.column_titles_sub, column_width_sub)
             # drive log
             self.export_spreadsheet('log', self.table_log, self.column_titles_log, column_width_log)
 
@@ -3098,12 +3030,21 @@ class Sequencer(object):
                         else:
                             worksheet.set_column(column_number, column_number)
                         worksheet.write(0, column_number, one_column)
+                    # Grouping tab: row colors (errors and warnings win over group colors)
+                    formats = {}
                     for row, line in enumerate(table):
+                        fmt = None
+                        if color_rows and line and isinstance(line[-1], dict):
+                            color = grouping.excel_color(line[-1])
+                            if color:
+                                if color not in formats:
+                                    formats[color] = workbook.add_format({'bg_color': color})
+                                fmt = formats[color]
                         for column_number, one_column in enumerate(titles):
                             value = line[column_number] if column_number < len(line) else ''
                             if isinstance(value, dict):
                                 value = ''
-                            worksheet.write(row + 1, column_number, value)
+                            worksheet.write(row + 1, column_number, value, fmt)
                     workbook.close()
                 except Exception as e:      # xlsxwriter raises its own errors, e.g. file open in Excel
                     self.log.error(f"Writing {file_name}.xlsx failed: {e}")
@@ -3157,6 +3098,8 @@ class Sequencer(object):
             # split to just one
             split_tables = {'all': table}
 
+        _gcfg = self.group_config()
+        color_rows = _gcfg['group_on'] and _gcfg['group_colors_excel']
         do_excel = self.export_file_names.get(mode)['do_excel']
         do_csv = self.export_file_names.get(mode)['do_csv']
 
@@ -5500,6 +5443,10 @@ class Sequencer(object):
                     item['warning'] = item['warning'] + '; ' + sw
                 else:
                     item['warning'] = sw
+            # the check messages without the Grouping tab ones (grouping.assign
+            # adds those on top on every refresh)
+            item['check_error'] = item['error']
+            item['check_warning'] = item['warning']
 
     def _log_check_error(self, one_check, field, error):
         """a check expression that fails: logged once per refresh, not per file"""
