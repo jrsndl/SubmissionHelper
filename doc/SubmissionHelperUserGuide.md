@@ -67,8 +67,8 @@ SH writes up to three exports when you press **Go**. The names are historical; u
 
 | Output | Usually holds | Formats | Notes |
 | --- | --- | --- | --- |
-| **Submission** | What the client ingests: one row per shot or file, with their columns | CSV, Excel | Can be filtered by file age, vendor CSV and Merge by. Used by Ayon publish. |
-| **Drive Log** | A record of everything that was sent | CSV, Excel | Never merged or age-filtered. |
+| **Submission** | What the client ingests: one row per shot or file, with their columns | CSV, Excel | Can be filtered by file age and vendor CSV, grouped and collapsed (Grouping tab). Used by Ayon publish. |
+| **Drive Log** | A record of everything that was sent | CSV, Excel | Never age-filtered; collapsed only when Grouping says so. |
 | **Text** | Lines for the follow-up email | TXT | Header and footer around the rows. |
 
 Each output has its own column template (Spreadsheet tab), its own Include / Exclude path filters, and its own counters (`{cnt_sub}`, `{cnt_log}`, `{cnt_txt}`). The bottom tabs preview each output exactly as it will be written. Red rows have an `{error}`, orange rows a `{warning}`.
@@ -606,6 +606,50 @@ Vendor=MyStudio,
 | **Exclude** (each output) | empty | Leave out items whose full path contains any of these words (spaces between, case sensitive). Example: `.mov _proxy` |
 | **Include** (each output) | empty | Use only items whose path contains one of these words. Exclude is applied afterwards. |
 
+### Grouping tab
+
+The Grouping tab puts together the files that belong to one version – the EXR sequence, the mov or mp4 review, a thumbnail – checks that each group has the representations the client needs, and shows the groups in the Submission and Drive Log. It replaces Merge by (formerly on the Preferences tab).
+
+**Example – EXR plus review per shot.** Group by `{shot}{task}{version}`, one group definition with Always Repres `exr` and Always/Convert Repres `mov`. `001_0010_comp_v003` with an EXR sequence and a mov is one group with the same muted background in both previews. `001_0020_comp_v001` has only the EXR: every row of that group turns red with *missing representation(s) mov*, and with **Do not export items in group with missing Representations** on it is left out of the Submission files.
+
+**Example – one row per version.** Turn on **Collapse Groups: Submission**. The two rows of `001_0010_comp_v003` become one: equal values are shown once (`001_0010`), different ones are joined by the Separator (`exr, mov`).
+
+**Example – values the review doesn't have.** The mov has no `{meta_time_code}`, so its Timecode column shows the token. Inherit Columns `Timecode` with Inheritance Repre Priority `exr` copies the EXR's timecode to the mov row.
+
+![sh_tab_grouping](screenshots/sh_tab_grouping.png)
+
+| Control | Default | Description |
+| --- | --- | --- |
+| **Enable Grouping** | off | Switch the tab on. Off, nothing below has any effect. |
+| Group by | `{shot}{task}{version}` | Token template; files with the same result are one group. A file where a token is unknown is in no group. |
+| Representation | `{extension}` | Representation of each file, compared with the Repres fields (not case sensitive, no dot). `{list_Matched Representation}` uses the Ayon representation. |
+| Task Type / Task Name | `{task_type}` / `{task}` | Task of each file, compared with the definitions' Task Type(s) / Task Name(s). |
+| **Do not export items in group with missing Representations** | on | Leave groups with a missing required representation out of the Submission export (Excel, CSV, Ayon publish CSV). They stay in the preview, red. The Drive Log is written in full. |
+| **Keep Group Rows Together** | on | Rows of a group follow its first row. |
+| **Color Group Rows** | on | Same muted background for the rows of a group in the previews. Error, warning and size warning colours win. |
+| **Color Rows in Excel** | off | Colour the Excel exports too: groups light, errors red, warnings orange. |
+| **Collapse Groups**: Submission, Drive Log | off | Show each group as one row. A collapsed row is red or orange when any of its files is. |
+| Separator | `, ` | Text between different values of a collapsed column. |
+| **Add Group Definition** |  | Add a definition at the end. |
+
+#### Group definitions
+
+For every group the definitions are tried from the top (▲ ▼ change the order); the first enabled one whose Task Type(s) and Task Name(s) match a file of the group is used. A group without a matching definition is still grouped, coloured and collapsed, but not checked.
+
+| Field | Description |
+| --- | --- |
+| **Enable**, Group Name | Off: skipped. The name is `{group_name}`. |
+| Task Type(s), Task Name(s) | Values separated by commas or spaces, wildcards `*` `?`, not case sensitive. Empty matches anything. |
+| Always Repres | Required, must be in the package, e.g. `exr`. Missing: error on every row of the group. |
+| Always/Convert Repres | Required, in the package or made by a Convert row from a file of the group (the extension of its File Name counts), e.g. `mov`. |
+| Optional Repres | Allowed, not required. With any Repres field filled in, other representations get a warning, and so does one that is in the group twice. |
+| Inheritance Repre Priority | Order in which files give values to Inherit Columns, e.g. `exr mov`. |
+| Review Repre | Every file of the group gets this file's tokens as `{group_review_…}`, e.g. `{group_review_full_path}`. |
+| Thumbnail Source Repre | Every file gets this file's tokens as `{group_thumb_…}`, e.g. `{group_thumb_convert_path01}` – the thumbnail made from the EXR, also on the mov row. |
+| Inherit Columns | Submission column titles, separated by commas. A cell that is empty or still shows an unknown token takes the value of the same column from another file of the group. |
+
+A required representation with an error from the Checks tab makes the other rows of its group red too.
+
 ### Checks tab
 
 The Checks tab flags items that break the delivery spec. Each of the 21 check rows adds a message to the item's `{warning}` (row turns orange) or `{error}` (row turns red) when its condition is true. Both tokens can also be spreadsheet columns, e.g. `Problems={error}{warning},`. Two built-in checks look at file sequences.
@@ -748,16 +792,9 @@ Match rules and the prefix apply right away. Project, Enable, Thumbnails and the
 
 ### Preferences tab
 
-The Preferences tab sets how SH reads files – frame rate, timecode, sizes, colour config – and a few output-wide options: your ftrack and Ayon sign-in, row counters, and merging Submission rows. Changes to Frame Rate, timecode and OCIO need **Reload**.
+The Preferences tab sets how SH reads files – frame rate, timecode, sizes, colour config – and a few output-wide options: your ftrack and Ayon sign-in and row counters. Changes to Frame Rate, timecode and OCIO need **Reload**.
 
-**Merging rows.** Some clients want one Submission row per shot, not per file. **Merge by** `{shot}` with Separator `/` turns these rows…
-
-| Shot | File |
-| --- | --- |
-| 001\_0010 | 001\_0010\_comp\_v003.exr |
-| 001\_0010 | 001\_0010\_comp\_v003.mov |
-
-…into one row: `001_0010` / `001_0010_comp_v003.exr/001_0010_comp_v003.mov`. **Collapse Values** keeps the shot as `001_0010` instead of `001_0010/001_0010`. The Drive Log and Text are never merged.
+Joining the rows of one version (exr, mov…) is done on the **Grouping** tab, which replaces Merge by.
 
 **Accounts.** Shows who is signed in to ftrack and Ayon and where the credentials come from: environment variables, the Windows Credential Manager or `install.json`. **Sign in…** asks for your own account – ftrack through the web browser (or by pasting your personal API key from My Account > Security), Ayon with user name and password; only the Ayon session token is stored, never the password. **Sign out** removes the stored credentials from this computer. The first time ftrack or Ayon is used without credentials, SH asks by itself; headless runs never ask.
 
@@ -803,16 +840,6 @@ The Preferences tab sets how SH reads files – frame rate, timecode, sizes, col
 | **From** | 1 | First value of `{cnt_sub}`, `{cnt_log}`, `{cnt_txt}`. Each output counts its own visible rows. |
 | **Step** | 1 | Increment; 10 gives `010`, `020`, `030`. |
 | Digits | 3 | Digits of the counters; 3 gives `001`. |
-
-#### Merge Lines
-
-| Control | Default | Description |
-| --- | --- | --- |
-| **Merge by** + field | on, `{shot}` | Merge Submission rows with the same value of this one token. Items where it is empty are not merged. |
-| **Collapse Values** | on | Drop repeated values inside a merged cell; the order may change. |
-| **Separator** | `/` | Text between merged values. |
-| **Sort By**, **Order** |  | Not implemented yet. |
-| **Hide Merged** | on | Show only the merged rows. Off: the original rows are listed too, below. |
 
 ### Exports tab
 
@@ -1006,12 +1033,13 @@ Built-in tokens of each item. The Inspector tab shows the exact set for each fil
 | `{list_…}` (Column Prefix), `{list_Matched …}` | Ayon |
 | `{sidecar_path}`, `{sidecar_file}`, `{sidecar_ext}`, `{sidecar_result}` | Sidecar Files (Dest only) |
 | `{convert_path01}`, `{convert_path_relative01}` … | Convert |
-| `{warning}`, `{error}` | Checks |
+| `{warning}`, `{error}` | Checks (and Grouping messages) |
+| `{group_key}`, `{group_name}`, `{group_number}`, `{group_size}`, `{group_repre}`, `{group_repres}`, `{group_missing}`, `{group_to_convert}`, `{group_error}`, `{group_warning}`, `{group_review_…}`, `{group_thumb_…}` | Grouping |
 | `{ffmpeg}`, `{ffprobe}`, `{oiio}`, `{vfx-transcode}`, `{ocio}` | Tools (Convert) |
 
 ## Screenshot list
 
-21 screenshots to make, saved to `doc/screenshots/` under these names. For a consistent set, use one example package throughout – e.g. `001_0010` and `001_0020`, each with an EXR sequence and a mov, one deliberately wrong (2K instead of 4K) so a red row shows. Capture the whole window unless noted, with the matching bottom tab open.
+22 screenshots to make, saved to `doc/screenshots/` under these names. For a consistent set, use one example package throughout – e.g. `001_0010` and `001_0020`, each with an EXR sequence and a mov, one deliberately wrong (2K instead of 4K) so a red row shows. Capture the whole window unless noted, with the matching bottom tab open.
 
 | File | Section | What it should show |
 | --- | --- | --- |
@@ -1026,6 +1054,7 @@ Built-in tokens of each item. The Inspector tab shows the exact set for each fil
 | `sh_tab_replace.png` | Replace tab | Enable on, a rules CSV loaded, the table listing `.nk` files and their rules. |
 | `sh_tab_convert.png` | Convert tab | Row 1 with the oiiotool thumbnail example, Convert on Go and Skip Existing on. |
 | `sh_tab_spreadsheet.png` | Spreadsheet tab | Submission columns from the example (Shot, Version, Frames, Size …), an Exclude value, and the Submission preview below. |
+| `sh_tab_grouping.png` | Grouping tab | Enable on, Group by `{shot}{task}{version}`, one definition (Always `exr`, Always/Convert `mov`); Submission preview with two coloured groups and one red group. |
 | `sh_tab_checks.png` | Checks tab | Two or three filled checks (width, fps, codec), both sequence checks on; Submission preview below with red and orange rows. |
 | `sh_tab_ayon_publish.png` | Ayon Publish tab | Deadline fields and Folder / Task filled. |
 | `sh_tab_ayon.png` | Ayon tab | Enable on, Project, Package 1 `{shot}` = Data 1 `{Folder Name}`, Versions group filled (Pull versions, Product filters, Match version), Shot List sub-tab with green matched rows. |
