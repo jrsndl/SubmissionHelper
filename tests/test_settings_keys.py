@@ -5,6 +5,7 @@ import re
 import unittest
 
 from tests import _stubs  # noqa: F401
+import grouping
 import sequencer
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -24,6 +25,9 @@ class SettingsKeysExistTest(unittest.TestCase):
         sh = open(os.path.join(REPO, 'submission_helper.py'), encoding='utf-8').read()
         known = set(re.findall(r'self\.(\w+) = Q\w+\(', ui)) | set(re.findall(r'ui\.(\w+) = ', sh))
         known |= self.NOT_WIDGETS
+        # Grouping tab: widgets named after grouping.DEFAULTS (set on ui in a
+        # loop), the definitions are one list setting
+        known |= set(grouping.DEFAULTS) | {'group_definitions'}
         missing = {}
         for path in glob.glob(os.path.join(REPO, '*.py')):
             name = os.path.basename(path)

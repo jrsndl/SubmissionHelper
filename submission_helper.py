@@ -27,6 +27,8 @@ from settings import Settings
 import parse_file_name
 import sh_logging
 from log_view import LogView
+import grouping
+from grouping_widget import GroupingTab
 from sh_cli import (CLI_ACTIONS, CLI_DESCRIPTION, CLI_EPILOG, setting_to_bool,  # noqa: F401
                     get_args, console_level_from_args, check_cli_args)
 import sh_cli
@@ -135,6 +137,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             "preset_mod_inspector": [5, "Inspector"],
             "preset_mod_files": [6, "Files"]
         }
+        # tab pages of the checkboxes above: tabs added in code (Grouping)
+        # shift the indexes
+        self.tab_pages = {k: self.ui.TopTab.widget(v[0]) for k, v in self.tab_pairs.items()}
+        self.tab_pages_bottom = {k: self.ui.BottomTab.widget(v[0]) for k, v in self.tab_pairs_bottom.items()}
+        # Grouping tab after Spreadsheet, replaces Merge By (Preferences tab)
+        self.grouping_tab = self._add_grouping_tab()
         self.ui_start = True
         self.settings_obj = s
         self.settings = self.settings_obj.settings or {}
@@ -659,9 +667,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             getattr(self.ui, f"data_package{_n}_chbx").clicked.connect(
                 partial(self.handler, f"data_package{_n}_chbx", 'refresh_data_csv'))
 
-        # Merge by
-        self.ui.prefs_merge_by.textChanged.connect(
-            partial(self._handler_later, 'prefs_merge_by', 'refresh_merge'))
+        # Grouping tab (replaces Merge By): typed text refreshes after a pause
+        self.grouping_tab.changed_later.connect(
+            lambda key: self._handler_later(key, 'refresh_grouping'))
+        self.grouping_tab.changed_now.connect(
+            lambda key: self.handler(key, 'refresh_grouping'))
+        self.ui.preset_mod_grouping.clicked.connect(
+            partial(self.handler, 'preset_mod_grouping', 'tab_pairs'))
 
         # Convert rows: the convert_pathNN keys in the spreadsheets
         for _row in range(1, 9):
@@ -696,19 +708,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'prefs_counter_step', 'refresh_parsing'))
         self.ui.prefs_counter_zeroes.valueChanged.connect(
             partial(self.handler, 'prefs_counter_zeroes', 'refresh_parsing'))
-
-        self.ui.prefs_merge_chbx.clicked.connect(
-            partial(self.handler, 'prefs_merge_chbx', 'refresh_merge'))
-        self.ui.prefs_merge_collapse.clicked.connect(
-            partial(self.handler, 'prefs_merge_collapse', 'refresh_merge'))
-        self.ui.prefs_merge_sep.textChanged.connect(
-            partial(self._handler_later, 'prefs_merge_sep', 'refresh_merge'))
-        self.ui.prefs_merge_sort.textChanged.connect(
-            partial(self._handler_later, 'prefs_merge_sort', 'refresh_merge'))
-        self.ui.prefs_merge_order.textChanged.connect(
-            partial(self._handler_later, 'prefs_merge_order', 'refresh_merge'))
-        self.ui.prefs_merge_hide.clicked.connect(
-            partial(self.handler, 'prefs_merge_hide', 'refresh_merge'))
 
 
         # Exports Tab
@@ -1122,8 +1121,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.data.prepare_tables()
                 self.show_all()
 
-        if group == 'refresh_merge':
+        if group == 'refresh_grouping':
             if self.data:
+                # group tokens for the checks, then the tables (grouped again
+                # with the check results)
+                self.data.group_items()
+                self.data.run_checks()
                 self.data.prepare_all_columns()
                 self.data.prepare_tables()
                 self.show_all()
@@ -1611,15 +1614,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             table_ui.setColumnCount(len(titles))
             table_ui.setHorizontalHeaderLabels(titles)
             table_ui.setRowCount(len(table))
+            group_colors = setting_to_bool((self.settings.get('group_on') or {}).get('value')) and \
+                setting_to_bool((self.settings.get('group_colors') or {}).get('value', True))
 
             for row, line in enumerate(table):
-                # set row color by check list
-                color = 'white'
-
                 # sub and log tables have merged list data
                 # stored as a last item
                 one_item = line[-1]
-                if type(one_item) is str:
+                if not isinstance(one_item, dict):
                     one_item = None
 
                 for column_number, one_column in enumerate(titles):
@@ -1633,30 +1635,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                         log.error("can't display table row")
 
                     if one_item:
-                    #colorize
+                        # colorize: error, warning, size warning, then the
+                        # Grouping tab group color, else the default grey
                         itm = table_ui.item(row, column_number)
-                        color = 'white'
-                        _size_warning = one_item.get('size_warning', '')
-                        if _size_warning != '':
-                            color = 'purple'
-                        _warning = one_item.get('warning', '')
-                        if _warning != '':
-                            color = 'orange'
-                        _error = one_item.get('error', '')
-                        if _error != '':
-                            color = 'red'
                         if itm:
-                            if color == 'green':
-                                itm.setBackground(QtGui.QColor('darkgreen'))
-                            elif color == 'orange':
-                                itm.setBackground(QtGui.QColor('sienna'))
-                            elif color == 'red':
-                                itm.setBackground(QtGui.QColor('maroon'))
-                            elif color == 'purple':
-                                itm.setBackground(QtGui.QColor('purple'))
-                            else:
-                                # white
-                                itm.setBackground(QtGui.QColor("#4d4d4d"))
+                            color = grouping.gui_color(one_item, use_groups=group_colors)
+                            itm.setBackground(QtGui.QColor(color or "#4d4d4d"))
 
             table_ui.resizeColumnsToContents()
             table_ui.resizeRowsToContents()
@@ -1768,30 +1752,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.settings.update({name: {
                                             'category': 'slider',
                                             'value': value}})
+        # Grouping tab definitions: one setting, a list of dicts
+        if getattr(self, 'grouping_tab', None) is not None:
+            self.settings['group_definitions'] = {
+                'category': 'group_definitions',
+                'value': self.grouping_tab.definitions()}
 
     def gui_show_hide_modules(self):
         # show / hide tabs
-        for checkbox, val in self.tab_pairs.items():
-            index = val[0]
-            tab_name = val[1]
-            chbx = self.settings.get(checkbox)
-            if chbx:
-                is_on = chbx.get('value', False)
-                if is_on:
-                    self.ui.TopTab.setTabVisible(index, True)
-                else:
-                    self.ui.TopTab.setTabVisible(index, False)
-
-        for checkbox, val in self.tab_pairs_bottom.items():
-            index = val[0]
-            tab_name = val[1]
-            chbx = self.settings.get(checkbox)
-            if chbx:
-                is_on = chbx.get('value', False)
-                if is_on:
-                    self.ui.BottomTab.setTabVisible(index, True)
-                else:
-                    self.ui.BottomTab.setTabVisible(index, False)
+        for tabs, pages in ((self.ui.TopTab, self.tab_pages),
+                            (self.ui.BottomTab, self.tab_pages_bottom)):
+            for checkbox, page in pages.items():
+                chbx = self.settings.get(checkbox)
+                index = tabs.indexOf(page)
+                if chbx and index >= 0:
+                    tabs.setTabVisible(index, setting_to_bool(chbx.get('value', False)))
 
     def settings_to_gui(self):
         """
@@ -1904,6 +1879,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.log.warning("Error restoring {} {}".format(
                     str(one_setting['category']), str(obj.objectName())))
             obj.blockSignals(False)
+
+        # Grouping tab definitions (kept as they are when the preset has none)
+        group_defs = self.settings.get('group_definitions')
+        if isinstance(group_defs, dict) and getattr(self, 'grouping_tab', None) is not None:
+            self.grouping_tab.set_definitions(group_defs.get('value'))
 
     def settings_update(self, knob_name, ui, value, val2=None):
         one_setting = self.settings.get(knob_name)
@@ -2040,6 +2020,35 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         # Spreadsheet: the column editors (were max 300 px) use the full height
         for edit in (ui.sub_columns, ui.log_columns, ui.txt_columns):
             edit.setMaximumHeight(no_limit)
+
+    def _add_grouping_tab(self):
+        """
+        Grouping tab (grouping_widget.py) after the Spreadsheet tab and its
+        Modules checkbox on the Presets tab. Grouping replaces Merge By (the
+        Merge Lines group of the Preferences tab).
+        :return: the GroupingTab
+        """
+        ui = self.ui
+        tab = GroupingTab(ui.TopTab)
+        index = ui.TopTab.indexOf(ui.tab_2)
+        ui.TopTab.insertTab(index + 1 if index >= 0 else ui.TopTab.count(), tab, "Grouping")
+        # top controls are ordinary settings: settings_from_gui finds them on ui
+        for name, widget in tab.settings_widgets.items():
+            setattr(ui, name, widget)
+        ui.tab_grouping = tab
+
+        mod = QtWidgets.QCheckBox("Grouping", ui.groupBox_18)
+        mod.setObjectName("preset_mod_grouping")
+        mod.setSizePolicy(ui.preset_mod_spreadsheet.sizePolicy())
+        mod.setMinimumSize(ui.preset_mod_spreadsheet.minimumSize())
+        mod.setMaximumSize(ui.preset_mod_spreadsheet.maximumSize())
+        mod.setChecked(True)
+        mod.setToolTip("Show the Grouping tab. Hiding it doesn't switch grouping off.")
+        ui.preset_mod_grouping = mod
+        layout = ui.verticalLayout_72
+        layout.insertWidget(layout.indexOf(ui.preset_mod_spreadsheet) + 1, mod)
+        self.tab_pages['preset_mod_grouping'] = tab
+        return tab
 
     def _add_parse_rows(self):
         """

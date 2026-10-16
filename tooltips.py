@@ -490,25 +490,6 @@ TOOLTIPS = {
         "Counter increment, e.g. 10 gives 010, 020, 030.",
     "prefs_counter_zeroes":
         "Digits of the counters, e.g. 3 gives 001.",
-    "prefs_merge_chbx":
-        "Merge Submission rows that have the same value of the token in the\n"
-        "next field into one row; cell values are joined by Separator.\n"
-        "Drive Log and Text are not merged.",
-    "prefs_merge_by":
-        "Token to merge by, e.g. {shot}. One token only.\n"
-        "Files where it is empty are not merged.",
-    "prefs_merge_collapse":
-        "Drop repeated values inside a merged cell.\n"
-        "The order of the remaining values may change.",
-    "prefs_merge_sep":
-        "Text placed between merged values, e.g. / or \", \"",
-    "prefs_merge_sort":
-        "Token to sort the merged values by." + NOT_IMPLEMENTED,
-    "prefs_merge_order":
-        "Order of the sort values, comma separated." + NOT_IMPLEMENTED,
-    "prefs_merge_hide":
-        "Show only the merged rows. Off: the original rows are listed too,\n"
-        "below the merged ones.",
 
     # ------------------------------------------------------------ Exports tab
     "text_txt":

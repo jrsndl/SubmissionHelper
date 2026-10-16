@@ -20,6 +20,7 @@ The Package starts with one or more files that you want to package and send. Sub
 * Allows gathering and copying sidecar files like CDLs or LUTs to the package.  
 * Allows defining spreadsheet columns and values in a flexible way.  
 * Generates up to two spreadsheets that are called submission and drive log.  
+* Groups the files of one version (e.g. exr, mp4 review, thumbnail), checks the required representations, and colors or collapses the groups in the spreadsheets.  
 * Generates a text file often used for email that follows up the package sending.  
 * Can read notes and other data from the ftrack.  
 * Can read info from Ayon database.  
@@ -403,6 +404,32 @@ Vendor=MyStudio,
 
 Counters and totals for each output: `{cnt_sub}` `{cnt_log}` `{cnt_txt}` number the rows (start, step and digits are set in Preferences); `{total_sub}` … is the number of rows (a sequence counts once), `{files_sub}` … the number of files (every frame counts), and `{total_size_sub_human}` … the total size.
 
+# Grouping Tab
+
+Often more than one file of the same version goes to the client: the exr sequence, an mp4 review, a thumbnail. Grouping puts those files together, checks that the group has the representations the client needs, and shows the groups in the Submission and Drive Log tables. It replaces Merge By (formerly on the Preferences tab).
+
+* **Enable Grouping** switches the tab on. Off, nothing below has any effect.  
+* **Group by** is a token template; files with the same result are one group, e.g. `{folder_name}{task_name}{variant}{version}` or `{shot}{task}{version}`. A file where a token is unknown is in no group.  
+* **Representation** is the representation name of each file, compared (not case sensitive, without a leading dot) with the Repres fields of the definitions. Default `{extension}`; with the Ayon tab matching versions, `{list_Matched Representation}` uses the Ayon representation.  
+* **Task Type** and **Task Name** give the task of each file, compared with the definitions.  
+* **Do not export items in group with missing Representations**: groups that miss a required representation are left out of the Submission export (Excel, CSV and so the Ayon publish CSV). They stay in the Submission table, in red, and the Drive Log is exported in full.  
+* **Keep Group Rows Together** lists the rows of a group one below the other, at the place of its first row.  
+* **Color Group Rows** gives the rows of each group the same muted background in the Submission and Drive Log tables. Error, warning and size warning colors win. **Color Rows in Excel** colors the Excel exports too (groups light, errors red, warnings orange); it is off by default because the Submission usually goes to the client.  
+* **Collapse Groups** shows each group as one row in the Submission and/or Drive Log. In every column equal values are shown once and different values are joined by **Separator**, e.g. `exr, mp4`. A collapsed row is red or orange when any of its files is.
+
+## Group Definitions
+
+**Add Group Definition** adds one at the end. For every group, the definitions are tried from the top (▲ ▼ change the order) and the first enabled one whose **Task Type(s)** and **Task Name(s)** match a file of the group is used. Both accept several values separated by commas or spaces, wildcards `*` `?`, and match anything when empty. A group without a matching definition is still grouped, colored and collapsed, but not checked.
+
+* **Always Repres**: required, must be in the package, e.g. `exr`.  
+* **Always/Convert Repres**: required, in the package or made by a Convert row from a file of the group (the extension of the Convert File Name counts), e.g. `mp4`.  
+* **Optional Repres**: may be in the group.  
+* A missing required representation is an error on every row of the group. A required representation with an error from the Checks tab makes the other rows of the group red too. When any Repres field is filled in, a file with a representation not listed gets a warning, and so does a representation that is in the group more than once.  
+* **Inherit Columns**: Submission column titles, separated by commas. In each group, a cell that is empty or still has an unknown `{token}` takes the value of the same column from another file of the group: the first one in **Inheritance Repre Priority** order (e.g. `exr mp4`) with a good value, then the others in table order.  
+* **Review Repre** / **Thumbnail Source Repre**: every file of the group gets the tokens of that file as `{group_review_<token>}` / `{group_thumb_<token>}`. For example with Thumbnail Source Repre `exr`, `{group_thumb_convert_path01}` is the thumbnail Convert row 01 made from the exr, also on the mp4 row; with Review Repre `mp4 mov`, `{group_review_full_path}` is the review movie.
+
+Group tokens of every file (empty when it is in no group): `{group_key}`, `{group_name}` (definition name), `{group_number}`, `{group_size}`, `{group_repre}` (its representation), `{group_repres}` (all in the group), `{group_missing}`, `{group_to_convert}` (required representations a Convert row will make), `{group_error}`, `{group_warning}`. The group errors and warnings are also part of `{error}` and `{warning}`.
+
 # Checks Tab
 
 ![image3.png](rsrs/image3.png)
@@ -468,7 +495,6 @@ Changes to the match rules and the Column Prefix apply right away. Project, Enab
 * **Custom OCIO** sets the OCIO config used as `{ocio}` in Convert commands, instead of the one from install.json or the OCIO environment variable. Press Reload after changing it.  
 * **Accounts**: who is signed in to ftrack and Ayon, and where the credentials come from (environment, Windows Credential Manager or install.json). **Sign in...** asks for your own account: ftrack through the web browser (or your personal API key), Ayon with user name and password. **Sign out** removes the stored credentials from this computer. The first time ftrack or Ayon is used without credentials, SH asks by itself.  
 * **Counter**: start, step and digits of `{cnt_sub}`, `{cnt_log}` and `{cnt_txt}`.  
-* **Merge by** joins Submission rows with the same value of a token (e.g. `{shot}`) into one row; the values of each column are joined by **Separator**. **Collapse Values** drops repeated values in a cell, and **Hide Merged** shows only the merged rows. The Drive Log and Text are not merged.
 
 # Exports Tab
 
@@ -511,5 +537,4 @@ These controls are in the window but don't work yet. Their tooltips say "Not imp
 |---|---|---|
 | Replace | Replace, Replace with Go | Not implemented: the tab only previews the rules. |
 | Vendor | Cross Check with Ftrack | Not implemented. |
-| Preferences | Sort By, Order (Merge) | Not implemented. |
 | Ayon Publish | Product, Version, Check if Version Exists, Change Version to Available | Not implemented. |
