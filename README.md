@@ -152,6 +152,7 @@ console to print to). Run with `-h` to print the help.
 | `p` | Publish to Ayon | Export the submission csv and ingest it to Ayon locally |
 | `P` | Publish to Ayon (farm) | Same as `p`, submitted as a Deadline job |
 | `a` | Ayon shot list | Read, filter and write the Ayon shot list (Ayon tab) |
+| `k` | Record package | Write to Ayon which versions and representations this package includes (Ayon tab, needs *Pull versions* and *Match version*) |
 | `x` | ftrack shot list | Write the ftrack shot list to the Ftrack tab's Export path (empty: `ftrack_shotlist.csv` in the package folder). Needs *Use Ftrack* in the preset |
 
 Most actions work on data prepared by `f` and `t`, so start with `ft`.
@@ -251,6 +252,7 @@ Each filter is `task:product:representation`:
 | `:platePl01:exr` | the same, from any task |
 | `platePl01:exr` | the same as above |
 | `:platePl01` | any representation |
+| `:renderCompMain:` | product only: any task, any representation (same as `:renderCompMain`) |
 | `render*:exr` | wildcards `*` `?` in any part, names are not case sensitive |
 
 Filters are tried in order and the first one with a match is used, so put the
@@ -322,6 +324,44 @@ For checks, every file matched to an Ayon folder also gets
 already in Ayon) and `{list_Matched Max Existing Version}` (highest existing
 version of the preferred product), also when its version is not in Ayon yet. Changing these keys doesn't query Ayon again. When some files don't
 find their version, the Log tab shows what was compared.
+
+### Matching a representation to each file
+
+Every file matched to a version is also paired with one representation of that
+version:
+
+1. **File extension**: the representations with the file's extension (taken
+   from the representation's published files; `jpeg` = `jpg`, `tiff` = `tif`).
+   If exactly one has it, that's the one.
+2. **File size**: if several representations share the extension (or none
+   has it), the one whose size equals the file size. Ayon keeps the size of
+   every published file; a sequence is compared by the sum of its frames.
+   Needs file sizes (*Scan Sizes* on).
+
+When the product filter names a representation (`comp:renderCompMain:exr`)
+only that one is considered; use `:renderCompMain:` to let the extension and
+size decide. The result is `{list_Matched Representation}` and
+`{list_Matched Representation By}` (`extension`, `extension+size` or `size`).
+The Log tab shows how many files were paired and why one wasn't.
+
+### Recording the package in Ayon
+
+**Record Package to Ayon** (third row of the Versions group, or **Record
+Package with Go**, or headless action `k`) writes to Ayon which package
+includes which versions and representations. It uses the Submission files
+(not the ones left out by filters or the vendor csv) that found their version
+with **Match version**. The package name comes from the Package tab.
+
+| Entity | Written to its `data` |
+|---|---|
+| version | `submissionHelper.packages.<package>` = `{"representations": ["exr", "mov"], "date": ..., "user": ...}` |
+| representation | `submissionHelper.packages.<package>` = `{"date": ..., "user": ...}` |
+
+The current data is read just before writing and the package is added to it,
+so other data and other packages stay. Recording the same package again
+writes nothing unless its representations changed (then they are replaced and
+`updated` is set). A file whose representation wasn't found still records its
+version, without that representation, with a warning in the Log tab.
 
 ## Ftrack
 

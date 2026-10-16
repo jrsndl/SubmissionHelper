@@ -909,6 +909,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'ayon_export_butt', 'ayon_export_butt'))
         self.ui.ayon_scan_butt.clicked.connect(
             partial(self.handler, 'ayon_scan_butt', 'ayon_scan'))
+        self.ui.ayon_record_butt.clicked.connect(
+            partial(self.handler, 'ayon_record_butt', 'ayon_record'))
         self.ui.ayon_versions_matched_only.clicked.connect(
             partial(self.handler, 'ayon_versions_matched_only', 'ayon_changed_filter'))
         # Match version uses the cached Matched Versions: no Ayon query, just refresh
@@ -1193,6 +1195,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.data.prepare_all_columns()
                 self.data.prepare_tables()
                 self.show_all()
+
+        if group == 'ayon_record':
+            if self.data is None or not self.data.merged_list:
+                self.log.error("Record package: load a package first.")
+            else:
+                self._ayon_busy(self.data.ayon_record_packages, "Recording package to Ayon...")
 
         if sender == 'preset_explore':
             self.expore_local_presets()
@@ -2089,8 +2097,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         group = QtWidgets.QGroupBox("Versions", parent)
         group.setObjectName("ayon_versions_group")
-        group.setMinimumSize(QtCore.QSize(350, 80))
-        group.setMaximumHeight(80)
+        group.setMinimumSize(QtCore.QSize(350, 112))
+        group.setMaximumHeight(112)
         pol = group.sizePolicy()
         pol.setVerticalPolicy(QtWidgets.QSizePolicy.Fixed)
         group.setSizePolicy(pol)
@@ -2119,7 +2127,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             "<p>task:product:representation, separated by commas. The task is optional.</p>"
             "<p><b>comp:renderCompMain:exr</b> - representation exr of product renderCompMain "
             "published from task comp<br>"
-            "<b>:platePl01:exr</b> - any task</p>"
+            "<b>:platePl01:exr</b> - any task<br>"
+            "<b>:renderCompMain:</b> - product only: any task, any representation. Match version "
+            "then pairs each file with a representation by its extension, then by its size.</p>"
             "<p>Filters are tried in order, the first one with a match is used, so list the "
             "preferred product first. The latest version of the product is used. "
             "Wildcards * ? are allowed, names are not case sensitive.</p>"
@@ -2168,6 +2178,34 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         mdata.setToolTip(match_tip)
         ui.ayon_version_match_data = mdata
         row2.addWidget(mdata, 1)
+
+        # third row: record which package includes the matched versions
+        row3 = QtWidgets.QHBoxLayout()
+        rows.addLayout(row3)
+        record_tip = (
+            "<p>Write to Ayon which package includes each version and representation. "
+            "Needs Pull versions and Match version: every Submission file matched to a "
+            "version is paired with one of its representations, by file extension first, "
+            "then by file size (Ayon keeps the size of every published file). The paired "
+            "representation is {list_Matched Representation}, how it was found "
+            "{list_Matched Representation By}.</p>"
+            "<p>Version data gets <b>submissionHelper / packages / &lt;package name&gt;</b> with "
+            "the representations in the package, representation data gets "
+            "<b>submissionHelper / packages / &lt;package name&gt;</b>, both with date and user. "
+            "Recording the same package again only writes what changed; other data stays.</p>")
+        rec_go = QtWidgets.QCheckBox("Record Package with Go", group)
+        rec_go.setObjectName("ayon_record_go")
+        rec_go.setMinimumSize(QtCore.QSize(170, 25))
+        rec_go.setToolTip(record_tip)
+        ui.ayon_record_go = rec_go
+        row3.addWidget(rec_go)
+        row3.addStretch(1)
+        rec_butt = QtWidgets.QPushButton("Record Package to Ayon", group)
+        rec_butt.setObjectName("ayon_record_butt")
+        rec_butt.setMinimumSize(QtCore.QSize(170, 25))
+        rec_butt.setToolTip(record_tip)
+        ui.ayon_record_butt = rec_butt
+        row3.addWidget(rec_butt)
 
         idx = ui.verticalLayout_116.indexOf(ui.groupBox_33)
         ui.verticalLayout_116.insertWidget(idx + 1 if idx >= 0 else -1, group)
