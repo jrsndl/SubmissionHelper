@@ -35,6 +35,54 @@ class _KeepMissing(dict):
         return '{' + key + '}'
 
 
+# a {token} as SH users write it: any name without braces, colons or '!'
+_TOKEN_RE = re.compile(r'\{([^{}:!]+)\}')
+
+
+def expand_tokens(text, *mappings):
+    """
+    Replace {token} with its value for tokens found in mappings (first mapping
+    wins); everything else, e.g. regex counts like \\d{3}, stays as it is.
+    Never raises. Use for regexes and other text where braces can mean
+    something else than a token.
+    """
+    if not text:
+        return text
+
+    def repl(m):
+        key = m.group(1)
+        for mapping in mappings:
+            if mapping and key in mapping:
+                return str(mapping[key])
+        return m.group(0)
+    return _TOKEN_RE.sub(repl, text)
+
+
+def format_keep(text, *mappings):
+    """
+    str.format_map with unknown tokens kept as {token}, format specs like
+    {cnt_sub:0>4} supported. Text with stray braces ({}, {3}, a lone {) can't
+    go through str.format: it falls back to expand_tokens instead of raising.
+    """
+    if not text:
+        return text
+    merged = _KeepMissing()
+    for mapping in reversed(mappings):
+        if mapping:
+            merged.update(mapping)
+    try:
+        return text.format_map(merged)
+    except (ValueError, IndexError, AttributeError, TypeError, KeyError):
+        return expand_tokens(text, *mappings)
+
+
+def unresolved_tokens(text):
+    """names of {tokens} left in text (regex counts like {3} or {2,4} are not tokens)"""
+    if not text:
+        return []
+    return [n for n in _TOKEN_RE.findall(text) if not re.fullmatch(r'[\d,\s]*', n)]
+
+
 class Sequencer(object):
     def __init__(self, in_path, sequence_mode='to_subsequences', gui=None, more_settings=None, ui=None, headless=False):
 
@@ -715,21 +763,33 @@ class Sequencer(object):
             if self.settings['vendor_csv_skip_by']['value']:
                 _skip_by = self.settings['vendor_csv_skip_by']['value']
             if self.settings['vendor_csv_skip_what']['value']:
-                _skip_what = str(self.settings['vendor_csv_skip_what']['value']).split(" ")
+                _skip_what = str(self.settings['vendor_csv_skip_what']['value']).split()
             if self.settings['vendor_csv_skip']['value'] is not None:
                 _skip = bool(self.settings['vendor_csv_skip']['value'])
                 if (not _skip_what) or (not _skip_by):
                     _skip = False
 
+            # no vendor csv (any more): nothing is left out because of it
+            for one_item in self.merged_list or []:
+                one_item['vendor_skip'] = False
+                one_item['vendor_ignore_sub'] = bool(one_item.get('hide_sub'))
+
             if self.merged_list is not None and len(
                     self.merged_list) > 0 and self.vendor_csv_transformed:
 
-                for one_item in self.merged_list:
-                    #package_key = p_key.format(**one_item)
-                    package_key = p_key.format_map(Default(one_item))
+                # a key without any {token} would pair every file with every row
+                keys_ok = bool(unresolved_tokens(p_key)) and bool(unresolved_tokens(v_key))
+                if not keys_ok and (p_key or v_key):
+                    self.log.warning(
+                        f"Vendor: Package key {p_key!r} and Vendor key {v_key!r} must both "
+                        "use tokens, e.g. {name} and {vendor_Filename}; files are not paired")
+                for one_item in self.merged_list if keys_ok else []:
+                    package_key = format_keep(p_key, one_item)
+                    if unresolved_tokens(package_key):
+                        # the file doesn't have the token: can't pair it
+                        continue
                     for one_row in self.vendor_csv_transformed:
-                        vendor_key = v_key.format_map(Default(one_row))
-                        #vendor_key = v_key.format(**one_row)
+                        vendor_key = format_keep(v_key, one_row)
                         if vendor_key == package_key:
                             # vendor csv row identification matches
                             # the package scan row identification
@@ -743,26 +803,22 @@ class Sequencer(object):
                     all_vendor_keys = self.vendor_csv_transformed[0].keys()
                     one_vendor_key = list(all_vendor_keys)[0]
                     for one_item in self.merged_list:
-                        if one_item['hide_sub']:
-                            one_item['vendor_ignore_sub'] = True
-                        _tst = one_item.get(one_vendor_key, None)
-                        if not _tst:
-                            one_item['vendor_ignore_sub'] = True
-                        else:
-                            one_item['vendor_ignore_sub'] = False
-
+                        # vendor_skip: left out because of the vendor csv,
+                        # kept when the other filters (age...) run again
+                        vendor_skip = not one_item.get(one_vendor_key, None)
                         if _skip:
-                            try:
-                                _skip_by = _skip_by.format(**one_item)
-                                if _skip_by in _skip_what:
-                                    one_item['vendor_ignore_sub'] = True
-                            except Exception:
-                                pass
+                            item_skip_by = format_keep(_skip_by, one_item)
+                            if item_skip_by in _skip_what:
+                                vendor_skip = True
+                        one_item['vendor_skip'] = vendor_skip
+                        one_item['vendor_ignore_sub'] = bool(
+                            one_item.get('hide_sub')) or vendor_skip
 
 
                 else:
                     for one_item in self.merged_list:
-                        one_item['vendor_ignore_sub'] = False
+                        one_item['vendor_skip'] = False
+                        one_item['vendor_ignore_sub'] = bool(one_item.get('hide_sub'))
 
 
     def vendor_csv_repre_checks(self):
@@ -787,7 +843,7 @@ class Sequencer(object):
                 #print('current {}'.format(current))
                 try:
                     #one_row['vendor_Merge_by'] = merge_key.format(**one_row)
-                    one_row['vendor_Merge_by'] = merge_key.format_map(Default(one_row))
+                    one_row['vendor_Merge_by'] = format_keep(merge_key, one_row)
                     if '{' in one_row['vendor_Merge_by']:
                         raise Exception('failed to expand')
                     #print('merge by {}'.format(one_row['vendor_Merge_by']))
@@ -1211,18 +1267,23 @@ class Sequencer(object):
         _neighbrs = 2
         _tresh = 0.3
         if self.settings:
-            if self.settings['check_sequence_size_consistency']['value']:
-                _consistency = bool(self.settings['check_sequence_size_consistency']['value'])
-            if self.settings['check_sequence_holes']['value']:
-                _holes = bool(self.settings['check_sequence_holes']['value'])
-            if self.settings['prefs_size_scan']['value']:
-                _sizes = bool(self.settings['prefs_size_scan']['value'])
-            if self.settings['prefs_size_ignore_first']['value']:
-                _ignore_first = int(self.settings['prefs_size_ignore_first']['value'])
-            if self.settings['prefs_size_neighborhood']['value']:
-                _neighbrs = int(self.settings['prefs_size_neighborhood']['value'])
-            if self.settings['prefs_size_threshold']['value']:
-                _tresh = float(int(self.settings['prefs_size_threshold']['value']))*0.01
+            def _value(key):
+                item = self.settings.get(key)
+                return item.get('value') if isinstance(item, dict) else None
+
+            # unchecked / 0 are real values: test for None, not for truth
+            if _value('check_sequence_size_consistency') is not None:
+                _consistency = bool(_value('check_sequence_size_consistency'))
+            if _value('check_sequence_holes') is not None:
+                _holes = bool(_value('check_sequence_holes'))
+            if _value('prefs_size_scan') is not None:
+                _sizes = bool(_value('prefs_size_scan'))
+            if _value('prefs_size_ignore_first') is not None:
+                _ignore_first = max(0, int(_value('prefs_size_ignore_first')))
+            if _value('prefs_size_neighborhood') is not None:
+                _neighbrs = max(0, int(_value('prefs_size_neighborhood')))
+            if _value('prefs_size_threshold'):
+                _tresh = float(int(_value('prefs_size_threshold')))*0.01
 
         # end this if sizes should not be worked on
         if not _sizes:
@@ -1246,6 +1307,7 @@ class Sequencer(object):
                     # calculate sequence size
                     my_size = 0
                     sizes = []
+                    frames = []     # frame number of every size
                     zero_size = []
                     for one_frame in range(start, end+1):
                         one_file = one_pth + '/' + clean + str(one_frame).zfill(pad) + ext
@@ -1257,7 +1319,8 @@ class Sequencer(object):
                             if one_size == 0:
                                 zero_size.append(one_frame)
                             sizes.append(one_size)
-                        except:
+                            frames.append(one_frame)
+                        except OSError:
                             pass
 
                     if sizes is not None and len(sizes) > 0:
@@ -1279,8 +1342,8 @@ class Sequencer(object):
                             else:
                                 one_item['size_warning'] += ", " + new_warn
 
-                        missing = len(one_item['missing_numbers'])
-                        if missing > 0:
+                        missing = len(one_item.get('missing_numbers') or [])
+                        if _holes and missing > 0:
                             warn = one_item.get('size_warning', '')
                             new_warn = "{} missing files: {}".format(
                                 str(missing),
@@ -1299,7 +1362,7 @@ class Sequencer(object):
                             # this is done for slates, they are often small
                             try:
                                 sizes = sizes[_ignore_first:]
-                                start = start + _ignore_first
+                                frames = frames[_ignore_first:]
 
                                 # add the last item neighbor times
                                 _s = sizes
@@ -1314,7 +1377,7 @@ class Sequencer(object):
                                 itms = 2 * _neighbrs + 1
 
                                 for cnt in range(_neighbrs, len(_s)-_neighbrs):
-                                    _frame = start + _ignore_first + cnt - _neighbrs - 1
+                                    _frame = frames[cnt - _neighbrs]
                                     _w = _s[(cnt - _neighbrs):(cnt + _neighbrs)+1]
                                     all_neighbrs = sum([i for i in _w if isinstance(i, int)])
                                     average = float(all_neighbrs / itms)
@@ -1883,6 +1946,13 @@ class Sequencer(object):
         log_include_list = ""
         txt_exclude_list = ""
         txt_include_list = ""
+        # file age defaults (a preset without the age settings)
+        _age_enabled = False
+        _age_number = 0.0
+        _age_unit = 'days'
+        _age_type = 'modified'
+        age_exclude = []
+        age_include = []
         counter_start = 1
         counter_step = 1
         counter_zeroes = 3
@@ -1922,13 +1992,13 @@ class Sequencer(object):
                     if _age_exclude == '':
                         age_exclude = []
                     else:
-                        age_exclude = _age_exclude.strip().split(' ')
+                        age_exclude = _age_exclude.split()
                 if self.settings['age_include']['value'] is not None:
                     _age_include = self.settings['age_include']['value']
                     if _age_include == '':
                         age_include = []
                     else:
-                        age_include = _age_include.strip().split(' ')
+                        age_include = _age_include.split()
         except:
             pass
 
@@ -1951,10 +2021,6 @@ class Sequencer(object):
                 one_item.update({"hide_sub": False})
                 one_item.update({"hide_log": False})
                 one_item.update({"hide_txt": False})
-                one_item.update({"hide_sub": False})
-                one_item.update({"hide_log": False})
-                one_item.update({"hide_txt": False})
-                one_item.update({"vendor_ignore_sub": False})
 
                 # include ONLY
                 if sub_include_list:
@@ -1999,31 +2065,23 @@ class Sequencer(object):
                     item_age = one_item.get(age_key, 0)
                     hide_item = False
                     if item_age > _age_number:
-                        hide_item = True
-                        if len(age_exclude) == 0 and len(
-                                age_include) == 0:
-                            hide_item = True
-                        else:
-                            includes = False
-                            for one in age_include:
-                                if one in one_item['full_path']:
-                                    includes = True
-                                    break
-                            if len(age_include) > 0 and includes or len(age_include) == 0:
-                                hide_item = True
-
-                            for one in age_exclude:
-                                if one in one_item['full_path']:
-                                    # not hiding current item, it fits Exclude
-                                    # condition, even if it fits include only
-                                    hide_item = False
-                                    break
+                        _full_path = one_item.get('full_path', one_item.get('path', ''))
+                        # Age Include: only these files are hidden by age
+                        hide_item = (not age_include) or any(
+                            one in _full_path for one in age_include)
+                        # Age Exclude: never hidden by age, even if included
+                        if any(one in _full_path for one in age_exclude):
+                            hide_item = False
                         if hide_item:
                             one_item['hide_sub'] = True
 
+                # Vendor tab: files not in the vendor csv (vendor_csv_add)
+                one_item['vendor_ignore_sub'] = bool(one_item['hide_sub']) or \
+                    bool(one_item.get('vendor_skip'))
+
                 # add counter to the items that are not hidden
                 _frames = int(one_item.get('meta_duration_frames', 0))
-                if not one_item['hide_sub']:
+                if not one_item['vendor_ignore_sub']:
                     one_item.update({"cnt_sub": str(cnt_sub).zfill(counter_zeroes)})
                     cnt_sub += counter_step
                     total_sub += 1
@@ -2131,25 +2189,33 @@ class Sequencer(object):
 
         if self.merged_list and len(self.merged_list) > 0:
             for one_item in self.merged_list:
+                # values the parse rows replaced: put them back first, so a row
+                # that no longer applies (Filter, removed row) leaves no old result
+                originals = one_item.setdefault('_parse_orig', {})
+                for key, (had, value) in originals.items():
+                    if had:
+                        one_item[key] = value
+                    else:
+                        one_item.pop(key, None)
                 for k, one_regex in self.regexes.items():
                     do_filter = False
                     if one_regex['filter'] != '':
                         if not (one_regex['filter'] in one_item['path']):
                             do_filter = True
                     if not do_filter:
-                        # expand keywords in source
+                        # expand keywords in source; an unknown token gives ''
                         try:
                             expanded = one_regex["source"].format(**one_item)
-                            #
                         except KeyError:
                             expanded = None
+                        except (ValueError, IndexError, AttributeError):
+                            # stray braces: expand the known tokens only
+                            expanded = expand_tokens(one_regex["source"], one_item)
+                            if unresolved_tokens(expanded):
+                                expanded = None
                         if expanded and expanded != '':
                             # expand static keywords
-                            try:
-                                expanded = expanded.format(**self.static_keywords)
-                                #expanded = expanded.format_map(Default(self.static_keywords))
-                            except KeyError:
-                                pass
+                            expanded = format_keep(expanded, self.static_keywords)
                             if one_regex["repl"] and one_regex["repl"] != "":
                                 # it is a replace
                                 if one_regex["repl"].startswith("lambda "):
@@ -2183,7 +2249,10 @@ class Sequencer(object):
                                     result = ""
                         else:
                             result = ""
-                        one_item.update({one_regex["key"]: result})
+                        key = one_regex["key"]
+                        if key not in originals:
+                            originals[key] = (key in one_item, one_item.get(key))
+                        one_item.update({key: result})
 
     def prepare_package_name(self):
 
@@ -2217,48 +2286,60 @@ class Sequencer(object):
         if self.settings['name_from_template']['value'] is not None:
             _from_template = bool(self.settings['name_from_template']['value'])
 
-        if self.settings['name_template']['value'] is not None:
-            _template = self.settings['name_template']['value']
-        if self.settings['name_date_regex']['value'] is not None:
-            _date_regex = self.settings['name_date_regex']['value']
-            _date_compiled = re.compile(_date_regex)
-        if self.settings['name_version_regex']['value'] is not None:
-            _version_regex = self.settings[
-                                     'name_version_regex']['value']
-            _version_compiled = re.compile(_version_regex)
-        if self.settings['package_folder']['value'] is not None:
-            _pkg_folder = self.settings['package_folder']['value']
-        if self.settings['name_version_per_date']['value'] is not None:
-            _per_date = bool(self.settings[
-                                 'name_version_per_date']['value'])
-        if self.settings['name_version_zeroes']['value'] is not None:
-            _ver_zeroes = self.settings[
-                                  'name_version_zeroes']['value']
-        if self.settings['name_version_use_letters']['value'] is not None:
-            _ver_letters = bool(self.settings[
-                'name_version_use_letters']['value'])
-        if self.settings['name_version_letters_uppercase']['value'] is not None:
-            _ver_upper = bool(self.settings[
-                'name_version_letters_uppercase']['value'])
+        def _setting(key, default):
+            item = self.settings.get(key)
+            if isinstance(item, dict) and item.get('value') is not None:
+                return item['value']
+            return default
+
+        def _compile(pattern, what):
+            """regex from the gui; date tokens like {yy} are expanded first"""
+            if not pattern:
+                return None
+            try:
+                return re.compile(expand_tokens(pattern, date_keys))
+            except re.error as e:
+                self.log.warning(f"Package name: invalid {what} {pattern!r}: {e}")
+                return None
+
+        def _first_group(compiled, text):
+            """group 1 of the match, or the whole match when there is no group"""
+            if compiled is None:
+                return ''
+            m = compiled.search(text)
+            if not m:
+                return ''
+            return m.group(1) if compiled.groups else m.group(0)
+
+        _template = _setting('name_template', '') or ''
+        _date_compiled = _compile(_setting('name_date_regex', ''), 'Date Regex')
+        _version_compiled = _compile(_setting('name_version_regex', ''), 'Version Regex')
+        _pkg_folder = _setting('package_folder', '') or ''
+        _per_date = bool(_setting('name_version_per_date', False))
+        try:
+            _ver_zeroes = int(_setting('name_version_zeroes', 0) or 0)
+        except (TypeError, ValueError):
+            _ver_zeroes = 0
+        _ver_letters = bool(_setting('name_version_use_letters', False))
+        _ver_upper = bool(_setting('name_version_letters_uppercase', True))
 
         # get current date by applying regex to expanded template
-        try:
-            _temp_expanded = _template.format(**date_keys)
-            #_temp_expanded = _template.format_map(Default(date_keys))
-        except KeyError:
-            self.log.error("Package name template failed")
+        _temp_expanded = format_keep(_template, date_keys)
+        if unresolved_tokens(_temp_expanded):
+            self.log.warning(
+                f"Package name template {_template!r}: only {{y}} {{yy}} {{m}} {{mm}} {{d}} "
+                f"{{dd}} and {{package_version}} can be used, "
+                f"unknown: {', '.join(unresolved_tokens(_temp_expanded))}")
+        current_date = _first_group(_date_compiled, _temp_expanded)
+        if _per_date and _from_template and not current_date:
+            self.log.warning(
+                "Package name: Date Regex finds no date in the template "
+                f"{_temp_expanded!r}, so Per Date can't tell the dates apart")
 
-        if _date_compiled:
-
-            d = _date_compiled.search(_temp_expanded)
-            if d:
-                try:
-                    current_date = d.group(1)
-                except :
-                    self.log.error("Package date failed")
-
+        one_up = ''
+        name_from_folder = ''
         # make sure path exists, it is a directory and has no trailing slash
-        if os.path.exists(_pkg_folder):
+        if _pkg_folder and os.path.exists(_pkg_folder):
             if _pkg_folder is None:
                 _pkg_folder = ''
             else:
@@ -2284,71 +2365,55 @@ class Sequencer(object):
         else:
             # list all dirs, parse date and version
             dir_list = []
-            for filename in os.listdir(one_up):
+            try:
+                siblings = os.listdir(one_up) if one_up else []
+            except OSError as e:
+                self.log.warning(f"Package name: can't list {one_up}: {e}")
+                siblings = []
+            for filename in siblings:
                 if os.path.isdir(os.path.join(one_up, filename)):
                     if filename != name_from_folder:
-                        d = _date_compiled.search(filename)
-                        dd = ''
-                        if d:
-                            try:
-                                dd = d.group(1)
-                            except:
-                                dd = ''
-                        v = _version_compiled.search(filename)
-                        vv = ''
-                        if v:
-                            try:
-                                vv = v.group(1)
-                            except:
-                                vv = ''
                         dir_list.append({
                             'folder': filename,
-                            'date': dd,
-                            'version': vv
+                            'date': _first_group(_date_compiled, filename),
+                            'version': _first_group(_version_compiled, filename)
                         })
+
+            def _version_key(one_dir):
+                """numbers compare by value (9 < 10), letters alphabetically"""
+                v = one_dir['version']
+                if v.isdigit():
+                    return (0, int(v), '')
+                return (1, 0, v.upper())
 
             if _per_date:
                 # each date has separate version chain
-                _today_subs = []
-                for one_dir in dir_list:
-                    if one_dir['date'] == current_date:
-                        if one_dir['version'] and one_dir['version'] != '':
-                            _today_subs.append(one_dir)
-                if _today_subs:
-                    last_dir = sorted(_today_subs, key=lambda i: i['version'])[-1]
-                else:
-                    last_dir = None
+                candidates = [d for d in dir_list
+                              if d['date'] == current_date and d['version']]
             else:
-                # sort by version, take highest
-                try:
-                    last_dir = sorted(dir_list, key=lambda i: i['version'])[-1]
-                except:
-                    last_dir = None
-            if last_dir:
-                last_version = last_dir['version']
+                candidates = [d for d in dir_list if d['version']]
+            if _ver_letters:
+                candidates = [d for d in candidates
+                              if len(d['version']) == 1 and d['version'].isalpha()]
             else:
-                last_version = None
+                candidates = [d for d in candidates if d['version'].isdigit()]
+            last_dir = max(candidates, key=_version_key) if candidates else None
+            last_version = last_dir['version'] if last_dir else None
 
             if _ver_letters:
                 if last_version is None:
-                    last_version = 'Z'
-                try:
-                    _test = last_version.upper()
-                except:
-                    last_version = 'Z'
-                next_version = chr(
-                    (ord(last_version.upper()) + 1 - 65) % 26 + 65)
+                    next_version = 'A'
+                elif last_version.upper() == 'Z':
+                    next_version = 'A'
+                    self.log.warning("Package name: version Z is used, next letter "
+                                     "version wraps around to A")
+                else:
+                    next_version = chr(ord(last_version.upper()) + 1)
                 if not _ver_upper:
                     next_version = next_version.lower()
             else:
-                if last_version is None:
-                    last_version = 0
-                try:
-                    _test = int(last_version)
-                except ValueError:
-                    last_version = 0
-                # version is number
-                next_version = str(int(last_version) + 1).zfill(_ver_zeroes)
+                last_number = int(last_version) if last_version else 0
+                next_version = str(last_number + 1).zfill(_ver_zeroes)
 
             # add what we know
             if _per_date:
@@ -2369,11 +2434,8 @@ class Sequencer(object):
             # use source folder as name
             _pkg_new_name = name_from_folder
             # expand template to make package name
-            try:
-                _pkg_new_name = _template.format(**date_keys)
-                #_pkg_new_name = _template.format_map(Default(date_keys))
-            except:
-                pass
+            if _template:
+                _pkg_new_name = format_keep(_template, date_keys)
 
             date_keys.update({
                 'package_name': _pkg_new_name,
@@ -2628,7 +2690,7 @@ class Sequencer(object):
                     for one_expression in self.column_expressions_sub:
                         try:
                             #formatted = one_expression.format(**one_item)
-                            formatted = one_expression.format_map(Default(one_item))
+                            formatted = format_keep(one_expression, one_item)
                             one_row_sub.append(formatted)
                         except KeyError:
                             # can't parse expression, put it in original form
@@ -2663,7 +2725,7 @@ class Sequencer(object):
                     for one_expression in self.column_expressions_log:
                         try:
                             #formatted = one_expression.format(**one_item)
-                            formatted = one_expression.format_map(Default(one_item))
+                            formatted = format_keep(one_expression, one_item)
                             one_row_log.append(formatted)
                         except KeyError:
                             # can't parse expression, put it in original form
@@ -2680,7 +2742,7 @@ class Sequencer(object):
                     for one_expression in self.column_expressions_txt:
                         try:
                             #formatted = one_expression.format(**one_item)
-                            formatted = one_expression.format_map(Default(one_item))
+                            formatted = format_keep(one_expression, one_item)
                             one_row_txt.append(formatted)
                         except KeyError:
                             # can't parse expression, put it in original form
@@ -2691,11 +2753,11 @@ class Sequencer(object):
 
                 sides = one_item.get('sidecars', None)
                 if sides:
-                    do_side = False
-                    if side_sub_only and (not one_item['hide_sub']) and (not one_item['vendor_ignore_sub']):
-                        do_side = True
-                    elif side_log_only and not one_item['hide_log']:
-                        do_side = True
+                    if side_sub_only:
+                        do_side = not one_item.get('hide_sub') and \
+                            not one_item.get('vendor_ignore_sub')
+                    elif side_log_only:
+                        do_side = not one_item.get('hide_log')
                     else:
                         do_side = True
                     if do_side:
@@ -2736,7 +2798,7 @@ class Sequencer(object):
 
         try:
             #_header = txt_header.format(**self.static_keywords)
-            _header = txt_header.format_map(Default(self.static_keywords))
+            _header = format_keep(txt_header, self.static_keywords)
         except KeyError:
             _header = txt_header
         if do_txt_titles:
@@ -2745,7 +2807,7 @@ class Sequencer(object):
             _titles = ""
         try:
             #_footer = txt_footer.format(**self.static_keywords)
-            _footer = txt_footer.format_map(Default(self.static_keywords))
+            _footer = format_keep(txt_footer, self.static_keywords)
         except KeyError:
             _footer = txt_footer
         self.table_txt = _header + '\n' + _titles + body_txt + '\n' + _footer
@@ -2886,6 +2948,10 @@ class Sequencer(object):
         if csv_pth is None:
             self.log.error("Ayon publish: submission csv file name is not set, check the Exports tab.")
             return
+        if not (self.export_file_names.get('sub') or {}).get('do_csv'):
+            self.log.error("Ayon publish: turn on Exports > Submission > CSV, "
+                           "the Ayon ingest reads the submission csv.")
+            return
 
         # export the sub csv spreadsheet(s) now
         # the exports is a dict where keys are file names (excluding extension), and values are list
@@ -2934,6 +3000,15 @@ class Sequencer(object):
                     self.log.info(f"Text exported: {self.export_file_names['t_export_name']}")
                 except (OSError, UnicodeError) as e:
                     self.log.error(f"Error exporting text file {self.export_file_names['t_export_name']}: {e}")
+
+        # Ayon tab: Export with Go
+        if self._setting_on('ayon_export_go'):
+            self.ayon_export()
+
+        # Ayon Publish tab: Send Submission CSV to Ayon on Go (local publish),
+        # before the package folder is renamed
+        if self._setting_on('dead_go_ayon'):
+            self.publish_ayon(mode="local")
 
         # rename if autorename is ON
         if self.settings and\
@@ -2999,11 +3074,16 @@ class Sequencer(object):
                         worksheet.write(row + 1, column_number,line[column_number])
                 workbook.close()
 
-        if table is None or len(table) == 0:
-            self.log.error("Spreadsheet for export is empty. Nothing exported.")
+        spec = self.export_file_names.get(mode) or {}
+        if not (spec.get('do_excel') or spec.get('do_csv')):
+            # neither Excel nor CSV is on for this spreadsheet
+            self.log.debug(f"Export {mode}: Excel and CSV are off, nothing to write")
             return
         if titles is None or len(titles) == 0:
             self.log.error("Spreadsheet column names empty. Nothing exported.")
+            return
+        if table is None or len(table) == 0:
+            self.log.error("Spreadsheet for export is empty. Nothing exported.")
             return
 
         # mode is sub or log
@@ -3137,23 +3217,21 @@ class Sequencer(object):
         if not self.settings:
             return
 
-        do_sidecar = False
-        if self.sidecars is not None:
-            if len(self.sidecars) > 0:
-                do_sidecar = True
-        if not do_sidecar:
-            return
+        # clear the sidecar matches of the last refresh, also when there are
+        # no sidecar files any more
+        for item in self.merged_list or []:
+            if 'sidecars' in item:
+                item['sidecars'] = []
 
-        # clear the sidecar files
-        for item in self.merged_list:
-            sides = item.get('sidecars', None)
-            if sides is not None:
-                item['sides'] = []
+        if not self.sidecars:
+            return
 
         # Get regexes from UI
         side_regexes = {}
-        indexes = [str(x) for x in range(1, 6)]
+        indexes = [str(x) for x in range(1, 7)]
         for one in indexes:
+            if 'side_pattern_' + one not in self.settings:
+                continue
             name_pat = 'side_pattern_' + one
             pat = self.settings[name_pat]['value']
             name_rep = 'side_repl_' + one
@@ -3193,34 +3271,34 @@ class Sequencer(object):
             return
 
         for one_item in self.sidecars:
-            one_file = one_item
-            _s = one_item.split('/')
-            if not _s:
-                break
-            else:
-                one_file = _s[-1]
-                one_path = '/'.join(_s[:-1])
-
-            if one_file:
-                _e = one_item.split('.')
-                if not _e:
-                    break
-                else:
-                    one_file_noext = '.'.join(_e[:-1])
-                    one_file_ext = _e[-1]
+            one_path, _, one_file = one_item.rpartition('/')
+            if not one_file:
+                continue
+            one_file_noext, dot, one_file_ext = one_file.rpartition('.')
+            if not dot:
+                # no extension
+                one_file_noext, one_file_ext = one_file, ''
 
             for k, one_regex in side_regexes.items():
+                # Filter: only sidecar files with this text in the file name
+                if one_regex['filter'] and one_regex['filter'] not in one_file:
+                    continue
                 result = None
                 if one_regex['repl'] and one_regex['repl'] != '':
                     # it is a replace
-                    if one_regex['repl'].startswith("lambda "):
-                        # LAMBDA!
-                        result = re.sub(one_regex['compiled'],
-                                        eval(str(one_regex['repl'])),
-                                        one_file)
-                    else:
-                        result = re.sub(one_regex['compiled'],
-                                        one_regex['repl'], one_file)
+                    try:
+                        if one_regex['repl'].startswith("lambda "):
+                            # LAMBDA!
+                            result = re.sub(one_regex['compiled'],
+                                            eval(str(one_regex['repl'])),
+                                            one_file)
+                        else:
+                            result = re.sub(one_regex['compiled'],
+                                            one_regex['repl'], one_file)
+                    except Exception as e:
+                        self.log.warning(f"Sidecar row {k}: Repl {one_regex['repl']!r} "
+                                         f"failed on {one_file}: {e}")
+                        result = None
                 else:
                     m = one_regex['compiled'].search(one_file)
                     if m:
@@ -3245,50 +3323,22 @@ class Sequencer(object):
                     # now we have the match or repl, see if it matches
                     # to some package item
                     for item in self.merged_list:
-                        expanded = None
-                        try:
-                            expanded = one_regex['match'].format_map(
-                                Default(item))
-                            expanded = expanded.format_map(
-                                Default(self.static_keywords))
-                            dest = None
-                            dest = None
-                            try:
-                                dest = str(one_regex['destination'])
-                                try:
-                                    dest = dest.format_map(
-                                        Default(sidecar_keywords))
-                                except:
-                                    pass
-                                try:
-                                    dest = dest.format_map(
-                                        Default(self.static_keywords))
-                                except:
-                                    pass
-                                try:
-                                    dest = dest.format_map(Default(item))
-                                except:
-                                    pass
-                                try:
-                                    dest = dest.replace('\\', '/')
-                                except:
-                                    pass
-                            except:
-                                pass
-                            if expanded is not None:
-                                if expanded == result:
-                                    # sidecar file matches the package file
-                                    one_side = {
-                                        'result': result,
-                                        'file': one_item,
-                                        'dest': dest
-                                    }
-                                    try:
-                                        item['sidecars'].append(one_side)
-                                    except:
-                                        item['sidecars'] = [one_side]
-                        except KeyError:
-                            pass
+                        expanded = format_keep(one_regex['match'], item)
+                        expanded = format_keep(expanded, self.static_keywords)
+                        if expanded != result:
+                            continue
+                        # sidecar file matches the package file
+                        dest = str(one_regex['destination'])
+                        dest = format_keep(dest, sidecar_keywords)
+                        dest = format_keep(dest, self.static_keywords)
+                        dest = format_keep(dest, item)
+                        dest = dest.replace('\\', '/')
+                        one_side = {
+                            'result': result,
+                            'file': one_item,
+                            'dest': dest
+                        }
+                        item.setdefault('sidecars', []).append(one_side)
 
     def rename_prepare(self):
         """
@@ -3334,37 +3384,21 @@ class Sequencer(object):
                 _src = item['path_prs'] + '/' + item['name']
             _target = _src
             item['rename'] = ''
+            item.pop('rename_source', None)
 
             for one_rename in self.renames:
-                _f = one_rename['filter'].format_map(
-                    Default(self.static_keywords))
-                _f = _f.format_map(Default(item))
-                _p = one_rename['pattern'].format_map(
-                    Default(self.static_keywords))
-                _p = _p.format_map(Default(item))
-                if _p is None:
+                # tokens only: regex counts like \d{3} stay as they are
+                _f = expand_tokens(one_rename['filter'], self.static_keywords, item)
+                _p = expand_tokens(one_rename['pattern'], self.static_keywords, item)
+                if not _p or unresolved_tokens(_p):
                     continue
-                if '{' in _p:
-                    continue
-                if _p == '':
-                    continue
-                pat_valid = False
                 try:
                     _p_comp = re.compile(_p)
-                    pat_valid = True
                 except re.error:
-                    _p_comp = None
-                if not pat_valid:
                     continue
 
-                _r = one_rename['repl'].format_map(
-                    Default(self.static_keywords))
-                _r = _r.format_map(Default(item))
-                if _r is None:
-                    continue
-                if '{' in _r:
-                    continue
-                if _r == '':
+                _r = expand_tokens(one_rename['repl'], self.static_keywords, item)
+                if not _r or unresolved_tokens(_r):
                     continue
 
                 # filter out first
@@ -3474,7 +3508,7 @@ class Sequencer(object):
             _s = item.get('rename_source')
             _c = item.get('category')
             _ext = item.get('extension')
-            if (_r is None) or (_s is None) or (_c is None) or (_ext is None):
+            if (not _r) or (not _s) or (_c is None) or (_ext is None):
                 continue
 
             # what to rename
@@ -3650,7 +3684,7 @@ class Sequencer(object):
 
         def expand(template, values):
             try:
-                return template.format_map(Default(values))
+                return format_keep(template, values)
             except (ValueError, IndexError, AttributeError):
                 return template
 
@@ -3876,8 +3910,8 @@ class Sequencer(object):
 
         def expand(template, first, second):
             try:
-                out = template.format_map(Default(first))
-                return out.format_map(Default(second))
+                out = format_keep(template, first)
+                return format_keep(out, second)
             except (ValueError, IndexError, AttributeError):
                 return template
 
@@ -4279,9 +4313,13 @@ class Sequencer(object):
 
     def csv_data_assign(self):
 
-        class Default(dict):
-            def __missing__(self, key):
-                return '{' + key + '}'
+        # remove what the last assign merged into the files: the csv, the
+        # prefix or the rules may have changed since
+        for item in self.merged_list or []:
+            for key in item.pop('_data_keys', []):
+                item.pop(key, None)
+        for one_data_line in self.csv_data or []:
+            one_data_line.pop("_matched", None)
 
         if self.csv_data is None or len(self.csv_data) == 0:
             return
@@ -4315,10 +4353,10 @@ class Sequencer(object):
             for one_data_line in self.csv_data:
                 matched_filters = 0
                 for one_filter in filters:
-                    pkg = one_filter['pkg'].format_map(Default(item))
-                    pkg = pkg.format_map(Default(one_data_line))
-                    data = one_filter['data'].format_map(Default(one_data_line))
-                    data = data.format_map(Default(item))
+                    pkg = format_keep(one_filter['pkg'], item)
+                    pkg = format_keep(pkg, one_data_line)
+                    data = format_keep(one_filter['data'], one_data_line)
+                    data = format_keep(data, item)
                     if pkg is None or data is None:
                         continue
                     if str(pkg) == str(data):
@@ -4330,8 +4368,10 @@ class Sequencer(object):
                 # flag data line as matched
                 one_data_line["_matched"] = True
 
-                # merge data to matched item
-                item.update(one_data_line)
+                # merge data to matched item, remember the keys for the next assign
+                merged = [k for k in one_data_line if k != "_matched"]
+                item.update({k: one_data_line[k] for k in merged})
+                item['_data_keys'] = sorted(set(item.get('_data_keys', [])) | set(merged))
                 continue
 
     def display_data_table(self):
@@ -4339,6 +4379,11 @@ class Sequencer(object):
         table data to ui
         """
         if self.csv_data is None or len(self.csv_data) == 0:
+            # Data off or the csv is gone: don't keep showing the old rows
+            if self.ui is not None and not self.headless:
+                self.ui.data_table.clear()
+                self.ui.data_table.setColumnCount(0)
+                self.ui.data_table.setRowCount(0)
             return
 
         table = self.csv_data
@@ -4693,9 +4738,9 @@ class Sequencer(object):
 
     def _ftrack_resolve(self, item):
         """shot, task and version names of the item from the ftrack tab templates"""
-        current_shot = self.ftrack.get('shot', '').format_map(_KeepMissing(item))
-        current_task = self.ftrack.get('task', '').format_map(_KeepMissing(item))
-        current_version = self.ftrack.get('version', '').format_map(_KeepMissing(item))
+        current_shot = format_keep(self.ftrack.get('shot', ''), item)
+        current_task = format_keep(self.ftrack.get('task', ''), item)
+        current_version = format_keep(self.ftrack.get('version', ''), item)
         item['_ftrack_shot'] = current_shot
         item['_ftrack_task'] = current_task
         item['_ftrack_version'] = current_version if self.ftrack.get('do_version') else ''
@@ -4995,7 +5040,7 @@ class Sequencer(object):
             if not all_notes:
                 continue
             with_notes += 1
-            current_note = self.ftrack.get('note_pattern', '').format_map(_KeepMissing(item))
+            current_note = expand_tokens(self.ftrack.get('note_pattern', ''), item)
             notes = []
             for one in all_notes:
                 v = self.note_regex(one, current_note, self.ftrack['note_repl'])
@@ -5153,7 +5198,7 @@ class Sequencer(object):
                 _if_eval = False
                 if one_check['filter'] != '':
                     try:
-                        _if = one_check['filter'].format_map(Default(item))
+                        _if = format_keep(one_check['filter'], item)
                         _if_eval = bool(eval(_if))
                     except:
                         pass
@@ -5165,13 +5210,13 @@ class Sequencer(object):
                     # not filtered out
                     _check_eval = False
                     try:
-                        _check = one_check['check'].format_map(Default(item))
+                        _check = format_keep(one_check['check'], item)
                         _check_eval = bool(eval(_check))
                     except:
                         pass
                     if _check_eval:
                         # it is warning or error
-                        m = one_check['message'].format_map(Default(item))
+                        m = format_keep(one_check['message'], item)
                         if one_check['is_error']:
                             e = item.get('error', '')
                             if e == '':
@@ -5232,57 +5277,44 @@ class Sequencer(object):
                 'vfx-transcode': self.paths['vfx-transcode'],
         }
 
-        for item in self.merged_list:
-            convert_number = 1
-            for one_conv in self.converts:
+        for item in self.merged_list or []:
+            # commands by convert number (01 = first row with Arguments and File
+            # Name), rebuilt on every refresh: a stale list paired commands with
+            # the wrong output paths
+            commands = {}
+            for convert_number, one_conv in enumerate(self.converts, start=1):
+                convert_count_string = str(convert_number).zfill(2)
+                item[f"convert_path{convert_count_string}"] = None
+                item[f"convert_path_relative{convert_count_string}"] = None
                 # filter out first
-                _if_eval = False
+                _if_eval = True
                 if one_conv['filter'] != '':
                     try:
-                        _if = one_conv['filter'].format_map(Default(item))
+                        _if = format_keep(one_conv['filter'], item)
                         _if_eval = bool(eval(_if))
-                    except:
-                        pass
-                else:
-                    # no filtering, so true for all
-                    _if_eval = True
-
-                if _if_eval:
-                    # not filtered out
-                    _check_eval = False
-                    try:
-                        _e = one_conv['exe'].format_map(Default(self.static_keywords))
-                        _e = _e.format_map(Default(_exes))
-                        _a = one_conv['args'].format_map(Default(self.static_keywords))
-                        _a = _a.format_map(Default(item))
-                        _a = _a.format_map(Default(_exes))
-                        _cmd = "{} {}".format(_e, _a)
-                        _fn = one_conv['fn'].format_map(Default(self.static_keywords))
-                        _fn = _fn.format_map(Default(item))
-
-                        # static keywords or item can include "unfilled tokens" in curly brackets
-                        # skip file outputs that have curly brackets
-                        convert_count_string = str(convert_number).zfill(2)
-                        if '{' in _fn:
-                            item[f"convert_path{convert_count_string}"] = None
-                            item[f"convert_path_relative{convert_count_string}"] = None
-                            if item.get('convert_cmd') is None:
-                                item["convert_cmd"] = [""]
-                            else:
-                                item["convert_cmd"].append("")
-                        else:
-                            _fnr = _fn
-                            if _fn.startswith(_root):
-                                _fnr = _fn[len(_root)+1:]
-                            item[f"convert_path{convert_count_string}"] = _fn
-                            item[f"convert_path_relative{convert_count_string}"] = _fnr
-                            if item.get('convert_cmd') is None:
-                                item["convert_cmd"] = [_cmd]
-                            else:
-                                item["convert_cmd"].append(_cmd)
-                    except:
-                        pass
-                convert_number += 1
+                    except Exception:
+                        _if_eval = False
+                if not _if_eval:
+                    continue
+                _e = format_keep(one_conv['exe'], self.static_keywords)
+                _e = format_keep(_e, _exes)
+                _a = format_keep(one_conv['args'], self.static_keywords)
+                _a = format_keep(_a, item)
+                _a = format_keep(_a, _exes)
+                _cmd = "{} {}".format(_e, _a).strip()
+                _fn = format_keep(one_conv['fn'], self.static_keywords)
+                _fn = format_keep(_fn, item)
+                # static keywords or item can include "unfilled tokens": skip
+                # file outputs with unknown tokens
+                if unresolved_tokens(_fn):
+                    continue
+                _fnr = _fn
+                if _root and _fn.startswith(_root):
+                    _fnr = _fn[len(_root)+1:]
+                item[f"convert_path{convert_count_string}"] = _fn
+                item[f"convert_path_relative{convert_count_string}"] = _fnr
+                commands[convert_count_string] = _cmd
+            item["convert_cmd"] = commands
 
     def run_converts(self):
         """
@@ -5293,20 +5325,21 @@ class Sequencer(object):
         if self.settings:
             _skip_existing = bool(self.settings['thumbs_skip_existing']['value'])
         for item in self.merged_list:
-            if item.get("convert_cmd") is None or len(item["convert_cmd"]) == 0:
+            commands = item.get("convert_cmd")
+            if not isinstance(commands, dict) or not commands:
                 continue
             # there can be more than one convert for one item
-            for i, one_command in enumerate(item["convert_cmd"]):
-                if one_command == "":
+            for number, one_command in sorted(commands.items()):
+                if not one_command:
                     # skip empty commands
                     continue
 
-                _pth = item.get(f"convert_path{str(i + 1).zfill(2)}", "")
+                _pth = item.get(f"convert_path{number}") or ""
                 if _pth == "":
                     # skip empty paths
                     continue
 
-                item_label = item['part2'] + '/' + item['part1']
+                item_label = item.get('part2', '') + '/' + item.get('part1', '')
 
                 _run = True
                 if _skip_existing and os.path.exists(_pth):
@@ -5338,8 +5371,8 @@ class Sequencer(object):
 
                     # if command didn't produce desired output, clear convert path to indicate so
                     if not os.path.exists(_pth):
-                        item[f"convert_path{str(i + 1).zfill(2)}"] = ''
-                        item[f"convert_path_relative{str(i + 1).zfill(2)}"] = ''
+                        item[f"convert_path{number}"] = ''
+                        item[f"convert_path_relative{number}"] = ''
 
     def checks_init(self):
         self.checks = []

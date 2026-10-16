@@ -21,6 +21,9 @@ import parse_file_name
 import sh_logging
 from log_view import LogView
 
+# bookkeeping keys of the Sequencer, not tokens: not shown in the Inspector
+INSPECTOR_HIDDEN_KEYS = ('_parse_orig', '_data_keys')
+
 
 class ImgWidget1(QtWidgets.QLabel):
 
@@ -297,6 +300,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'Rename_go', 'Rename_go'))
         self.ui.rename_reload_after.clicked.connect(
             partial(self.handler, 'rename_reload_after', ''))
+        # bottom Rename tab: how the paths are shown
+        for _radio in ('rename_tab_relative', 'rename_tab_absolute', 'rename_tab_names_only'):
+            getattr(self.ui, _radio).clicked.connect(
+                partial(self.handler, _radio, 'rename_display'))
 
         self.ui.rename_filter_01.textChanged.connect(
             partial(self.handler, 'rename_filter_01', 'refresh_rename'))
@@ -461,11 +468,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'txt_include', 'refresh_spreadsheets'))
 
         # Checks Tab
+        # the size checks need the sizes read again
         self.ui.check_sequence_size_consistency.clicked.connect(
             partial(self.handler,
-                    'check_sequence_size_consistency', 'refresh_checks'))
+                    'check_sequence_size_consistency', 'refresh_size_checks'))
         self.ui.check_sequence_holes.clicked.connect(
-            partial(self.handler, 'check_sequence_holes', 'refresh_checks'))
+            partial(self.handler, 'check_sequence_holes', 'refresh_size_checks'))
 
         self.ui.check_if_01.textChanged.connect(
             partial(self.handler, 'check_if_01', 'refresh_checks'))
@@ -609,6 +617,40 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'check_error_13', 'refresh_checks'))
         self.ui.check_message_13.textChanged.connect(
             partial(self.handler, 'check_message_13', 'refresh_checks'))
+
+        # check rows 14-21 (rows 1-13 are connected one by one above)
+        for _row in range(14, 22):
+            for _field, _signal in (('if', 'textChanged'), ('check', 'textChanged'),
+                                    ('message', 'textChanged'), ('warning', 'clicked'),
+                                    ('error', 'clicked')):
+                _name = f"check_{_field}_{_row:02d}"
+                getattr(getattr(self.ui, _name), _signal).connect(
+                    partial(self.handler, _name, 'refresh_checks'))
+
+        # Package name: Version Regex
+        self.ui.name_version_regex.textChanged.connect(
+            partial(self.handler, 'name_version_regex', 'package_rename'))
+
+        # Data tab: Column Prefix and the match rules
+        self.ui.name_date_prefix.textChanged.connect(
+            partial(self.handler, 'name_date_prefix', 'refresh_data_csv'))
+        for _n in (1, 2, 3):
+            for _name in (f"data_package{_n}", f"data_data{_n}"):
+                getattr(self.ui, _name).textChanged.connect(
+                    partial(self.handler, _name, 'refresh_data_csv'))
+            getattr(self.ui, f"data_package{_n}_chbx").clicked.connect(
+                partial(self.handler, f"data_package{_n}_chbx", 'refresh_data_csv'))
+
+        # Merge by
+        self.ui.prefs_merge_by.textChanged.connect(
+            partial(self.handler, 'prefs_merge_by', 'refresh_merge'))
+
+        # Convert rows: the convert_pathNN keys in the spreadsheets
+        for _row in range(1, 9):
+            for _field in ('if', 'exe', 'args', 'name'):
+                _name = f"thumbs_{_field}_{_row:02d}"
+                getattr(self.ui, _name).textChanged.connect(
+                    partial(self.handler, _name, 'refresh_spreadsheets'))
 
 
 
@@ -773,7 +815,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.ayon_project.textChanged.connect(
             partial(self.handler, 'ayon_project', 'ayon_changed'))
         self.ui.ayon_prefix.textChanged.connect(
-            partial(self.handler, 'ayon_prefix', 'ayon_changed'))
+            partial(self.handler, 'ayon_prefix', 'ayon_rematch'))
         self.ui.ayon_output_folder.textChanged.connect(
             partial(self.handler, 'ayon_output_folder', 'ayon_changed'))
         self.ui.ayon_path_browse_2.clicked.connect(
@@ -829,29 +871,29 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'ayon_filter_assignees', 'ayon_changed_filter'))
 
         self.ui.ayon_package1_chbx.clicked.connect(
-            partial(self.handler, 'ayon_package1_chbx', 'ayon_changed_filter'))
+            partial(self.handler, 'ayon_package1_chbx', 'ayon_rematch'))
         self.ui.ayon_package2_chbx.clicked.connect(
-            partial(self.handler, 'ayon_package2_chbx', 'ayon_changed_filter'))
+            partial(self.handler, 'ayon_package2_chbx', 'ayon_rematch'))
         self.ui.ayon_package3_chbx.clicked.connect(
-            partial(self.handler, 'ayon_package3_chbx', 'ayon_changed_filter'))
+            partial(self.handler, 'ayon_package3_chbx', 'ayon_rematch'))
         self.ui.ayon_package1.textChanged.connect(
             partial(self.handler, 'ayon_package1',
-                    'ayon_changed_filter'))
+                    'ayon_rematch'))
         self.ui.ayon_list1.textChanged.connect(
             partial(self.handler, 'ayon_list1',
-                    'ayon_changed_filter'))
+                    'ayon_rematch'))
         self.ui.ayon_package2.textChanged.connect(
             partial(self.handler, 'ayon_package2',
-                    'ayon_changed_filter'))
+                    'ayon_rematch'))
         self.ui.ayon_list2.textChanged.connect(
             partial(self.handler, 'ayon_list2',
-                    'ayon_changed_filter'))
+                    'ayon_rematch'))
         self.ui.ayon_package3.textChanged.connect(
             partial(self.handler, 'ayon_package3',
-                    'ayon_changed_filter'))
+                    'ayon_rematch'))
         self.ui.ayon_list3.textChanged.connect(
             partial(self.handler, 'ayon_list3',
-                    'ayon_changed_filter'))
+                    'ayon_rematch'))
         self.ui.ayon_export_butt.clicked.connect(
             partial(self.handler, 'ayon_export_butt', 'ayon_export_butt'))
         self.ui.ayon_scan_butt.clicked.connect(
@@ -865,10 +907,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self.handler, 'ayon_version_match_pkg', 'refresh_spreadsheets'))
         self.ui.ayon_version_match_data.textChanged.connect(
             partial(self.handler, 'ayon_version_match_data', 'refresh_spreadsheets'))
-
-
-        self.ui.tree_filter_value.textChanged.connect(
-            partial(self.handler, 'tree_filter_value', 'data_filter'))
 
         # preset name is empty, disable save button
         #self.ui.save_preset_button.setEnabled(False)
@@ -1100,21 +1138,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         if sender == 'Rename_go':
             if self.data:
-                # sidecar files filter
                 self.data.rename_execute()
+                if bool(self.settings.get('rename_reload_after', {}).get('value')):
+                    # read the renamed files again
+                    self._reload_package()
 
         if sender == 'write_button':
             # read column widths from tablewidget for excel column sizes
             # there is no way to change excel column sizes by content
-            column_widths_sub = []
-            if self.data and self.data.column_titles_sub:
-                for column_number, one_column in enumerate(self.data.column_titles_sub):
-                    column_widths_sub.append(
-                        (float(self.ui.sub_table.columnWidth(column_number))))
-                column_widths_log = []
-                for column_number, one_column in enumerate(self.data.column_titles_log):
-                    column_widths_log.append(
-                        (float(self.ui.log_table.columnWidth(column_number))))
+            # Go also works with no Submission columns: the Drive Log, text,
+            # sidecars, converts and rename don't need them
+            if self.data:
+                column_widths_sub = [
+                    float(self.ui.sub_table.columnWidth(column_number))
+                    for column_number, _ in enumerate(self.data.column_titles_sub or [])]
+                column_widths_log = [
+                    float(self.ui.log_table.columnWidth(column_number))
+                    for column_number, _ in enumerate(self.data.column_titles_log or [])]
 
                 self.data.export_all(column_widths_sub, column_widths_log)
 
@@ -1186,6 +1226,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             self.settings_update("save_preset_name",
                                  self.ui.save_preset_name,
                                  value=preset_to_load)
+            # the tables were cleared: build them again with the new preset,
+            # so Go doesn't export the data of the previous one
+            if self.data is not None:
+                self._reload_package()
             """
             except:
                 log.error('Error reading preset {}'.format(preset_to_load))
@@ -1193,10 +1237,35 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         if group == "thumbs_convert_now":
             if self.data is not None:
+                # commands from the current Convert rows
+                self.data.prepare_converts()
                 self.data.run_converts()
+                self.data.prepare_all_columns()
+                self.data.prepare_tables()
+                self.show_all()
 
         if group == "data_filter":
             self.show_data()
+
+        if group == "rename_display":
+            if self.data:
+                self.show_all()
+
+        if group == "ayon_rematch":
+            # match rules or prefix changed: match the loaded list again, no
+            # new Ayon query (Project, Enable, Thumbnails apply on Scan / Reload)
+            if self.data is not None and self.data.ayon_data:
+                self.data.ayon_collect_gui()
+                self.data.ayon_data_assign()
+                self.data.ayon_versions_update()
+                self.data.ayon_versions_assign()
+                self.data.ayon_data_filter()
+                self.data.prepare_all_columns()
+                self.data.prepare_tables()
+                self.show_all()
+            elif self.ayon_only is not None:
+                self.ayon_only.settings = self.settings
+                self.ayon_only.ayon_data_filter()
 
         if group == "ayon_changed_filter":
             if self.data is not None:
@@ -1211,35 +1280,71 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
     def show_data(self):
 
         if self.data and self.settings:
-            _1 = str(self.settings['tree_filter_file']['value'])
-            _2 = str(self.settings['tree_filter_key']['value'])
-            _3 = str(self.settings['tree_filter_value']['value'])
+            _1 = str(self.settings['tree_filter_file']['value'] or '')
+            _2 = str(self.settings['tree_filter_key']['value'] or '')
+            _3 = str(self.settings['tree_filter_value']['value'] or '')
 
             # Display merged items as a data tree
             self.ui.data_tree.clear()
             self.ui.data_tree.setColumnCount(3)
             self.ui.data_tree.setHeaderLabels(["#", "key", "value"])
             if self.data.merged_list is not None:
-                for one_itm in self.data.merged_list:
-                    _ti = QtWidgets.QTreeWidgetItem(self.ui.data_tree)
+                for index, one_itm in enumerate(self.data.merged_list):
                     _fn = one_itm.get('part1', '')
                     _fp = one_itm.get('part2', '')
                     if _fp:
                         _l = _fp + '/' + _fn
                     else:
                         _l = _fn
-                    _n = "{}: {}".format(str(self.data.merged_list.index(one_itm)), _l)
+                    _n = "{}: {}".format(str(index), _l)
+                    if _1 and _1 not in _n:
+                        continue
+                    rows = [(str(k), str(v)) for k, v in sorted(one_itm.items())
+                            if k not in INSPECTOR_HIDDEN_KEYS
+                            and (not _2 or _2 in str(k)) and (not _3 or _3 in str(v))]
+                    if (_2 or _3) and not rows:
+                        # no token matches the key / value filter: skip the file
+                        continue
+                    _ti = QtWidgets.QTreeWidgetItem(self.ui.data_tree)
+                    _ti.setText(0, _n)
+                    for k, v in rows:
+                        _tii = QtWidgets.QTreeWidgetItem(_ti)
+                        _tii.setText(1, k)
+                        _tii.setText(2, v)
 
-                    if (not _1) or _1 == "" or (str(_1) in _n):
-                        _ti.setText(0, _n)
-                        for k, v in sorted(one_itm.items()):
-                            _tii = None
-                            if (not _2) or _2 == "" or (str(_2) in str(k)):
-                                if (not _3) or _3 == "" or (str(_3) in str(v)):
-                                    _tii = QtWidgets.QTreeWidgetItem(self.ui.data_tree)
-                                    _tii.setText(1, str(k))
-                                    _tii.setText(2, str(v))
-                                    _ti.addChild(_tii)
+    def _reload_package(self):
+        """read the package folder again, like the Reload button"""
+        self.settings_from_gui()
+        pth = str(self.settings['package_folder']['value'] or '').replace('\\', '/')
+        if not pth:
+            return
+        self.data = Sequencer(pth, sequence_mode='holes_allowed', gui=self.settings,
+                              more_settings=self.settings_obj, ui=self.ui,
+                              headless=self.no_gui)
+        self.show_all()
+
+    def _rename_rows_for_display(self, rows):
+        """
+        Rename table rows (full source / destination paths) as chosen by the
+        radio buttons above the bottom Rename table
+        """
+        if not rows:
+            return rows
+
+        def _on(name):
+            return bool(self.settings.get(name, {}).get('value'))
+
+        if _on('rename_tab_names_only'):
+            return [[str(p).replace('\\', '/').rsplit('/', 1)[-1] for p in row] for row in rows]
+        if _on('rename_tab_relative'):
+            root = str(self.settings.get('package_folder', {}).get('value') or '')
+            root = root.replace('\\', '/').rstrip('/') + '/'
+
+            def _rel(p):
+                p = str(p).replace('\\', '/')
+                return p[len(root):] if root != '/' and p.startswith(root) else p
+            return [[_rel(p) for p in row] for row in rows]
+        return rows
 
     def show_all(self):
         """
@@ -1248,6 +1353,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         """
 
         if self.data:
+            # tables are filled again: Go back to its normal look (it is
+            # grey while the tables are cleared)
+            self.ui.write_button.setStyleSheet("")
             # fill all tables
             self.display_table(
                 self.data.table_sub,
@@ -1272,7 +1380,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 #self.ui.side_table.update()
 
             self.display_table(
-                self.data.table_rename,
+                self._rename_rows_for_display(self.data.table_rename),
                 self.ui.rename_table,
                 ['source', 'destination']
             )

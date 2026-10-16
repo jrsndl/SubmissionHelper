@@ -7422,12 +7422,14 @@ class Ui_submission(object):
         self.horizontalLayout_59.setObjectName(u"horizontalLayout_59")
         self.check_sequence_size_consistency = QCheckBox(self.tab_12)
         self.check_sequence_size_consistency.setObjectName(u"check_sequence_size_consistency")
+        self.check_sequence_size_consistency.setChecked(True)
         self.check_sequence_size_consistency.setMinimumSize(QSize(220, 25))
 
         self.horizontalLayout_59.addWidget(self.check_sequence_size_consistency)
 
         self.check_sequence_holes = QCheckBox(self.tab_12)
         self.check_sequence_holes.setObjectName(u"check_sequence_holes")
+        self.check_sequence_holes.setChecked(True)
         self.check_sequence_holes.setMinimumSize(QSize(220, 25))
 
         self.horizontalLayout_59.addWidget(self.check_sequence_holes)
@@ -9837,7 +9839,6 @@ class Ui_submission(object):
         self.dead_go_ayon.setSizePolicy(sizePolicy2)
         self.dead_go_ayon.setMinimumSize(QSize(240, 25))
         self.dead_go_ayon.setMaximumSize(QSize(240, 25))
-        self.dead_go_ayon.setChecked(True)
 
         self.verticalLayout_91.addWidget(self.dead_go_ayon)
 
@@ -12630,7 +12631,7 @@ class Ui_submission(object):
         self.label_91.setText(QCoreApplication.translate("submission", u"Note Pattern:", None))
         self.ftrack_note_pattern.setText(QCoreApplication.translate("submission", u"4client v{version}(.*)", None))
         self.label_160.setText(QCoreApplication.translate("submission", u"Note Repl:", None))
-        self.ftrack_note_repl.setText(QCoreApplication.translate("submission", u"\\2", None))
+        self.ftrack_note_repl.setText(QCoreApplication.translate("submission", u"\\1", None))
         self.groupBox_37.setTitle(QCoreApplication.translate("submission", u"Shot List", None))
         self.ftrack_export.setText(QCoreApplication.translate("submission", u"Export", None))
         self.ftrack_path.setText("")
@@ -12642,10 +12643,10 @@ class Ui_submission(object):
         self.vendor_csv_browse.setText("")
         self.groupBox_12.setTitle(QCoreApplication.translate("submission", u"Match Package Key to Vendor Key", None))
         self.label_163.setText(QCoreApplication.translate("submission", u"Package:", None))
-        self.vendor_csv_package_key.setText(QCoreApplication.translate("submission", u"_(\\d{3})$", None))
+        self.vendor_csv_package_key.setText("")
         self.vendor_csv_package_key.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
         self.label_164.setText(QCoreApplication.translate("submission", u"Vendor:", None))
-        self.vendor_csv_vendor_key.setText(QCoreApplication.translate("submission", u"_(\\d{3})$", None))
+        self.vendor_csv_vendor_key.setText("")
         self.vendor_csv_vendor_key.setPlaceholderText(QCoreApplication.translate("submission", u"preview", None))
         self.groupBox_24.setTitle(QCoreApplication.translate("submission", u"Options", None))
         self.vendor_csv_ignore.setText(QCoreApplication.translate("submission", u"Ignore Items not in CSV", None))

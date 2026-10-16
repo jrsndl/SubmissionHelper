@@ -12568,7 +12568,7 @@ QCalendarWidget
                         </size>
                        </property>
                        <property name="text">
-                        <string>\2</string>
+                        <string>\1</string>
                        </property>
                       </widget>
                      </item>
@@ -12950,7 +12950,7 @@ QCalendarWidget
                             </size>
                            </property>
                            <property name="text">
-                            <string>_(\d{3})$</string>
+                            <string/>
                            </property>
                            <property name="readOnly">
                             <bool>false</bool>
@@ -13010,7 +13010,7 @@ QCalendarWidget
                             </size>
                            </property>
                            <property name="text">
-                            <string>_(\d{3})$</string>
+                            <string/>
                            </property>
                            <property name="readOnly">
                             <bool>false</bool>
@@ -15622,6 +15622,9 @@ Vendor = AmazingVFX</string>
                 <property name="text">
                  <string>File Sequence Size consistency</string>
                 </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item>
@@ -15634,6 +15637,9 @@ Vendor = AmazingVFX</string>
                 </property>
                 <property name="text">
                  <string>Check for File Sequence Holes</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -20206,9 +20212,6 @@ Vendor = AmazingVFX</string>
                      </property>
                      <property name="text">
                       <string>Send Submission CSV to Ayon on Go</string>
-                     </property>
-                     <property name="checked">
-                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>

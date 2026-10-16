@@ -221,6 +221,7 @@ class Settings(object):
         _dir = dir_path
         for one_file in os.listdir(_dir):
             if one_file.endswith(".json"):
-                if one_file != 'install.json':
+                # install.json and its template are studio settings, not presets
+                if one_file not in ('install.json', 'install.example.json'):
                     files.append(_dir + '/' + one_file)
         return files

@@ -44,7 +44,11 @@ class MetaData(object):
 
         self.default_tc = '01:00:00:00'
         if self.settings['prefs_tc_default']['value'] is not None:
-            self.default_tc = str(self.settings['prefs_tc_default']['value'])
+            self.default_tc = str(self.settings['prefs_tc_default']['value']).strip()
+
+        # Preferences TimeCode: From Metadata (default) or From Frame Counter
+        _counter = self.settings.get('prefs_tc_from_counter') or {}
+        self.tc_from_counter = bool(_counter.get('value'))
 
         # get file path
         # get file path
@@ -249,19 +253,19 @@ class MetaData(object):
                 self.log.debug("EXR metadata traceback", exc_info=True)
 
 
-        # Other TCs
+        # get fps from gui if meta not available or if forced
+        self.__fix_fps()
+
+        # Other TCs (the frame counter TC needs the fps)
         self.meta['time_code_from_metadata'] =\
             self.get_source_tc_start(method='meta')
 
         try:
             self.meta['time_code_from_seq'] =\
                 self.get_source_tc_start(method='filename')
-        except:
-            pass
-        self.meta['time_code'] = self.meta['time_code_from_metadata']
-
-        # get fps from gui if meta not available or if forced
-        self.__fix_fps()
+        except Exception:
+            self.meta['time_code_from_seq'] = ''
+        self.meta['time_code'] = self.pick_time_code()
 
         # create duration for sequences
         self.__fix_duration()
@@ -369,22 +373,31 @@ class MetaData(object):
 
     def get_source_tc_start(self, method='meta'):
         """
-        Use metadata and gui settings
+        Timecode from the metadata (method 'meta') or from the frame number of
+        a sequence (method 'filename'). '' when there is none.
         """
-
-        default_tc = '01:00:00:00'
-        f_tc = default_tc
+        f_tc = ''
         if method == 'meta':
             f_tc = self.meta['time_code']
         elif method == 'filename':
-            if self.item['category'] in ['sequence']:
+            if self.item['category'] in ['sequence'] and self.meta.get('fps_b'):
                 # get frame number
                 num = int(self.item['number'])
                 f_tc = helpers.frames_to_tc(num, self.meta['fps_a'], self.meta['fps_b'])
+        return f_tc or ''
 
-        if f_tc is None:
-            f_tc = default_tc
-        return f_tc
+    def pick_time_code(self):
+        """
+        {meta_time_code} by the Preferences TimeCode settings: From Metadata
+        or From Frame Counter (sequences), else the other one, else Default TC
+        (only for videos and sequences, stills keep an empty timecode)
+        """
+        from_meta = self.meta.get('time_code_from_metadata') or ''
+        from_seq = self.meta.get('time_code_from_seq') or ''
+        tc = (from_seq or from_meta) if self.tc_from_counter else (from_meta or from_seq)
+        if not tc and self.item.get('category') in ('video', 'sequence'):
+            tc = self.default_tc
+        return tc
 
     def get_reel_name(self):
         """

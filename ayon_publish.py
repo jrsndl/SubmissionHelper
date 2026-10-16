@@ -133,6 +133,11 @@ class AyonPublish(object):
             "-prop", f"OutputDirectory0={self.csv_path}"
         ]
         params_1.extend(envs_list)
+        # optional job info: secondary pool and comment (empty: not sent)
+        for setting, job_key in (('dead_secpool', 'SecondaryPool'), ('dead_limits_2', 'Comment')):
+            value = str((self.settings.get(setting) or {}).get('value') or '').strip()
+            if value:
+                params_1.extend(['-prop', f"{job_key}={value}"])
 
         # the deadline arguments have to be quoted, so pre-joining here
         # since there is executable already in params_1, removing path to ayon

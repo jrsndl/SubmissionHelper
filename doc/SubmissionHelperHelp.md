@@ -47,7 +47,7 @@ Use the **Inspector** tab at the bottom to see every token of every file with it
 A few rules hold almost everywhere:
 
 * An unknown token is usually left in the text as it is, e.g. `{shoot}` stays `{shoot}`. That makes typos easy to spot in the tables.
-* Braces always mean a token. Regex counts like `\d{3}` don't work in fields that also expand tokens; write `\d\d\d` instead.
+* Only names of tokens in braces are replaced, so regex counts like `\d{3}` still work in fields that are a regex and also expand tokens (Rename Pattern, ftrack Note Pattern).
 * Fields named **If**, **Filter** (Rename tab) and **Check** are Python expressions. Tokens are pasted into them as plain text, so put quotes around text values: `'{extension}' == 'exr'`. Numbers need no quotes: `{meta_width} > 1920`.
 
 # Main window
@@ -67,8 +67,8 @@ Assists with adhering to naming convention. Typically, coordinator gathers all t
 SH checks the folders next to the package (in {show}/out/submissions) and detects previous sendings. With Name From set to Template, Preview shows the next package name. The package folder is renamed to it when you press **Rename**, or after Go when **Auto Rename** is on.
 
 * **Template** builds the new name. It can only use the date tokens `{yy}` `{y}` `{mm}` `{m}` `{dd}` `{d}` and `{package_version}`, which is replaced by the next available version.  
-* **Date Regex** finds the date stamp: its first capture group is the date. It is run on the expanded template (to get today's stamp) and on every folder next to the package. Tokens are not expanded here, so write the date as a regex, e.g. `sub_(\d{6})`.  
-* **Version Regex** finds the version in the folders next to the package; its first capture group is the version, e.g. `_(\d{3})$` for numbers or `_([A-Z])$` for letters.  
+* **Date Regex** finds the date stamp: its first capture group, or the whole match when it has no group. It is run on the expanded template (to get today's stamp) and on every folder next to the package. The date tokens are expanded, so `sub_{yy}{mm}{dd}` finds the packages of today; `sub_(\d{6})` finds any date.  
+* **Version Regex** finds the version in the folders next to the package; its first capture group is the version, e.g. `_(\d{3})$` for numbers or `_([A-Z])$` for letters. Numbers compare by value (`010` is after `009`).  
 * **Per Date** restarts the versions every day; only folders with today's date are compared. With it off, versions continue across dates.  
 * **Leading Zeroes**, **Letter** and **Upper Case** set how the version is written.
 
@@ -88,7 +88,7 @@ The name is available as `{package_name}`, the date as `{package_date}` (only wi
 
 ## Submission File Age
 
-**Only Last** keeps only recently written files in the Submission spreadsheet: files older than the set age (minutes, hours or days, by modified or created time) are hidden from the Submission. The Drive Log and Text keep them. A file sequence is as old as its newest frame. **Age Exclude** lists words (separated by spaces) of paths that are never hidden by age. Note that *created* is the creation time only on Windows.
+**Only Last** keeps only recently written files in the Submission spreadsheet: files older than the set age (minutes, hours or days, by modified or created time) are hidden from the Submission. The Drive Log and Text keep them. A file sequence is as old as its newest frame. **Age Include** limits the age filter to paths that contain one of its words, **Age Exclude** lists words of paths that are never hidden by age (both separated by spaces). Note that *created* is the creation time only on Windows.
 
 # Parsing Tab
 
@@ -193,7 +193,7 @@ Can be used to copy additional files from your project to the package. For examp
 
 The Search Folder (1) is the path where to search for files, including subfolders. Exclude skips files whose full path contains any of the words (separated by spaces). Include accepts only files whose full path contains one of the words, e.g. `.cdl .cc`.
 
-The Submission Only / Log Only / All options are meant to consider only package files listed in the Submission or Drive Log tables (see Not working yet).
+The Submission Only / Log Only / All options consider only package files listed in the Submission table, in the Drive Log table, or all files.
 
 There are five columns in the sidecar tab line:
 
@@ -201,7 +201,7 @@ There are five columns in the sidecar tab line:
 2. Repl: Optional replace pattern applied to the found file name.  
 3. If match to: Tokens of the package file, e.g. `{shot}`. The sidecar file is linked to every package file where this equals the result exactly.  
 4. Dest: Path to where to copy (and maybe rename) the sidecar file. Include the file name, e.g. `{package_name_root}/{package_name}/cdl/{sidecar_file}`. Sidecar tokens: `{sidecar_path}`, `{sidecar_file}`, `{sidecar_ext}`, `{sidecar_result}`; tokens of the package file work too.  
-5. Filter: Only consider found files that have this string in file name (see Not working yet).
+5. Filter: Only consider found files that have this string in file name (plain text, case sensitive).
 
 ## The process
 
@@ -225,7 +225,7 @@ There are four columns in the rename tab line:
 3. Pattern: Regex to check (tokens allowed)  
 4. Repl: Replace string (tokens allowed). A line with an empty Repl is off.
 
-Lines are applied in order; each line works on the result of the line above. The bottom Rename tab shows the planned renames. **Rename** renames and moves the files right away, with no undo; files whose destination exists are skipped. Press Reload afterwards: the tables still show the old paths, and emptied folders stay behind.
+Lines are applied in order; each line works on the result of the line above. The bottom Rename tab shows the planned renames, as full paths, paths relative to the package or file names only. **Rename** renames and moves the files right away, with no undo; files whose destination exists are skipped. With **Reload after Rename** on, the package is read again afterwards, otherwise press Reload. Emptied folders stay behind.
 
 # Data Tab
 ![image5.png](rsrs/image5.png)
@@ -242,7 +242,7 @@ For each file detected by SH, a row from Data CSV can be paired. You can use one
 
 There can be arbitrary column names in the Data CSV. To avoid overwriting the tokens already parsed from the file name, metadata, or other sources, the prefix will be added to every token loaded and paired to the file: with the prefix `data_`, the column `shot` becomes `{data_shot}`. Please add the Column prefix also to the matching data keys.
 
-Changes to Column Prefix and to the match conditions take effect on the next Reload.
+Changes to the CSV, the Column Prefix and the match conditions apply right away; tokens of the previous match are removed.
 
 # Ftrack Tab
 
@@ -415,7 +415,9 @@ If on, SH checks the size of every file in the detected file sequence. For every
 
 ## Check for File Sequence Holes
 
-Missing frames in file sequences are reported as a warning (orange). The bottom Files tab lists the missing frame numbers.
+If on, missing frames in file sequences are reported as a warning (orange). The bottom Files tab lists the missing frame numbers.
+
+Both size checks need **Scan Sizes** on in Preferences.
 
 # Ayon Publish Tab
 
@@ -426,6 +428,8 @@ Settings for the **Publish Ayon Local** and **Publish Ayon Deadline** buttons. B
 * **Folder** and **Task** (this tab) and **Project** (Ayon tab) are required.  
 * **Publish Ayon Local** runs the ingest on this computer; the window waits until it finishes.  
 * **Publish Ayon Deadline** submits the ingest as a Deadline job with **Primary Pool**, **Group**, **Priority**, **Department** and **Limits** from this tab.
+
+**Secondary Pool** and **Comment** are added to the Deadline job when they are filled. With **Send Submission CSV to Ayon on Go** on, Go also runs the local publish after the exports.
 
 The ayon (and for Deadline the deadlinecommand) executable and the Ayon / ftrack connection come from install.json. The buttons do nothing when no package is loaded.
 
@@ -438,10 +442,10 @@ Sometimes the tokens parsed from file name or metadata are not enough for produc
 * **Enable** reads the list whenever the package is loaded or reloaded. **Scan** reads it right away, also without a package and with Enable off.  
 * **Match Package Keys to Shot List Keys** works like the Data tab: Package N (file tokens, e.g. `{shot}`) must equal Data N (shot list columns, e.g. `{Folder Name}`). Matched rows are green, and their columns become tokens with the **Column Prefix**, e.g. `{list_Folder Name}`, `{list_Range}`, `{list_Task Status}` with the prefix `list_`.  
 * **List Filters** limit the rows shown: Assets / Shots / Other pick folder rows, Tasks adds task rows, Task Types / Task Names / Assignees narrow the tasks, Matched Only keeps rows matched to package files.  
-* **Export Shot List** writes `ayon-list.csv` (the rows shown) to **Output**, and with **Versions CSV** also `ayon-list-versions.csv`. **Thumbnails** downloads folder and task thumbnails to Output/\_thumbsDownload when the list is read.  
+* **Export Shot List** writes the rows shown to **Output**: `ayon-list.csv` with **Export CSV**, `ayon-list.xlsx` with **Export Excel** (with both off, the csv), and with **Versions CSV** also `ayon-list-versions.csv`. **Export with Go** also exports it when Go is pressed. **Thumbnails** downloads folder and task thumbnails to Output/\_thumbsDownload when the list is read.  
 * **Versions**: with **Pull versions** and **Product filters** (e.g. `comp:renderCompMain:exr, :platePl01:exr`), every row gets the latest version of the preferred product. The **Matched Versions** sub-tab lists the versions of the matched folders, and **Match version** pairs each file with its version, e.g. Package `{version}` with Version `{Version}`.
 
-Changes to Project, Column Prefix, Output and the export options take effect on the next Scan or Reload. The README has the full description of the version columns and filters.
+Changes to the match rules and the Column Prefix apply right away. Project, Enable and Thumbnails take effect on the next Scan or Reload, because they need a new Ayon query. The README has the full description of the version columns and filters.
 
 # Preferences Tab
 
@@ -449,6 +453,7 @@ Changes to Project, Column Prefix, Output and the export options take effect on 
 
 * **Frame Rate** is used for `{meta_fps}` when **Use Metadata FPS if Available** is off. It accepts `24`, `23.976` or `24000/1001`. Press Reload after changing it.  
 * **Scan Sizes** reads the file sizes (`{size_bytes}`, `{size_human}`) and checks sequences for empty, missing and inconsistent frames. **Ignore first frames** skips slates, **Neighborhood frames** is how many frames on each side each frame is compared to, and **Warning %** is how much its size may differ from their average.  
+* **TimeCode**: `{meta_time_code}` comes **From Metadata** (falling back to the frame counter for sequences) or **From Frame Counter** (the frame number of a sequence and its fps). Videos and sequences with no timecode get **Default TC**; leave it empty for no timecode. Press Reload after changing them.  
 * **Custom OCIO** sets the OCIO config used as `{ocio}` in Convert commands, instead of the one from install.json or the OCIO environment variable. Press Reload after changing it.  
 * **Counter**: start, step and digits of `{cnt_sub}`, `{cnt_log}` and `{cnt_txt}`.  
 * **Merge by** joins Submission rows with the same value of a token (e.g. `{shot}`) into one row; the values of each column are joined by **Separator**. **Collapse Values** drops repeated values in a cell, and **Hide Merged** shows only the merged rows. The Drive Log and Text are not merged.
@@ -474,7 +479,7 @@ Allows to store and load the gui values for SH. Modules group can be used to hid
 The path to store preset Json files can be set up to network location for studio wide use.  
 Danger: if you press Save Preset and Preset name matches an already existing one, the preset will be overwritten with no further warning.
 
-Loading a preset keeps the current Package Folder and Vendor CSV and clears the tables: press Reload afterwards.
+Loading a preset keeps the current Package Folder and Vendor CSV; a loaded package is read again with the new preset.
 
 SH automatically saves the current state to the last\_\<username\> preset, so users can easily return to the last preset with no need to explicitly load it via the Load Preset button.
 
@@ -488,27 +493,11 @@ SH automatically saves the current state to the last\_\<username\> preset, so us
 
 # Not working yet
 
-These controls are in the window but don't work yet, or work differently than their label says. Their tooltips say "Not implemented yet" where nothing happens at all.
+These controls are in the window but don't work yet. Their tooltips say "Not implemented yet".
 
 | Tab | Control | Status |
 |---|---|---|
-| Package | Age Include | No effect: the age filter applies to all files. |
-| Package | Date Regex default `sub_{yy}{mm}{dd}` | Doesn't work (tokens are not expanded, no capture group). Use e.g. `sub_(\d{6})`. |
-| Sidecar | Submission Only / Log Only | No effect: all files are used. |
-| Sidecar | 6th row, Filter column | Not used. |
-| Rename | Reload after Rename | Not implemented: press Reload. |
-| Rename (bottom) | Relative / Absolute / File Names Only | Not implemented. |
 | Replace | Replace, Replace with Go | Not implemented: the tab only previews the rules. |
 | Vendor | Cross Check with Ftrack | Not implemented. |
-| Convert | If | When an earlier row's If is false for a file, later rows may be skipped for that file. |
-| Convert | Convert Now | Uses the commands prepared at the last refresh: press Reload after editing convert rows. |
-| Checks | Check for File Sequence Holes, File Sequence Size consistency | Can't be turned off; missing frames are always reported. |
-| Checks | rows 14–21 | Work, but editing them doesn't refresh the tables until the next change elsewhere. |
-| Preferences | Scan Sizes | Can't be turned off. Size and counter settings of 0 are ignored. |
-| Preferences | Use Metadata FPS | Files without fps in the metadata get no fps (Frame Rate isn't used as a fallback). |
-| Preferences | TimeCode From Metadata / From Frame Counter, Default TC | Not implemented. |
 | Preferences | Sort By, Order (Merge) | Not implemented. |
-| Ayon Publish | Secondary Pool, Comment, Send Submission CSV to Ayon on Go | Not implemented. |
-| Ayon | Export CSV | Ignored: Export Shot List always writes the CSV. |
-| Ayon | Export Excel, Export with Go | Not implemented. |
-| Main | Go | Does nothing when the Submission has no columns. |
+| Ayon Publish | Product, Version, Check if Version Exists, Change Version to Available | Not implemented. |

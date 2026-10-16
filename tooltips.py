@@ -85,10 +85,11 @@ TOOLTIPS = {
         "(the next free version). No other tokens are allowed.\n"
         "Example: sub_{yy}{mm}{dd}_{package_version}",
     "name_date_regex":
-        "Regex that finds the date stamp; capture group 1 is the date.\n"
-        "Run on the expanded Template (today's date) and on the names of\n"
-        "the folders next to the package. Tokens are not expanded here.\n"
-        "Example: sub_(\\d{6})",
+        "Regex that finds the date stamp: capture group 1, or the whole\n"
+        "match when there is no group. Run on the expanded Template (today's\n"
+        "date) and on the names of the folders next to the package.\n"
+        "Date tokens {yy} {mm} {dd}... are expanded, so the default\n"
+        "sub_{yy}{mm}{dd} finds today's packages.",
     "name_version_regex":
         "Regex that finds the version in the names of the folders next to\n"
         "the package; capture group 1 is the version.\n"
@@ -151,9 +152,9 @@ TOOLTIPS = {
     "Rename_go":
         "Rename / move the files listed in the bottom Rename tab now.\n"
         "No undo. Files whose destination exists are skipped.\n"
-        "Press Reload afterwards to see the new paths.",
+        "Turn on Reload after Rename to see the new paths right away.",
     "rename_reload_after":
-        "Reload the package after Rename." + NOT_IMPLEMENTED,
+        "Reload the package after Rename, so the tables show the new paths.",
 
     # ------------------------------------------------------------ Data tab
     "data_enable":
@@ -163,8 +164,7 @@ TOOLTIPS = {
         "Prefix added to every Data CSV column name.\n"
         "Example: column shot gives the token {data_shot}.\n"
         "Use the prefixed names in the Data fields and spreadsheets.\n"
-        "Empty: columns keep their names and may overwrite other tokens.\n"
-        "Applied on the next Reload.",
+        "Empty: columns keep their names and may overwrite other tokens.",
     "data_csv_path":
         "Data CSV file, or a folder of CSV files. First row = column names.\n"
         "Folder (or Latest in Folder on): the last *.csv by name is used.\n"
@@ -222,8 +222,8 @@ TOOLTIPS = {
         "Version number to match, with tokens, e.g. {version}.\n"
         "Must give a whole number; otherwise the file gets no notes.",
     "ftrack_note_pattern":
-        "Regex that picks the notes for {ftrack_note}. Tokens allowed, so\n"
-        "regex counts like {3} don't work (braces are read as tokens).\n"
+        "Regex that picks the notes for {ftrack_note}. Tokens allowed;\n"
+        "regex counts like \\d{3} work too.\n"
         "Note Repl empty: keeps every note that contains a match.\n"
         "Note Repl set: the note must match from its start; the result is\n"
         "Note Repl with the groups filled in. Several notes are joined with ;---;",
@@ -347,14 +347,14 @@ TOOLTIPS = {
         "Tune it on the Preferences tab (Scan Sizes group).\n"
         "Reliable for uncompressed sequences only.",
     "check_sequence_holes":
-        "Warn about missing frames in file sequences." + NOT_IMPLEMENTED +
-        "\nMissing frames are always reported when Scan Sizes is on.",
+        "Warn about missing frames in file sequences.\n"
+        "The bottom Files tab lists the missing frame numbers.",
 
     # ------------------------------------------------------------ Ayon Publish tab
     "dead_primpool":
         "Deadline pool of the Ayon ingest job.",
     "dead_secpool":
-        "Deadline secondary pool of the Ayon ingest job." + NOT_IMPLEMENTED,
+        "Deadline secondary pool of the Ayon ingest job. Empty: not set.",
     "dead_group":
         "Deadline group of the Ayon ingest job.",
     "dead_priority":
@@ -362,12 +362,13 @@ TOOLTIPS = {
     "dead_limits":
         "Deadline limits of the Ayon ingest job, comma separated.",
     "dead_limits_2":
-        "Deadline job comment." + NOT_IMPLEMENTED,
+        "Deadline job comment of the Ayon ingest job. Empty: not set.",
     "dead_department":
         "Deadline department of the Ayon ingest job.",
     "dead_go_ayon":
-        "Publish the Submission CSV to Ayon when Go is pressed." +
-        NOT_IMPLEMENTED + "\nUse the Publish Ayon buttons.",
+        "Also publish the Submission CSV to Ayon on this machine when Go\n"
+        "is pressed, like Publish Ayon Local. Needs Project, Folder, Task\n"
+        "and Exports > Submission > CSV on.",
     "dead_ayon_folder":
         "Ayon folder path for the CSV ingest, e.g. /shots/sq01/sh010.\n"
         "Required for publishing. No tokens.",
@@ -392,18 +393,18 @@ TOOLTIPS = {
         "Used for the shot list and by the Publish Ayon buttons.",
     "ayon_export_csv":
         "Write the shot list as ayon-list.csv to the Output folder\n"
-        "(Export Shot List).\n"
-        "(Currently ignored: Export Shot List always writes it.)",
+        "(Export Shot List). With Export CSV and Export Excel both off,\n"
+        "the CSV is written anyway.",
     "ayon_export_excel":
-        "Write the shot list as ayon-list.xlsx to the Output folder." + NOT_IMPLEMENTED,
+        "Write the shot list as ayon-list.xlsx to the Output folder\n"
+        "(Export Shot List).",
     "ayon_thumbnails":
         "Download folder and task thumbnails to Output/_thumbsDownload\n"
         "when the shot list is read. Needs Output.",
     "ayon_prefix":
         "Prefix of the tokens copied from the matched shot list row.\n"
         "list_ gives {list_Folder Name}, {list_Range}, {list_Task Status},\n"
-        "and with Match version {list_Matched Version}...\n"
-        "Applied on the next Scan / Reload.",
+        "and with Match version {list_Matched Version}...",
     "ayon_path_browse_2":
         "Pick the Output folder.",
     "ayon_filter_assets":
@@ -438,7 +439,7 @@ TOOLTIPS = {
         "only when no list is loaded yet. Needs Project and Output;\n"
         "works without Enable and without a loaded package.",
     "ayon_export_go":
-        "Also export the shot list when Go is pressed." + NOT_IMPLEMENTED,
+        "Also export the shot list (like Export Shot List) when Go is pressed.",
     "ayon_table":
         "Ayon shot list after the filters.\n"
         "Green: the row is matched to a package file.",
@@ -451,15 +452,14 @@ TOOLTIPS = {
         "Use the fps from the file metadata when the file has one.\n"
         "Off: use Frame Rate for all files. Press Reload to apply.",
     "prefs_tc_from_meta":
-        "Take the timecode from the file metadata." + NOT_IMPLEMENTED +
-        "\n{meta_time_code} is always from metadata.",
+        "{meta_time_code} is the timecode from the file metadata;\n"
+        "for a sequence without one, the frame counter timecode.",
     "prefs_tc_from_counter":
-        "Compute the timecode from the frame number." + NOT_IMPLEMENTED +
-        "\n{time_code_from_seq} is always computed from the frame number\n"
-        "of sequences, using the metadata fps.",
+        "{meta_time_code} of a sequence is computed from its frame number\n"
+        "and fps; files without a frame number use the metadata timecode.",
     "prefs_tc_default":
-        "Timecode used when a file has none." + NOT_IMPLEMENTED +
-        "\nFiles without a timecode get an empty {meta_time_code}.",
+        "Timecode for videos and sequences that have none, e.g. 01:00:00:00.\n"
+        "Empty: no timecode. Stills never get one. Press Reload to apply.",
     "prefs_size_scan":
         "Read file sizes ({size_bytes}, {size_human}) and check sequences\n"
         "for empty, missing and inconsistent frames.",
@@ -534,7 +534,8 @@ TOOLTIPS = {
         "Saved presets. last_<user> is your state when the app was last closed.",
     "load_preset_button":
         "Load the selected preset into the GUI.\n"
-        "Package Folder and Vendor CSV are kept; press Reload afterwards.",
+        "Package Folder and Vendor CSV are kept; a loaded package is\n"
+        "read again with the new preset.",
     "save_preset_name":
         "Name of the preset to save, without .json.",
     "save_preset_button":
@@ -565,11 +566,11 @@ TOOLTIPS = {
         "Planned renames: source and destination\n"
         "(paths without extension and frame number).",
     "rename_tab_relative":
-        "Show the paths relative to the package folder." + NOT_IMPLEMENTED,
+        "Show the paths relative to the package folder.",
     "rename_tab_absolute":
-        "Show full paths." + NOT_IMPLEMENTED,
+        "Show full paths.",
     "rename_tab_names_only":
-        "Show file names only." + NOT_IMPLEMENTED,
+        "Show file names only.",
     "tree_filter_file":
         "Show only files whose label (number: folder/file name) contains\n"
         "this text. Case-sensitive.",
@@ -688,8 +689,8 @@ ROW_TOOLTIPS = [
      "Sidecar tokens: {sidecar_path} {sidecar_file} {sidecar_ext}\n"
      "{sidecar_result}. File tokens like {shot} work too."),
     (r"side_filter_\d+$",
-     "Use this row only for sidecar files whose name contains this text." +
-     NOT_IMPLEMENTED),
+     "Use this row only for sidecar files whose name contains this text.\n"
+     "Plain text, case-sensitive. Empty: all sidecar files. Example: .cdl"),
     # Rename
     (r"rename_filter_\d+$",
      "Python condition; the row applies only to files where it is True.\n"
@@ -704,8 +705,8 @@ ROW_TOOLTIPS = [
     (r"rename_pattern_\d+$",
      "Regex to find in the chosen part. Tokens allowed.\n"
      "Rows run in order; each works on the result of the previous one.\n"
-     "Braces are read as tokens: write \\d\\d\\d, not \\d{3}.\n"
-     "A row with an unknown {token} is skipped.\n"
+     "Regex counts like \\d{3} work. A row with an unknown {token}\n"
+     "is skipped.\n"
      "Example: ^0x0$"),
     (r"rename_repl_\d+$",
      "Replacement with tokens, e.g. {width}x{height}.\n"

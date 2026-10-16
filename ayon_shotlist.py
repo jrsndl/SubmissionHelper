@@ -814,6 +814,7 @@ class AyonShotlist(object):
         self.output_csv_path = f"{self.output_folder}/{LIST_CSV_NAME}"
         self.output_versions_csv_path = f"{self.output_folder}/{VERSIONS_CSV_NAME}"
         self.output_excel_path = f"{self.output_folder}/ayon-list.xlsx"
+        self.do_output_excel = bool(ayon_gui.get('do_excel'))
         self.do_output = True
         do_thumbs = self.do_thumbs
         self.do_thumbs = False      # thumbnails were downloaded with the read
@@ -832,7 +833,14 @@ class AyonShotlist(object):
             return
         if rows is None:
             rows = [r for r in self.data if not r.get('_hide')]
-        self._write_rows(self.output_csv_path, self.columns, rows, "Ayon shot list")
+        do_csv = bool(self.do_output_csv)
+        do_excel = bool(getattr(self, 'do_output_excel', False))
+        # with neither checkbox on, the csv is written (Export Shot List always
+        # wrote it before the checkboxes worked)
+        if do_csv or not do_excel:
+            self._write_rows(self.output_csv_path, self.columns, rows, "Ayon shot list")
+        if do_excel:
+            self._write_rows_excel(self.output_excel_path, self.columns, rows, "Ayon shot list")
 
     def write_versions_csv(self, rows):
         """Matched Versions list to ayon-list-versions.csv, next to ayon-list.csv"""
@@ -843,6 +851,32 @@ class AyonShotlist(object):
                              "(needs Pull versions and files matched to Ayon folders)")
             return
         self._write_rows(self.output_versions_csv_path, MATCHED_VERSION_COLUMNS, rows, "Matched Versions")
+
+    def _write_rows_excel(self, path, columns, rows, what):
+        """rows to an .xlsx file, same columns as the csv"""
+        try:
+            import xlsxwriter
+        except ImportError:
+            self.log.error(f"Writing {what} {path} failed: xlsxwriter is not installed")
+            return
+        columns = [c for c in columns if not c.startswith('_')]
+        try:
+            # values are text: don't turn '=...' or urls into formulas / links
+            workbook = xlsxwriter.Workbook(path, {'strings_to_formulas': False,
+                                                  'strings_to_urls': False})
+            sheet = workbook.add_worksheet()
+            bold = workbook.add_format({'bold': True})
+            for col, title in enumerate(columns):
+                sheet.write_string(0, col, str(title), bold)
+            for row_number, row in enumerate(rows, start=1):
+                for col, title in enumerate(columns):
+                    value = row.get(title, '')
+                    sheet.write_string(row_number, col, '' if value is None else str(value))
+            sheet.freeze_panes(1, 0)
+            workbook.close()
+            self.log.info(f"{what} written to {path} ({len(rows)} rows)")
+        except Exception as e:      # xlsxwriter raises its own errors, e.g. file open in Excel
+            self.log.error(f"Writing {what} {path} failed: {e}")
 
     def _write_rows(self, path, columns, rows, what):
         try:
