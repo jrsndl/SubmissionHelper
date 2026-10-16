@@ -4,6 +4,8 @@ import time
 
 import ftrack_api
 
+import credentials
+
 log = logging.getLogger("Ftrack")
 
 # (url, user, key) -> session; connecting takes seconds and refreshes run on
@@ -34,8 +36,9 @@ def open_session(url, user, key):
     if missing:
         _log_once(logging.WARNING,
                   f"Ftrack is on, but the {', '.join(missing)} is not set: ftrack is skipped. "
-                  f"Set ftrack_server_url / ftrack_api_user / ftrack_api_key in install.json, "
-                  f"or FTRACK_SERVER / FTRACK_API_USER / FTRACK_API_KEY.")
+                  f"Sign in on the Preferences tab (Accounts), or set "
+                  f"FTRACK_SERVER / FTRACK_API_USER / FTRACK_API_KEY, or "
+                  f"ftrack_server_url / ftrack_api_user / ftrack_api_key in install.json.")
         return None
     cache_key = (url, user, key)
     session = _SESSIONS.get(cache_key)
@@ -270,6 +273,7 @@ class FtrackHelper(object):
             self.ftrack['project_id'] = None
             self.ftrack['all_projects'] = None
             if self.ftrack['do_ftrack']:
+                credentials.ensure_ftrack(self.paths)
                 self.ftrack['url'] = self.paths.get('FTRACK_SERVER', '')
                 self.ftrack['key'] = self.paths.get('FTRACK_API_KEY', '')
                 self.ftrack['user'] = self.paths.get('FTRACK_API_USER', '')

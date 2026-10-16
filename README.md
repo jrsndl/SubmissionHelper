@@ -76,9 +76,41 @@ ffprobe and oiiotool are external tools. They are found on `PATH`, through
 environment variables. oiiotool for Windows is included in `oiio/win`.
 
 Studio settings (tool paths, OCIO config, shared presets folder, ftrack and
-Ayon connection) go to `install.json` next to the app. Copy
+Ayon server urls) go to `install.json` next to the app. Copy
 `install.example.json` to `install.json` and fill it in. `install.json` is
-ignored by git, so API keys stay local; keep them out of the example.
+ignored by git; keep API keys out of it, users sign in with their own accounts
+(see [Signing in to ftrack and Ayon](#signing-in-to-ftrack-and-ayon)).
+
+## Signing in to ftrack and Ayon
+
+Submission Helper uses each user's own ftrack and Ayon account. The
+credentials are stored in the Windows Credential Manager (with the `keyring`
+package), only for that Windows user, under Submission Helper's own names
+(`SubmissionHelper/ftrack/<server>`, `SubmissionHelper/ayon/<server>`), never
+in a file.
+
+Credentials are taken from, first found wins:
+
+| Order | Source | Used for |
+|---|---|---|
+| 1 | Environment: `FTRACK_SERVER` / `FTRACK_API_USER` / `FTRACK_API_KEY`, `AYON_SERVER_URL` / `AYON_API_KEY` | studio or AYON launcher, farm |
+| 2 | Credential Manager | what the user signed in with |
+| 3 | `install.json`: `ftrack_api_user` / `ftrack_api_key`, `ayon_api_key` | fallback for older setups |
+| 4 | Sign-in dialog (GUI only) | the first time ftrack or Ayon is used |
+
+* **ftrack**: *Sign in with web browser* opens the ftrack web app; when the
+  user is signed in there (or signs in), ftrack sends the user's personal API
+  key back to Submission Helper. The key can also be typed in (ftrack: My
+  Account > Security). Personal keys don't expire.
+* **Ayon**: user name (the Windows login is pre-filled) and password, once.
+  The server comes from `AYON_SERVER_URL` / `install.json`, or is typed in.
+  The Ayon session token is checked before use and renewed with the stored
+  password when it has expired.
+* **Preferences > Accounts** shows who is signed in and where the
+  credentials come from, with *Sign in...* and *Sign out*. A cancelled
+  sign-in isn't asked again until the next start or *Sign in...*.
+* Headless runs never ask: they use the environment, the Credential Manager
+  or `install.json`.
 
 ## Building the exe
 
@@ -318,8 +350,9 @@ find their version, the Log tab shows what was compared.
 
 ## Ftrack
 
-The ftrack tab reads notes and shot attributes for the loaded files. Server, user and api key come
-from `install.json` (`ftrack_server_url`, `ftrack_api_user`, `ftrack_api_key`).
+The ftrack tab reads notes and shot attributes for the loaded files. The server comes from
+`FTRACK_SERVER` or `install.json` (`ftrack_server_url`); the user signs in with their own
+account (see [Signing in to ftrack and Ayon](#signing-in-to-ftrack-and-ayon)).
 
 * **Use Ftrack** turns it on. **Project** is the full name of an *active* ftrack project.
 * **Shot** / **Task** are templates filled per file from the parsed keys (default `{shot}` / `{task}`).

@@ -14,7 +14,10 @@
 
 from PyInstaller.utils.hooks import collect_data_files, collect_submodules
 
-hiddenimports = collect_submodules('ftrack_api') + collect_submodules('ayon_api')
+# keyring finds its backends through entry points, which a frozen app doesn't
+# have: credentials.py sets the Windows backend itself, it must be bundled
+hiddenimports = (collect_submodules('ftrack_api') + collect_submodules('ayon_api')
+                 + collect_submodules('keyring'))
 datas = collect_data_files('ftrack_api')
 
 a = Analysis(
