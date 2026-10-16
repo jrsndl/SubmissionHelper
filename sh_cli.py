@@ -19,7 +19,7 @@ from settings import Settings
 
 log = logging.getLogger("SubmissionHelper")
 
-CLI_ACTIONS = "ftdgsrcpPakx"
+CLI_ACTIONS = "ftdgsrcepPakx"
 
 CLI_DESCRIPTION = """\
 Submission Helper - check, rename and document vfx packages.
@@ -35,13 +35,15 @@ actions (letters for --actions, run left to right):
                      (most actions below need f and t to run first)
   d  reload          same as f + t, use after r (rename) or c (convert)
   g  go              same as the Go button: export submission, drive log and
-                     text as set in the preset. Also copies sidecars ("Copy
-                     with Go"), runs converts ("Convert on Go") and renames
+                     text as set in the preset. Also runs the replace ("Replace
+                     with Go"), copies sidecars ("Copy with Go"), runs
+                     converts ("Convert on Go") and renames
                      the package folder ("Auto Rename") when those are on.
                      Nothing is exported without g.
   s  sidecar files   copy sidecar files to their destinations
   r  rename          rename / move files using the Rename tab rules
   c  convert         run the Convert tab commands
+  e  replace         search and replace in text files, in place (Replace tab)
   p  publish ayon    export submission csv and ingest it to Ayon locally
   P  publish farm    same as p, submitted as a Deadline job
   a  ayon shotlist   read, filter and write the Ayon shot list (Ayon tab)

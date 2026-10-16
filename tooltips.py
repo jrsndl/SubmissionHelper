@@ -292,15 +292,21 @@ TOOLTIPS = {
     "replace_csv_path":
         "CSV with search and replace rules for text files (e.g. .nk).\n"
         "The last *.csv in the file's folder is used.\n"
-        "Columns: Extension,Pattern,Search,Replace (Pattern is not used yet).\n"
-        "Extension without dot, exact case, e.g. nk. One rule per row.\n"
+        "Columns: Extension,Pattern,Search,Replace. One rule per row.\n"
+        "Extension without dot, any case, e.g. nk.\n"
+        "Pattern: empty for all files, or text the file name must contain\n"
+        "(literal, case-sensitive). Search and Replace are literal text.\n"
         "The used file name is available as {csv_replace_file}.",
     "data_csv_browse_2":
         "Pick the Search and Replace CSV.",
     "replace_withgo":
-        "Also run the replace when Go is pressed." + NOT_IMPLEMENTED,
+        "Also run the replace when Go is pressed, as its first step.\n"
+        "Files are changed in place, without a backup.\n"
+        "Don't also press Replace: running twice applies the rules twice.",
     "replace_button":
-        "Apply the replace rules to the package files now." + NOT_IMPLEMENTED,
+        "Apply the replace rules to the package files now.\n"
+        "Files are changed in place, without a backup: use it on a copy.\n"
+        "Pressing it again applies the rules again.",
     "replace_table":
         "Files the replace rules apply to, with their rules.",
 

@@ -178,10 +178,11 @@ console to print to). Run with `-h` to print the help.
 | `f` | Read files | Scan the package folder, read metadata and csv / Ayon / ftrack data |
 | `t` | Transform data | Apply parsing, spreadsheet columns, naming and checks |
 | `d` | Reload | Same as `f` + `t`. Use it after `r` or `c`, which change files on disk |
-| `g` | Go | Same as the **Go** button: export submission, drive log and text as set in the preset. Also copies sidecar files (*Copy with Go*), runs converts (*Convert on Go*) and renames the package folder (*Auto Rename*) when those are on |
+| `g` | Go | Same as the **Go** button: export submission, drive log and text as set in the preset. Also runs the search and replace (*Replace with Go*), copies sidecar files (*Copy with Go*), runs converts (*Convert on Go*) and renames the package folder (*Auto Rename*) when those are on |
 | `s` | Sidecar files | Copy sidecar files to their destinations |
 | `r` | Rename | Rename / move files using the Rename tab rules |
 | `c` | Convert | Run the Convert tab commands |
+| `e` | Search and replace | Apply the Replace tab rules to the package text files, in place (Replace tab, needs *Enable*) |
 | `p` | Publish to Ayon | Export the submission csv and ingest it to Ayon locally |
 | `P` | Publish to Ayon (farm) | Same as `p`, submitted as a Deadline job |
 | `a` | Ayon shot list | Read, filter and write the Ayon shot list (Ayon tab) |

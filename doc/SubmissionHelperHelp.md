@@ -367,9 +367,18 @@ Extension,Pattern,Search,Replace
 nk,,D:/projects/,/mnt/projects/
 ```
 
-Extension is written without dot and must match the file extension exactly. The last CSV file (by name) in the folder of the given file is used.
+The last CSV file (by name) in the folder of the given file is used. A rule applies to a file when:
 
-Currently the tab only shows which files the rules apply to; the Replace button and Replace with Go are not implemented yet.
+- **Extension** (without dot) equals the file extension. Case doesn't matter: `nk` matches `.nk` and `.NK`.
+- **Pattern** is empty, or the file name contains it. Pattern is literal text (no regex, no wildcards) and case-sensitive. For example `_comp_` limits the rule to files like `sh010_comp_v003.nk`.
+
+**Search** and **Replace** are literal text too. Rules with an empty Search are skipped. When several rules apply to a file, they run in CSV order, each on the result of the previous one.
+
+The table shows which files the rules apply to. **Replace** applies the rules now; **Replace with Go** applies them as the first step of Go. On the command line it is the action `e`. Enable must be on in all cases. The CSV is read again each time, so changes to it are picked up.
+
+The files are changed **in place, without a backup**: run it on a copy of the delivery, never on the only original. Text is read as UTF-8 (other files as latin-1) and written back with the same encoding and line endings.
+
+Running the replace twice applies the rules twice. That is harmless when the Replace text doesn't contain the Search text (`D:/projects/` → `/mnt/projects/`), but a rule like `a` → `ab` grows with every run. Nothing remembers which files were already replaced, so don't press Replace and then also use Replace with Go on the same files.
 
 # Spreadsheet Tab
 

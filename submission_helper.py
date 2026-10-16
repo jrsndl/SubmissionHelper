@@ -855,6 +855,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self._handler_later, 'replace_csv_path', 'refresh_replace_csv'))
         self.ui.replace_enable.clicked.connect(
             partial(self.handler, 'replace_enable', 'refresh_replace_csv'))
+        self.ui.replace_button.clicked.connect(
+            partial(self.handler, 'replace_button', 'replace_apply'))
 
         self.ui.ayon_do_shotlist.clicked.connect(
             partial(self.handler, 'ayon_do_shotlist', 'ayon_changed'))
@@ -1202,6 +1204,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 self.data.prepare_all_columns()
                 self.data.prepare_tables()
                 self.show_all()
+
+        if group == 'replace_apply':
+            if self.data is None or not self.data.merged_list:
+                self.log.error("Search and Replace: load a package first.")
+            else:
+                self._ayon_busy(self.data.replace_execute, "Replacing in text files...")
 
         if group == 'ayon_record':
             if self.data is None or not self.data.merged_list:

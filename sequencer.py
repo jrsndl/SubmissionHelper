@@ -173,6 +173,7 @@ class Sequencer(object):
             "P": "Publish to Ayon - Deadline",
             "a": "Export Ayon Shotlist",
             "k": "Record Package to Ayon",
+            "e": "Search and Replace",
             "x": "Export Ftrack Shotlist"
         }
         if self.settings_args is not None:
@@ -225,6 +226,9 @@ class Sequencer(object):
                     elif action == "k":
                         # Record Package to Ayon
                         self.ayon_record_packages()
+                    elif action == "e":
+                        # Search and Replace in text files
+                        self.replace_execute()
                     elif action == "x":
                         # Export Ftrack Shotlist
                         self.ftrack_export()
@@ -2989,6 +2993,11 @@ class Sequencer(object):
 
     def export_all(self, column_width_sub=None, column_width_log=None):
 
+        # Replace tab: Replace with Go. Runs first, before the package folder
+        # can be renamed at the end of Go.
+        if self._setting_on('replace_withgo'):
+            self.replace_execute()
+
         if self.settings and bool(self.settings['side_copywithgo']['value']):
             self.sidecar_files_copy()
 
@@ -4382,21 +4391,106 @@ class Sequencer(object):
             return
 
         # build dict of lists of dicts: file: [{search:'', replace:''}]
+        # A rule applies to a file when:
+        #  - Extension (without dot, any case) equals the file extension
+        #  - Pattern is empty, or the file name contains it (literal text,
+        #    case-sensitive, no regex or wildcards)
+        # Search and Replace are literal text too. Rules with an empty Search
+        # are skipped.
         to_replace = {}
         for item in self.merged_list:
             ext = item.get('extension')
             if ext is None:
                 continue
             file_path = item.get('full_path')
-            if file_path is None:
+            if not file_path:
                 continue
+            file_name = str(file_path).replace('\\', '/').split('/')[-1]
             for one_rule in self.replace_data:
-                if str(one_rule.get('Extension') or '').lower().lstrip('.') == str(ext).lower():
-                    # every matching rule (append() returns None: only the
-                    # first rule used to survive)
-                    to_replace.setdefault(file_path, []).append(
-                        {'search': one_rule.get('Search', ''), 'replace': one_rule.get('Replace', '')})
+                if str(one_rule.get('Extension') or '').lower().lstrip('.') != str(ext).lower():
+                    continue
+                pattern = str(one_rule.get('Pattern') or '')
+                if pattern and pattern not in file_name:
+                    continue
+                search = str(one_rule.get('Search') or '')
+                if search == '':
+                    continue
+                # every matching rule (append() returns None: only the
+                # first rule used to survive)
+                to_replace.setdefault(file_path, []).append(
+                    {'search': search, 'replace': str(one_rule.get('Replace') or '')})
         self.replace_prep = to_replace
+
+    def replace_execute(self):
+        """
+        Replace button / Replace with Go / headless action 'e'.
+        Applies the Search and Replace CSV rules to the package text files,
+        in place, with no backup: the package is expected to be a copy already.
+
+        The CSV is read again and the rules are matched to the current file
+        list, so edits to the CSV and renamed files are picked up.
+        Rules are applied in CSV order, each to the result of the previous one.
+
+        Running it twice applies the rules twice. That is harmless when the
+        Replace text doesn't contain the Search text (D:/projects/ ->
+        /mnt/projects/), but a rule like 'a' -> 'ab' grows on every run.
+        This is an accepted risk, nothing tracks what was already replaced.
+
+        Files are decoded as UTF-8 (latin-1 as a lossless fallback) and
+        written back with the same encoding and the original line endings.
+        :return: dict {file path: number of replacements}, files that failed
+                 are left out
+        """
+        result = {}
+        if not self._setting_on('replace_enable'):
+            self.log.warning("Search and Replace: Enable is off on the Replace tab, nothing replaced.")
+            return result
+        self.replace_data = []
+        self.csv_replace_data_read()
+        if not self.replace_data:
+            self.log.warning("Search and Replace: no valid CSV with rules, nothing replaced.")
+            return result
+        self.csv_replace_prepare()
+        if not self.replace_prep:
+            self.log.info("Search and Replace: no package file matches the rules.")
+            return result
+
+        for file_path, rules in self.replace_prep.items():
+            try:
+                with open(file_path, 'rb') as f:
+                    raw = f.read()
+            except OSError as e:
+                self.log.error(f"Search and Replace: can't read {file_path}: {e}")
+                continue
+            encoding = 'utf-8'
+            try:
+                text = raw.decode(encoding)
+            except UnicodeDecodeError:
+                encoding = 'latin-1'
+                text = raw.decode(encoding)
+
+            count = 0
+            for rule in rules:
+                hits = text.count(rule['search'])
+                if hits:
+                    text = text.replace(rule['search'], rule['replace'])
+                    count += hits
+
+            if count:
+                try:
+                    with open(file_path, 'wb') as f:
+                        f.write(text.encode(encoding))
+                except (OSError, UnicodeError) as e:
+                    self.log.error(f"Search and Replace: can't write {file_path}: {e}")
+                    continue
+            result[file_path] = count
+            self.log.info(f"Search and Replace: {count} replacement(s) in {file_path}")
+
+        total = sum(result.values())
+        self.log.info(f"Search and Replace: {total} replacement(s) in {len(result)} file(s).")
+        if not self.headless and self.ui is not None:
+            self.display_replace_table()
+        return result
 
 
     def display_replace_table(self):
