@@ -1515,6 +1515,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         # Parsing tab Preview: the tables were rebuilt / parsed again
         if getattr(self, 'parse_table', None) is not None:
             self.parse_table.update_preview()
+        # AYON Lists: compare the lists with the package's matched versions
+        if getattr(self, 'ayon_lists_tab', None) is not None:
+            self.ayon_lists_tab.update_matches()
 
 
     def explore(self, path):
@@ -2674,10 +2677,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         versions_layout.addWidget(vtable)
         tabs.addTab(versions_page, "Matched Versions")
         # AYON Lists: the project's entity lists and their versions
-        self.ayon_lists_tab = AyonListsTab(self._ayon_lists_connect, self._ayon_busy, tabs)
+        self.ayon_lists_tab = AyonListsTab(self._ayon_lists_connect, self._ayon_busy, tabs,
+                                           log=self.log)
+        self.ayon_lists_tab.package_source = self._package_ayon_versions
+        self.ayon_lists_tab.ftrack_connect = self._ftrack_lists_connect
         tabs.addTab(self.ayon_lists_tab, "AYON Lists")
-        # auto-read checkbox is a setting
+        # auto-read and Match % are settings
         ui.ayon_lists_auto = self.ayon_lists_tab.auto_chbx
+        ui.ayon_lists_match_pct = self.ayon_lists_tab.match_pct
         # every successful AYON connection of a Sequencer (Scan, package load)
         if not self.no_gui:
             Sequencer.on_ayon_connected = self.ayon_lists_tab.auto_read
@@ -2685,6 +2692,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         ui.ayon_versions_page = versions_page
         ui.ayon_tables_tab = tabs
         ui.verticalLayout_118.insertWidget(table_index if table_index >= 0 else -1, tabs, 1)
+
+    def _package_ayon_versions(self):
+        """
+        AYON Lists matching: (package name, AYON version ids the Submission
+        files matched, in table order, no repeats); ('', []) without a package
+        """
+        if self.data is None:
+            return '', []
+        ids = []
+        for item in self.data.merged_list or []:
+            if item.get('hide_sub') or item.get('vendor_ignore_sub'):
+                continue
+            vid = item.get('_ayon_version_id')
+            if vid and vid not in ids:
+                ids.append(vid)
+        name = str((self.data.output or {}).get('package_name') or '') or self._package_folder_name()
+        return name, ids
 
     def _ayon_lists_connect(self):
         """

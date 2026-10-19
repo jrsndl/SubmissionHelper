@@ -205,6 +205,120 @@ def query_list_versions(session, list_id):
     return rows
 
 
+def list_categories(session):
+    """names of the ftrack list categories (ftrack lists need one), sorted"""
+    if session is None:
+        return []
+    try:
+        return sorted(str(c['name']) for c in session.query('select id, name from ListCategory').all())
+    except Exception as e:
+        log.error(f"Reading ftrack list categories failed: {e}")
+        return []
+
+
+def _write_session(session):
+    """
+    A new session for writing (the shared one can hold a large cache, merging
+    into it hit 'maximum recursion depth'); the shared one when a new one
+    can't be made. :return: (session, is_new)
+    """
+    url = getattr(session, 'server_url', None)
+    user = getattr(session, 'api_user', None)
+    key = getattr(session, 'api_key', None)
+    if not (url and user and key):
+        return session, False
+    try:
+        return ftrack_api.Session(server_url=url, api_key=key, api_user=user,
+                                  auto_connect_event_hub=False, timeout=15), True
+    except Exception as e:
+        log.debug(f"New ftrack session failed ({e}), using the shared one")
+        return session, False
+
+
+def _find_list(session, project_id, name):
+    """
+    the project's list with this name in any category (ayon-ftrack pairs
+    lists by name and may have made one in another category):
+    (list entity, set of its entity ids), or (None, set())
+    """
+    found = session.query(
+        'select id, name, category_id from List where project_id is "{0}" '
+        'and name is "{1}"'.format(project_id, str(name).replace('"', '\\"'))).first()
+    if found is None:
+        return None, set()
+    objects = session.query(
+        'select entity_id from ListObject where list_id is "{0}"'.format(found['id'])).all()
+    return found, {o['entity_id'] for o in objects}
+
+
+def create_version_list(session, project_id, name, category, version_ids):
+    """
+    Create an ftrack version list (as ayon-ftrack does: List, system_type
+    assetversion) with the AssetVersions, in this order. A list with this
+    name already there (any category) gets the versions it doesn't have and
+    the chosen category, so a second run doesn't make a duplicate.
+    Written with a new session. When ftrack raises but the list is there
+    with all the versions, it counts as done (logged as a warning).
+    :return: the list id (raises on failure)
+    """
+    ws, is_new = _write_session(session)
+    try:
+        categories = {str(c['name']): c['id']
+                      for c in ws.query('select id, name from ListCategory').all()}
+        category_id = categories.get(category)
+        if not category_id:
+            raise ValueError(f"ftrack list category '{category}' not found")
+        try:
+            existing, present = _find_list(ws, project_id, name)
+        except Exception as e:
+            log.debug(f"Looking for ftrack list '{name}' failed: {e}")
+            existing, present = None, set()
+        try:
+            if existing is not None:
+                list_id = existing['id']
+                log.info(f"ftrack list '{name}' exists: adding the versions it doesn't have")
+                if existing['category_id'] != category_id:
+                    existing['category_id'] = category_id
+                    log.info(f"ftrack list '{name}': category set to '{category}'")
+            else:
+                list_id = ws.create("List", {
+                    "project_id": project_id,
+                    "name": name,
+                    "is_open": True,
+                    "category_id": category_id,
+                    "system_type": "assetversion",
+                })["id"]
+            for version_id in version_ids:
+                if version_id not in present:
+                    ws.create("ListObject", {"list_id": list_id, "entity_id": version_id})
+                    present.add(version_id)
+            ws.commit()
+            return list_id
+        except Exception as e:
+            log.debug("ftrack list write failed", exc_info=True)
+            try:
+                ws.rollback()
+            except Exception:
+                pass
+            # it may be saved anyway (the error came after the commit): check
+            try:
+                found, objects = _find_list(ws, project_id, name)
+            except Exception:
+                found, objects = None, set()
+            found_id = found['id'] if found is not None else None
+            if found_id is not None and set(version_ids) <= objects:
+                log.warning(f"ftrack reported an error ({e}), but list '{name}' is there with "
+                            f"all {len(set(version_ids))} versions")
+                return found_id
+            raise
+    finally:
+        if is_new:
+            try:
+                ws.close()
+            except Exception:
+                pass
+
+
 class FtrackHelper(object):
 
     def __init__(self, gui, pths):

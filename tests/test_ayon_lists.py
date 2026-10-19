@@ -129,11 +129,13 @@ class Versions(unittest.TestCase):
         with self.assertLogs('AyonLists', 'INFO'):
             rows = al.query_list_versions(con, 'proj', 'L1')
         self.assertEqual(rows, [
-            {'Folder Path': '/sq01/sh010', 'Task': 'comp', 'Product': 'renderCompMain',
-             'Version': 3},
-            {'Folder Path': '/sq01/sh020', 'Task': '', 'Product': 'plateMain', 'Version': 12},
+            {'_id': 'v1', 'Folder Path': '/sq01/sh010', 'Task': 'comp',
+             'Product': 'renderCompMain', 'Version': 3},
+            {'_id': 'v2', 'Folder Path': '/sq01/sh020', 'Task': '', 'Product': 'plateMain',
+             'Version': 12},
         ])
-        self.assertEqual(list(rows[0]), list(al.LIST_COLUMNS))
+        # the columns shown; _id is for the package match colors
+        self.assertEqual([k for k in rows[0] if not k.startswith('_')], list(al.LIST_COLUMNS))
 
     def test_new_api(self):
         self.check(NewApi())

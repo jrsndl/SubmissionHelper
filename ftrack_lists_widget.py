@@ -49,6 +49,10 @@ class FtrackListsTab(QtWidgets.QWidget):
         """rows: dicts with COLUMNS keys"""
         return ftrack.query_list_versions(session, list_id)
 
+    def row_background(self, row):
+        """background color name of a table row, None: default"""
+        return None
+
     def __init__(self, connect, busy=None, parent=None):
         """
         :param connect: callable -> (session, project_id); (None, None) or a
@@ -154,11 +158,17 @@ class FtrackListsTab(QtWidgets.QWidget):
         table.setSortingEnabled(False)
         table.setRowCount(len(rows))
         for r, row in enumerate(rows):
+            color = self.row_background(row)
             for c, column in enumerate(self.COLUMNS):
                 value = row.get(column, '')
                 item = QtWidgets.QTableWidgetItem()
                 # numbers sort as numbers
                 item.setData(QtCore.Qt.DisplayRole, value if isinstance(value, int) else str(value))
+                if c == 0:
+                    # the row's entity id (rows can be re-colored after sorting)
+                    item.setData(ID_ROLE, row.get('_id'))
+                if color:
+                    item.setBackground(QtGui.QColor(color))
                 table.setItem(r, c, item)
         table.setSortingEnabled(True)
         if rows:
