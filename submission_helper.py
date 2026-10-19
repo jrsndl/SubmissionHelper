@@ -29,6 +29,7 @@ import sh_logging
 from log_view import LogView
 import grouping
 from grouping_widget import GroupingTab
+from ftrack_lists_widget import FtrackListsTab
 from sh_cli import (CLI_ACTIONS, CLI_DESCRIPTION, CLI_EPILOG, setting_to_bool,  # noqa: F401
                     get_args, console_level_from_args, check_cli_args)
 import sh_cli
@@ -145,6 +146,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.tab_pages_bottom = {k: self.ui.BottomTab.widget(v[0]) for k, v in self.tab_pairs_bottom.items()}
         # Grouping tab after Spreadsheet, replaces Merge By (Preferences tab)
         self.grouping_tab = self._add_grouping_tab()
+        # Ftrack tab: Shots and Get Lists sub-tabs
+        self.ftrack_lists_tab = self._add_ftrack_lists_tab()
         # Presets tab: Modules below the Presets group, full width
         self._arrange_preset_modules()
         self.ui_start = True
@@ -2060,6 +2063,54 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         layout.insertWidget(layout.indexOf(ui.preset_mod_spreadsheet) + 1, mod)
         self.tab_pages['preset_mod_grouping'] = tab
         return tab
+
+    def _add_ftrack_lists_tab(self):
+        """
+        The Ftrack tab gets sub-tabs: Shots (the Ftrack tab of the .ui file)
+        and Get Lists (ftrack_lists_widget.py).
+        :return: the FtrackListsTab
+        """
+        ui = self.ui
+        top = ui.TopTab
+        index = top.indexOf(ui.tab_11)
+        if index < 0:
+            return None
+        label = top.tabText(index)
+        was_current = top.currentIndex() == index
+        container = QtWidgets.QWidget()
+        layout = QtWidgets.QVBoxLayout(container)
+        layout.setContentsMargins(0, 0, 0, 0)
+        sub_tabs = QtWidgets.QTabWidget(container)
+        sub_tabs.setObjectName("ftrack_sub_tabs")
+        layout.addWidget(sub_tabs)
+        top.removeTab(index)
+        sub_tabs.addTab(ui.tab_11, "Shots")
+        lists = FtrackListsTab(self._ftrack_lists_connect, self._ayon_busy, sub_tabs)
+        sub_tabs.addTab(lists, "Get Lists")
+        top.insertTab(index, container, label)
+        if was_current:
+            top.setCurrentIndex(index)
+        # Modules checkbox (Presets tab) shows / hides the whole Ftrack tab
+        self.tab_pages['preset_mod_ftrack'] = container
+        self.ftrack_sub_tabs = sub_tabs
+        return lists
+
+    def _ftrack_lists_connect(self):
+        """
+        Get Lists: ftrack session and the id of the Project of the Shots
+        sub-tab. :return: (session, project_id), None items when missing (logged)
+        """
+        import ftrack
+        paths = self._credential_paths()
+        credentials.ensure_ftrack(paths)
+        session = ftrack.open_session(paths.get('FTRACK_SERVER', ''),
+                                      paths.get('FTRACK_API_USER', ''),
+                                      paths.get('FTRACK_API_KEY', ''))
+        project = str(self.ui.ftrack_project.displayText()).strip()
+        if session is not None and not project:
+            self.log.warning("Get Lists: set the ftrack Project on the Ftrack > Shots sub-tab")
+            return session, None
+        return session, ftrack.find_project_id(session, project)
 
     # Presets tab, Modules group: tabs in the order of the window
     MODULES_TOP = ('package', 'parsing', 'sidecar', 'rename', 'data', 'ftrack', 'vendor',

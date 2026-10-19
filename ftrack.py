@@ -75,6 +75,136 @@ def find_project_id(session, project_name):
     _log_once(logging.WARNING, f"Ftrack project '{project_name}' not found among active projects")
     return None
 
+
+# ---------------------------------------------------------------------------
+# Ftrack tab > Get Lists: version lists of a project and the versions in a list
+# ---------------------------------------------------------------------------
+
+LIST_COLUMNS = ("Version Link", "Version", "Version Status", "Version Description",
+                "Asset Type", "Published By")
+NO_FOLDER = "(no folder)"
+# ids per "AssetVersion where id in (...)" query
+_ID_CHUNK = 100
+
+
+def _get(entity, *keys):
+    """entity[k1][k2]... or None when anything on the way is missing"""
+    value = entity
+    for key in keys:
+        if value is None:
+            return None
+        try:
+            value = value[key]
+        except Exception:
+            return None
+    return value
+
+
+def _text(value):
+    return '' if value is None else str(value)
+
+
+def version_name(asset_name, number):
+    """name of a version as shown in Get Lists, e.g. compMain_v003"""
+    try:
+        return f"{asset_name}_v{int(number):03d}"
+    except (TypeError, ValueError):
+        return f"{asset_name}_v{_text(number)}"
+
+
+def version_link(version):
+    """
+    ftrack hierarchy path of the version's asset parent followed by the
+    version name, e.g. proj/sq010/sh010/compMain_v003
+    """
+    names = []
+    for one in _get(version, 'asset', 'parent', 'link') or []:
+        name = _get(one, 'name')
+        if name:
+            names.append(str(name))
+    names.append(version_name(_text(_get(version, 'asset', 'name')), _get(version, 'version')))
+    return "/".join(names)
+
+
+def version_row(version):
+    """one row of the Get Lists table, keys LIST_COLUMNS"""
+    first = _text(_get(version, 'user', 'first_name'))
+    last = _text(_get(version, 'user', 'last_name'))
+    user = f"{first} {last}".strip() or _text(_get(version, 'user', 'username'))
+    number = _get(version, 'version')
+    return {
+        "Version Link": version_link(version),
+        "Version": number if isinstance(number, int) else _text(number),
+        "Version Status": _text(_get(version, 'status', 'name')),
+        "Version Description": _text(_get(version, 'comment')),
+        "Asset Type": _text(_get(version, 'asset', 'type', 'name')),
+        "Published By": user,
+    }
+
+
+def query_version_lists(session, project_id):
+    """
+    Version lists of the project:
+    [{'id', 'name', 'folder'}] sorted by folder (lists without one last), name.
+    Never raises, errors are logged.
+    """
+    if session is None or not project_id:
+        return []
+    try:
+        lists = session.query(
+            'select id, name, category.name from AssetVersionList '
+            'where project.id is "{0}"'.format(project_id)).all()
+    except Exception as e:
+        log.error(f"Reading ftrack lists failed: {e}")
+        return []
+    out = []
+    for one in lists:
+        out.append({'id': _get(one, 'id'),
+                    'name': _text(_get(one, 'name')),
+                    'folder': _text(_get(one, 'category', 'name')) or NO_FOLDER})
+    out.sort(key=lambda d: (d['folder'] == NO_FOLDER, d['folder'].lower(), d['name'].lower()))
+    return out
+
+
+_VERSION_FIELDS = ('version, comment, status.name, asset.name, asset.type.name, '
+                   'user.first_name, user.last_name, user.username')
+
+
+def query_list_versions(session, list_id):
+    """
+    Rows (version_row) of the versions in an ftrack list, sorted by Version Link.
+    Never raises, errors are logged.
+    """
+    if session is None or not list_id:
+        return []
+    try:
+        ids = [_get(o, 'entity_id') for o in session.query(
+            'select entity_id from ListObject where list_id is "{0}"'.format(list_id)).all()]
+    except Exception as e:
+        log.error(f"Reading ftrack list items failed: {e}")
+        return []
+    ids = [i for i in ids if i]
+    rows = []
+    for start in range(0, len(ids), _ID_CHUNK):
+        id_list = ', '.join(f'"{i}"' for i in ids[start:start + _ID_CHUNK])
+        versions = None
+        # with the hierarchy in one go; without it (read per version) when the
+        # server refuses the nested projection
+        for fields in (_VERSION_FIELDS + ', asset.parent.link', _VERSION_FIELDS):
+            try:
+                versions = session.query(
+                    'select {0} from AssetVersion where id in ({1})'.format(fields, id_list)).all()
+                break
+            except Exception as e:
+                err = e
+        if versions is None:
+            log.error(f"Reading ftrack list versions failed: {err}")
+            continue
+        rows.extend(version_row(v) for v in versions)
+    rows.sort(key=lambda r: r["Version Link"].lower())
+    return rows
+
+
 class FtrackHelper(object):
 
     def __init__(self, gui, pths):
