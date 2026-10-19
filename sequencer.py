@@ -2177,6 +2177,10 @@ class Sequencer(object):
                         one_item[key] = value
                     else:
                         one_item.pop(key, None)
+                # Parsing tab Preview: result of each row that ran for this
+                # item, by row number ('01'...); filtered out rows aren't in it
+                previews = {}
+                one_item['_parse_preview'] = previews
                 for k, one_regex in self.regexes.items():
                     do_filter = False
                     if one_regex['filter'] != '':
@@ -2233,6 +2237,7 @@ class Sequencer(object):
                         if key not in originals:
                             originals[key] = (key in one_item, one_item.get(key))
                         one_item.update({key: result})
+                        previews[k] = result
 
     def prepare_package_name(self):
 
@@ -3702,6 +3707,13 @@ class Sequencer(object):
             self.log.error(f"Ayon: {self.my_ayon.error}")
         else:
             self.log.info(f"Ayon: {len(self.ayon_data)} row(s) read from project {self.ayon_gui['project']}")
+            # gui: AYON Lists auto-read uses this connection
+            hook = getattr(Sequencer, 'on_ayon_connected', None)
+            if hook is not None and self.ui is not None:
+                try:
+                    hook(getattr(self.my_ayon, 'ayon', None), self.ayon_gui['project'])
+                except Exception as e:
+                    self.log.warning(f"AYON Lists auto-read failed: {e}")
         return self.ayon_data
 
     def ayon_scan(self):

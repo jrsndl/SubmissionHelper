@@ -29,6 +29,25 @@ class _CopyTable(QtWidgets.QTableWidget):
 
 
 class FtrackListsTab(QtWidgets.QWidget):
+    """
+    Lists browser; the AYON Lists sub-tab (ayon_lists_widget.py) is a subclass
+    with its own COLUMNS, texts and queries.
+    """
+    COLUMNS = ftrack.LIST_COLUMNS
+    SYSTEM = "ftrack"
+    BUTTON_TIP = ("Read the version lists of the ftrack Project set on the Shots sub-tab. "
+                  "Uses the ftrack sign-in of the Preferences tab (Accounts).")
+    TREE_TIP = "ftrack list folders and their version lists. Select a list to show its versions."
+    TREE_HEADER = "List Folder / List"
+    GROUPS = "folders"
+
+    def query_lists(self, session, project):
+        """[{'id', 'name', 'folder'}]"""
+        return ftrack.query_version_lists(session, project)
+
+    def query_versions(self, session, list_id):
+        """rows: dicts with COLUMNS keys"""
+        return ftrack.query_list_versions(session, list_id)
 
     def __init__(self, connect, busy=None, parent=None):
         """
@@ -43,25 +62,24 @@ class FtrackListsTab(QtWidgets.QWidget):
 
         layout = QtWidgets.QVBoxLayout(self)
         top = QtWidgets.QHBoxLayout()
+        self.top_bar = top
         layout.addLayout(top)
         self.get_butt = QtWidgets.QPushButton("Get Lists", self)
         self.get_butt.setMinimumSize(QtCore.QSize(120, 30))
-        self.get_butt.setToolTip(
-            "Read the version lists of the ftrack Project set on the Shots sub-tab. "
-            "Uses the ftrack sign-in of the Preferences tab (Accounts).")
+        self.get_butt.setToolTip(self.BUTTON_TIP)
         top.addWidget(self.get_butt)
         self.status = QtWidgets.QLabel("", self)
         top.addWidget(self.status, 1)
 
         splitter = QtWidgets.QSplitter(QtCore.Qt.Horizontal, self)
+        self.splitter = splitter
         layout.addWidget(splitter, 1)
 
         self.tree = QtWidgets.QTreeWidget(splitter)
-        self.tree.setHeaderLabels(["List Folder / List"])
-        self.tree.setToolTip("ftrack list folders and their version lists. "
-                             "Select a list to show its versions.")
-        self.table = _CopyTable(0, len(ftrack.LIST_COLUMNS), splitter)
-        self.table.setHorizontalHeaderLabels(list(ftrack.LIST_COLUMNS))
+        self.tree.setHeaderLabels([self.TREE_HEADER])
+        self.tree.setToolTip(self.TREE_TIP)
+        self.table = _CopyTable(0, len(self.COLUMNS), splitter)
+        self.table.setHorizontalHeaderLabels(list(self.COLUMNS))
         self.table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.table.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.table.verticalHeader().setVisible(False)
@@ -70,9 +88,10 @@ class FtrackListsTab(QtWidgets.QWidget):
                               "rows (tab separated, for Excel).")
         splitter.addWidget(self.tree)
         splitter.addWidget(self.table)
-        splitter.setStretchFactor(0, 1)
-        splitter.setStretchFactor(1, 3)
-        splitter.setSizes([300, 900])
+        # the list tree only as wide as its names (_fit_tree), the table gets the rest
+        splitter.setStretchFactor(0, 0)
+        splitter.setStretchFactor(1, 1)
+        splitter.setSizes([200, 1000])
 
         self.table.on_copy = self.copy_selection
 
@@ -82,16 +101,21 @@ class FtrackListsTab(QtWidgets.QWidget):
     # lists -------------------------------------------------------------------
 
     def get_lists(self):
+        result = self._busy(self._connect, f"Connecting to {self.SYSTEM}...") or (None, None)
+        session, project_id = result
+        self.show_lists(session, project_id)
+
+    def show_lists(self, session, project_id):
+        """the lists of the project, with a connection made elsewhere"""
         self.tree.clear()
         self._fill_table([])
-        result = self._busy(self._connect, "Connecting to Ftrack...") or (None, None)
-        session, project_id = result
         self._session = session
+        self._project = project_id
         if session is None or not project_id:
-            self.status.setText("No ftrack connection or project (see the Log tab).")
+            self.status.setText(f"No {self.SYSTEM} connection or project (see the Log tab).")
             return
-        lists = self._busy(lambda: ftrack.query_version_lists(session, project_id),
-                           "Reading ftrack lists...")
+        lists = self._busy(lambda: self.query_lists(session, project_id),
+                           f"Reading {self.SYSTEM} lists...")
         folders = {}
         for one in lists:
             folder = folders.get(one['folder'])
@@ -102,15 +126,24 @@ class FtrackListsTab(QtWidgets.QWidget):
             item = QtWidgets.QTreeWidgetItem(folder, [one['name']])
             item.setData(0, ID_ROLE, one['id'])
         self.tree.expandAll()
-        self.status.setText(f"{len(lists)} lists in {len(folders)} folders")
+        self._fit_tree()
+        self.status.setText(f"{len(lists)} lists in {len(folders)} {self.GROUPS}")
+
+    def _fit_tree(self):
+        """tree as wide as its longest name (160..450 px)"""
+        self.tree.resizeColumnToContents(0)
+        width = self.tree.sizeHintForColumn(0) + self.tree.indentation() + 40
+        width = max(160, min(width, 450))
+        total = sum(self.splitter.sizes()) or (width + 800)
+        self.splitter.setSizes([width, max(total - width, 200)])
 
     def _list_selected(self, current, previous=None):
         list_id = current.data(0, ID_ROLE) if current is not None else None
         if not list_id:
             return
         session = self._session
-        rows = self._busy(lambda: ftrack.query_list_versions(session, list_id),
-                          "Reading ftrack list versions...")
+        rows = self._busy(lambda: self.query_versions(session, list_id),
+                          f"Reading {self.SYSTEM} list versions...")
         self._fill_table(rows)
         self.status.setText(f"{current.text(0)}: {len(rows)} versions")
 
@@ -121,7 +154,7 @@ class FtrackListsTab(QtWidgets.QWidget):
         table.setSortingEnabled(False)
         table.setRowCount(len(rows))
         for r, row in enumerate(rows):
-            for c, column in enumerate(ftrack.LIST_COLUMNS):
+            for c, column in enumerate(self.COLUMNS):
                 value = row.get(column, '')
                 item = QtWidgets.QTableWidgetItem()
                 # numbers sort as numbers
@@ -135,7 +168,7 @@ class FtrackListsTab(QtWidgets.QWidget):
         rows = sorted({i.row() for i in self.table.selectedIndexes()})
         if not rows:
             return
-        lines = ["\t".join(ftrack.LIST_COLUMNS)]
+        lines = ["\t".join(self.COLUMNS)]
         for r in rows:
             cells = []
             for c in range(self.table.columnCount()):

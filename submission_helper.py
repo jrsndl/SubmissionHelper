@@ -31,6 +31,8 @@ from log_view import LogView
 import grouping
 from grouping_widget import GroupingTab
 from ftrack_lists_widget import FtrackListsTab
+from ayon_lists_widget import AyonListsTab
+from parse_rows_widget import ParseRowsTable
 from sh_cli import (CLI_ACTIONS, CLI_DESCRIPTION, CLI_EPILOG, setting_to_bool,  # noqa: F401
                     get_args, console_level_from_args, check_cli_args)
 import sh_cli
@@ -103,6 +105,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self._add_data_controls()
         # tooltips of the .ui widgets and the parse rows added above
         apply_tooltips(self.ui)
+        # Parsing tab: a table instead of the 48 field rows (kept, hidden, as
+        # the storage presets and the Sequencer use)
+        self.parse_table = self._setup_parse_table()
         # Sequencer used by the Ayon tab when no package is loaded
         self.ayon_only = None
 
@@ -1507,6 +1512,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             # Present data for each item
             self.show_data()
 
+        # Parsing tab Preview: the tables were rebuilt / parsed again
+        if getattr(self, 'parse_table', None) is not None:
+            self.parse_table.update_preview()
+
 
     def explore(self, path):
 
@@ -1647,12 +1656,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         edit_mode 'sub' / 'log': only the cells of the Title=*value columns
         can be edited (_table_cell_edited stores them)
         """
+        # the selected rows stay selected (Parsing tab Preview follows them)
+        selected = sorted({i.row() for i in table_ui.selectedIndexes()}) if edit_mode else []
         # filling the table must not count as edits
         table_ui.blockSignals(True)
         try:
             self._display_table(table, table_ui, titles, edit_mode)
         finally:
             table_ui.blockSignals(False)
+        selected = [r for r in selected if r < table_ui.rowCount()]
+        if selected and table_ui.columnCount():
+            model = table_ui.model()
+            selection = QtCore.QItemSelection()
+            for r in selected:
+                selection.select(model.index(r, 0), model.index(r, table_ui.columnCount() - 1))
+            table_ui.selectionModel().select(selection, QtCore.QItemSelectionModel.ClearAndSelect)
 
     def _table_cell_edited(self, mode, item):
         """a Title=*value cell edited in the Submission / Drive Log table"""
@@ -2044,6 +2062,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         if isinstance(group_defs, dict) and getattr(self, 'grouping_tab', None) is not None:
             self.grouping_tab.set_definitions(group_defs.get('value'))
 
+        # Parsing tab table: the fields above were filled with signals
+        # blocked; old presets (no rows 33-48, no Filter) get the defaults
+        # for what they don't have, not the rows of the preset loaded before
+        if getattr(self, 'parse_table', None) is not None:
+            self.parse_table.set_from_settings(self.settings, self._ui_default_settings())
+
     def settings_update(self, knob_name, ui, value, val2=None):
         one_setting = self.settings.get(knob_name)
         if one_setting:
@@ -2078,6 +2102,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                         ui.blockSignals(False)
                 elif one_setting["category"] == "combobox":
                     pass
+
+    def _ui_default_settings(self):
+        """settings of the .ui file (ui_defaults, also used by the command line), read once"""
+        if getattr(self, '_ui_defaults', None) is None:
+            try:
+                import ui_defaults
+                self._ui_defaults = ui_defaults.load_defaults() or {}
+            except Exception as e:
+                self.log.warning(f"Can't read the .ui defaults: {e}")
+                self._ui_defaults = {}
+        return self._ui_defaults
 
     def apply_settings_overrides(self, overrides):
         """
@@ -2396,6 +2431,40 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             setattr(ui, hl.objectName(), hl)
             ui.verticalLayout_30.addLayout(hl)
 
+    def _setup_parse_table(self):
+        """the Parsing tab shows ParseRowsTable; the parse_* rows are hidden"""
+        ui = self.ui
+        table = ParseRowsTable(ui, PARSE_ROWS, parent=ui.tab_10, log=self.log)
+        table.preview_source = self._parse_preview_values
+        ui.sub_table.itemSelectionChanged.connect(table.update_preview)
+        ui.scrollArea.hide()
+        ui.horizontalLayout_24.addWidget(table)
+        return table
+
+    def _parse_preview_values(self):
+        """
+        Parsing tab Preview: (file name, {'01': value...}) of the first
+        selected Submission row (Sequencer.fill_regexes), None without one
+        """
+        if self.data is None:
+            return None
+        rows = sorted({i.row() for i in self.ui.sub_table.selectedIndexes()})
+        table = self.data.table_sub or []
+        if not rows or rows[0] >= len(table):
+            return None
+        item = table[rows[0]][-1]
+        if not isinstance(item, dict):
+            return None
+        members = item.get('_group_members')
+        if members:
+            # a collapsed group row: its first file
+            item = members[0]
+        name = str(item.get('sequence_nuke') or item.get('name') or '')
+        ext = item.get('extension')
+        if name and ext:
+            name = f"{name}.{ext}"
+        return name, item.get('_parse_preview') or {}
+
     def _add_ayon_controls(self):
         """
         Ayon tab additions, built in code so ui_Submission.py can be regenerated:
@@ -2604,10 +2673,32 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         versions_layout.addLayout(vbar)
         versions_layout.addWidget(vtable)
         tabs.addTab(versions_page, "Matched Versions")
+        # AYON Lists: the project's entity lists and their versions
+        self.ayon_lists_tab = AyonListsTab(self._ayon_lists_connect, self._ayon_busy, tabs)
+        tabs.addTab(self.ayon_lists_tab, "AYON Lists")
+        # auto-read checkbox is a setting
+        ui.ayon_lists_auto = self.ayon_lists_tab.auto_chbx
+        # every successful AYON connection of a Sequencer (Scan, package load)
+        if not self.no_gui:
+            Sequencer.on_ayon_connected = self.ayon_lists_tab.auto_read
         ui.ayon_versions_table = vtable
         ui.ayon_versions_page = versions_page
         ui.ayon_tables_tab = tabs
         ui.verticalLayout_118.insertWidget(table_index if table_index >= 0 else -1, tabs, 1)
+
+    def _ayon_lists_connect(self):
+        """
+        AYON Lists: (connection, project name) with the AYON sign-in and the
+        Project of the Ayon group; None items when missing (logged)
+        """
+        import ayon_lists
+        paths = self._credential_paths()
+        credentials.ensure_ayon(paths)
+        con = ayon_lists.connect(paths)
+        project = str(self.ui.ayon_project.displayText()).strip()
+        if con is not None and not project:
+            self.log.warning("AYON Lists: set the Project in the Ayon group of the Ayon tab")
+        return con, project or None
 
     def _ayon_target(self):
         """

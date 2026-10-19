@@ -185,7 +185,7 @@ The buttons at the bottom of the window act on the whole package. Drop a folder 
 
 | Control | What it does |
 | --- | --- |
-| **Go** | Writes the Submission, Drive Log and Text set on the Exports tab. When the options are on, it also runs converts (*Convert on Go*), copies sidecars (*Copy with Go*), exports the Ayon shot list (*Export with Go*), records the package in Ayon (*Record Package with Go*), publishes to Ayon (*Send Submission CSV to Ayon on Go*) and renames the package folder (*Auto Rename*). Go uses the data shown in the tables. |
+| **Go** | Writes the Submission, Drive Log and Text set on the Exports tab. When the options are on, it also runs converts (*Convert on Go*), copies sidecars (*Copy with Go*), exports the Ayon shot list (*Export with Go*), records the package in Ayon (*Record with Go*), publishes to Ayon (*Send Submission CSV to Ayon on Go*) and renames the package folder (*Auto Rename*). Go uses the data shown in the tables. |
 | **Reload** | Rescans the package folder: files, sizes, metadata and CSV data. Use it after files changed on disk, after Rename, or after changing Frame Rate, timecode or OCIO. |
 | **Publish Ayon Local** | Writes the Submission CSV and ingests it into Ayon on this computer. See Ayon Publish tab. |
 | **Publish Ayon Deadline** | The same, submitted as a Deadline job. |
@@ -272,6 +272,24 @@ Row 2 shows the override pattern; row 4 shows Python in Repl for things a plain 
 - Useful Sources: `{name}` = file name without extension, `{part1}` = file name with extension, `{part2}` = parent folder, `{part3}` = the folder above, and so on.
 
 ![sh_tab_parsing](screenshots/sh_tab_parsing.png)
+
+#### Editing the rows
+
+The rows are a table with the column titles on top, and only the rows in use are shown (up to 48). Double click a cell to edit it.
+
+| Button | Key | Does |
+| --- | --- | --- |
+| **Add** |  | Empty row at the end. |
+| **Insert** | Ins | Empty row above the selected row. |
+| **Duplicate** | Ctrl+D | Copies of the selected rows below them. |
+| **Delete** | Del | Deletes the selected rows. |
+| **Move Up** / **Move Down** | Ctrl+Up / Ctrl+Down | Moves the selected rows; the order matters, rows run top to bottom. |
+| **Copy** | Ctrl+C | The selected rows as tab separated text (Name, Pattern, Repl, Source, Filter). |
+| **Paste** | Ctrl+V | Rows from tab separated text, below the selected row or at the end – also from Excel or another preset; a title line is skipped. A single value (no tab, one line) goes into the selected cells. |
+
+**Preview** (checkbox above the table) adds a Preview column with the value each row gives for the first selected row of the Submission table; the column header names the file. A row that didn't run for that file – filtered out by Filter, or with Name, Pattern or Source empty – has an empty preview cell. The preview updates after each edit, and the Submission selection is kept when the tables refresh. A collapsed group row previews its first file.
+
+A red Pattern cell is an invalid regex; a brown row is skipped (Name, Pattern or Source empty) – its tooltip says why. Presets store the rows in order from row 1, without the empty rows in between, so older presets with gaps load compacted.
 
 #### Controls (each row)
 
@@ -736,7 +754,7 @@ Before publishing you need: a loaded package, **Project** on the Ayon tab, **Fol
 
 The Ayon tab reads the folders (shots, assets) and tasks of an Ayon project, pairs them with the package items, and makes their values tokens with the **Column Prefix** (default `list_`): `{list_Folder Path}`, `{list_Range}`, `{list_Task Status}`. It can also pull the published versions of each shot, match each file to its exact version and representation, export the shot list, and record in Ayon which package sent which versions.
 
-**Shot list.** **Enable** reads the list on every package load; **Scan** reads it now, also without a package. Package 1 `{shot}` = Data 1 `{Folder Name}` pairs files with folders; matched rows are green. The List Filters decide which rows are shown and exported. Each row has the frame range (`In`, `Out`, `Head`, `Tail`, `Range`, `Length`), resolution, `Start Date` / `End Date`, status, assignees and links.
+**Shot list.** **Enable** reads the list on every package load; **Scan** reads it now, also without a package. Package 1 `{shot}` = AYON 1 `{Folder Name}` pairs files with folders; matched rows are green. The Folder Filters decide which rows are shown and exported. Each row has the frame range (`In`, `Out`, `Head`, `Tail`, `Range`, `Length`), resolution, `Start Date` / `End Date`, status, assignees and links.
 
 **Versions.** With **Pull versions** on and **Product filters** `comp:renderCompMain:exr, :platePl01:exr`, every row gets the latest version of the first product that exists – `Version`, `Version Status`, `Version Comment`, `Repre Path`, `Version FPS` and more. Each filter is `task:product:representation`:
 
@@ -750,6 +768,8 @@ The Ayon tab reads the folders (shots, assets) and tasks of an Ayon project, pai
 
 The **Matched Versions** sub-tab lists all versions of those products for the matched folders, sorted by folder and version; the preferred one is highlighted.
 
+**AYON Lists.** The third sub-tab browses the project's AYON lists. **Get Lists** reads them (Project of the Ayon group, AYON sign-in of the Preferences tab); the left side shows them by list category – the list's `category` attribute, else `category` in its data – with lists without a category last. List folders are not used. With **auto-read** on (default, saved in presets) the lists are read right after SH connects to AYON – Scan, or a package load / Reload with Enable on – and again only when the Project changes. Select a list to see its versions: **Folder Path**, **Task**, **Product**, **Version**. Items that aren't versions are not shown. Columns sort by a click on the header, Ctrl+C copies the selected rows for Excel. Get Lists works without a package.
+
 **Match version.** Package `{version}` = Version `{Version}` pairs `001_0010_comp_v003.exr` with Ayon version 3 of its shot (numbers compare by value, so `003` = `3`). Use Package `v{version}` = Version `{Version Name}` to compare `v003` with `v003`. The file then gets `{list_Matched Version}`, `{list_Matched Version Status}`, `{list_Matched Version Comment}`, `{list_Matched Repre Path}`; matched rows are teal. Every matched file also gets `{list_Matched Version Exists}` (`True` / `False`) and `{list_Matched Max Existing Version}` – handy in checks to catch a version that is already in Ayon or older than the latest.
 
 Each matched file is also paired with one **representation**: by file extension first (`jpeg` = `jpg`, `tiff` = `tif`), then by file size when several share the extension (needs Scan Sizes). The result is `{list_Matched Representation}` and how it was found, `{list_Matched Representation By}`.
@@ -762,7 +782,7 @@ Match rules and the prefix apply right away. Project, Enable, Thumbnails and the
 
 ![sh_tab_ayon_versions](screenshots/sh_tab_ayon_versions.png)
 
-#### Ayon and List
+#### Ayon and AYON CSV Export
 
 | Control | Default | Description |
 | --- | --- | --- |
@@ -778,13 +798,13 @@ Match rules and the prefix apply right away. Project, Enable, Thumbnails and the
 | **Export Shot List** |  | Write the files with the rows the tables show. Works without Enable and without a package. |
 | **Export with Go** | off | Also export when Go is pressed. |
 
-#### Match Package Keys to Shot List Keys
+#### Match Package Files to AYON
 
 | Control | Default | Description |
 | --- | --- | --- |
 | **Package 1–3** checkbox | 1 on | Use this condition; all that are on must match. |
 | Package field | `{shot}` | Item side, with item tokens. |
-| **Data 1–3** | `{Folder Name}` | Shot list side: columns in braces, e.g. `{Folder Path}`, `{Task Name}`, `{Task Type}`. |
+| **AYON 1–3** | `{Folder Name}` | Shot list side: columns in braces, e.g. `{Folder Path}`, `{Task Name}`, `{Task Type}`. |
 
 #### Versions
 
@@ -794,10 +814,10 @@ Match rules and the prefix apply right away. Project, Enable, Thumbnails and the
 | **Product filters** | empty | `task:product:representation`, comma separated, tried in order. |
 | **Match version** | off | Pair each file with a version row. |
 | Package / Version keys | `{version}` / `{Version}` | Item side and version side of the pairing. |
-| **Record Package with Go** | off | Record the package when Go is pressed. |
+| **Record with Go** | off | Record the package when Go is pressed. |
 | **Record Package to Ayon** |  | Record now. Same as CLI action `k`. |
 
-#### List Filters
+#### Folder Filters
 
 | Control | Default | Description |
 | --- | --- | --- |
@@ -1076,7 +1096,7 @@ Built-in tokens of each item. The Inspector tab shows the exact set for each fil
 | `sh_tab_grouping.png` | Grouping tab | Enable on, Group by `{shot}{task}{version}`, one definition (Always `exr`, Always/Convert `mov`); Submission preview with two coloured groups and one red group. |
 | `sh_tab_checks.png` | Checks tab | Two or three filled checks (width, fps, codec), both sequence checks on; Submission preview below with red and orange rows. |
 | `sh_tab_ayon_publish.png` | Ayon Publish tab | Deadline fields and Folder / Task filled. |
-| `sh_tab_ayon.png` | Ayon tab | Enable on, Project, Package 1 `{shot}` = Data 1 `{Folder Name}`, Versions group filled (Pull versions, Product filters, Match version), Shot List sub-tab with green matched rows. |
+| `sh_tab_ayon.png` | Ayon tab | Enable on, Project, Package 1 `{shot}` = AYON 1 `{Folder Name}`, Versions group filled (Pull versions, Product filters, Match version), Shot List sub-tab with green matched rows. |
 | `sh_tab_ayon_versions.png` | Ayon tab | Matched Versions sub-tab: highlighted Preferred rows and teal matched rows. Crop to the tab. |
 | `sh_tab_preferences.png` | Preferences tab | Whole tab including the Accounts group showing a signed-in ftrack and Ayon user (blur user names if needed). |
 | `sh_tab_exports.png` | Exports tab | Submission CSV + Excel, Above Root; Text with a header using `{package_name}` and `{total_txt}`. |

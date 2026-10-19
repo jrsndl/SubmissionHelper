@@ -631,7 +631,7 @@ for _n in (1, 2, 3):
         "All conditions that are on must match.")
     TOOLTIPS[f"ayon_package{_n}"] = (
         "File side of the condition: text with file tokens, e.g. {shot}.\n"
-        "Must equal the Data value exactly (case-sensitive).")
+        "Must equal the AYON value exactly (case-sensitive).")
     TOOLTIPS[f"ayon_list{_n}"] = (
         "Shot list side of the condition: shot list columns in braces,\n"
         "e.g. {Folder Name}, {Folder Path}, {Task Name}, {Task Type}.")

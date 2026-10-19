@@ -259,7 +259,7 @@ their values become keywords with the Ayon tab's *Column Prefix* (default
 
 * **Scan** reads the list now. It works without a loaded package, and also
   when *Enable* is off (that checkbox controls reading on package load).
-* **List Filters** limit the list: Assets / Shots / Tasks / Other, task types,
+* **Folder Filters** limit the list: Assets / Shots / Tasks / Other, task types,
   **Task Names** (comma separated, wildcards `*` `?`, e.g. `comp*`) and
   assignees. A task row must pass every enabled filter.
 * **Export Shot List** writes `ayon-list.csv` (visible rows only) to the output
@@ -309,7 +309,7 @@ filters takes effect with the next **Scan** or package load.
 ### Matched Versions
 
 With **Pull versions** on and package files matched to Ayon folders (*Match
-Package Keys to Shot List Keys*), the **Matched Versions** sub-tab lists all
+Package Files to AYON*), the **Matched Versions** sub-tab lists all
 versions of the configured products (the product filters: product name, task
 and representation must fit) of the matched folders only, sorted by folder
 path and then version. The version picked by the filters as the preferred one
