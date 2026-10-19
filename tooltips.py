@@ -327,12 +327,16 @@ TOOLTIPS = {
         "Shot = {shot}, Frames = {range}, Vendor = MyStudio\n"
         "Put a comma after every column, also at the end of a line.\n"
         "No commas or = inside a value. Unknown tokens stay as {token}.\n"
+        "Title = *value  makes the column editable in the Submission table,\n"
+        "e.g. Notes = *{note}. Edits are exported, Reload drops them.\n"
         "See the Inspector tab for the available tokens.",
     "log_columns":
         "Drive Log columns as  Title = value  separated by commas.\n"
         "Value is text with tokens, e.g. File = {sequence_nuke}, Size = {size_human}\n"
         "Put a comma after every column, also at the end of a line.\n"
-        "No commas or = inside a value. Unknown tokens stay as {token}.",
+        "No commas or = inside a value. Unknown tokens stay as {token}.\n"
+        "Title = *value  makes the column editable in the Drive Log table.\n"
+        "Edits are exported, Reload drops them.",
     "txt_columns":
         "Text columns as  Title = value  separated by commas.\n"
         "Put a comma after every column, also at the end of a line.\n"

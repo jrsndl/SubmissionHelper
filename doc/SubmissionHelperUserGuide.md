@@ -584,6 +584,25 @@ Vendor=MyStudio,
 - Text without braces is written as is (`Vendor=MyStudio`).
 - Format specs work: `#={cnt_sub:0>4}`.
 - Spaces around `=` become part of the title (`Shot = {shot}` gives the title ` Shot  `). Write `Shot={shot}` when you refer to the title in Exports Skip / Split Column.
+- `Title=*value` makes the column editable in the Submission / Drive Log table, see below.
+
+**Editable columns**
+
+A coordinator often needs to change a value just before sending, typically the notes of the versions. Instead of opening the exported spreadsheet in Excel, mark the column with `*` right after the `=`:
+
+```
+Shot={shot},
+Notes=*{ftrack_note},
+```
+
+- The `*` is not part of the value: the cells are filled from the template as usual.
+- Only the cells of `*` columns can be edited (double click); all other cells are read only. The header tooltip of an editable column says so.
+- Ctrl+V pastes the clipboard text into all selected editable cells, e.g. the same Intent for many rows. Several lines (a column copied from Excel) go one per selected row, top down; selected cells of other columns are skipped.
+- The edited value is what Go exports: the Submission and Drive Log Excel / CSV files and the Ayon publish CSV.
+- Edits are kept when the tables are rebuilt (changing settings or columns). Each edit belongs to the row's file; on a collapsed group row (Grouping tab) it belongs to the group, so switching Collapse off shows the files' normal values.
+- Removing the `*` from the column shows its normal values again.
+- **Reload** drops all edits and starts from the normal values.
+- Works for the Submission and Drive Log only; the Text output has no table to edit.
 
 **Counters and totals**
 

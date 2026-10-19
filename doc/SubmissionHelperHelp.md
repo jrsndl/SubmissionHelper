@@ -402,6 +402,22 @@ Vendor=MyStudio,
 * The value is text with tokens. Format specs work, e.g. `{cnt_sub:0>4}`.  
 * Spaces around `=` become part of the title (`Shot = {shot}` gives the title "Shot "); write `Shot={shot}` when you use the title in Exports Skip / Split.
 
+## Editable columns
+
+Put `*` right after the `=` to let the coordinator edit a Submission or Drive Log column in the table at the bottom, e.g. to change the notes of the versions being sent without opening the exported spreadsheet in Excel:
+
+```
+Shot={shot},
+Notes=*{ftrack_note},
+```
+
+* The `*` is not part of the value: the cells start with the value of the template as usual. A column without `*` can't be edited.  
+* Double click a cell to edit it. The edit is what Go exports: the Excel / CSV of the Submission and Drive Log, and the Ayon publish CSV.  
+* Ctrl+V pastes the clipboard text into all selected editable cells, e.g. the same Intent for many rows. Several lines (a column copied from Excel) go one per selected row, top down.  
+* Edits are kept when the tables refresh (changing settings or columns). Each edit belongs to the row's file; in a collapsed group row it belongs to the group, so switching Collapse off shows the files' normal values.  
+* Removing the `*` from the column shows its normal values again.  
+* **Reload** drops all edits.  
+
 Counters and totals for each output: `{cnt_sub}` `{cnt_log}` `{cnt_txt}` number the rows (start, step and digits are set in Preferences); `{total_sub}` … is the number of rows (a sequence counts once), `{files_sub}` … the number of files (every frame counts), and `{total_size_sub_human}` … the total size.
 
 # Grouping Tab

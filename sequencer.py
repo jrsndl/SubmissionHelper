@@ -63,6 +63,13 @@ class Sequencer(object):
         self.column_expressions_log = None
         self.column_titles_txt = None
         self.column_expressions_txt = None
+        # Spreadsheet tab: columns defined as Title=*value can be edited in
+        # the Submission / Drive Log tables
+        self.column_editable_sub = []
+        self.column_editable_log = []
+        # cell edits of those tables: {'sub' / 'log': {(row key, column title): text}}
+        # kept over refreshes, a Reload (new Sequencer) drops them
+        self.cell_edits = {'sub': {}, 'log': {}}
         self.table_sub = []
         self.table_log = []
         self.table_side = []
@@ -2419,14 +2426,16 @@ class Sequencer(object):
         # add to outputs
         self.output.update(date_keys)
 
-    def prepare_columns(self, gui_columns):
+    def prepare_columns(self, gui_columns, editable=None):
         """
         For Spreadsheet Table, parse columns
 
         Gets columns definition as a string like:
         Thumbnail={thumb_path}, Thumbnail={created_thumb_path},
-        Shot={shot_name}, CheckShot={check_shot_name}, ...
+        Shot={shot_name}, CheckShot={check_shot_name}, Notes=*{note}, ...
         Returns two lists: column_titles and column_expressions
+        Title=*value: the column can be edited in the gui table; the * is not
+        part of the expression. editable (a list) gets one bool per column.
         """
 
         column_titles = []
@@ -2446,6 +2455,11 @@ class Sequencer(object):
             if m:
                 title = m.group("column_title")
                 expression = m.group("column_expression")
+                is_editable = expression.startswith('*')
+                if is_editable:
+                    expression = expression[1:].lstrip()
+                if editable is not None:
+                    editable.append(is_editable)
                 one_itm = {
                     'column_number': column_count,
                     'title': title,
@@ -2470,10 +2484,12 @@ class Sequencer(object):
             if self.settings['txt_columns']['value']:
                 _txt = self.settings['txt_columns']['value']
 
+        self.column_editable_sub = []
+        self.column_editable_log = []
         self.column_titles_sub, self.column_expressions_sub =\
-            self.prepare_columns(_sub)
+            self.prepare_columns(_sub, self.column_editable_sub)
         self.column_titles_log, self.column_expressions_log =\
-            self.prepare_columns(_log)
+            self.prepare_columns(_log, self.column_editable_log)
         self.column_titles_txt, self.column_expressions_txt =\
             self.prepare_columns(_txt)
 
@@ -2681,6 +2697,9 @@ class Sequencer(object):
             # Grouping tab: inherit columns, keep groups together, collapse
             self.table_sub = self.group_rows(self.table_sub, self.column_titles_sub, groups, 'sub')
             self.table_log = self.group_rows(self.table_log, self.column_titles_log, groups, 'log')
+            # cells edited in the gui (columns Title=*value)
+            self.apply_cell_edits('sub')
+            self.apply_cell_edits('log')
 
         try:
             #_header = txt_header.format(**self.static_keywords)
@@ -2697,6 +2716,73 @@ class Sequencer(object):
         except KeyError:
             _footer = txt_footer
         self.table_txt = _header + '\n' + _titles + body_txt + '\n' + _footer
+
+    # ------------------------------------------------- editable table cells
+    def _edit_tables(self, mode):
+        """(table, titles, editable flags) of 'sub' or 'log'"""
+        if mode == 'sub':
+            return self.table_sub, self.column_titles_sub, getattr(self, 'column_editable_sub', None)
+        if mode == 'log':
+            return self.table_log, self.column_titles_log, getattr(self, 'column_editable_log', None)
+        return None, None, None
+
+    @staticmethod
+    def row_edit_key(row):
+        """
+        What a table row is, over table rebuilds: the file path, for a
+        collapsed group row the group. None: the row can't keep edits.
+        """
+        it = row[-1] if row and isinstance(row[-1], dict) else None
+        if not it:
+            return None
+        if it.get('_group_members'):
+            group = it.get('group_key') or it.get('_group_number')
+            return f"group:{group}" if group else None
+        key = it.get('path') or it.get('sequence_nuke')
+        return str(key) if key else None
+
+    def is_cell_editable(self, mode, column):
+        _, _, editable = self._edit_tables(mode)
+        return bool(editable) and 0 <= column < len(editable) and editable[column]
+
+    def set_cell_edit(self, mode, row_index, column, value):
+        """
+        A cell edited in the gui: the table row gets the value (so the tables,
+        the exports and the Ayon publish csv use it) and it is kept for the
+        next table rebuild. :return: True when stored
+        """
+        table, titles, _ = self._edit_tables(mode)
+        if not table or not titles or not self.is_cell_editable(mode, column):
+            return False
+        if not 0 <= row_index < len(table) or column >= len(titles):
+            return False
+        row = table[row_index]
+        key = self.row_edit_key(row)
+        if key is None or column >= len(row) - 1:
+            return False
+        row[column] = value
+        if getattr(self, 'cell_edits', None) is None:
+            self.cell_edits = {'sub': {}, 'log': {}}
+        self.cell_edits.setdefault(mode, {})[(key, titles[column])] = value
+        return True
+
+    def apply_cell_edits(self, mode):
+        """put the kept cell edits into the rebuilt table (editable columns only)"""
+        edits = (getattr(self, 'cell_edits', None) or {}).get(mode)
+        table, titles, editable = self._edit_tables(mode)
+        if not edits or not table or not titles:
+            return
+        columns = [(c, t) for c, t in enumerate(titles) if self.is_cell_editable(mode, c)]
+        if not columns:
+            return
+        for row in table:
+            key = self.row_edit_key(row)
+            if key is None:
+                continue
+            for c, title in columns:
+                value = edits.get((key, title))
+                if value is not None and c < len(row) - 1:
+                    row[c] = value
 
     # ------------------------------------------------------------ Grouping tab
     def group_config(self):

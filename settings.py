@@ -4,6 +4,41 @@ import json
 import inspect
 import logging
 
+# last_<user>.json: the preset loaded (or saved) last and closed without
+# changes; the next gui start opens that preset instead of last_<user>
+OPEN_PRESET_KEY = '_open_preset'
+# not part of what a preset is: window geometry, the package and values the
+# gui never takes from a preset (MainWindow.settings_to_gui skip_names)
+NOT_PRESET_KEYS = (
+    'size', 'position', 'panel_splitter',
+    'package_folder', 'name_preview', 'load_preset_combobox', 'save_preset_name',
+    'global_prefs_path', 'global_prefs_enabled', 'ffprobe_path', 'vendor_csv_path',
+    OPEN_PRESET_KEY,
+)
+
+
+def preset_values(settings):
+    """
+    the settings without NOT_PRESET_KEYS; of a combobox only its value (its
+    items can be filled at run time, e.g. from Ayon, without a user change)
+    """
+    out = {}
+    for k, v in (settings or {}).items():
+        if k in NOT_PRESET_KEYS:
+            continue
+        if isinstance(v, dict) and 'all_items' in v:
+            v = {kk: vv for kk, vv in v.items() if kk != 'all_items'}
+        out[k] = v
+    return out
+
+
+def preset_changed(baseline, current):
+    """True when current differs from baseline in anything a preset holds"""
+    if baseline is None:
+        return True
+    return preset_values(baseline) != preset_values(current)
+
+
 class Settings(object):
     def __init__(self, name, args):
         self.settings = None
@@ -118,6 +153,34 @@ class Settings(object):
         self.settings = data
         # don't keep the requested name, saving would overwrite that preset with defaults
         self.current_settings_name = 'default'
+
+    def open_last_preset(self):
+        """
+        GUI start: last_<user> says the preset loaded last was closed without
+        changes - read that preset instead, keeping the window geometry and the
+        other non preset values of last_<user>.
+        :return: name of the preset opened, or None (last_<user> stays)
+        """
+        last = self.settings or {}
+        name = last.get(OPEN_PRESET_KEY)
+        if not name or not isinstance(name, str):
+            return None
+        if name not in self.preset_names:
+            self.log.info(f"Preset '{name}' loaded last is gone, starting with {self.current_settings_name}")
+            return None
+        last_name = self.current_settings_name
+        self.read(name)
+        if self.current_settings_name != name:
+            # unreadable: back to last_<user>
+            self.settings = last
+            self.current_settings_name = last_name
+            return None
+        for key in NOT_PRESET_KEYS:
+            if key in last and key != OPEN_PRESET_KEY:
+                self.settings[key] = last[key]
+        self.settings.pop(OPEN_PRESET_KEY, None)
+        self.log.info(f"Opening preset '{name}' (loaded last, closed without changes)")
+        return name
 
     def write(self, name):
         """

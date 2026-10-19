@@ -1,3 +1,4 @@
+import json
 import pprint
 import argparse
 
@@ -23,7 +24,7 @@ from ui_Submission import Ui_submission
 from tooltips import apply_tooltips
 
 from sequencer import Sequencer, PARSE_ROWS, PARSE_FIELDS
-from settings import Settings
+from settings import Settings, OPEN_PRESET_KEY, preset_changed
 import parse_file_name
 import sh_logging
 from log_view import LogView
@@ -171,6 +172,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             self.settings_update_app_title()
             self.settings_update_dropbox()
             self.gui_show_hide_modules()
+            # what the preset looked like when opened; command line overrides
+            # count as changes
+            self._remember_preset(self.settings_obj.current_settings_name,
+                                  changed=bool(self.args.get('settings')))
         else:
             # headless: start from the gui defaults, overlay the preset, so
             # older or partial presets don't raise KeyError later
@@ -491,6 +496,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             partial(self._handler_later, 'log_exclude', 'refresh_spreadsheets'))
         self.ui.log_include.textChanged.connect(
             partial(self._handler_later, 'log_include', 'refresh_spreadsheets'))
+
+        # Submission / Drive Log: edits of the Title=*value columns
+        self.ui.sub_table.itemChanged.connect(partial(self._table_cell_edited, 'sub'))
+        self.ui.log_table.itemChanged.connect(partial(self._table_cell_edited, 'log'))
+        # Ctrl+V pastes into the selected editable cells
+        self.ui.sub_table.installEventFilter(self)
+        self.ui.log_table.installEventFilter(self)
 
         self.ui.txt_columns.textChanged.connect(
             partial(self._handler_later, 'txt_columns', 'refresh_spreadsheets'))
@@ -953,6 +965,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         self.ui.publish_local_button.clicked.connect(
             partial(self.handler, 'publish_local_button', 'publish'))
 
+        # window title: * when a setting changes, also for widgets that don't
+        # run the handler
+        if not self.no_gui:
+            self._watch_settings_for_title()
+
         # For Headless operation, just run what is needed in init
         if self.no_gui and self.package_path is not None:
             self.settings_update("package_folder", self.ui.package_folder,
@@ -991,6 +1008,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         # refresh self.settings
         self.settings_from_gui()
+        self.settings_update_app_title()
 
         # update settings from gui
         if self.data is not None:
@@ -1244,6 +1262,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                             self.settings_from_gui()
                             self.settings_obj.settings = self.settings
                             self.settings_obj.write(preset_name)
+                            self._remember_preset(preset_name)
 
                             self.settings_update_app_title()
                             self.settings_update_dropbox()
@@ -1275,6 +1294,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             self.settings_update("save_preset_name",
                                  self.ui.save_preset_name,
                                  value=preset_to_load)
+            self._remember_preset(self.settings_obj.current_settings_name)
             # edits made before the load are superseded by the preset
             self._cancel_later()
             # the tables were cleared: build them again with the new preset,
@@ -1453,13 +1473,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             self.display_table(
                 self.data.table_sub,
                 self.ui.sub_table,
-                self.data.column_titles_sub
+                self.data.column_titles_sub,
+                edit_mode='sub'
             )
             #self.ui.sub_table.update()
             self.display_table(
                 self.data.table_log,
                 self.ui.log_table,
-                self.data.column_titles_log
+                self.data.column_titles_log,
+                edit_mode='log'
             )
             #self.ui.log_table.update()
             self.ui.txt_table.setPlainText(self.data.table_txt)
@@ -1615,10 +1637,63 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         return last_dir
 
-    def display_table(self, table, table_ui, titles):
+    # table item data: index of the row in Sequencer.table_sub / table_log
+    # (QtCore.Qt.UserRole + 1; a number so the module imports without Qt in tests)
+    EDIT_ROW_ROLE = 257
+
+    def display_table(self, table, table_ui, titles, edit_mode=None):
         """
         table data to ui
+        edit_mode 'sub' / 'log': only the cells of the Title=*value columns
+        can be edited (_table_cell_edited stores them)
         """
+        # filling the table must not count as edits
+        table_ui.blockSignals(True)
+        try:
+            self._display_table(table, table_ui, titles, edit_mode)
+        finally:
+            table_ui.blockSignals(False)
+
+    def _table_cell_edited(self, mode, item):
+        """a Title=*value cell edited in the Submission / Drive Log table"""
+        row_index = item.data(self.EDIT_ROW_ROLE)
+        if self.data is None or row_index is None:
+            return
+        if not self.data.set_cell_edit(mode, int(row_index), item.column(), item.text()):
+            self.log.warning("This cell can't keep the edit (no file / group for the row).")
+
+    def _paste_to_cells(self, table_ui):
+        """
+        Ctrl+V in the Submission / Drive Log table: the clipboard text goes to
+        every selected editable cell (e.g. the same Intent for many rows).
+        Several lines (a column copied from Excel): line 1 to the first
+        selected row, line 2 to the second... rows without a line are left as
+        they are. Other selected cells are skipped.
+        """
+        text = QtWidgets.QApplication.clipboard().text()
+        if text is None:
+            return
+        lines = text.replace('\r\n', '\n').replace('\r', '\n').rstrip('\n').split('\n')
+        cells = [i for i in table_ui.selectedItems()
+                 if i.data(self.EDIT_ROW_ROLE) is not None and i.flags() & QtCore.Qt.ItemIsEditable]
+        if not cells:
+            self.log.info("Paste: select cells of an editable column (Title=*value on the Spreadsheet tab)")
+            return
+        rows = sorted({i.row() for i in cells})
+        for item in cells:
+            if len(lines) == 1:
+                value = lines[0]
+            else:
+                index = rows.index(item.row())
+                if index >= len(lines):
+                    continue
+                value = lines[index]
+            # tab separated cells of one line: the first one
+            value = value.split('\t')[0]
+            # itemChanged stores the edit (_table_cell_edited)
+            item.setText(value)
+
+    def _display_table(self, table, table_ui, titles, edit_mode=None):
         # display table
         table_ui.clear()
         table_ui.setColumnCount(0)
@@ -1630,6 +1705,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             table_ui.setRowCount(len(table))
             group_colors = setting_to_bool((self.settings.get('group_on') or {}).get('value')) and \
                 setting_to_bool((self.settings.get('group_colors') or {}).get('value', True))
+            editable = [bool(edit_mode and self.data and self.data.is_cell_editable(edit_mode, c))
+                        for c in range(len(titles))]
+            for c, can_edit in enumerate(editable):
+                header = table_ui.horizontalHeaderItem(c)
+                if header is not None and can_edit:
+                    bold = header.font()
+                    bold.setBold(True)
+                    header.setFont(bold)
+                    header.setToolTip("Editable: double click a cell. The edit is exported "
+                                      "with Go, Reload drops it.")
 
             for row, line in enumerate(table):
                 # sub and log tables have merged list data
@@ -1641,10 +1726,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
                 for column_number, one_column in enumerate(titles):
                     my_title = str(one_column).lstrip().rstrip()
                     try:
-                        table_ui.setItem(row,
-                                         column_number,
-                                         QtWidgets.QTableWidgetItem(str(line[column_number]))
-                                         )
+                        cell = QtWidgets.QTableWidgetItem(str(line[column_number]))
+                        if edit_mode:
+                            if editable[column_number]:
+                                cell.setData(self.EDIT_ROW_ROLE, row)
+                            else:
+                                cell.setFlags(cell.flags() & ~QtCore.Qt.ItemIsEditable)
+                        table_ui.setItem(row, column_number, cell)
                     except Exception:
                         log.error("can't display table row")
 
@@ -1696,8 +1784,65 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             self.ui.load_preset_combobox.blockSignals(False)
 
     def settings_update_app_title(self):
-        self.setWindowTitle(self.bare_title + ": " +
-                            self.settings_obj.current_settings_name)
+        """
+        Submission Helper: <preset>[*] - <package folder>
+        * : the settings differ from the preset as loaded / saved / opened
+        """
+        title = self.bare_title + ": " + str(self.settings_obj.current_settings_name or '')
+        if self._settings_changed():
+            title += "*"
+        folder = self._package_folder_name()
+        if folder:
+            title += " - " + folder
+        self.setWindowTitle(title)
+
+    def _settings_changed(self):
+        # before the start preset is remembered nothing has changed yet
+        if not hasattr(self, '_preset_name'):
+            return False
+        return preset_changed(getattr(self, '_preset_baseline', None), self.settings)
+
+    def _package_folder_name(self):
+        """last folder of the Package Folder field, '' when not set"""
+        pth = str(((self.settings or {}).get('package_folder') or {}).get('value') or '')
+        pth = pth.strip().replace('\\', '/').rstrip('/')
+        if not pth:
+            return ''
+        if os.path.isfile(pth):
+            # a vendor csv: its folder is the package
+            pth = os.path.dirname(pth)
+        return os.path.basename(pth)
+
+    # typing pause before the title is checked for changes (ms)
+    TITLE_DELAY_MS = 500
+
+    def _watch_settings_for_title(self):
+        """every settings widget's change signal checks the title after a pause"""
+        self._title_timer = QtCore.QTimer(self)
+        self._title_timer.setSingleShot(True)
+        self._title_timer.setInterval(self.TITLE_DELAY_MS)
+        self._title_timer.timeout.connect(self._refresh_title)
+        signals = ((QtWidgets.QLineEdit, 'textChanged'), (QtWidgets.QPlainTextEdit, 'textChanged'),
+                   (QtWidgets.QCheckBox, 'toggled'), (QtWidgets.QRadioButton, 'toggled'),
+                   (QtWidgets.QComboBox, 'currentIndexChanged'), (QtWidgets.QSpinBox, 'valueChanged'),
+                   (QtWidgets.QSlider, 'valueChanged'))
+        for name, obj in inspect.getmembers(self.ui):
+            if name in self.NOT_SETTINGS:
+                continue
+            for cls, signal in signals:
+                if isinstance(obj, cls):
+                    getattr(obj, signal).connect(self._title_timer.start)
+                    break
+
+    def _refresh_title(self):
+        """read the gui (settings_from_gui) only to update the title"""
+        # self.settings stays as the handler left it (the Sequencer uses it)
+        kept = self.settings
+        try:
+            self.settings_from_gui()
+            self.settings_update_app_title()
+        finally:
+            self.settings = kept
 
     def settings_from_gui(self):
         """
@@ -2272,8 +2417,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
 
         group = QtWidgets.QGroupBox("Versions", parent)
         group.setObjectName("ayon_versions_group")
-        group.setMinimumSize(QtCore.QSize(350, 112))
-        group.setMaximumHeight(112)
+        # height from its rows (a fixed 112 px could cut off the third row)
+        group.setMinimumSize(QtCore.QSize(350, 0))
         pol = group.sizePolicy()
         pol.setVerticalPolicy(QtWidgets.QSizePolicy.Fixed)
         group.setSizePolicy(pol)
@@ -2368,13 +2513,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
             "the representations in the package, representation data gets "
             "<b>submissionHelper / packages / &lt;package name&gt;</b>, both with date and user. "
             "Recording the same package again only writes what changed; other data stays.</p>")
-        rec_go = QtWidgets.QCheckBox("Record Package with Go", group)
+        # button with its "with Go" checkbox, on the right
+        row3.addStretch(1)
+        rec_go = QtWidgets.QCheckBox("Record with Go", group)
         rec_go.setObjectName("ayon_record_go")
-        rec_go.setMinimumSize(QtCore.QSize(170, 25))
-        rec_go.setToolTip(record_tip)
+        rec_go.setMinimumSize(QtCore.QSize(110, 25))
+        rec_go.setToolTip("<p>Go also records the package to Ayon, like the "
+                          "Record Package to Ayon button.</p>" + record_tip)
         ui.ayon_record_go = rec_go
         row3.addWidget(rec_go)
-        row3.addStretch(1)
         rec_butt = QtWidgets.QPushButton("Record Package to Ayon", group)
         rec_butt.setObjectName("ayon_record_butt")
         rec_butt.setMinimumSize(QtCore.QSize(170, 25))
@@ -2520,6 +2667,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
         splitter.setSizes([self.TOP_PANEL_DEFAULT, total - self.TOP_PANEL_DEFAULT])
 
     def eventFilter(self, obj, event):
+        if event.type() == QtCore.QEvent.KeyPress and \
+                obj in (self.ui.sub_table, self.ui.log_table) and \
+                event.matches(QtGui.QKeySequence.Paste):
+            self._paste_to_cells(obj)
+            return True
         splitter = getattr(self, 'panel_splitter', None)
         if splitter is not None and obj is splitter.handle(1) \
                 and event.type() == QtCore.QEvent.MouseButtonDblClick:
@@ -2530,10 +2682,36 @@ class MainWindow(QtWidgets.QMainWindow, Ui_submission):
     def get_user_name(self):
         return getpass.getuser()
 
+    def _remember_preset(self, name, changed=False):
+        """
+        The preset just loaded / saved / opened at start: its gui values are
+        the baseline closeEvent compares with. last_<user> and default are no
+        preset to come back to.
+        """
+        self.settings_from_gui()
+        self._preset_name = name
+        self._preset_baseline = None if changed else json.loads(json.dumps(self.settings))
+        self.settings_update_app_title()
+
+    def _unchanged_preset(self):
+        """name of the loaded preset when the gui still matches it, else None"""
+        name = getattr(self, '_preset_name', None)
+        if not name or name.startswith('last_') or name == 'default':
+            return None
+        if preset_changed(getattr(self, '_preset_baseline', None), self.settings):
+            return None
+        return name
+
     def closeEvent(self, event):
         if self.log_view is not None:
             self.log_view.detach()
         self.settings_from_gui()
+        # no changes to the loaded preset: the next start opens that preset,
+        # else last_<user> as it is now
+        unchanged = self._unchanged_preset()
+        if unchanged:
+            self.settings[OPEN_PRESET_KEY] = unchanged
+            log.info(f"Preset '{unchanged}' was not changed, the next start opens it")
         self.settings_obj.settings = self.settings
         _last_prefs = 'last_' + self.get_user_name()
         self.settings_obj.write(_last_prefs)
@@ -2582,6 +2760,8 @@ if __name__ == "__main__":
 
     log.debug('Starting GUI')
     settings_obj = Settings('last_' + getpass.getuser(), args)
+    # the preset loaded last, when it was closed without changes
+    settings_obj.open_last_preset()
     main = MainWindow(no_gui=False, s=settings_obj, args=args)
     main.show()
     rc = app.exec_()
